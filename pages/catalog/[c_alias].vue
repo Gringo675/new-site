@@ -1,5 +1,5 @@
 <script setup>
-import { computed, watch } from 'vue'
+// import { computed, watch } from '#imports'
 const route = useRoute()
 const alias = route.params.c_alias
 const {catData, products, filter} = await $fetch('/api/getCategory?alias=' + alias)
@@ -19,13 +19,37 @@ const activeProducts = computed(() => {
   // })
 })
 
-watch(filter, () => {
-  console.log(`Filter changed`);
+// watch(filter, () => {
+//   console.log(`Filter changed`);
+// })
+
+////// TTEST ///////////
+const ttest = ref({
+  name: 'ttest',
+  active: true
 })
+const antiTtest = computed(() => {
+  console.log(`CHANGED`);
+  return !ttest.value.active
+} )
 </script>
 
 <template>
   <div class="category">
+
+    <div>
+      <h2>TTEST</h2>
+      <div>
+        name: {{ttest.name}}
+      </div>
+      <div>
+        active: {{ttest.active}}
+        <span><button @click="ttest.active = !ttest.active">Toggle</button></span>
+        anti: {{antiTtest}}
+      </div>
+    </div>
+
+
     <h1>{{ catData.name }}</h1>
     <div class="catBlock">
       <div>
