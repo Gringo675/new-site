@@ -24,88 +24,113 @@ export default async (req) => {
 
         // получаем все товары
         const catID = (catData.parent_id > 0 ? catData.parent_id : catData.id) // если нет родительской категории, значит мы уже в ней
-        query = `SELECT id, name, alias, brand_id, price, images, label_id,
-                 p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature, p8_pack
+        query = `SELECT id, name, alias, price, images, label_id,
+                 p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature, p8_pack
                  FROM i_products WHERE category_id = '${catID}' AND published = 1`;
         const [products] = await connection.execute(query);
 
         // на основе полученных продуктов создаем фильтр
-        let filter = [
-            {
+        const filterGroups = {
+            // объект создает сопоставление между полями в таблице mysql и фильтром на сайте
+            p1_type: {
                 name: 'Тип',
-                values: new Set()
+                ordering: 1
             },
-            {
+            p2_counting_system: {
                 name: 'Система отсчета',
-                values: new Set()
+                ordering: 2
             },
-            {
-                name: 'Диапазон',
-                values: new Set()
+            p3_range: {
+                name: 'Диапазон измерений',
+                ordering: 3
             },
-        ]
+            p4_size: {
+                name: 'Размерность',
+                ordering: 4
+            },
+            p5_accuracy: {
+                name: 'Точность отсчета',
+                ordering: 5
+            },
+            p6_class: {
+                name: 'Класс',
+                ordering: 6
+            },
+            p7_feature: {
+                name: 'Особенности',
+                ordering: 7
+            },
+            p0_brand: {
+                name: 'Производитель',
+                ordering: 8
+            },
+            p8_pack: {
+                name: 'Упаковка',
+                ordering: 9
+            }
+        }
+        // далее можно задать частные случаи - особые имена и порядок для отдельных категорий
+        // if (cat_id = ...) {filter.p4_size.name = 'Длина'}
 
+
+        let filter = {}
         let allProps = new Set() // набор из всех уникальных id, для запроса в базу
+        let catActivePropsSet = new Set()  // Set из активных для данной категории пропсов
 
-        products.forEach((product) => {
-            product.props = [] // собираем все пропсы в 1 массив, чтобы легче работать с фильтром
-            if (product.p1_type > 0 ) {
-                filter[0].values.add(product.p1_type)
-                allProps.add(product.p1_type)
-                product.props.push(product.p1_type)
-            }
-            if (product.p2_counting_system > 0 ) {
-                filter[1].values.add(product.p2_counting_system)
-                allProps.add(product.p2_counting_system)
-                product.props.push(product.p2_counting_system)
-            }
-            if (product.p3_range > 0 ) {
-                filter[2].values.add(product.p3_range)
-                allProps.add(product.p3_range)
-                product.props.push(product.p3_range)
-            }
-            // удаляем p1-p9, больше не понадобятся
-            delete product.p1_type
-            delete product.p2_counting_system
-            delete product.p3_range
-        })
+        for (let propKey in filterGroups) {
+            if (catData[propKey] > 0) catActivePropsSet.add(catData[propKey])
 
+            products.forEach((product) => {
+                if (product[propKey] > 0) {
+                    if (filter[propKey] === undefined) { // первое обращение, нужно создать
+                        filter[propKey] = filterGroups[propKey]
+                        filter[propKey].values = new Set()
+                    }
+                    filter[propKey].values.add(product[propKey])
+                    allProps.add(product[propKey])
+                    if (product.props === undefined) product.props = [] // собираем все пропсы в 1 массив, чтобы легче работать с фильтром
+                    product.props.push(product[propKey])
+                    delete product[propKey] // удаляем, больше не понадобится
+                    // console.log(`filter ${propKey} size: ${filter[propKey].values.size}`);
+                }
+            })
+        }
+
+        // console.log(`filter: ${JSON.stringify(filter)}`);
+        // console.log(`allProps: ${Array.from(allProps).join(',')}`);
+        // console.log(`catActivePropsSet: ${Array.from(catActivePropsSet).join(',')}`);
+
+        // получаем пропсы
         query = `SELECT id, name, ordering
                 FROM i_properties 
                 WHERE id IN (${Array.from(allProps).join(',')})`
         const [props] = await connection.execute(query);
-        // для удобства сосздаем Map из всех параметров и Set из активных для данной категории
-        let propsMap = new Map()
+
+        let propsMap = new Map() // для удобства создаем Map из всех пропсов
         props.forEach((prop) => {
             propsMap.set(prop.id, {name: prop.name, order: prop.ordering})
         })
-        let activePropsSet = new Set()
-        if (catData.p1_type > 0) activePropsSet.add(catData.p1_type)
-        if (catData.p2_counting_system > 0) activePropsSet.add(catData.p2_counting_system)
-        if (catData.p3_range > 0) activePropsSet.add(catData.p3_range)
-        if (catData.p4_size > 0) activePropsSet.add(catData.p4_size)
-        if (catData.p5_accuracy > 0) activePropsSet.add(catData.p5_accuracy)
-        if (catData.p6_class > 0) activePropsSet.add(catData.p6_class)
-        if (catData.p7_feature > 0) activePropsSet.add(catData.p7_feature)
-        if (catData.p8_pack > 0) activePropsSet.add(catData.p8_pack)
 
-        filter.forEach((group) => {
+        filter = Object.values(filter).sort((a, b) => a.ordering - b.ordering) // преобразуем объект в массив и сортируем
+        filter.forEach((fGroup) => {
             let values = []
-            group.values.forEach((valueSet) => {
+            fGroup.values.forEach((valueSet) => {
                 values.push({
                     val: valueSet,
                     name: propsMap.get(valueSet).name,
-                    active: activePropsSet.has(valueSet),
+                    active: catActivePropsSet.has(valueSet),
                     order: propsMap.get(valueSet).order
                 })
             })
-            values.sort( (a, b) => a.order - b.order)
-            group.values = values
+            values.sort((a, b) => a.order - b.order)
+            values.forEach(value => delete value.order)  // больше не нужно
+            fGroup.values = values
+            delete fGroup.ordering // больше не нужно
         })
-        // console.log(`filter: ${JSON.stringify(filter)}`);
+        // console.log(`filter array: ${JSON.stringify(filter)}`);
 
 
-        return {catData , products, filter}
+        return {catData, products, filter}
 
     } catch (e) {
         console.log(`getCategory Error: ${e}`);

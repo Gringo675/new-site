@@ -2,36 +2,61 @@
 // import { computed, watch } from '#imports'
 const route = useRoute()
 const alias = route.params.c_alias
-const {catData, products, filter} = await $fetch('/api/getCategory?alias=' + alias)
+const {catData, products, filter: filterOrigin} = await $fetch('/api/getCategory?alias=' + alias)
+let initialFilterProps = new Set() // собираем начальные значения, для сброса
+filterOrigin.forEach(fGroup => {fGroup.values.forEach(prop => {if (prop.active) initialFilterProps.add(prop.val)})})
+console.log(`initialFilterProps.size: ${initialFilterProps.size}`);
+let filter = reactive(filterOrigin)
+let activeProducts = reactive([])
+createActiveProducts()
 
-const activeProducts = computed(() => {
-  let fActiveProps = []
-  filter.forEach((fGroup) => {
-    fGroup.values.forEach((prop) => {
-      if (prop.active) fActiveProps.push(prop.val)
+
+function resetFilter() {
+  filter.forEach(fGroup => {
+    fGroup.values.forEach(prop => {
+      if (initialFilterProps.has(prop.val)) {
+        prop.active = true
+      } else {
+        prop.active = false
+      }
     })
   })
-  console.log(`fActiveProps: ${fActiveProps}`);
+}
 
-  return products
-  // return products.filter((product) => {
-  //
-  // })
+function createActiveProducts () {
+  let fActiveProps = []  // соберем массив из всех активных id. Если в группе нет выбранных значений, нужно включить всю группу.
+  filter.forEach((fGroup) => {
+    const isGroupEnabled = fGroup.values.some(value => value.active)
+    fGroup.values.forEach((prop) => {
+      if (isGroupEnabled) {
+        if (prop.active) fActiveProps.push(prop.val)
+      } else {
+        fActiveProps.push(prop.val)
+      }
+
+    })
+  })
+  // теперь проходимся по всем продуктам и выбираем те, все пропсы которых входят в массив fActiveProps
+  activeProducts.length =  0 // обнуляем
+  products.forEach( product => {
+    if (product.props.every(prop => fActiveProps.includes(prop))) activeProducts.push(product)
+  })
+}
+
+watch(filter, () => {
+  createActiveProducts()
 })
 
-// watch(filter, () => {
-//   console.log(`Filter changed`);
-// })
-
 ////// TTEST ///////////
-const ttest = ref({
+const ttest = reactive({
   name: 'ttest',
   active: true
 })
 const antiTtest = computed(() => {
   console.log(`CHANGED`);
-  return !ttest.value.active
+  return !ttest.active
 } )
+
 </script>
 
 <template>
@@ -71,10 +96,11 @@ const antiTtest = computed(() => {
             <span>{{ prop.name }}</span>
           </div>
         </div>
+        <button @click="resetFilter">Сбросить</button>
       </div>
       <div class="products">
         <h2>PRODUCTS</h2>
-        <div v-for="product in products">
+        <div v-for="product in activeProducts">
           {{ product.name }}
         </div>
       </div>
