@@ -1,7 +1,7 @@
 <script setup>
 
 // const counter2 = useState('counter', () => Math.round(Math.random() * 1000))
-
+// some text
 const counter = useState('counter')
 </script>
 
