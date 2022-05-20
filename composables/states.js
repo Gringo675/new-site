@@ -1,5 +1,4 @@
-export const useCats = () => useState('cats', () => [])
-export const getCats = async () => {
+export const useCats = () => useAsyncData('cats', async () => {
     const rowCats = await $fetch('/api/getCategories')
     // делаем "правильный" массив из натегорий (подкатегории вложены в родительские категории)
     // rowCats отсортирован по ИД, значит сначала наверняка будут основыные категории
@@ -18,9 +17,7 @@ export const getCats = async () => {
     })
 
     return cats
-}
+});
 
-export const useProps = () => useState('props', () => [])
-export const getProps = async () => {
-    return await $fetch('/api/getProperties')
-}
+export const useProps = () => useAsyncData('props', () => $fetch('/api/getProperties'))
+
