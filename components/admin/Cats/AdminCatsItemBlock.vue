@@ -3,14 +3,13 @@
 const props = defineProps({
   parentIndex: Number,
   childIndex: Number,
-  saveChanges: Function
+  catsObj: Object,
+  propersObj: Object
 })
 
-const {data: cats} = useCats()
-const {data: catProps} =  useProps()
-const cat = (props.childIndex !== null ? cats.value[props.parentIndex].children[props.childIndex] : cats.value[props.parentIndex])
-// console.log(`parentIndex: ${props.parentIndex} childIndex: ${props.childIndex} cat.children.length: ${cat.children?.length}`);
-console.log(`catProps.length: ${catProps.value?.length}`);
+const cat = (props.childIndex !== null ? props.catsObj.items[props.parentIndex].children[props.childIndex] : props.catsObj.items[props.parentIndex])
+const propers = props.propersObj.items
+
 </script>
 
 <template>
@@ -19,46 +18,66 @@ console.log(`catProps.length: ${catProps.value?.length}`);
 
       <div class="propWrapper">
         <div class="editableBlock" contenteditable="true"
-             @blur="props.saveChanges(parentIndex, childIndex, 'name', $event.target.innerHTML)">
+             @blur="props.catsObj.handleChanges(parentIndex, childIndex, 'name', $event.target.innerHTML)">
           {{ cat.name }}
         </div>
       </div>
 
       <div class="propWrapper">
         <div class="editableBlock" contenteditable="true"
-             @blur="props.saveChanges(parentIndex, childIndex, 'alias', $event.target.innerHTML)">
+             @blur="props.catsObj.handleChanges(parentIndex, childIndex, 'alias', $event.target.innerHTML)">
           {{ cat.alias }}
         </div>
       </div>
 
       <div class="propWrapper">
         <div class="editableBlock" contenteditable="true"
-             @blur="props.saveChanges(parentIndex, childIndex, 'image', $event.target.innerHTML)">
+             @blur="props.catsObj.handleChanges(parentIndex, childIndex, 'image', $event.target.innerHTML)">
           {{ cat.image }}
         </div>
       </div>
 
       <div class="propWrapper">
         <div class="editableBlock" contenteditable="true"
-             @blur="props.saveChanges(parentIndex, childIndex, 'short_description', $event.target.innerHTML)">
+             @blur="props.catsObj.handleChanges(parentIndex, childIndex, 'short_description', $event.target.innerHTML)">
           {{ cat.short_description }}
         </div>
       </div>
 
-<!--      <div class="propWrapper">-->
-<!--        <div class="editableBlock" contenteditable="true"-->
-<!--             @blur="props.saveChanges(parentIndex, childIndex, 'description', $event.target.innerHTML)">-->
-<!--          {{ cat.description }}-->
-<!--        </div>-->
-<!--      </div>-->
+      <!--      <div class="propWrapper">-->
+      <!--        <div class="editableBlock" contenteditable="true"-->
+      <!--             @blur="props.handleChanges(parentIndex, childIndex, 'description', $event.target.innerHTML)">-->
+      <!--          {{ cat.description }}-->
+      <!--        </div>-->
+      <!--      </div>-->
 
       <div class="propWrapper">
-        <select @change="saveChanges(parentIndex, childIndex, 'p0_brand', $event.target.value)">
+        <select @change="props.catsObj.handleChanges(parentIndex, childIndex, 'p0_brand', $event.target.value)">
           <option disabled :selected="cat.p0_brand===0">Бренд:</option>
-<!--          <option v-for="prop in catProps.filter( prop => prop.group_id === 0)" :value="prop.id"-->
-<!--                  :selected="prop.id===cat.p0_brand">-->
-<!--            {{ prop.name }}-->
-<!--          </option>-->
+          <option v-for="proper in propers.brand" :value="proper.id"
+                  :selected="proper.id===cat.p0_brand">
+            {{ proper.name }}
+          </option>
+        </select>
+      </div>
+
+      <div class="propWrapper">
+        <select @change="props.catsObj.handleChanges(parentIndex, childIndex, 'p1_type', $event.target.value)">
+          <option disabled :selected="cat.p1_type===0">Тип:</option>
+          <option v-for="proper in propers.type" :value="proper.id"
+                  :selected="proper.id===cat.p1_type">
+            {{ proper.name }}
+          </option>
+        </select>
+      </div>
+
+      <div class="propWrapper">
+        <select @change="props.catsObj.handleChanges(parentIndex, childIndex, 'p2_counting_system', $event.target.value)">
+          <option disabled :selected="cat.p2_counting_system===0">Система отсчета:</option>
+          <option v-for="proper in propers.type" :value="proper.id"
+                  :selected="proper.id===cat.p2_counting_system">
+            {{ proper.name }}
+          </option>
         </select>
       </div>
 
@@ -66,7 +85,8 @@ console.log(`catProps.length: ${catProps.value?.length}`);
     </div>
     <div class="catChildrenBlock" v-if="cat.children?.length">
       <template v-for="(childCat, childIndex) in cat.children" :key="childCat.id">
-        <AdminCatsItemBlock :parentIndex=props.parentIndex :childIndex=childIndex :saveChanges=props.saveChanges />
+        <AdminCatsItemBlock :parentIndex=parentIndex :childIndex=childIndex
+                            :catsObj=catsObj :propersObj="propersObj"/>
       </template>
     </div>
   </div>

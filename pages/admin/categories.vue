@@ -1,31 +1,52 @@
 <script setup>
 
-const {data: cats} = useCats()
-// const {data: props} = useProps()
-// console.log(`cats: ${JSON.stringify(cats)}`);
+const catsObj = reactive( {} )
+catsObj.items = await useFetch('/api/getCategories')
+catsObj.items = catsObj.items.data // более элегантного способа не придумал
+catsObj.changedCats = {} // хранит информацию об изменениях в категориях
+catsObj.handleChanges = function (parentIndex, childIndex, key, newContent) {
+  const targetCat = (childIndex === null ? this.items[parentIndex] : this.items[parentIndex].children[childIndex])
 
-async function saveChanges(parentIndex, childIndex, key, newContent) {
-  const targetCat = (childIndex === null ? cats.value[parentIndex] : cats.value[parentIndex].children[childIndex])
-
-  if (targetCat[key] !== newContent) {
+  if (targetCat[key] !== newContent) { // есть изменения
     targetCat[key] = newContent
-    // const response = await $fetch('/api/setCategory', {
-    //   method: 'post',
-    //   body: {parentIndex, childIndex, key, newContent}
-    // })
+    if (this.changedCats[targetCat.id] === undefined) this.changedCats[targetCat.id] = {}
+    this.changedCats[targetCat.id][key] = newContent
 
-    console.log(`changed`);
+    console.log(`changedCats: ${JSON.stringify(this.changedCats)}`);
   }
 }
+catsObj.saveChanges = async function () {
+
+  for (const key in this.changedCats) {
+    const postData = {
+      id: key,
+      fields: this.changedCats[key]
+    }
+    console.log(`postData: ${JSON.stringify(postData)}`);
+    const response = await $fetch('/api/setCategory', {
+      method: 'POST',
+      body: postData
+    })
+  }
+}
+
+const propersObj = reactive( {} )
+propersObj.items = await useFetch('/api/getProperties')
+propersObj.items = propersObj.items.data
+
+
 
 </script>
 
 <template>
   <div class="categories">
     <h1>Categories</h1>
+    <button :disabled="!Object.keys(catsObj.changedCats).length" @click="catsObj.saveChanges()">
+      Save
+    </button>
     <div class="catItems">
-      <template v-for="(parentCat, parentIndex) in cats" :key="parentCat.id">
-        <AdminCatsItemBlock :parentIndex=parentIndex :childIndex=null :saveChanges=saveChanges />
+      <template v-for="(parentCat, parentIndex) in catsObj.items" :key="parentCat.id">
+        <AdminCatsItemBlock :parentIndex=parentIndex :childIndex=null :catsObj=catsObj :propersObj=propersObj />
 <!--        <div>{{ parentCat.name }}</div>-->
       </template>
     </div>
