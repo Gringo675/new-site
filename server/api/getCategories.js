@@ -4,7 +4,7 @@ import { defineHandler } from 'h3'
 export default defineHandler(async () => {
     // console.log(`from getCategories`);
     try {
-        const query = `SELECT * FROM i_categories WHERE id IN (11, 1101, 1102) ORDER by id`;
+        const query = `SELECT * FROM i_categories WHERE id IN (12, 13) OR parent_id IN (12, 13) ORDER by id`;
         // const query = `SELECT * FROM i_categories ORDER by id`;
 
         const rowCats = await request(query)

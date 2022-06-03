@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Play:wght@400;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    html {
+        font-family: Play, system-ui, sans-serif;
+        font-size: 1rem;
+    }
+    select {
+        @apply border border-blue-500 rounded
+    }
+}
+
+@layer components {
+    .button {
+        @apply inline-block mx-5 my-1.5 px-3.5 py-2 min-w-[100px] text-base text-slate-800 cursor-pointer
+        border border-gray-300 rounded bg-gradient-to-b from-cyan-400 to-indigo-400
+        hover:from-indigo-400 hover:to-cyan-400
+        disabled:cursor-default disabled:bg-gray-300 disabled:bg-none
+    }
+
+}
