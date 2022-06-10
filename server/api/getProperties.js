@@ -6,50 +6,29 @@ export default defineHandler(async () => {
     try {
         // const query = `SELECT * FROM i_properties WHERE group_id=0 ORDER by group_id, ordering`
         const query = `SELECT * FROM i_properties ORDER by group_id, ordering`
-        const rowProps = await request(query)
+        const rawProps = await request(query)
         // разделим параметры на группы
-        const props = {
-            brand: [],
-            type: [],
-            counting_system: [],
-            range: [],
-            size: [],
-            accuracy: [],
-            class: [],
-            feature: [],
-            pack: []
+        const propsGroups = [ // порядковый номер соостветствует group_id
+            'p0_brand',
+            'p1_type',
+            'p2_counting_system',
+            'p3_range',
+            'p4_size',
+            'p5_accuracy',
+            'p6_class',
+            'p7_feature',
+            'p8_pack'
+        ]
+
+        const props = {}
+        for (const groupName of propsGroups) {
+            props[groupName] = []
         }
-        for (const prop of rowProps) {
-            switch (prop.group_id) {
-                case 0:
-                    props.brand.push(prop)
-                    break
-                case 1:
-                    props.type.push(prop)
-                    break
-                case 2:
-                    props.counting_system.push(prop)
-                    break
-                case 3:
-                    props.range.push(prop)
-                    break
-                case 4:
-                    props.size.push(prop)
-                    break
-                case 5:
-                    props.accuracy.push(prop)
-                    break
-                case 6:
-                    props.class.push(prop)
-                    break
-                case 7:
-                    props.feature.push(prop)
-                    break
-                case 8:
-                    props.pack.push(prop)
-                    break
-            }
+
+        for (const prop of rawProps) {
+            props[propsGroups[prop.group_id]].push(prop)
         }
+
         return props
 
     } catch (e) {

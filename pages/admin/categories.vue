@@ -1,5 +1,11 @@
 <script setup>
 import {useMessage as message} from "@/composables/state";
+const textEditor = await useTextEditor
+const propsEditor = await usePropsEditor
+
+const propersObj = reactive({})
+propersObj.items = await useFetch('/api/getProperties')
+propersObj.items = propersObj.items.data
 
 const catsObj = reactive({})
 catsObj.items = await useFetch('/api/getCategories')
@@ -115,18 +121,20 @@ catsObj.moveCat = function (parentIndex, childIndex, direction) {
   if (isChanged) this.createNewCatsOrder(targetArray)
 }
 
-const propersObj = reactive({})
-propersObj.items = await useFetch('/api/getProperties')
-propersObj.items = propersObj.items.data
 
 </script>
 
 <template>
   <div class="categories">
+    <AdminCatsTextEditor v-if="textEditor.isShow" :catsObj="catsObj"/>
+    <AdminCatsPropsEditor v-if="propsEditor.isShow" :propersObj="propersObj"/>
     <h1>Categories</h1>
-    <button class="button" :disabled="!Object.keys(catsObj.changedCats).length" @click="catsObj.saveChanges()">
-      Save
-    </button>
+    <AdminCatsFilter />
+    <div>
+      <button class="button" :disabled="!Object.keys(catsObj.changedCats).length" @click="catsObj.saveChanges()">
+        Save
+      </button>
+    </div>
     <div class="catItems">
       <template v-for="(parentCat, parentIndex) in catsObj.items" :key="parentCat.id">
         <AdminCatsItemBlock :parentIndex=parentIndex :childIndex=null :catsObj=catsObj :propersObj="propersObj"/>

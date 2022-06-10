@@ -1,5 +1,9 @@
 <script setup>
 import {useMessage as message} from "@/composables/state";
+import {usePropsEditor} from "../../../composables/state";
+const fields = await useCatFields
+const textEditor = await useTextEditor
+const propsEditor = await usePropsEditor
 
 const props = defineProps({
   parentIndex: Number,
@@ -20,6 +24,23 @@ const validateDelete = () => {
   message.show('Подтвердите удаление', `<p>Категория "${cat.name}" будет удалена.</p><p>Продолжить?</p>`,
                 'info', ()=> {props.catsObj.deleteCat(props.parentIndex, props.childIndex)})
 }
+
+const activateTextEditor = (field) => {
+  textEditor.field = field
+  textEditor.parentIndex = props.parentIndex
+  textEditor.childIndex = props.childIndex
+  textEditor.isShow = true
+}
+
+const handleSelect = (field, value) => {
+  if (value === 'add') {
+    propsEditor.group = field
+    propsEditor.isShow = true
+  } else {
+    props.catsObj.handleChanges(props.parentIndex, props.childIndex, field, value)
+  }
+}
+
 </script>
 
 <template>
@@ -32,73 +53,36 @@ const validateDelete = () => {
       <button class="button" @click="catsObj.moveCat(parentIndex, childIndex, 'up')">UP</button>
       <button class="button" @click="catsObj.moveCat(parentIndex, childIndex, 'down')">DOWN</button>
     </div>
-    <div class="catItem">
+    <div class="catFields">
 
-      <div class="propWrapper">
-        <div class="editableBlock" contenteditable="true"
-             @blur="props.catsObj.handleChanges(parentIndex, childIndex, 'name', $event.target.innerHTML)">
-          {{ cat.name }}
-        </div>
-      </div>
-
-      <div class="propWrapper">
-        <div class="editableBlock" contenteditable="true"
-             @blur="props.catsObj.handleChanges(parentIndex, childIndex, 'alias', $event.target.innerHTML)">
-          {{ cat.alias }}
-        </div>
-      </div>
-
-      <div class="propWrapper">
-        <div class="editableBlock" contenteditable="true"
-             @blur="props.catsObj.handleChanges(parentIndex, childIndex, 'image', $event.target.innerHTML)">
-          {{ cat.image }}
-        </div>
-      </div>
-
-      <div class="propWrapper">
-        <div class="editableBlock" contenteditable="true"
-             @blur="props.catsObj.handleChanges(parentIndex, childIndex, 'short_description', $event.target.innerHTML)">
-          {{ cat.short_description }}
-        </div>
-      </div>
-
-      <!--      <div class="propWrapper">-->
-      <!--        <div class="editableBlock" contenteditable="true"-->
-      <!--             @blur="props.handleChanges(parentIndex, childIndex, 'description', $event.target.innerHTML)">-->
-      <!--          {{ cat.description }}-->
-      <!--        </div>-->
-      <!--      </div>-->
-
-      <div class="propWrapper">
-        <select @change="props.catsObj.handleChanges(parentIndex, childIndex, 'p0_brand', $event.target.value)">
-          <option disabled :selected="!cat.p0_brand>0">Бренд:</option>
-          <option v-for="proper in propers.brand" :value="proper.id"
-                  :selected="proper.id===cat.p0_brand">
-            {{ proper.name }}
-          </option>
-        </select>
-      </div>
-
-      <div class="propWrapper">
-        <select @change="props.catsObj.handleChanges(parentIndex, childIndex, 'p1_type', $event.target.value)">
-          <option disabled :selected="!cat.p1_type>0">Тип:</option>
-          <option v-for="proper in propers.type" :value="proper.id"
-                  :selected="proper.id===cat.p1_type">
-            {{ proper.name }}
-          </option>
-        </select>
-      </div>
-
-      <div class="propWrapper">
-        <select @change="props.catsObj.handleChanges(parentIndex, childIndex, 'p2_counting_system', $event.target.value)">
-          <option disabled :selected="cat.p2_counting_system>!0">Система отсчета:</option>
-          <option v-for="proper in propers.counting_system" :value="proper.id"
-                  :selected="proper.id===cat.p2_counting_system">
-            {{ proper.name }}
-          </option>
-        </select>
-      </div>
-
+      <template v-for="(field, i) in fields" :key="i">
+        <template v-if="field.isActive">
+          <div v-if="field.type === 'text'" >
+            <div class="editableBlock" contenteditable="true"
+                 @blur="catsObj.handleChanges(parentIndex, childIndex, field.name, $event.target.innerHTML)">
+              {{ cat[field.name] }}
+            </div>
+            <button v-if="field.hasEditButton" class="button" @click="activateTextEditor(field.name)">Edit</button>
+          </div>
+          <div v-else-if="field.type === 'select'">
+            <select @change="handleSelect(field.name, $event.target.value)">
+              <option disabled :selected="!cat[field.name]>0">{{field.nameRU}}:</option>
+              <option v-for="proper in propers[field.name]" :value="proper.id"
+                      :selected="proper.id===cat[field.name]">
+                {{ proper.name }}
+              </option>
+              <option value="add">Добавить...</option>
+            </select>
+          </div>
+          <div v-else-if="field.type === 'checkbox'">
+            <label>
+              <input type="checkbox" :checked="cat[field.name]"
+              @change="catsObj.handleChanges(parentIndex, childIndex, field.name, ($event.target.checked ? 1 : 0))" >
+              {{ field.nameRU }}
+            </label>
+          </div>
+        </template>
+      </template>
 
     </div>
     <div class="catChildrenBlock" v-if="cat.children?.length">
