@@ -5,7 +5,7 @@ const props = defineProps({
   propersObj: Object,
 })
 
-const group = props.propersObj.items[propsEditor.group]
+const pGroup = props.propersObj.items[propsEditor.group]
 
 console.log(`group: ${JSON.stringify(group, null, 2)}`)
 </script>
