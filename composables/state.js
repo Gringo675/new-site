@@ -74,55 +74,64 @@ export const useCatFields = reactive([
         name: 'p0_brand',
         nameRU: 'Производитель',
         isActive: true,
-        type: 'select'
+        type: 'select',
+        groupID: 0
     },
     {
         name: 'p1_type',
         nameRU: 'Тип',
         isActive: true,
-        type: 'select'
+        type: 'select',
+        groupID: 1
     },
     {
         name: 'p2_counting_system',
         nameRU: 'Система отсчета',
         isActive: true,
-        type: 'select'
+        type: 'select',
+        groupID: 2
     },
     {
         name: 'p3_range',
         nameRU: 'Диапазон',
         isActive: true,
-        type: 'select'
+        type: 'select',
+        groupID: 3
     },
     {
         name: 'p4_size',
         nameRU: 'Размерность',
         isActive: true,
-        type: 'select'
+        type: 'select',
+        groupID: 4
     },
     {
         name: 'p5_accuracy',
         nameRU: 'Точность',
         isActive: true,
-        type: 'select'
+        type: 'select',
+        groupID: 5
     },
     {
         name: 'p6_class',
         nameRU: 'Класс',
         isActive: true,
-        type: 'select'
+        type: 'select',
+        groupID: 6
     },
     {
         name: 'p7_feature',
         nameRU: 'Особенности',
         isActive: true,
-        type: 'select'
+        type: 'select',
+        groupID: 7
     },
     {
         name: 'p8_pack',
         nameRU: 'Упаковка',
         isActive: true,
-        type: 'select'
+        type: 'select',
+        groupID: 8
     },
     {
         name: 'meta_title',
@@ -168,5 +177,17 @@ export const useTextEditor = reactive({
 
 export const usePropsEditor = reactive({
     isShow: false,
-    group: ''
+    groupName: '',
+    groupNameRU: '',
+    groupID: null
+})
+
+export const useLoader = reactive({
+    isActive: false,
+    show: function () {
+        this.isActive = true
+    },
+    hide: function () {
+        this.isActive = false
+    }
 })

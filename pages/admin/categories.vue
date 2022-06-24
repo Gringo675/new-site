@@ -1,27 +1,77 @@
 <script setup>
 import {useMessage as message} from "@/composables/state";
+
 const textEditor = await useTextEditor
 const propsEditor = await usePropsEditor
 
 const propersObj = reactive({})
-propersObj.items = await useFetch('/api/getProperties')
-propersObj.items = propersObj.items.data
+propersObj.getItems = async function () {
+  if (this.refreshItems) {
+    await this.refreshItems()
+  } else {
+    const items = await useFetch('/api/getProperties')
+    this.items = items.data
+    this.refreshItems = items.refresh
+  }
+}
+propersObj.handleChanges = async function (groupName, newItems) {
+  const oldItems = this.items[groupName]
+  newItems.forEach((item, i) => { // записываем правильное значение ordering
+    item.ordering = i + 1
+  })
+  const changedItems = []
+  // new
+  newItems.filter(item => item.id === undefined).forEach(item => {
+    item.isNew = true
+    changedItems.push(item)
+  })
+  // changed or deleted
+  oldItems.forEach(oldItem => {
+    const newItem = newItems.find(newItem => newItem.id === oldItem.id)
+    if (newItem === undefined) {
+      oldItem.isDel = true
+      changedItems.push(oldItem)
+    } else {
+      if (oldItem.name !== newItem.name || oldItem.ordering !== newItem.ordering) {
+        newItem.isChanged = true
+        changedItems.push(newItem)
+      }
+    }
+  })
+
+  if (changedItems.length) {
+    await $fetch('/api/setProperties', {
+      method: 'POST',
+      body: changedItems
+    })
+    await this.getItems() // обновляем с новыми данными
+  }
+}
+
+await propersObj.getItems()
+
 
 const catsObj = reactive({})
 catsObj.items = await useFetch('/api/getCategories')
 catsObj.items = catsObj.items.data // более элегантного способа не придумал
 catsObj.changedCats = {} // хранит информацию об изменениях в категориях
 
-catsObj.handleChanges = function (parentIndex, childIndex, key, newContent) {
-  const targetCat = (childIndex === null ? this.items[parentIndex] : this.items[parentIndex].children[childIndex])
-
-  if (targetCat[key] !== newContent) { // есть изменения
-    targetCat[key] = newContent
-    // сохраняем изменения в объекте для последующей отправки на сервер
-    if (this.changedCats[targetCat.id] === undefined) this.changedCats[targetCat.id] = {}
-    this.changedCats[targetCat.id][key] = newContent
-  }
+catsObj.handleChanges = function (catID, key, newContent) {
+  console.log(`newContent: ${newContent}`)
+  if (this.changedCats[catID] === undefined) this.changedCats[catID] = {}
+  this.changedCats[catID][key] = newContent
 }
+// catsObj.handleChanges = function (parentIndex, childIndex, key, newContent) {
+//   const targetCat = (childIndex === null ? this.items[parentIndex] : this.items[parentIndex].children[childIndex])
+//   if (targetCat[key] !== newContent) { // есть изменения
+//     console.log(`oldContent: ${targetCat[key]}`)
+//     console.log(`newContent: ${newContent}`)
+//     targetCat[key] = newContent
+//     // сохраняем изменения в объекте для последующей отправки на сервер
+//     if (this.changedCats[targetCat.id] === undefined) this.changedCats[targetCat.id] = {}
+//     this.changedCats[targetCat.id][key] = newContent
+//   }
+// }
 
 catsObj.saveChanges = async function () {
 
@@ -33,7 +83,7 @@ catsObj.saveChanges = async function () {
   } catch (e) {
     console.log(`saveChanges ERROR: ${e.message}`);
     message.show('При сохранении категорий произошла ошибка', `<p>Описание: ${e.message}</p><p>Повторить сохранение?</p>`,
-    'error', catsObj.saveChanges)
+        'error', catsObj.saveChanges)
   }
 
   this.changedCats = {}
@@ -49,19 +99,18 @@ catsObj.addCat = function (parentIndex, childIndex, isCopy) {
    */
 
   const isAddSubCat = childIndex === undefined
-  const targetCat = (childIndex>=0&&childIndex!==null ? this.items[parentIndex].children[childIndex] : this.items[parentIndex] )
+  const targetCat = (childIndex >= 0 && childIndex !== null ? this.items[parentIndex].children[childIndex] : this.items[parentIndex])
   if (isAddSubCat && targetCat.children === undefined) targetCat.children = []
-  const targetArray = (childIndex!==null ? this.items[parentIndex].children : this.items ) // куда будем вставлять
+  const targetArray = (childIndex !== null ? this.items[parentIndex].children : this.items) // куда будем вставлять
 
-  const newID = (targetArray.length ? Math.max.apply(null, targetArray.map(cat => cat.id)) +1 : targetCat.id*100+1 )
-  // console.log(`newID: ${newID}`);
+  const newID = (targetArray.length ? Math.max.apply(null, targetArray.map(cat => cat.id)) + 1 : targetCat.id * 100 + 1)
   const newCat = (isCopy ? JSON.parse(JSON.stringify(targetCat)) : {})
   delete newCat.children // при копировании дети не копируются
   newCat.id = newID
   if (isAddSubCat) { // вставляем в конец
     targetArray.push(newCat)
   } else {  // вставляем рядом
-    const targetIndex = (childIndex>=0&&childIndex!==null ? childIndex : parentIndex) + 1
+    const targetIndex = (childIndex >= 0 && childIndex !== null ? childIndex : parentIndex) + 1
     targetArray.splice(targetIndex, 0, newCat)
   }
   // сохраняем изменения в спец. объекте
@@ -76,8 +125,8 @@ catsObj.addCat = function (parentIndex, childIndex, isCopy) {
 }
 
 catsObj.deleteCat = function (parentIndex, childIndex) {
-  const targetCat = (childIndex !== null ? this.items[parentIndex].children[childIndex] : this.items[parentIndex] )
-  const targetArray = (childIndex !== null ? this.items[parentIndex].children : this.items ) // откуда будем удалять
+  const targetCat = (childIndex !== null ? this.items[parentIndex].children[childIndex] : this.items[parentIndex])
+  const targetArray = (childIndex !== null ? this.items[parentIndex].children : this.items) // откуда будем удалять
   const targetIndex = (childIndex !== null ? childIndex : parentIndex)
   const targetID = targetCat.id
 
@@ -93,11 +142,11 @@ catsObj.deleteCat = function (parentIndex, childIndex) {
   this.createNewCatsOrder(targetArray)
 }
 
-catsObj.createNewCatsOrder = function(targetCats) {
+catsObj.createNewCatsOrder = function (targetCats) {
   // присваивает переданным в массиве категориям новое значение ordering
-  targetCats.forEach( (cat, i) => {
+  targetCats.forEach((cat, i) => {
     const newOrdering = i + 1
-    if ( newOrdering !== cat.ordering) {
+    if (newOrdering !== cat.ordering) {
       cat.ordering = newOrdering
       if (this.changedCats[cat.id] === undefined) this.changedCats[cat.id] = {}
       this.changedCats[cat.id].ordering = cat.ordering
@@ -107,14 +156,14 @@ catsObj.createNewCatsOrder = function(targetCats) {
 
 catsObj.moveCat = function (parentIndex, childIndex, direction) {
 
-  const targetArray = (childIndex!==null ? this.items[parentIndex].children : this.items )
-  const targetIndex = (childIndex!==null ? childIndex : parentIndex )
+  const targetArray = (childIndex !== null ? this.items[parentIndex].children : this.items)
+  const targetIndex = (childIndex !== null ? childIndex : parentIndex)
   let isChanged = false
   if (direction === 'up' && targetIndex > 0) {
-    targetArray.splice(targetIndex-1, 0, targetArray.splice(targetIndex, 1)[0])
+    targetArray.splice(targetIndex - 1, 0, targetArray.splice(targetIndex, 1)[0])
     isChanged = true
-  } else if (direction === 'down' && targetIndex+1 < targetArray.length) {
-    targetArray.splice(targetIndex+1, 0, targetArray.splice(targetIndex, 1)[0])
+  } else if (direction === 'down' && targetIndex + 1 < targetArray.length) {
+    targetArray.splice(targetIndex + 1, 0, targetArray.splice(targetIndex, 1)[0])
     isChanged = true
   }
 
@@ -126,10 +175,8 @@ catsObj.moveCat = function (parentIndex, childIndex, direction) {
 
 <template>
   <div class="categories">
-    <AdminCatsTextEditor v-if="textEditor.isShow" :catsObj="catsObj"/>
-    <AdminCatsPropsEditor v-if="propsEditor.isShow" :propersObj="propersObj"/>
     <h1>Categories</h1>
-    <AdminCatsFilter />
+    <AdminCatsFilter/>
     <div>
       <button class="button" :disabled="!Object.keys(catsObj.changedCats).length" @click="catsObj.saveChanges()">
         Save
@@ -140,6 +187,12 @@ catsObj.moveCat = function (parentIndex, childIndex, direction) {
         <AdminCatsItemBlock :parentIndex=parentIndex :childIndex=null :catsObj=catsObj :propersObj="propersObj"/>
       </template>
     </div>
+    <transition name="transition-fade">
+    <AdminCatsTextEditor v-if="textEditor.isShow" :catsObj="catsObj"/>
+    </transition>
+    <transition name="transition-fade">
+      <AdminCatsPropsEditor v-if="propsEditor.isShow" :propersObj="propersObj"/>
+    </transition>
   </div>
 </template>
 

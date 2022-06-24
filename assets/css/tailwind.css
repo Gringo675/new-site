@@ -22,3 +22,29 @@
     }
 
 }
+
+/*эти классы всегда будут в итоговом css-файле*/
+
+.transition-fade-enter-active,
+.transition-fade-leave-active {
+    transition: opacity .2s linear;
+}
+.transition-fade-enter-active .modal-form,
+.transition-fade-leave-active .modal-form {
+    transition: transform .2s linear;
+}
+.transition-fade-enter-from,
+.transition-fade-leave-to {
+    opacity: .2;
+}
+.transition-fade-enter-from .modal-form,
+.transition-fade-leave-to .modal-form {
+    transform: translateY(-20px);
+}
+
+.transition-loader-enter-active {
+    transition: opacity .2s .5s linear;
+}
+.transition-loader-enter-from {
+    opacity: 0;
+}

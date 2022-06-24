@@ -1,6 +1,5 @@
 <script setup>
 import {useMessage as message} from "@/composables/state";
-import {usePropsEditor} from "../../../composables/state";
 const fields = await useCatFields
 const textEditor = await useTextEditor
 const propsEditor = await usePropsEditor
@@ -13,7 +12,7 @@ const props = defineProps({
 })
 
 const cat = (props.childIndex !== null ? props.catsObj.items[props.parentIndex].children[props.childIndex] : props.catsObj.items[props.parentIndex])
-const propers = props.propersObj.items
+const propers = computed(() => props.propersObj.items ) // без computed изменения в propsObj не будут отслеживаться
 
 const validateDelete = () => {
   if (cat.children?.length) {
@@ -32,13 +31,14 @@ const activateTextEditor = (field) => {
   textEditor.isShow = true
 }
 
-const handleSelect = (field, value) => {
-  if (value === 'add') {
-    propsEditor.group = field
-    propsEditor.isShow = true
-  } else {
-    props.catsObj.handleChanges(props.parentIndex, props.childIndex, field, value)
-  }
+const activatePropsEditor = (field) => {
+  propsEditor.groupName = field.name
+  propsEditor.groupNameRU = field.nameRU
+  propsEditor.groupID = field.groupID
+  propsEditor.isShow = true
+}
+const handleSelect = (fieldName, value) => {
+  props.catsObj.handleChanges(props.parentIndex, props.childIndex, fieldName, value)
 }
 
 </script>
@@ -58,10 +58,8 @@ const handleSelect = (field, value) => {
       <template v-for="(field, i) in fields" :key="i">
         <template v-if="field.isActive">
           <div v-if="field.type === 'text'" >
-            <div class="editableBlock" contenteditable="true"
-                 @blur="catsObj.handleChanges(parentIndex, childIndex, field.name, $event.target.innerHTML)">
-              {{ cat[field.name] }}
-            </div>
+            <input type="text" v-model.lazy="cat[field.name]"
+                   @change="catsObj.handleChanges(cat.id, field.name, $event.target.value)">
             <button v-if="field.hasEditButton" class="button" @click="activateTextEditor(field.name)">Edit</button>
           </div>
           <div v-else-if="field.type === 'select'">
@@ -71,8 +69,8 @@ const handleSelect = (field, value) => {
                       :selected="proper.id===cat[field.name]">
                 {{ proper.name }}
               </option>
-              <option value="add">Добавить...</option>
             </select>
+            <button class="button" @click="activatePropsEditor(field)">Edit</button>
           </div>
           <div v-else-if="field.type === 'checkbox'">
             <label>

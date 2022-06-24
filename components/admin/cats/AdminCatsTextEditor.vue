@@ -1,5 +1,4 @@
 <script setup>
-
 const textEditor = await useTextEditor
 
 const props = defineProps({
@@ -11,22 +10,19 @@ const title = `${textEditor.field} - ${cat.name}`
 const content = ref(cat[textEditor.field])
 
 const saveChanges = () => {
-  props.catsObj.handleChanges(textEditor.parentIndex, textEditor.childIndex, textEditor.field, content.value)
+  if (content.value !== cat[textEditor.field]) props.catsObj.handleChanges(cat.id, textEditor.field, content.value)
   textEditor.isShow = false
 }
 </script>
 
 <template>
-  <div class="
-       fixed left-0 right-0 top-0 bottom-0 z-50 bg-gray-300/60
-       flex flex-col items-center justify-center
-       ">
-    <div class="w-[1000px] max-w-[95%]
+  <HelperModalWrapper>
+    <div class="modal-form w-[1000px] max-w-[95%]
          border border-amber-900 rounded-xl
          overflow-auto flex flex-col justify-start">
       <div class="flex flex-row justify-between items-center bg-orange-300 p-2.5">
         <div class="max-w-full whitespace-nowrap overflow-hidden overflow-ellipsis size text-xl">{{ title }}</div>
-        <div class="bg-[url('/public/img/x-circle.svg')] bg-center bg-no-repeat bg-contain
+        <div class="bg-[url('/img/x-circle.svg')] bg-center bg-no-repeat bg-contain
                     w-7 h-7 ml-2 flex-shrink-0 cursor-pointer hover:scale-90 transition-transform"
              @click="textEditor.isShow = false"></div>
       </div>
@@ -36,10 +32,11 @@ const saveChanges = () => {
       <div class="p-2.5 bg-orange-200 flex justify-end items-center">
         <button @click="textEditor.isShow = false" class="button px-2 py-1">Cancel</button>
         <button class="button px-2 py-1"
-                @click="saveChanges">OK</button>
+                @click="saveChanges">OK
+        </button>
       </div>
     </div>
-  </div>
+  </HelperModalWrapper>
 </template>
 
 <style lang="scss">

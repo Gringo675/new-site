@@ -1,7 +1,5 @@
 <script setup>
-import TheHeader from "./components/TheHeader";
-import TheFooter from "./components/TheFooter";
-import TheMessage from "./components/TheMessage";
+
 </script>
 
 <template>
@@ -11,6 +9,7 @@ import TheMessage from "./components/TheMessage";
     <TheFooter/>
     <ClientOnly>
       <TheMessage/>
+      <TheLoader/>
     </ClientOnly>
   </div>
 </template>

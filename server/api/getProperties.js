@@ -28,7 +28,6 @@ export default defineHandler(async () => {
         for (const prop of rawProps) {
             props[propsGroups[prop.group_id]].push(prop)
         }
-
         return props
 
     } catch (e) {
