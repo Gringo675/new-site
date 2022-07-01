@@ -16,9 +16,6 @@ import {useMessage as message} from "../composables/state";
               message.title
             }}
           </div>
-          <div class="bg-[url('/public/img/x-circle.svg')] bg-center bg-no-repeat bg-contain
-                    w-7 h-7 ml-2 flex-shrink-0 cursor-pointer hover:scale-90 transition-transform"
-               @click="message.hide"></div>
         </div>
         <div class="p-5 overflow-auto bg-amber-100">
           <div v-html="message.body"></div>

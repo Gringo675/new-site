@@ -74,6 +74,8 @@ catsObj.handleChanges = function (catID, key, newContent) {
 // }
 
 catsObj.saveChanges = async function () {
+  console.log(`HERE`)
+  if (!Object.keys(this.changedCats).length) return
 
   try {
     await $fetch('/api/setCategories', {
@@ -170,25 +172,78 @@ catsObj.moveCat = function (parentIndex, childIndex, direction) {
   if (isChanged) this.createNewCatsOrder(targetArray)
 }
 
+const draggableCatIndex = ref(null)
+const moveCatsDebounced = {
+  timerValue: 500,
+  coolDownValue: 500,
+  timer: null,
+  isCoolDown: false,
+  go(target) {
+    if (this.isCoolDown) return
+    clearTimeout(this.timer)
+    this.timer = setTimeout(() => {
+      const dragIndex = draggableCatIndex.value.split(':')
+      const targetIndex = target.split(':')
+      // console.log(`dragIndex: ${JSON.stringify(dragIndex, null, 2)}`)
+      // console.log(`targetIndex: ${JSON.stringify(targetIndex, null, 2)}`)
+      if (dragIndex[1] === 'null' && targetIndex[1] === 'null') {
+        console.log(`В главных`)
+      } else if (targetIndex[1] !== 'null' && dragIndex[0] === targetIndex[0]) {
+        console.log(`В подкатегории`)      // неправильно
+      } else {
+        console.log(`Выходим`)
+      }
 
+
+      this.isCoolDown = true
+      setTimeout(() => this.isCoolDown = false, this.coolDownValue)
+    }, this.timerValue)
+  }
+}
+const handleDragStart = (ev) => {
+  if (ev.target.dataset?.dragindex === undefined) return
+  draggableCatIndex.value = ev.target.dataset.dragindex
+  ev.dataTransfer.setDragImage(ev.target.parentElement, 10, 10)
+}
+const handleDragEnd = () => {
+  draggableCatIndex.value = null
+}
+const handleDragEnter = (ev) => {
+  ev.preventDefault()
+  if (draggableCatIndex.value === null) return
+  const currentIndex = ev.target.dataset?.dragindex
+  if (currentIndex === undefined || currentIndex === draggableCatIndex.value) return
+  moveCatsDebounced.go(currentIndex)
+}
 </script>
 
 <template>
-  <div class="categories">
-    <h1>Categories</h1>
-    <AdminCatsFilter/>
-    <div>
-      <button class="button" :disabled="!Object.keys(catsObj.changedCats).length" @click="catsObj.saveChanges()">
-        Save
+  <div class="p-2">
+    <h1>Редактирование категорий</h1>
+    <div class="my-2 flex items-center">
+      <AdminCatsFilter/>
+      <!--      save button-->
+      <button :disabled="!Object.keys(catsObj.changedCats).length"
+              @click="catsObj.saveChanges()"
+              class="ml-2 shrink-0"
+              title="Сохранить"
+      >
+        <img class="w-16"
+             src="@/img/send.svg"
+        >
       </button>
     </div>
-    <div class="catItems">
+    <div class="catItems"
+         @dragstart="handleDragStart" @dragend="handleDragEnd" @dragenter="handleDragEnter" @dragover="handleDragOver"
+    >
+      <TransitionGroup name="transition-draggable-group">
       <template v-for="(parentCat, parentIndex) in catsObj.items" :key="parentCat.id">
         <AdminCatsItemBlock :parentIndex=parentIndex :childIndex=null :catsObj=catsObj :propersObj="propersObj"/>
       </template>
+      </TransitionGroup>
     </div>
     <transition name="transition-fade">
-    <AdminCatsTextEditor v-if="textEditor.isShow" :catsObj="catsObj"/>
+      <AdminCatsTextEditor v-if="textEditor.isShow" :catsObj="catsObj"/>
     </transition>
     <transition name="transition-fade">
       <AdminCatsPropsEditor v-if="propsEditor.isShow" :propersObj="propersObj"/>

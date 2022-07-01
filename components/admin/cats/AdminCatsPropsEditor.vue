@@ -8,56 +8,42 @@ const props = defineProps({
 
 const pGroup = reactive(JSON.parse(JSON.stringify(props.propersObj.items[propsEditor.groupName]))) // локальная копия
 
-let draggableElementIndex = null
-const handleDragStart = (e, i) => {
-  draggableElementIndex = i
-  // e.target.parentElement.style.opacity = '.2'
-  e.target.parentElement.classList.add('opacity-20')
-  e.dataTransfer.setDragImage(e.target.parentElement, 18, 20)
+const draggableElementIndex = ref(null)
+const handleDragStart = (ev) => {
+  if (ev.target.dataset?.draggable === undefined) return
+  draggableElementIndex.value = Number(ev.target.parentElement.dataset.index)
+  ev.dataTransfer.setDragImage(ev.target.parentElement, 18, 20)
 }
-const handleDragEnd = (e) => {
-  draggableElementIndex = null
-  // e.target.parentElement.removeAttribute("style")
-  e.target.parentElement.classList.remove('opacity-20')
+const handleDragEnd = () => {
+  draggableElementIndex.value = null
 }
-const handleDragEnterItem = (e, i) => {
-  e.preventDefault()
-  if (draggableElementIndex === null || draggableElementIndex === i || e.currentTarget.style.padding) return
-  if (draggableElementIndex < i) { // спускаем сверху
-    e.currentTarget.style.padding = '0 0 50px'
-  } else { // поднимаем снизу
-    e.currentTarget.style.padding = '50px 0 0'
+const handleDragEnter = (ev) => {
+  ev.preventDefault()
+  if (draggableElementIndex.value === null) return
+  const currentIndex = Number(ev.target.dataset?.index)
+  if (isNaN(currentIndex) || currentIndex === draggableElementIndex.value) return
+  changeArrayDebounced.go(currentIndex)
+}
+const handleDragOver = (ev) => {
+  if (draggableElementIndex.value === null) return
+  ev.preventDefault()
+  ev.dataTransfer.dropEffect = "move"
+}
+const changeArrayDebounced = {
+  timerValue: 500,
+  coolDownValue: 500,
+  timer: null,
+  isCoolDown: false,
+  go(targetIndex) {
+    if (this.isCoolDown) return
+    clearTimeout(this.timer)
+    this.timer = setTimeout(() => {
+      pGroup.splice(targetIndex, 0, pGroup.splice(draggableElementIndex.value, 1)[0])
+      draggableElementIndex.value = targetIndex
+      this.isCoolDown = true
+      setTimeout(() => this.isCoolDown = false, this.coolDownValue)
+    }, this.timerValue)
   }
-  // убираем padding у сиблингов
-  let sibling = e.currentTarget.parentNode.firstChild;
-  while (sibling) {
-    if (sibling !== e.currentTarget) {
-      sibling.style?.removeProperty('padding')
-    }
-    sibling = sibling.nextSibling
-  }
-}
-const handleDragEnterWrapper = (e) => {
-  e.preventDefault()
-  if (draggableElementIndex === null) return
-  // убираем padding у всех детей
-  for (let i = 0; i < e.currentTarget.children.length; i++) {
-    e.currentTarget.children[i].style?.removeProperty('padding')
-  }
-}
-const handleDragOver = (e) => {
-  if (draggableElementIndex === null) return
-  e.preventDefault()
-  e.dataTransfer.dropEffect = "move"
-}
-const handleDrop = (e, i) => {
-  if (draggableElementIndex === null) return
-  e.currentTarget.removeAttribute("style")
-  if (draggableElementIndex === i) return
-  removeItems(draggableElementIndex, i)
-}
-const removeItems = (relocateItem, targetItem) => {
-  pGroup.splice(targetItem, 0, pGroup.splice(relocateItem, 1)[0])
 }
 
 const deleteItem = (i) => {
@@ -107,25 +93,32 @@ const handleOK = async () => {
              @click="propsEditor.isShow = false"></div>
       </div>
       <div class="p-5 overflow-auto bg-amber-100 flex flex-col items-center"
-           @dragenter.self="handleDragEnterWrapper($event)">
-        <div v-for="(item, i) in pGroup" :key="i"
-             @dragenter="handleDragEnterItem($event, i)" @dragover="handleDragOver"
-             @drop="handleDrop($event, i)"
-             class="transition-[padding] duration-500">
-          <div class="bg-orange-200 border border-orange-700 rounded p-2 m-2 transition-opacity duration-300">
-            <img @dragstart="handleDragStart($event, i)" @dragend="handleDragEnd"
-                 class="inline cursor-move select-none"
-                 src="@/img/arrows-move.svg">
+           @dragstart="handleDragStart" @dragend="handleDragEnd" @dragenter="handleDragEnter" @dragover="handleDragOver"
+      >
+        <TransitionGroup name="transition-draggable-group">
+          <div v-for="(item, i) in pGroup"
+               :key="item.name"
+               :data-index="i"
+               :class="{'opacity-20': draggableElementIndex === i}"
+               class="bg-orange-200 border border-orange-700 rounded-lg p-2 m-2 transition-opacity duration-300"
+          >
+            <img class="inline cursor-move select-none"
+                 src="@/img/arrows-move.svg"
+                 data-draggable
+            >
             <input type="text" v-model="item.name"
-                   class="ml-2 px-1 rounded bg-orange-100 outline-none  w-40">
+                   class="ml-2 px-1 rounded bg-orange-100 outline-none  w-40"
+            >
             <img @click="deleteItem(i)"
                  class="inline cursor-pointer select-none mx-1.5"
-                 src="@/img/dash-square.svg">
+                 src="@/img/dash-square.svg"
+            >
             <img @click="addItem(i)"
                  class="inline cursor-pointer select-none"
-                 src="@/img/plus-square.svg">
+                 src="@/img/plus-square.svg"
+            >
           </div>
-        </div>
+        </TransitionGroup>
       </div>
       <div class="p-2.5 bg-orange-200 flex justify-end items-center">
         <button @click="propsEditor.isShow = false" class="button px-2 py-1">Cancel</button>
@@ -137,6 +130,5 @@ const handleOK = async () => {
   </HelperModalWrapper>
 </template>
 
-<style lang="scss">
-
+<style>
 </style>

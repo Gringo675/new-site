@@ -1,19 +1,25 @@
 <script setup>
+
+let isSubModal = false // если модульное окно вызывается из другого модульного окна, ничего делать не надо
+let top = 0
+
 onMounted(() => {
-  let wrapper = document.querySelector("html")
-  let coord = wrapper.getBoundingClientRect()
+  const wrapper = document.querySelector("html")
+  isSubModal = wrapper.hasAttribute('style')
+  if (isSubModal) return
+  const coord = wrapper.getBoundingClientRect()
   wrapper.style.cssText = `
                 position: fixed;
                 left: ${coord.left}px;
-                top: ${coord.top}px;`
+                top: ${coord.top}px;
+                width: ${coord.width}px`
+  top = coord.top * (-1)
 })
 onUnmounted(() => {
-  setTimeout(()=> { // время на анимацию исчезновения
-    let wrapper = document.querySelector("html")
-    let top = wrapper.getBoundingClientRect().top * (-1)
-    wrapper.removeAttribute('style');
-    window.scrollTo(0, top);
-  }, 300)
+  if (isSubModal) return
+  const wrapper = document.querySelector("html")
+  wrapper.removeAttribute('style');
+  window.scrollTo(0, top);
 })
 </script>
 

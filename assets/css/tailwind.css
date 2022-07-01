@@ -9,7 +9,28 @@
         font-size: 1rem;
     }
     select {
-        @apply border border-blue-500 rounded
+        @apply cursor-pointer border-2 border-gray-400 rounded outline-none
+    }
+    input {
+        @apply border border-gray-400 rounded outline-none
+    }
+    input[type="checkbox"] {
+        @apply cursor-pointer
+    }
+    input[type="text"] {
+        @apply cursor-text
+    }
+    label {
+        @apply cursor-pointer
+    }
+    h1 {
+        @apply text-3xl font-semibold
+    }
+    button {
+        @apply transition-opacity
+    }
+    button:disabled {
+        @apply opacity-70
     }
 }
 
@@ -21,6 +42,12 @@
         disabled:cursor-default disabled:bg-gray-300 disabled:bg-none
     }
 
+}
+
+@layer utilities {
+    .rotate-over {
+        transform: rotate3d(1, 0, 0, 180deg);
+    }
 }
 
 /*эти классы всегда будут в итоговом css-файле*/
@@ -48,3 +75,32 @@
 .transition-loader-enter-from {
     opacity: 0;
 }
+
+.transition-draggable-group-move {
+    transition: all .5s ease;
+}
+
+.transition-catchild-enter-active,
+.transition-catchild-leave-active {
+    transition: all .5s linear;
+}
+.transition-catchild-enter-from,
+.transition-catchild-leave-to {
+    opacity: 0;
+    max-height: 0;
+}
+.transition-catchild-enter-to,
+.transition-catchild-leave-from {
+    opacity: 1;
+    max-height: var(--child-height);
+}
+
+.transition-test-enter-from,
+.transition-test-leave-to {
+    transform: scaleY(0);
+}
+.transition-test-enter-active,
+.transition-test-leave-active {
+    transition: transform 2s linear;
+}
+
