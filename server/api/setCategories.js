@@ -40,6 +40,7 @@ export default defineHandler(async (req, res) => {
             }
 
             if (!cat.isDel && !cat.isNew) {  // обновляем
+                console.log(`cat: ${JSON.stringify(cat, null, 2)}`)
                 query = `UPDATE i_categories
                          SET `
                 for (const key in cat) {

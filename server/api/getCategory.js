@@ -1,33 +1,24 @@
-import mysql from 'mysql2/promise'
+import request from "../src/mysql"
 
-const newBaseData = {
-    host: process.env.DB_HOST_LOCAL,
-    user: process.env.DB_USER,
-    database: process.env.DB_DATABASE,
-    password: process.env.DB_PASSWORD
-};
-
-export default async (req) => {
+export default defineEventHandler(async (event) => {
     try {
-        // вытаскиваем алиас из req.url
-        if (!req.url.startsWith('/api/getCategory?alias=')) throw new Error('Alias parsing error!')
-        const alias = req.url.substring(23)
+        const {alias} = useQuery(event)
+        if (!alias.length) throw new Error('Alias parsing error!')
         // console.log(`API alias: ${alias}`);
 
-        const connection = await mysql.createConnection(newBaseData)
-
         // получаем категорию
-        let query = `SELECT * FROM i_categories WHERE alias = '${alias}' `;
-        const [rows] = await connection.execute(query);
-        const catData = rows[0]
+        let query = `SELECT * FROM i_categories WHERE alias = '${alias}' `
+        // console.log(`query: ${query}`)
+        const catData = (await request(query))[0]
         // console.log(`catData: ${JSON.stringify(catData)}`);
-
+        if (catData === undefined) throw new Error('No such category!')
         // получаем все товары
         const catID = (catData.parent_id > 0 ? catData.parent_id : catData.id) // если нет родительской категории, значит мы уже в ней
         query = `SELECT id, name, alias, price, images, label_id,
                  p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature, p8_pack
                  FROM i_products WHERE category_id = '${catID}' AND published = 1`;
-        const [products] = await connection.execute(query);
+        const products = await request(query)
+        // console.log(`products: ${JSON.stringify(products, null, 2)}`)
 
         // на основе полученных продуктов создаем фильтр
         const filterGroups = {
@@ -104,7 +95,7 @@ export default async (req) => {
         query = `SELECT id, name, ordering
                 FROM i_properties 
                 WHERE id IN (${Array.from(allProps).join(',')})`
-        const [props] = await connection.execute(query);
+        const props = await request(query)
 
         let propsMap = new Map() // для удобства создаем Map из всех пропсов
         props.forEach((prop) => {
@@ -137,4 +128,4 @@ export default async (req) => {
         return {}
     }
 
-}
+})

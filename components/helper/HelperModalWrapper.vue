@@ -17,9 +17,11 @@ onMounted(() => {
 })
 onUnmounted(() => {
   if (isSubModal) return
-  const wrapper = document.querySelector("html")
-  wrapper.removeAttribute('style');
-  window.scrollTo(0, top);
+  setTimeout(() => { // время на анимацию исчезновения
+    const wrapper = document.querySelector("html")
+    wrapper.removeAttribute('style');
+    window.scrollTo(0, top);
+  }, 300)
 })
 </script>
 

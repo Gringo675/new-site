@@ -30,7 +30,7 @@
         @apply transition-opacity
     }
     button:disabled {
-        @apply opacity-70
+        @apply opacity-50
     }
 }
 

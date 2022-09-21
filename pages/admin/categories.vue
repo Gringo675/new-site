@@ -61,17 +61,6 @@ catsObj.handleChanges = function (catID, key, newContent) {
   if (this.changedCats[catID] === undefined) this.changedCats[catID] = {}
   this.changedCats[catID][key] = newContent
 }
-// catsObj.handleChanges = function (parentIndex, childIndex, key, newContent) {
-//   const targetCat = (childIndex === null ? this.items[parentIndex] : this.items[parentIndex].children[childIndex])
-//   if (targetCat[key] !== newContent) { // есть изменения
-//     console.log(`oldContent: ${targetCat[key]}`)
-//     console.log(`newContent: ${newContent}`)
-//     targetCat[key] = newContent
-//     // сохраняем изменения в объекте для последующей отправки на сервер
-//     if (this.changedCats[targetCat.id] === undefined) this.changedCats[targetCat.id] = {}
-//     this.changedCats[targetCat.id][key] = newContent
-//   }
-// }
 
 catsObj.saveChanges = async function () {
   console.log(`HERE`)
@@ -156,44 +145,24 @@ catsObj.createNewCatsOrder = function (targetCats) {
   })
 }
 
-catsObj.moveCat = function (parentIndex, childIndex, direction) {
-
-  const targetArray = (childIndex !== null ? this.items[parentIndex].children : this.items)
-  const targetIndex = (childIndex !== null ? childIndex : parentIndex)
-  let isChanged = false
-  if (direction === 'up' && targetIndex > 0) {
-    targetArray.splice(targetIndex - 1, 0, targetArray.splice(targetIndex, 1)[0])
-    isChanged = true
-  } else if (direction === 'down' && targetIndex + 1 < targetArray.length) {
-    targetArray.splice(targetIndex + 1, 0, targetArray.splice(targetIndex, 1)[0])
-    isChanged = true
-  }
-
-  if (isChanged) this.createNewCatsOrder(targetArray)
+catsObj.draggableCatIndex = {
+  group: null,
+  item: null
 }
-
-const draggableCatIndex = ref(null)
 const moveCatsDebounced = {
   timerValue: 500,
   coolDownValue: 500,
   timer: null,
   isCoolDown: false,
-  go(target) {
+  go(targetIndex) {
     if (this.isCoolDown) return
     clearTimeout(this.timer)
     this.timer = setTimeout(() => {
-      const dragIndex = draggableCatIndex.value.split(':')
-      const targetIndex = target.split(':')
-      // console.log(`dragIndex: ${JSON.stringify(dragIndex, null, 2)}`)
-      // console.log(`targetIndex: ${JSON.stringify(targetIndex, null, 2)}`)
-      if (dragIndex[1] === 'null' && targetIndex[1] === 'null') {
-        console.log(`В главных`)
-      } else if (targetIndex[1] !== 'null' && dragIndex[0] === targetIndex[0]) {
-        console.log(`В подкатегории`)      // неправильно
-      } else {
-        console.log(`Выходим`)
-      }
 
+      let targetArray = (catsObj.draggableCatIndex.group === 'none' ? catsObj.items : catsObj.items[catsObj.draggableCatIndex.group].children)
+      targetArray.splice(targetIndex, 0, targetArray.splice(catsObj.draggableCatIndex.item, 1)[0])
+      catsObj.draggableCatIndex.item = targetIndex
+      catsObj.createNewCatsOrder(targetArray)
 
       this.isCoolDown = true
       setTimeout(() => this.isCoolDown = false, this.coolDownValue)
@@ -201,19 +170,39 @@ const moveCatsDebounced = {
   }
 }
 const handleDragStart = (ev) => {
-  if (ev.target.dataset?.dragindex === undefined) return
-  draggableCatIndex.value = ev.target.dataset.dragindex
-  ev.dataTransfer.setDragImage(ev.target.parentElement, 10, 10)
+  if (ev.target.dataset?.dragGroup === undefined) return
+  catsObj.draggableCatIndex.group = ev.target.dataset.dragGroup
+  catsObj.draggableCatIndex.item = ev.target.dataset.dragItem
+  ev.dataTransfer.setDragImage(ev.target.parentElement, 15, 20)
 }
 const handleDragEnd = () => {
-  draggableCatIndex.value = null
+  catsObj.draggableCatIndex.group = null
+  catsObj.draggableCatIndex.item = null
 }
 const handleDragEnter = (ev) => {
+  if (catsObj.draggableCatIndex.group === null) return
   ev.preventDefault()
-  if (draggableCatIndex.value === null) return
-  const currentIndex = ev.target.dataset?.dragindex
-  if (currentIndex === undefined || currentIndex === draggableCatIndex.value) return
-  moveCatsDebounced.go(currentIndex)
+  const currentIndex = {
+    group: ev.target.dataset?.dragGroup,
+    item: ev.target.dataset?.dragItem
+  }
+  if (currentIndex.group === undefined || currentIndex.group !== catsObj.draggableCatIndex.group ||
+      currentIndex.item == catsObj.draggableCatIndex.item) return
+  moveCatsDebounced.go(currentIndex.item)
+}
+const handleDragOver = (ev) => {
+  if (catsObj.draggableCatIndex.group === null) return
+  ev.preventDefault()
+  const currentIndex = {
+    group: ev.target.dataset?.dragGroup,
+    item: ev.target.dataset?.dragItem
+  }
+  if (currentIndex.group === undefined || currentIndex.group !== catsObj.draggableCatIndex.group ||
+      currentIndex.item == catsObj.draggableCatIndex.item) {
+    ev.dataTransfer.dropEffect = "none"
+  } else {
+    ev.dataTransfer.dropEffect = "move"
+  }
 }
 </script>
 
@@ -225,10 +214,10 @@ const handleDragEnter = (ev) => {
       <!--      save button-->
       <button :disabled="!Object.keys(catsObj.changedCats).length"
               @click="catsObj.saveChanges()"
-              class="ml-2 shrink-0"
+              class="ml-2 shrink-0 p-1 border border-blue-300 rounded-lg"
               title="Сохранить"
       >
-        <img class="w-16"
+        <img class="w-12"
              src="@/img/send.svg"
         >
       </button>
@@ -237,9 +226,9 @@ const handleDragEnter = (ev) => {
          @dragstart="handleDragStart" @dragend="handleDragEnd" @dragenter="handleDragEnter" @dragover="handleDragOver"
     >
       <TransitionGroup name="transition-draggable-group">
-      <template v-for="(parentCat, parentIndex) in catsObj.items" :key="parentCat.id">
+      <div v-for="(parentCat, parentIndex) in catsObj.items" :key="parentCat.id">
         <AdminCatsItemBlock :parentIndex=parentIndex :childIndex=null :catsObj=catsObj :propersObj="propersObj"/>
-      </template>
+      </div>
       </TransitionGroup>
     </div>
     <transition name="transition-fade">

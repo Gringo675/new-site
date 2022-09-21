@@ -16,6 +16,7 @@ const cat = (props.childIndex !== null ? props.catsObj.items[props.parentIndex].
 const propers = computed(() => props.propersObj.items) // без computed изменения в propsObj не будут отслеживаться
 
 const validateDelete = () => {
+  showMenu.value = false
   if (cat.children?.length) {
     message.show('Удаление отменено', '<p>В категории содержатся вложенные подкатегории.</p><p>Сначала удалите их.</p>')
     return
@@ -40,17 +41,44 @@ const activatePropsEditor = (field) => {
   propsEditor.groupID = field.groupID
   propsEditor.isShow = true
 }
-const handleSelect = (fieldName, value) => {
-  props.catsObj.handleChanges(props.parentIndex, props.childIndex, fieldName, value)
-}
 
 const showMenu = ref(false)
 const showParams = ref(false)
 const showChildren = ref(false)
 
+const addCat = () => {
+  showMenu.value = false
+  props.catsObj.addCat(props.parentIndex, props.childIndex)
+}
+const addSubCat = () => {
+  showMenu.value = false
+  props.catsObj.addCat(props.parentIndex)
+}
+const copyCat = () => {
+  showMenu.value = false
+  props.catsObj.addCat(props.parentIndex, props.childIndex, true)
+}
+
 const setChildHeight = (el) => {
   el.style.setProperty('--child-height', cat.children?.length * 70 + "px");
 }
+
+const isDraggingCat = computed(() => {
+  if (props.childIndex === null) {
+    if (props.catsObj.draggableCatIndex.group === 'none' && props.catsObj.draggableCatIndex.item == props.parentIndex) return true
+  } else {
+    if (props.catsObj.draggableCatIndex.group == props.parentIndex && props.catsObj.draggableCatIndex.item == props.childIndex) return true
+  }
+  return false
+})
+const isDraggingGroup = computed(() => {
+  if (props.childIndex === null) {
+    if (props.catsObj.draggableCatIndex.group === 'none') return true
+  } else {
+    if (props.catsObj.draggableCatIndex.group == props.parentIndex) return true
+  }
+  return false
+})
 </script>
 
 <template>
@@ -101,14 +129,15 @@ const setChildHeight = (el) => {
                    @click="activateTextEditor(field.name)"
               >
             </div>
-            <div v-else-if="field.type === 'select'"
+            <div v-else-if="childIndex !== null && field.type === 'select'"
                  class="m-2 flex"
             >
-              <select @change="handleSelect(field.name, $event.target.value)"
+              <select @change="catsObj.handleChanges(cat.id, field.name, $event.target.value)"
                       class="w-36"
                       :title="field.nameRU"
               >
                 <option disabled :selected="!cat[field.name]>0">{{ field.nameRU }}:</option>
+                <option value="0">Нет</option>
                 <option v-for="proper in propers[field.name]" :value="proper.id"
                         :selected="proper.id===cat[field.name]">
                   {{ proper.name }}
@@ -136,19 +165,19 @@ const setChildHeight = (el) => {
         <div class="flex items-center overflow-hidden transition-all duration-500"
              :class="(showMenu ? 'max-w-[170px]' : 'max-w-0 opacity-0')"
         >
-          <button class="shrink-0 mx-2" @click="catsObj.addCat(parentIndex, childIndex)">
+          <button class="shrink-0 mx-2" @click="addCat">
             <img src="@/img/plus-circle.svg"
                  class="w-7"
                  title="Добавить категорию"
             >
           </button>
-          <button class="shrink-0 mx-1" v-if="childIndex === null" @click="catsObj.addCat(parentIndex)">
+          <button class="shrink-0 mx-1" v-if="childIndex === null" @click="addSubCat">
             <img src="@/img/node-plus.svg"
                  class="w-7 rotate-90"
                  title="Добавить подкатегорию"
             >
           </button>
-          <button class="shrink-0 mx-2" @click="catsObj.addCat(parentIndex, childIndex, true)">
+          <button class="shrink-0 mx-2" @click="copyCat">
             <img src="@/img/hdd-stack.svg"
                  class="w-7"
                  title="Скопировать категорию"
@@ -160,17 +189,14 @@ const setChildHeight = (el) => {
                  title="Удалить категорию"
             >
           </button>
-          <!--          <button class="" @click="validateDelete">-->
-          <!--            <img src="@/img/plus-square.svg"-->
-          <!--            >-->
-          <!--          </button>-->
-          <!--          <button class="button" @click="catsObj.moveCat(parentIndex, childIndex, 'up')">UP</button>-->
-          <!--          <button class="button" @click="catsObj.moveCat(parentIndex, childIndex, 'down')">DOWN</button>-->
         </div>
-        <button class="rounded-lg bg-blue-200 py-1 " @click="showMenu = !showMenu">
-          <img src="@/img/three-dots-vertical.svg"
-               class="w-7"
-               :data-dragindex="parentIndex + ':' + childIndex"
+        <button class="rounded-lg bg-blue-200 py-1 transition" @click="showMenu = !showMenu"
+                :class="{'scale-125 bg-amber-500': isDraggingGroup, 'opacity-20': isDraggingCat}"
+        >
+          <img :src="(showMenu ? '/_nuxt/img/x.svg' : '/_nuxt/img/three-dots-vertical.svg')"
+               class="w-7 transition-opacity"
+               :data-drag-group="(childIndex === null ? 'none' : parentIndex)"
+               :data-drag-item="(childIndex === null ? parentIndex : childIndex)"
           >
         </button>
       </div>
@@ -181,10 +207,12 @@ const setChildHeight = (el) => {
                 @before-leave="setChildHeight"
     >
       <div class="catChildrenBlock ml-2 overflow-hidden" v-if="showChildren">
-        <template v-for="(childCat, childIndex) in cat.children" :key="childCat.id">
-          <AdminCatsItemBlock :parentIndex=parentIndex :childIndex=childIndex
-                              :catsObj=catsObj :propersObj="propersObj"/>
-        </template>
+        <TransitionGroup name="transition-draggable-group">
+          <div v-for="(childCat, childIndex) in cat.children" :key="childCat.id">
+            <AdminCatsItemBlock :parentIndex=parentIndex :childIndex=childIndex
+                                :catsObj=catsObj :propersObj="propersObj"/>
+          </div>
+        </TransitionGroup>
       </div>
     </transition>
   </div>
