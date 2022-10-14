@@ -3,15 +3,8 @@
 </script>
 
 <template>
-  <div class="TheFooter">
+  <footer class="w-full h-32 bg-fuchsia-400">
     FOOTER
-  </div>
+  </footer>
 </template>
 
-<style lang="scss">
-.TheFooter {
-  width: 100%;
-  height: 150px;
-  background: orchid;
-}
-</style>

@@ -1,11 +1,11 @@
 <script setup>
-import {useMessage as message} from "../composables/state";
-
+import message from "~/composables/common/message"
+const isActive = message.isActive
 </script>
 
 <template>
   <Transition name="transition-fade">
-    <HelperModalWrapper v-if="message.isShow">
+    <HelperModalWrapper v-if="isActive">
       <div class="modal-form w-96 max-w-[95%] max-h-[90vh]
          border border-amber-900 rounded-xl
          overflow-auto flex flex-col justify-start"
@@ -29,6 +29,3 @@ import {useMessage as message} from "../composables/state";
   </Transition>
 </template>
 
-<style lang="scss">
-
-</style>

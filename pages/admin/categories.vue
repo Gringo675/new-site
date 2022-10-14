@@ -1,8 +1,9 @@
 <script setup>
-import {useMessage as message} from "@/composables/state";
+import message from "~/composables/common/message"
 
-const textEditor = await useTextEditor
-const propsEditor = await usePropsEditor
+definePageMeta({
+  layout: "admin",
+});
 
 const propersObj = reactive({})
 propersObj.getItems = async function () {
@@ -226,47 +227,16 @@ const handleDragOver = (ev) => {
          @dragstart="handleDragStart" @dragend="handleDragEnd" @dragenter="handleDragEnter" @dragover="handleDragOver"
     >
       <TransitionGroup name="transition-draggable-group">
-      <div v-for="(parentCat, parentIndex) in catsObj.items" :key="parentCat.id">
-        <AdminCatsItemBlock :parentIndex=parentIndex :childIndex=null :catsObj=catsObj :propersObj="propersObj"/>
-      </div>
+        <div v-for="(parentCat, parentIndex) in catsObj.items" :key="parentCat.id">
+          <AdminCatsItemBlock :parentIndex=parentIndex :childIndex=null :catsObj=catsObj :propersObj="propersObj"/>
+        </div>
       </TransitionGroup>
     </div>
-    <transition name="transition-fade">
-      <AdminCatsTextEditor v-if="textEditor.isShow" :catsObj="catsObj"/>
-    </transition>
-    <transition name="transition-fade">
-      <AdminCatsPropsEditor v-if="propsEditor.isShow" :propersObj="propersObj"/>
-    </transition>
+
+    <AdminCatsTextEditor :catsObj="catsObj"/>
+
+    <AdminCatsPropsEditor :propersObj="propersObj"/>
+
   </div>
 </template>
 
-<style lang="scss">
-.categories {
-
-  .editableBlock {
-    width: 250px;
-    margin: 5px;
-    padding: 5px;
-    border: 1px solid blue;
-    border-radius: 5px;
-  }
-
-  .parentCat {
-    background: orchid;
-    margin: 10px;
-    padding: 10px;
-    border-radius: 10px;
-
-    .paramsBlock {
-      display: flex;
-    }
-
-    .childrenBlock {
-
-      .childCat {
-
-      }
-    }
-  }
-}
-</style>

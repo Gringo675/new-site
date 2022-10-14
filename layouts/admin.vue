@@ -3,7 +3,12 @@
 </script>
 
 <template>
-  <div class="mainPage">
-    MAIN PAGE 222
+  <div>
+    admin layout
+    <slot/>
   </div>
 </template>
+
+<style>
+
+</style>

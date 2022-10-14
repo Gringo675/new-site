@@ -1,7 +1,13 @@
 <script setup>
 
+import loader from "~/composables/common/loader"
+import message from "~/composables/common/message"
+import {showNotice} from "~/composables/common/notice"
+// import {useTest, multiply} from "~/composables/common/test"
+// const test = useTest()
+// console.log(`testttt: ${JSON.stringify(test, null, 2)}`)
+//
 
-import {useMessage as message} from "../composables/state";
 
 const createDialog = () => {
   message.show('My very very large title', '<p>paragraph with <i>italic</i> word</p>', 'success', ()=>{localFn(localVar)})}
@@ -14,23 +20,19 @@ const localFn = (localWar) => {
 const createMess = () => {
   message.show('title2', 'body2')
 }
+
 </script>
 
 <template>
-  <div class="TheHeader">
+  <header class="w-full h-32 bg-cyan-200">
     HEADER
     <div>
       <button @click="createDialog" class="button">Create dialog</button>
       <button @click="createMess" class="button">Create mess</button>
+      <button @click="loader.show()" class="button">Show loader</button>
+      <button @click="showNotice('some text', 'error')" class="button">Show notice</button>
+<!--      <button @click="multiply" class="button">Multuply</button>-->
     </div>
 
-  </div>
+  </header>
 </template>
-
-<style lang="scss">
-.TheHeader {
-  width: 100%;
-  height: 150px;
-  background: aqua;
-}
-</style>

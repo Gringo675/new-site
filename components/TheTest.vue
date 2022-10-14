@@ -1,18 +1,13 @@
 <script setup>
 
-const test = await useCatProps2()
-console.log(`test: ${JSON.stringify(test)}`);
-// console.log(`test: ${test.value}`)
+const test = await useTest();
+console.log(`pending: ${test.pending.value} data: ${test.data.value}`);
 
 </script>
 
 <template>
   <div class="TheTest">
-THE TEST component {{ test }}
+THE TEST component data: {{ test.data }}
   </div>
 </template>
 
-<style lang="scss">
-.TheTest {
-}
-</style>

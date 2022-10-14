@@ -1,10 +1,11 @@
 <script setup>
-const fields = await useCatFields
+import useCatFields from "~/composables/admin/cats/useCatFields"
+const fields = useCatFields()
 
 const masterButton = reactive({
-  checked: computed(() => fields.every(field => field.isActive)),
-  indeterminate: computed(() => fields.some(field => field.isActive) && fields.some(field => !field.isActive)),
-  onChange: (value) => fields.forEach(field => field.isActive = value)
+  checked: computed(() => fields.value.every(field => field.isActive)),
+  indeterminate: computed(() => fields.value.some(field => field.isActive) && fields.value.some(field => !field.isActive)),
+  onChange: (value) => fields.value.forEach(field => field.isActive = value)
 })
 
 const vIndeterminate = (el, binding) => { // custom directive v-indeterminate
@@ -34,6 +35,6 @@ const vIndeterminate = (el, binding) => { // custom directive v-indeterminate
   </div>
 </template>
 
-<style lang="scss">
+<style>
 
 </style>
