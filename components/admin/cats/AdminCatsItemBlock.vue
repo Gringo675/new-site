@@ -1,9 +1,10 @@
 <script setup>
-import {useMessage as message} from "@/composables/state";
+import message from "~/composables/common/message"
+import useCatFields from "~/composables/admin/cats/useCatFields"
+import textEditor from "~/composables/admin/cats/textEditor"
+import propsEditor from "~/composables/admin/cats/propsEditor"
 
-const fields = await useCatFields
-const textEditor = await useTextEditor
-const propsEditor = await usePropsEditor
+const fields = useCatFields()
 
 const props = defineProps({
   parentIndex: Number,
@@ -26,20 +27,6 @@ const validateDelete = () => {
       'info', () => {
         props.catsObj.deleteCat(props.parentIndex, props.childIndex)
       })
-}
-
-const activateTextEditor = (field) => {
-  textEditor.field = field
-  textEditor.parentIndex = props.parentIndex
-  textEditor.childIndex = props.childIndex
-  textEditor.isShow = true
-}
-
-const activatePropsEditor = (field) => {
-  propsEditor.groupName = field.name
-  propsEditor.groupNameRU = field.nameRU
-  propsEditor.groupID = field.groupID
-  propsEditor.isShow = true
 }
 
 const showMenu = ref(false)
@@ -93,7 +80,7 @@ const isDraggingGroup = computed(() => {
               @click="showChildren = !showChildren"
               class="shrink-0 flex items-center border border-gray-200 rounded-lg bg-blue-200 m-1 p-1"
       >
-        <img src="@/img/chevron-up.svg"
+        <img src="@/img/chevron-down.svg"
              class="transition-transform duration-500"
              :class="{'rotate-over': showChildren}"
         >
@@ -104,7 +91,7 @@ const isDraggingGroup = computed(() => {
       <button class="border border-gray-200 rounded-full bg-blue-200 m-1 p-2 shrink-0"
               @click="showParams = !showParams"
       >
-        <img src="@/img/chevron-up.svg"
+        <img src="@/img/chevron-down.svg"
              class="transition-transform duration-500"
              :class="{'rotate-over': showParams}"
         >
@@ -126,7 +113,7 @@ const isDraggingGroup = computed(() => {
               <img v-if="field.hasEditButton"
                    class="inline cursor-pointer select-none shrink-0 w-5 ml-1"
                    src="@/img/pencil-square.svg"
-                   @click="activateTextEditor(field.name)"
+                   @click="textEditor.show(parentIndex, childIndex, field.name)"
               >
             </div>
             <div v-else-if="childIndex !== null && field.type === 'select'"
@@ -145,7 +132,7 @@ const isDraggingGroup = computed(() => {
               </select>
               <img class="inline cursor-pointer select-none shrink-0 w-5 ml-1"
                    src="@/img/pencil-square.svg"
-                   @click="activatePropsEditor(field)"
+                   @click="propsEditor.show(field.name, field.nameRU, field.groupID)"
               >
             </div>
             <div v-else-if="field.type === 'checkbox'"
@@ -206,7 +193,7 @@ const isDraggingGroup = computed(() => {
                 @before-enter="setChildHeight"
                 @before-leave="setChildHeight"
     >
-      <div class="catChildrenBlock ml-2 overflow-hidden" v-if="showChildren">
+      <div class="ml-2 overflow-hidden" v-if="showChildren">
         <TransitionGroup name="transition-draggable-group">
           <div v-for="(childCat, childIndex) in cat.children" :key="childCat.id">
             <AdminCatsItemBlock :parentIndex=parentIndex :childIndex=childIndex
@@ -220,15 +207,6 @@ const isDraggingGroup = computed(() => {
 
 </template>
 
-<style lang="scss">
-.catWrapper {
-  border: 1px solid red;
-  margin: 10px;
+<style>
 
-  .catChildrenBlock {
-    border: 1px solid blue;
-    margin: 10px;
-  }
-
-}
 </style>

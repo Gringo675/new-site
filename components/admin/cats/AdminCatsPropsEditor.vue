@@ -1,13 +1,24 @@
 <script setup>
-const propsEditor = await usePropsEditor
-const message = await useMessage
-const loader = await useLoader
+import loader from "~/composables/common/loader"
+import message from "~/composables/common/message"
+import propsEditor from "~/composables/admin/cats/propsEditor"
+
+const isActive = propsEditor.isActive
+
 const props = defineProps({
   propersObj: Object,
 })
 
-const pGroup = reactive(JSON.parse(JSON.stringify(props.propersObj.items[propsEditor.groupName]))) // локальная копия
+// const pGroup = reactive(JSON.parse(JSON.stringify(props.propersObj.items[propsEditor.groupName]))) // локальная копия
+const title = ref()
+const pGroup = ref()
 
+watch(isActive, (newValue) => {
+  if (newValue === true) {
+    title.value = propsEditor.groupNameRU
+    pGroup.value = JSON.parse(JSON.stringify(props.propersObj.items[propsEditor.groupName])) // локальная копия
+  }
+})
 const draggableElementIndex = ref(null)
 const handleDragStart = (ev) => {
   if (ev.target.dataset?.draggable === undefined) return
@@ -38,7 +49,7 @@ const changeArrayDebounced = {
     if (this.isCoolDown) return
     clearTimeout(this.timer)
     this.timer = setTimeout(() => {
-      pGroup.splice(targetIndex, 0, pGroup.splice(draggableElementIndex.value, 1)[0])
+      pGroup.value.splice(targetIndex, 0, pGroup.value.splice(draggableElementIndex.value, 1)[0])
       draggableElementIndex.value = targetIndex
       this.isCoolDown = true
       setTimeout(() => this.isCoolDown = false, this.coolDownValue)
@@ -47,9 +58,9 @@ const changeArrayDebounced = {
 }
 
 const deleteItem = (i) => {
-  message.show('Подтвердите удаление', `<p>Параметр "${pGroup[i].name}" будет удален.</p><p>Продолжить?</p>`,
+  message.show('Подтвердите удаление', `<p>Параметр "${pGroup.value[i].name}" будет удален.</p><p>Продолжить?</p>`,
       'info', () => {
-        pGroup.splice(i, 1)
+        pGroup.value.splice(i, 1)
       })
 }
 
@@ -58,20 +69,20 @@ const addItem = (i) => {
     group_id: propsEditor.groupID,
     name: ''
   }
-  pGroup.splice(i + 1, 0, newItem)
+  pGroup.value.splice(i + 1, 0, newItem)
 }
 
 const handleOK = async () => {
   // проверяем пустые значения name
-  if (pGroup.some(item => item.name === '')) {
+  if (pGroup.value.some(item => item.name === '')) {
     message.show('Действие отменено!', 'Не все имена параметров заполнены!', 'error')
     return
   }
   try {
     loader.show()
-    await props.propersObj.handleChanges(propsEditor.groupName, pGroup)
+    await props.propersObj.handleChanges(propsEditor.groupName, pGroup.value)
     loader.hide()
-    propsEditor.isShow = false
+    propsEditor.hide()
   } catch (e) {
     loader.hide()
     message.show('Изменения не сохранены!', 'При сохранении произошла ошибка. Попробовать еще раз?', 'error', handleOK)
@@ -80,54 +91,57 @@ const handleOK = async () => {
 </script>
 
 <template>
-  <HelperModalWrapper>
-    <div class="modal-form w-96 max-w-[95%] max-h-[95%]
+  <transition name="transition-fade">
+    <HelperModalWrapper v-if="isActive">
+      <div class="modal-form w-96 max-w-[95%] max-h-[95%]
          border border-amber-900 rounded-xl
          overflow-auto flex flex-col justify-start">
-      <div class="flex flex-row justify-between items-center bg-orange-300 p-2.5">
-        <div class="max-w-full whitespace-nowrap overflow-hidden overflow-ellipsis size text-xl">
-          {{ propsEditor.groupNameRU }}
-        </div>
-        <div class="bg-[url('/img/x-circle.svg')] bg-center bg-no-repeat bg-contain
-                    w-7 h-7 ml-2 flex-shrink-0 cursor-pointer hover:scale-90 transition-transform"
-             @click="propsEditor.isShow = false"></div>
-      </div>
-      <div class="p-5 overflow-auto bg-amber-100 flex flex-col items-center"
-           @dragstart="handleDragStart" @dragend="handleDragEnd" @dragenter="handleDragEnter" @dragover="handleDragOver"
-      >
-        <TransitionGroup name="transition-draggable-group">
-          <div v-for="(item, i) in pGroup"
-               :key="item.name"
-               :data-index="i"
-               :class="{'opacity-20': draggableElementIndex === i}"
-               class="bg-orange-200 border border-orange-700 rounded-lg p-2 m-2 transition-opacity duration-300"
-          >
-            <img class="inline cursor-move select-none"
-                 src="@/img/arrows-move.svg"
-                 data-draggable
-            >
-            <input type="text" v-model="item.name"
-                   class="ml-2 px-1 rounded bg-orange-100 outline-none  w-40"
-            >
-            <img @click="deleteItem(i)"
-                 class="inline cursor-pointer select-none mx-1.5"
-                 src="@/img/dash-square.svg"
-            >
-            <img @click="addItem(i)"
-                 class="inline cursor-pointer select-none"
-                 src="@/img/plus-square.svg"
-            >
+        <div class="flex flex-row justify-between items-center bg-orange-300 p-2.5">
+          <div class="max-w-full whitespace-nowrap overflow-hidden overflow-ellipsis size text-xl">
+            {{ title }}
           </div>
-        </TransitionGroup>
+          <div class="bg-[url('/img/x-circle.svg')] bg-center bg-no-repeat bg-contain
+                    w-7 h-7 ml-2 flex-shrink-0 cursor-pointer hover:scale-90 transition-transform"
+               @click="propsEditor.hide"></div>
+        </div>
+        <div class="p-5 overflow-auto bg-amber-100 flex flex-col items-center"
+             @dragstart="handleDragStart" @dragend="handleDragEnd" @dragenter="handleDragEnter"
+             @dragover="handleDragOver"
+        >
+          <TransitionGroup name="transition-draggable-group">
+            <div v-for="(item, i) in pGroup"
+                 :key="item.name"
+                 :data-index="i"
+                 :class="{'opacity-20': draggableElementIndex === i}"
+                 class="bg-orange-200 border border-orange-700 rounded-lg p-2 m-2 transition-opacity duration-300"
+            >
+              <img class="inline cursor-move select-none"
+                   src="@/img/arrows-move.svg"
+                   data-draggable
+              >
+              <input type="text" v-model="item.name"
+                     class="ml-2 px-1 rounded bg-orange-100 outline-none  w-40"
+              >
+              <img @click="deleteItem(i)"
+                   class="inline cursor-pointer select-none mx-1.5"
+                   src="@/img/dash-square.svg"
+              >
+              <img @click="addItem(i)"
+                   class="inline cursor-pointer select-none"
+                   src="@/img/plus-square.svg"
+              >
+            </div>
+          </TransitionGroup>
+        </div>
+        <div class="p-2.5 bg-orange-200 flex justify-end items-center">
+          <button @click="propsEditor.hide" class="button px-2 py-1">Cancel</button>
+          <button class="button px-2 py-1"
+                  @click="handleOK">OK
+          </button>
+        </div>
       </div>
-      <div class="p-2.5 bg-orange-200 flex justify-end items-center">
-        <button @click="propsEditor.isShow = false" class="button px-2 py-1">Cancel</button>
-        <button class="button px-2 py-1"
-                @click="handleOK">OK
-        </button>
-      </div>
-    </div>
-  </HelperModalWrapper>
+    </HelperModalWrapper>
+  </transition>
 </template>
 
 <style>

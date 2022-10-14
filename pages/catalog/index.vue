@@ -8,11 +8,3 @@
     <div>Here will be all categories</div>
   </div>
 </template>
-
-<style lang="scss">
-.catalog {
-  width: 100%;
-  height: 600px;
-  background: lavender;
-}
-</style>

@@ -1,11 +1,11 @@
 <script setup>
-const loader = await useLoader
-
+import loader from "~/composables/common/loader"
+const isActive = loader.isActive
 </script>
 
 <template>
   <Transition name="transition-loader">
-    <div v-show="loader.isActive" class="
+    <div v-show="isActive" class="
        fixed left-0 right-0 top-0 bottom-0 z-50 bg-gray-300/60
        flex flex-col items-center justify-center cursor-progress
        ">
@@ -16,7 +16,3 @@ const loader = await useLoader
     </div>
   </Transition>
 </template>
-
-<style lang="scss">
-
-</style>
