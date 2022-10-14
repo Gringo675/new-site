@@ -16,7 +16,7 @@ const unactivateVal = (val) => {
 <template>
   <div class="my-2">
     <!--    header-->
-    <div class="border border-purple-200  bg-orange-200 rounded-t-md px-2 z-10 relative
+    <div class="border border-purple-200 bg-orange-200 rounded-t-md px-2 z-10 relative
                 flex justify-between items-center"
          :class="{'rounded-b-md': !showValues && !activeValues.length}"
     >
