@@ -10,7 +10,10 @@ import {showNotice} from "~/composables/common/notice"
 
 
 const createDialog = () => {
-  message.show('My very very large title', '<p>paragraph with <i>italic</i> word</p>', 'success', ()=>{localFn(localVar)})}
+  message.show('My very very large title', '<p>paragraph with <i>italic</i> word</p>', 'success', () => {
+    localFn(localVar)
+  })
+}
 
 const localVar = 111
 const localFn = (localWar) => {
@@ -31,7 +34,15 @@ const createMess = () => {
       <button @click="createMess" class="button">Create mess</button>
       <button @click="loader.show()" class="button">Show loader</button>
       <button @click="showNotice('some text', 'error')" class="button">Show notice</button>
-<!--      <button @click="multiply" class="button">Multuply</button>-->
+      <!--      <button @click="multiply" class="button">Multuply</button>-->
+    </div>
+    <div>
+      <button class="button">
+        <NuxtLink to="/catalog/shtangentsirkuli">ШТАНГЕНЦИРКУЛИ</NuxtLink>
+      </button>
+      <button class="button">
+        <NuxtLink to="/catalog/shtangentsirkuli-shts-i-s-glubinomerom">ШЦ с глубиномером</NuxtLink>
+      </button>
     </div>
 
   </header>

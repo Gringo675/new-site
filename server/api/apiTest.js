@@ -8,7 +8,11 @@ export default defineEventHandler(async (event) => {
 
     console.log(`from apiTest: ${cTime}`)
 
-    return `Current Time -  ${cTime}`
+    // return `Current Time -  ${cTime}`
+    return {
+        'Current time': cTime,
+        aaa: [111, 222, 333]
+    }
 
 })
 

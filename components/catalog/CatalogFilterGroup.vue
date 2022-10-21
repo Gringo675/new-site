@@ -16,20 +16,20 @@ const unactivateVal = (val) => {
 <template>
   <div class="my-2">
     <!--    header-->
-    <div class="border border-purple-200 bg-orange-200 rounded-t-md px-2 z-10 relative
+    <button class="w-full border border-purple-200 bg-orange-200 rounded-t-md px-2 z-10 relative
                 flex justify-between items-center"
-         :class="{'rounded-b-md': !showValues && !activeValues.length}"
+            :class="{'rounded-b-md': !showValues && !activeValues.length}"
+            @click="showValues = !showValues"
+
     >
       <span class="text-lg">{{ fGroup.name }}</span>
-      <button class="my-1 p-1 bg-purple-300 rounded"
-              @click="showValues = !showValues"
-      >
+      <div class="my-1 p-1 bg-purple-300 rounded">
         <img src="@/img/chevron-down.svg"
              class="transition-transform duration-500"
              :class="{'rotate-over': showValues}"
         >
-      </button>
-    </div>
+      </div>
+    </button>
     <!--    values-->
     <transition name="transition-filter-values">
       <div v-show="showValues"

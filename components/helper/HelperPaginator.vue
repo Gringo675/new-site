@@ -50,7 +50,7 @@ const handlePaginator = (val) => {
 </script>
 
 <template>
-  <div class="flex flex-col items-center my-2">
+  <div v-show="pageProps.totalPages > 1" class="flex flex-col items-center my-2">
     <div v-if="paginator.length > 1 && !paginator[paginator.length - 1].isActive"
          class="m-2 p-2 bg-sky-100 rounded cursor-pointer hover:shadow hover:bg-sky-200"
          @click="handlePaginator('more')"

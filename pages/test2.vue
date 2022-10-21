@@ -1,7 +1,29 @@
 <script setup>
 
-const { data } = await useLazyAsyncData('test2', () => $fetch('/api/apiTest'))
+// const { data, pending } = useLazyAsyncData('test2', () => $fetch('/api/apiTest'), {
+//   transform: (data) => data + ' from test2'
+// })
+let { data, pending } = await useLazyAsyncData('test2', () => $fetch('/api/apiTest'), {
+  transform: (data) => data
+})
 
+const vTime = ref()
+let vData
+// watch(data, () => (
+//     vData.value = data.value + ' from test2'
+// ))
+watchEffect(() => {
+  if (!data.value) return
+  vTime.value = data.value['Current time']
+  vData = JSON.parse(JSON.stringify(data.value.aaa))
+  // data = undefined
+
+
+})
+
+const handleButton = () => {
+  console.log(`data: ${JSON.stringify(data, null, 2)}`)
+}
 </script>
 
 <template>
@@ -11,8 +33,15 @@ const { data } = await useLazyAsyncData('test2', () => $fetch('/api/apiTest'))
       <NuxtLink to="/test1" class="text-sky-600">to test1</NuxtLink>
     </div>
     <div>
-      data - {{ data }}
+      Pending - {{ pending }}
     </div>
+    <div>
+      Data - {{ data }}
+    </div>
+    <div>
+      vTime - {{ vTime }}
+    </div>
+    <button @click="handleButton">Test</button>
   </div>
 </template>
 

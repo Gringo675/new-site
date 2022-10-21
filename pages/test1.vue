@@ -1,6 +1,8 @@
 <script setup>
 
-const { data } = useAsyncData('test1', () => $fetch('/api/apiTest'))
+const { data, pending } = await useAsyncData('test1', () => $fetch('/api/apiTest'))
+
+data.value['Current time'] = 'noooone'
 </script>
 
 <template>
@@ -8,6 +10,9 @@ const { data } = useAsyncData('test1', () => $fetch('/api/apiTest'))
     <h1>Test1</h1>
     <div class="m-2 p-2 ">
       <NuxtLink to="/test2" class="text-sky-600">to test2</NuxtLink>
+    </div>
+    <div>
+      pending - {{ pending }}
     </div>
     <div>
       data - {{ data }}

@@ -1,37 +1,43 @@
 import request from "../src/mysql"
 
 export default defineEventHandler(async (event) => {
-    console.log(`from getCategory`)
+    // const start = Date.now()
+    // console.log(`from getCategory`)
+    // await timer(5)
     try {
         const {alias} = useQuery(event)
         if (!alias.length) throw new Error('Alias parsing error!')
         // console.log(`API alias: ${alias}`);
 
         // получаем категорию
-        let query = `SELECT * FROM i_categories WHERE alias = '${alias}' `
+        let query = `SELECT * FROM i_categories WHERE alias = '${alias}'  AND published = 1`
         // console.log(`query: ${query}`)
         const catData = (await request(query))[0]
         // console.log(`catData: ${JSON.stringify(catData)}`);
         if (catData === undefined) throw new Error('No such category!')
 
         // получаем дочерние категории
-        query = `SELECT id, name, alias, image FROM i_categories 
+        query = `SELECT name, alias, image FROM i_categories 
                  WHERE parent_id = '${catData.id}' AND published = 1
                  ORDER BY ordering`
         catData.childCats = await request(query)
 
-        // для подкатегорий получаем смежные категории
+        // для подкатегорий получаем смежные категории и родительскую категорию
         if (catData.parent_id > 0) {
-            query = `SELECT id, name, alias, image FROM i_categories 
+            query = `SELECT name, alias, image FROM i_categories 
                  WHERE parent_id = '${catData.parent_id}' AND id != '${catData.id}' AND published = 1
                  ORDER BY ordering`
             catData.siblingCats = await request(query)
+            query = `SELECT name, alias FROM i_categories 
+                 WHERE id = '${catData.parent_id}'`
+            catData.parentCat = (await request(query))[0]
         }
 
         // получаем все товары
         const productsCatID = (catData.parent_id > 0 ? catData.parent_id : catData.id) // если нет родительской категории, значит мы уже в ней
         query = `SELECT id, name, alias, price, images, label_id,
-                 p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature, p8_pack
+                 p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature, p8_pack,
+                 standart_ids, reestr_ids, pasport_ids
                  FROM i_products WHERE category_id = '${productsCatID}' AND published = 1`;
         // query += ` AND old_id IN (11010301, 11010801, 11011501)`
         const products = await request(query)
@@ -118,21 +124,25 @@ export default defineEventHandler(async (event) => {
             props[prop.id] = {name: prop.name, order: prop.ordering}
         })
         filter = Object.values(filter).sort((a, b) => a.ordering - b.ordering) // преобразуем объект в массив и сортируем
+        let filterInitial = new Set() // собираем начальные значения, для сброса
         filter.forEach((fGroup) => {
             let values = []
             fGroup.values.forEach((valueSet) => {
-                values.push({
+                const value = {
                     val: valueSet,
                     name: props[valueSet].name,
                     active: catActivePropsSet.has(valueSet),
                     order: props[valueSet].order
-                })
+                }
+                values.push(value)
+                if (value.active) filterInitial.add(value.val)
             })
             values.sort((a, b) => a.order - b.order)
             values.forEach(value => delete value.order)  // больше не нужно
             fGroup.values = values
             delete fGroup.ordering // больше не нужно
         })
+        filterInitial = Array.from(filterInitial) // преобразовываем в массив, т.к. Set не передается через API
         // console.log(`filter array: ${JSON.stringify(filter)}`);
 
         // упорядочиваем товары по фильтру
@@ -147,9 +157,34 @@ export default defineEventHandler(async (event) => {
             }
             return 0
         })
-        products.forEach( (product, i) => product.order = i) // записываем порядок
 
-        return {catData, products, filter}
+        // вытаскиваем документацию и записываем порядок
+        const stnds = new Set()
+        const rstrs = new Set()
+        const pasps = new Set()
+        products.forEach( (product, i) => {
+            // + удалить ненужные параметры
+            product.order = i
+            product.standart_ids.split(' ').forEach( stnd => stnds.add(stnd))
+            product.reestr_ids.split(' ').forEach( rstr => rstrs.add(rstr))
+            product.pasport_ids.split(' ').forEach( pasp => pasps.add(pasp))
+        })
+        catData.docs = {}
+        // if (stnds.size) {
+        //     query = `SELECT number, name, file FROM i_docs_stnd
+        //          WHERE id IN (${Array.from(stnds).join(', ')})`
+        //     console.log(`query: ${query}`)
+        //     catData.docs.stnd = await request(query)
+        // }
+
+
+        // удаляем ненужное
+        delete catData.parent_id
+        delete catData.published
+
+        // console.log(`deltaF: ${Date.now() - start}`)
+
+        return {catData, products, filter, filterInitial}
 
     } catch (e) {
         console.log(`getCategory Error: ${e}`);
@@ -157,3 +192,10 @@ export default defineEventHandler(async (event) => {
     }
 
 })
+
+async function timer(sec) {
+    let promise = new Promise((resolve, reject) => {
+        setTimeout(() => resolve(), sec * 1000)
+    });
+    return await promise;
+}

@@ -3,14 +3,14 @@ import CatalogFilterGroup from "./CatalogFilterGroup";
 
 const props = defineProps({
   filter: Object,
-  initialFilterProps: Set
+  filterInitial: Array
 })
 const filter = props.filter
 
 const resetFilter = () => {
   filter.forEach(fGroup => {
     fGroup.values.forEach(prop => {
-      if (props.initialFilterProps.has(prop.val)) {
+      if (props.filterInitial.includes(prop.val)) {
         prop.active = true
       } else {
         prop.active = false
@@ -18,21 +18,19 @@ const resetFilter = () => {
     })
   })
 }
+
 </script>
 
 <template>
   <div class="w-[250px] p-2 bg-orange-50 rounded-xl">
     <template v-for="fGroup in filter">
-      <CatalogFilterGroup :fGroup="fGroup" />
-<!--      {{ fGroup.name }}-->
-<!--      <div v-for="prop in fGroup.values">-->
-<!--                <span>-->
-<!--                  <input type="checkbox" v-model="prop.active">-->
-<!--                </span>-->
-<!--        <span>{{ prop.name }}</span>-->
-<!--      </div>-->
+      <CatalogFilterGroup :fGroup="fGroup"/>
     </template>
-    <button @click="resetFilter">Сбросить</button>
+    <button class="m-auto block py-2 px-3 bg-purple-200 rounded cursor-pointer hover:shadow hover:bg-purple-300 transition-colors"
+            @click="resetFilter"
+    >
+      Сбросить
+    </button>
   </div>
 </template>
 

@@ -32,6 +32,9 @@
     button:disabled {
         @apply opacity-50
     }
+    a {
+        @apply text-sky-700 hover:text-sky-500
+    }
 }
 
 @layer components {
@@ -145,3 +148,11 @@
     transition: height .3s linear;
 }
 
+.page-enter-from,
+.page-leave-to {
+    opacity: 0;
+}
+.page-enter-active,
+.page-leave-active {
+    transition: opacity .4s linear;
+}
