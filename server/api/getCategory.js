@@ -170,12 +170,12 @@ export default defineEventHandler(async (event) => {
             product.pasport_ids.split(' ').forEach( pasp => pasps.add(pasp))
         })
         catData.docs = {}
-        // if (stnds.size) {
+        if (stnds.size) {
         //     query = `SELECT number, name, file FROM i_docs_stnd
         //          WHERE id IN (${Array.from(stnds).join(', ')})`
         //     console.log(`query: ${query}`)
         //     catData.docs.stnd = await request(query)
-        // }
+        }
 
 
         // удаляем ненужное
