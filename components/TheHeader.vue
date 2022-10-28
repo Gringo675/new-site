@@ -3,6 +3,7 @@
 import loader from "~/composables/common/loader"
 import message from "~/composables/common/message"
 import {showNotice} from "~/composables/common/notice"
+import CatsMenu from "./CatsMenu";
 // import {useTest, multiply} from "~/composables/common/test"
 // const test = useTest()
 // console.log(`testttt: ${JSON.stringify(test, null, 2)}`)
@@ -27,9 +28,9 @@ const createMess = () => {
 </script>
 
 <template>
-  <header class="w-full h-32 bg-cyan-200">
-    HEADER
-    <div>
+  <header class="w-full bg-cyan-200">
+    <div class="flex">
+      <CatsMenu />
       <button @click="createDialog" class="button">Create dialog</button>
       <button @click="createMess" class="button">Create mess</button>
       <button @click="loader.show()" class="button">Show loader</button>

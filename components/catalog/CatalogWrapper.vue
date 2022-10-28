@@ -8,6 +8,7 @@ const pageSetup = usePageSetup()
 const props = defineProps({
   fetchData: Object
 })
+if (!props.fetchData) throw createError({ statusCode: 404, statusMessage: 'Page Not Found!!!!', fatal: true})
 
 const catData = props.fetchData.catData
 const products = props.fetchData.products

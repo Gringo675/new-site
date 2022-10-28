@@ -1,4 +1,8 @@
 <script setup>
+definePageMeta({
+  // middleware: ["auth"]
+  middleware: 'auth'
+})
 
 const route = useRoute()
 const url = '/api/getProduct?alias=' + route.params.p_alias

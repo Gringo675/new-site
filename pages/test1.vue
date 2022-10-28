@@ -1,8 +1,12 @@
 <script setup>
 
-const { data, pending } = await useAsyncData('test1', () => $fetch('/api/apiTest'))
+const { data, pending, error } = await useAsyncData('test1', () => $fetch('/api/apiTest'))
 
-data.value['Current time'] = 'noooone'
+if (error.value) {
+  console.log(`error: ${JSON.stringify(error, null, 2)}`)
+  showError({statusCode: 404, statusMessage: 'Page Not Found!!!!'})
+}
+
 </script>
 
 <template>
@@ -16,6 +20,9 @@ data.value['Current time'] = 'noooone'
     </div>
     <div>
       data - {{ data }}
+    </div>
+    <div>
+      error - {{ error }}
     </div>
   </div>
 </template>

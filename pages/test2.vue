@@ -3,10 +3,10 @@
 // const { data, pending } = useLazyAsyncData('test2', () => $fetch('/api/apiTest'), {
 //   transform: (data) => data + ' from test2'
 // })
-let { data, pending } = await useLazyAsyncData('test2', () => $fetch('/api/apiTest'), {
+let { data, pending, error } = await useLazyAsyncData('test2', () => $fetch('/api/apiTest'), {
   transform: (data) => data
 })
-
+if (error.value) throw createError({ statusCode: 404, statusMessage: 'Page Not Found!!!!'})
 const vTime = ref()
 let vData
 // watch(data, () => (

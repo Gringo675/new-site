@@ -10,7 +10,7 @@ propersObj.getItems = async function () {
   if (this.refreshItems) {
     await this.refreshItems()
   } else {
-    const items = await useFetch('/api/getProperties')
+    const items = await useFetch('/api/adminGetProperties')
     this.items = items.data
     this.refreshItems = items.refresh
   }
@@ -41,7 +41,7 @@ propersObj.handleChanges = async function (groupName, newItems) {
   })
 
   if (changedItems.length) {
-    await $fetch('/api/setProperties', {
+    await $fetch('/api/adminSetProperties', {
       method: 'POST',
       body: changedItems
     })
@@ -53,7 +53,7 @@ await propersObj.getItems()
 
 
 const catsObj = reactive({})
-catsObj.items = await useFetch('/api/getCategories')
+catsObj.items = await useFetch('/api/adminGetCategories')
 catsObj.items = catsObj.items.data // более элегантного способа не придумал
 catsObj.changedCats = {} // хранит информацию об изменениях в категориях
 
@@ -68,7 +68,7 @@ catsObj.saveChanges = async function () {
   if (!Object.keys(this.changedCats).length) return
 
   try {
-    await $fetch('/api/setCategories', {
+    await $fetch('/api/adminSetCategories', {
       method: 'POST',
       body: this.changedCats
     })
