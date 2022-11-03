@@ -5,13 +5,22 @@ export default defineEventHandler(async (event) => {
     // функция по алиасу отдает информацию о товаре
     // const start = Date.now()
 
+    await timer(2)
+    const token = getRequestHeader(event, 'sessionToken')
+    console.log(`token: ${token}`)
+    if (!token) return {status: 'no auth'}
+
     const {alias} = useQuery(event)
-    if (!alias.length) throw createError({ statusCode: 500, statusMessage: 'Parsing alias error!', fatal: true})
+    if (!alias.length) throw createError({statusCode: 500, statusMessage: 'Parsing alias error!', fatal: true})
     // console.log(`API alias: ${alias}`);
 
     let query = `SELECT * FROM i_products WHERE alias = '${alias}' AND published = 1`
     const productData = (await request(query))[0]
-    if (productData === undefined) throw createError({statusCode: 404, statusMessage: 'Page Not Found!!!!', fatal: true})
+    if (productData === undefined) throw createError({
+        statusCode: 404,
+        statusMessage: 'Page Not Found!!!!',
+        fatal: true
+    })
     // console.log(`productData: ${JSON.stringify(productData)}`);
 
     const props = ['p0_brand', 'p1_type', 'p2_counting_system', 'p3_range', 'p4_size',
@@ -53,7 +62,7 @@ export default defineEventHandler(async (event) => {
 
     // формируем характеристики
     productData.props = []
-    props.forEach( prop => {
+    props.forEach(prop => {
         if (productData[prop] > 0) productData.props.push({
             name: prop,
             val: productData[prop]
@@ -76,7 +85,7 @@ export default defineEventHandler(async (event) => {
     }
     productData.props.splice(brandIndex, 1) // удаляем бренд из характеристик
     productData.props.sort((a, b) => a.ordering - b.ordering)
-    productData.props.forEach( prop => delete prop.ordering)
+    productData.props.forEach(prop => delete prop.ordering)
 
     // получаем brand
     query = `SELECT full_name, image
@@ -112,8 +121,8 @@ export default defineEventHandler(async (event) => {
     const toDelete = ['category_id', 'old_id', 'brand_eans', 'old_price', 'vendor_price', 'vendor_old_price',
         'verification_price', 'stock', 'vendor_stock', 'hits', 'published', 'date_modified', 'date_price_changed',
         'date_vendor_price_changed', 'label_id', 'standart_ids', 'reestr_ids', 'pasport_ids']
-    toDelete.forEach( name => delete productData[name])
-    props.forEach( name => delete productData[name])
+    toDelete.forEach(name => delete productData[name])
+    props.forEach(name => delete productData[name])
 
     // console.log(`deltaF: ${Date.now() - start}`)
 
@@ -121,3 +130,10 @@ export default defineEventHandler(async (event) => {
 
 
 })
+
+async function timer(sec) {
+    let promise = new Promise((resolve, reject) => {
+        setTimeout(() => resolve(), sec * 1000)
+    });
+    return await promise;
+}
