@@ -30,7 +30,7 @@ const createMess = () => {
 <template>
   <header class="w-full bg-cyan-200">
     <div class="flex">
-      <TheCart />
+<!--      <TheCart />-->
       <CatsMenu />
       <button @click="createDialog" class="button">Create dialog</button>
       <button @click="createMess" class="button">Create mess</button>
@@ -44,6 +44,12 @@ const createMess = () => {
       </button>
       <button class="button">
         <NuxtLink to="/catalog/shtangentsirkuli-shts-i-s-glubinomerom">ШЦ с глубиномером</NuxtLink>
+      </button>
+      <button class="button">
+        <NuxtLink to="/user/login">LOGIN</NuxtLink>
+      </button>
+      <button class="button">
+        <NuxtLink to="/test_err">test_err</NuxtLink>
       </button>
     </div>
 

@@ -22,6 +22,7 @@ export default (user, event) => {
 
     // создаем session token
     const sessionExp = new Date(Date.now() + 18e5) // + 30 min
+    // const sessionExp = new Date(Date.now() + 3e4) // + 30 sec
     const sessionHead = Buffer.from(JSON.stringify({alg: 'HS256', typ: 'jwt'})).toString('base64')
     const sessionPayload = Buffer.from(JSON.stringify({id: user.id, isAdmin: !!user.admin, expires: sessionExp})).toString('base64')
     const sessionSignature = crypto

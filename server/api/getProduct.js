@@ -7,8 +7,8 @@ export default defineEventHandler(async (event) => {
 
     await timer(2)
     const token = getRequestHeader(event, 'sessionToken')
-    console.log(`token: ${token}`)
-    if (!token) return {status: 'no auth'}
+    console.log(`product token: ${JSON.stringify(token, null, 2)}`)
+    if (!token || token === 'undefined') return {status: 'auth error'}
 
     const {alias} = useQuery(event)
     if (!alias.length) throw createError({statusCode: 500, statusMessage: 'Parsing alias error!', fatal: true})

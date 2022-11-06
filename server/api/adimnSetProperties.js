@@ -6,9 +6,8 @@
  */
 
 import request from "../src/mysql";
-import {createError, defineHandler, useBody} from 'h3'
 
-export default defineHandler(async (req, res) => {
+export default defineEventHandler(async (req, res) => {
 
     try { await timer(3)
         const props = await useBody(req)

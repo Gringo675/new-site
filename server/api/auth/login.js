@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
     // try {
     const {mail, pass} = await readBody(event)
 
-    const query = `SELECT *
+    const query = `SELECT id, admin, pass
                    FROM i_users WHERE mail = '${mail}' LIMIT 1`;
     const user = (await request(query))[0]
 
@@ -18,9 +18,9 @@ export default defineEventHandler(async (event) => {
 
     return {
         status: 'ok',
-        name: user.name,
-        isAdmin: !!user.admin,
-        cart: user.cart,
+        // name: user.name,
+        // isAdmin: !!user.admin,
+        // cart: user.cart,
         refreshToken,
         sessionToken,
         sessionExp

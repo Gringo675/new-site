@@ -3,6 +3,10 @@ labels
 cashing
 authorization
 Error Handling
+server checkAndDecodeToken
+refreshTokenCheck expires + redirect to login if exp.
+modal login?
+проверить admin cats
 
     ТЕЗИСЫ
 Все товары принадлежат категориям (не подкатегориям).

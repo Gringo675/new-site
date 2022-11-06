@@ -1,7 +1,6 @@
 import request from "../src/mysql";
-import {defineHandler} from 'h3'
 
-export default defineHandler(async () => {
+export default defineEventHandler(async () => {
     // console.log(`from getProperties`);
     try {
         // const query = `SELECT * FROM i_properties WHERE group_id=0 ORDER by group_id, ordering`

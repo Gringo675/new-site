@@ -1,26 +1,13 @@
 <script setup>
 
-import useUser from "~/composables/state/useUser"
+import useUser from "~/composables/user/useUser"
+import getUser from "../composables/user/getUser";
+
 const {value: user} = useUser()
 
-
-// const response = await $fetch('/api/auth/refresh')
-// console.log(`response: ${JSON.stringify(response, null, 2)}`)
-
 onMounted(() => {
-
   setTimeout(async () => {
-    // пытаемся обновить данные пользователя
-    // const response = await $fetch('/api/auth/refresh')
-    // console.log(`resnonse: ${JSON.stringify(response, null, 2)}`)
-    // if (response.status === 'ok') {
-    // user.isAuth = true
-    // user.sessionToken = response.sessionToken
-    // user.expiresToken = response.expires
-    //   user.name = response.name
-    //   user.isAdmin = response.isAdmin
-
-    // }
+    getUser()
   }, 3000)
 })
 
@@ -28,7 +15,7 @@ onMounted(() => {
 
 <template>
   <div class="">
-    TheCart
+    Hi{{(user.name ? ' ' + user.name : '')}}!
   </div>
 </template>
 

@@ -1,4 +1,4 @@
-import useUser from "~/composables/state/useUser"
+import useUser from "~/composables/user/useUser"
 
 export default defineNuxtRouteMiddleware((to, from) => {
 

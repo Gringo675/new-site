@@ -1,22 +1,21 @@
 <script setup>
-import useUser from "~/composables/state/useUser"
-const { value: user } = useUser()
+import useUser from "~/composables/user/useUser"
+import getUser from "~/composables/user/getUser"
+
+const {value: user} = useUser()
 const route = useRoute()
 const pathTo = route.query.from || '/'
 
 const onLogin = async () => {
 
-  const response = await $fetch('/api/auth/login', {method: 'post', body: {mail: 'vik@mail.com', pass: '111222'} })
+  const response = await $fetch('/api/auth/login', {method: 'post', body: {mail: 'vik@mail.com', pass: '111222'}})
 
-  console.log(`resnonse: ${JSON.stringify(response, null, 2)}`)
+  console.log(`login resnonse: ${JSON.stringify(response, null, 2)}`)
   if (response.status === 'ok') {
-    user.isAuth = true
-    user.name = response.name
-    user.isAdmin = response.isAdmin
     user.sessionToken = response.sessionToken
-    user.expiresToken = response.expires
-
-    // navigateTo(pathTo)
+    user.sessionExp = response.sessionExp
+    await getUser()
+    if (user.isAuth) navigateTo(pathTo)
   }
 
 }

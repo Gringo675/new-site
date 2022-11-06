@@ -1,39 +1,27 @@
 <script setup>
-import useUser from "~/composables/state/useUser"
-import {useLazyAsyncData} from "nuxt/app";
-const { value: user } = useUser()
+import useAuthFetch from "~/composables/common/useAuthFetch";
+// import useUser from "~/composables/user/useUser"
+// import refreshUser from "~/composables/user/refreshUser"
 
-definePageMeta({
-  // middleware: ["auth"]
-  // middleware: 'auth'
-})
+// const {value: user} = useUser()
+
+// definePageMeta({
+//   middleware: ["auth"]
+//   middleware: 'auth'
+// })
 
 const route = useRoute()
 const url = '/api/getProduct?alias=' + route.params.p_alias
-const {data: fetchData, pending} = await useLazyAsyncData(url, () => $fetch(url, {
-  headers: {
-    sessionToken: '111222333'
-  }
-}), {
-  server: false,
-  // transform: (data) => {
-  //   console.log(`from transform`)
-  //   if (data.status === 'no auth') {
-  //     navigateTo('/user/login?from=' + route.path)
-  //     return null
-  //   }
-  //   return data
-  // }
-})  // await будет только на сервере
-console.log(`pending: ${JSON.stringify(pending, null, 2)}`)
-// await navigateTo('/user/login?from=' + route.path)
+const data = await useAuthFetch(url, route.path)
+
+// console.log(`data.value: ${JSON.stringify(data.value, null, 2)}`)
 </script>
 
 <template>
   <div class="w-full p-2">
     <Transition name="page" mode="out-in">
-      <HelperInlineLoader v-if="!fetchData"/>
-      <ProductWrapper v-else :productData="fetchData"/>
+      <ProductWrapper v-if="data" :productData="data"/>
+      <HelperInlineLoader v-else/>
     </Transition>
   </div>
 </template>

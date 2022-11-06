@@ -1,4 +1,3 @@
-import request from "~/server/src/mysql";
 
 export default defineEventHandler(async (event) => {
 
@@ -8,7 +7,12 @@ export default defineEventHandler(async (event) => {
 
     console.log(`from apiTest: ${cTime}`)
 
-    // throw createError({ statusCode: 404, statusMessage: 'Page Not Found!!!!'})
+    // const error = new Error(`error from throw Error`)
+    // error.statusCode = 402
+    // throw error
+
+    // throw createError({ statusCode: 511, statusMessage: `Network Authentication Required in ${cTime}`})
+    throw createError({ statusCode: 498, statusMessage: `Some error in ${cTime}`})
     // showError({ statusCode: 404, statusMessage: 'Page Not Found!!!!'})
 
     // return `Current Time -  ${cTime}`
