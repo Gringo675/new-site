@@ -6,6 +6,10 @@ const {value: user} = useUser()
 const route = useRoute()
 const pathTo = route.query.from || '/'
 
+// const nuxtApp = useNuxtApp();
+// console.log(`login nuxtApp._asyncData[key]: ${JSON.stringify(nuxtApp._asyncData[pathTo], null, 2)}`)
+
+
 const onLogin = async () => {
 
   const response = await $fetch('/api/auth/login', {method: 'post', body: {mail: 'vik@mail.com', pass: '111222'}})

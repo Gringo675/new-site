@@ -8,7 +8,6 @@ import useUser from "~/composables/user/useUser"
 import refreshUser from "~/composables/user/refreshUser"
 
 export default async (url, from = '/') => {
-
     const {value: user} = useUser()
 
     // очищаем неудачный fetch для последующих заходов на страницу (lifehooks должны идти до первого await)
@@ -17,6 +16,7 @@ export default async (url, from = '/') => {
     })
 
     const {data} = await useLazyAsyncData(url, async () => {
+        console.log(`HERE`)
         try {
             if (!user.sessionToken || Date.parse(user.sessionExp) - 10e3 < Date.now()) {
                 const isRefresh = await refreshUser()
@@ -31,7 +31,7 @@ export default async (url, from = '/') => {
             return result
         } catch (e) {
             console.log(`${e}`);
-            await navigateTo('/user/login?from=' + from)
+            navigateTo('/user/login?from=' + from)
             return null
         }
     }, {server: false,})

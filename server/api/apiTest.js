@@ -1,7 +1,7 @@
 
 export default defineEventHandler(async (event) => {
 
-    // await timer(3)
+    await timer(2)
 
     const cTime = new Date().toLocaleTimeString()
 
@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
     // throw error
 
     // throw createError({ statusCode: 511, statusMessage: `Network Authentication Required in ${cTime}`})
-    throw createError({ statusCode: 498, statusMessage: `Some error in ${cTime}`})
+    throw createError({ statusCode: 499, statusMessage: `Some error in ${cTime}`})
     // showError({ statusCode: 404, statusMessage: 'Page Not Found!!!!'})
 
     // return `Current Time -  ${cTime}`

@@ -3,7 +3,7 @@ const props = defineProps({
   error: Object
 })
 
-console.log(`props.error: ${JSON.stringify(props.error, null, 2)}`)
+// console.log(`props.error: ${JSON.stringify(props.error, null, 2)}`)
 
 const handleError = () => clearError({ redirect: '/' })
 
