@@ -29,7 +29,7 @@ export default async (url, options = {}) => {
 
     const {data, pending, error} = await useAsyncData(url, async () => {
         try {
-            const options = {}
+            const fetchOptions = {}
             if (options.auth) {
                 if (!user.sessionToken || Date.parse(user.sessionExp) - 10e3 < Date.now()) {
                     const isRefresh = await refreshUser()
@@ -37,11 +37,11 @@ export default async (url, options = {}) => {
                         statusCode: 511, statusMessage: `Network Authentication Required!`
                     })
                 }
-                options.headers = {
+                fetchOptions.headers = {
                     sessionToken: user.sessionToken
                 }
             }
-            return await $fetch(url, options)
+            return await $fetch(url, fetchOptions)
         } catch (e) {
             throw createError({statusCode: e.statusCode, statusMessage: e.statusMessage, fatal: true})
             return null
@@ -50,31 +50,31 @@ export default async (url, options = {}) => {
         lazy: options.lazy, server: options.server
     })
 
-    watchEffect(async () => { // следим за ошибками
-        if (!error.value) return
-        console.log(`watchEffect error: ${JSON.stringify(error.value, null, 2)}`)
-        if (error.value.statusCode === 511) {
-            console.log(`here`)
-            // await navigateTo('/user/login?from=' + options.from)
-        }
-        else showError(error.value)
-        // else throw createError({ statusCode: 498, statusMessage: `Some error in 000}`})
-    })
-    // const handleError = async (error) => {
-    //     if (error.statusCode === 511) await navigateTo('/user/login')
-    //         // else throw createError(error)
-    //     // throw createError({ statusCode: 498, statusMessage: `Some error in 000}`})
-    //     else showError(error)
-    // }
-    // watch(error, () => { // на клиенте
-    //     console.log(`watch error: ${JSON.stringify(error.value, null, 2)}`)
-    //     // handleError(error.value)
+    // watchEffect(() => { // следим за ошибками
+    //     if (!error.value) return
+    //     console.log(`watchEffect error: ${JSON.stringify(error.value, null, 2)}`)
+    //     if (error.value.statusCode === 511) {
+    //         console.log(`auth redirect`)
+    //         navigateTo('/user/login?from=' + options.from)
+    //     }
+    //     else showError(error.value)
+    //     // else throw createError({ statusCode: 498, statusMessage: `Some error in 000}`})
     // })
-    // if (error.value) { // на сервере
-    //     console.log(`if error: ${JSON.stringify(error.value, null, 2)}`)
-    //     // handleError(error.value)
-    //     // throw createError({ statusCode: error.value.statusCode, statusMessage: error.value.statusMessage, fatal: false })
-    // }
+    const handleError = (error) => {
+        if (error.statusCode === 511) navigateTo('/user/login?from=' + options.from)
+            // else throw createError(error)
+        // throw createError({ statusCode: 498, statusMessage: `Some error in 000}`})
+        else showError(error)
+    }
+    watch(() => error.value, () => { // на клиенте
+        console.log(`watch error: ${JSON.stringify(error.value, null, 2)}`)
+        handleError(error.value)
+    })
+    if (process.server && error.value) { // на сервере
+        console.log(`if error: ${JSON.stringify(error.value, null, 2)}`)
+        handleError(error.value)
+        // throw createError({ statusCode: error.value.statusCode, statusMessage: error.value.statusMessage, fatal: false })
+    }
 
 
 // очищаем неудачный fetch для последующих заходов на страницу
@@ -84,5 +84,5 @@ export default async (url, options = {}) => {
 //         if (data.value === null) clearNuxtData(url)
 //     })
 
-    return {data, pending}
+    return {data, pending, error}
 }

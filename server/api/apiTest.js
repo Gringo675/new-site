@@ -11,8 +11,8 @@ export default defineEventHandler(async (event) => {
     // error.statusCode = 402
     // throw error
 
-    // throw createError({ statusCode: 511, statusMessage: `Network Authentication Required in ${cTime}`})
-    throw createError({ statusCode: 499, statusMessage: `Some error in ${cTime}`})
+    throw createError({ statusCode: 511, statusMessage: `Network Authentication Required in ${cTime}`})
+    // throw createError({ statusCode: 499, statusMessage: `Some error in ${cTime}`})
     // showError({ statusCode: 404, statusMessage: 'Page Not Found!!!!'})
 
     // return `Current Time -  ${cTime}`
