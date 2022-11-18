@@ -11,7 +11,7 @@ options {
 
 import useUser from "~/composables/user/useUser"
 import refreshUser from "~/composables/user/refreshUser"
-import {callWithNuxt} from '#app'
+import { callWithNuxt } from '#app'
 
 export default async (url, options = {}) => {
 
@@ -21,11 +21,14 @@ export default async (url, options = {}) => {
     options.server = options.server ?? !options.auth
     options.from = options.from ?? '/'
 
-    console.log(`options.lazy: ${JSON.stringify(options.lazy, null, 2)}`)
-    console.log(`options.server: ${JSON.stringify(options.server, null, 2)}`)
-
     const {value: user} = useUser()
     const nuxtApp = useNuxtApp() // запоминаем "контекст"
+
+    // очищаем для последующих заходов на страницу (lifehooks должны идти до первого await)
+    onUnmounted(() => {
+        unwatch() // иначе будет добавляться по обработчику при каждом заходе
+        if (error.value) callWithNuxt(nuxtApp, clearNuxtData, [url])
+    })
 
     const {data, pending, error} = await useAsyncData(url, async () => {
         try {
@@ -33,7 +36,9 @@ export default async (url, options = {}) => {
             if (options.auth) {
                 if (!user.sessionToken || Date.parse(user.sessionExp) - 10e3 < Date.now()) {
                     const isRefresh = await refreshUser()
-                    if (!isRefresh) throw createError({statusCode: 456, statusMessage: `Authentication Required!`})
+                    if (!isRefresh) throw createError({
+                        statusCode: 401, statusMessage: `Authentication Required!`
+                    })
                 }
                 fetchOptions.headers = {
                     sessionToken: user.sessionToken
@@ -41,7 +46,6 @@ export default async (url, options = {}) => {
             }
             return await $fetch(url, fetchOptions)
         } catch (e) {
-            console.log(`from catch`)
             throw createError({statusCode: e.statusCode, statusMessage: e.statusMessage})
             return null
         }
@@ -49,20 +53,12 @@ export default async (url, options = {}) => {
         lazy: options.lazy, server: options.server
     })
 
-    const isError = () => {
-        if (!error.value) return false
-        console.log(`in error`)
+    const unwatch = watchEffect(() => { // следим за ошибками
+        if (!error.value) return
+        console.log(`from watch error`)
         if (error.value.statusCode === 401) callWithNuxt(nuxtApp, navigateTo, ['/user/login?from=' + options.from])
         else callWithNuxt(nuxtApp, showError, [error.value])
-        callWithNuxt(nuxtApp, clearNuxtData, [url])
-        return true
-    }
-
-    const _pending = computed(() => {
-        console.log(`from computed`)
-        if (pending.value) return true
-        return isError()
     })
 
-    return {data, pending: _pending}
+    return {data, pending, error}
 }

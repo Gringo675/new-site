@@ -5,22 +5,15 @@ export default defineEventHandler(async (event) => {
     // функция по алиасу отдает информацию о товаре
     // const start = Date.now()
 
-    await timer(2)
-    const token = getRequestHeader(event, 'sessionToken')
-    console.log(`product token: ${JSON.stringify(token, null, 2)}`)
-    if (!token || token === 'undefined') return {status: 'auth error'}
+    // await timer(2)
 
-    const {alias} = useQuery(event)
-    if (!alias.length) throw createError({statusCode: 500, statusMessage: 'Parsing alias error!', fatal: true})
+    const {alias} = getQuery(event)
+    if (!alias.length) throw createError({statusCode: 500, statusMessage: 'Parsing alias error!'})
     // console.log(`API alias: ${alias}`);
 
     let query = `SELECT * FROM i_products WHERE alias = '${alias}' AND published = 1`
     const productData = (await request(query))[0]
-    if (productData === undefined) throw createError({
-        statusCode: 404,
-        statusMessage: 'Page Not Found!!!!',
-        fatal: true
-    })
+    if (productData === undefined) throw createError({statusCode: 404, statusMessage: 'Page Not Found!'})
     // console.log(`productData: ${JSON.stringify(productData)}`);
 
     const props = ['p0_brand', 'p1_type', 'p2_counting_system', 'p3_range', 'p4_size',

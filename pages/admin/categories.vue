@@ -1,5 +1,6 @@
 <script setup>
 import message from "~/composables/common/message"
+import myFetch from "~/composables/common/myFetch"
 
 definePageMeta({
   layout: "admin",
@@ -10,7 +11,7 @@ propersObj.getItems = async function () {
   if (this.refreshItems) {
     await this.refreshItems()
   } else {
-    const items = await useFetch('/api/adminGetProperties')
+    const items = await myFetch('/api/adminGetProperties', {auth: true, lazy: false})
     this.items = items.data
     this.refreshItems = items.refresh
   }

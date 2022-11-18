@@ -1,6 +1,8 @@
 <script setup>
 import useUser from "~/composables/user/useUser"
 import getUser from "~/composables/user/getUser"
+import refreshUser from "~/composables/user/refreshUser"
+import {showNotice} from "~/composables/common/notice"
 
 const {value: user} = useUser()
 const route = useRoute()
@@ -11,21 +13,34 @@ const pathTo = route.query.from || '/'
 
 
 const onLogin = async () => {
-
-  const response = await $fetch('/api/auth/login', {method: 'post', body: {mail: 'vik@mail.com', pass: '111222'}})
-
-  console.log(`login resnonse: ${JSON.stringify(response, null, 2)}`)
-  if (response.status === 'ok') {
+  try {
+    const response = await $fetch('/api/auth/login', {method: 'post', body: {mail: 'vik@mail.com', pass: '111222'}})
+    // console.log(`login resnonse: ${JSON.stringify(response, null, 2)}`)
     user.sessionToken = response.sessionToken
     user.sessionExp = response.sessionExp
-    await getUser()
-    if (user.isAuth) navigateTo(pathTo)
+
+  } catch (e) {
+    let message
+    switch (e.statusCode) {
+      case 400: message = 'Заполните почту и пароль!'
+            break
+      case 401: message = 'Ошибка! Проверьте введенные почту и пароль!'
+            break
+      default: message = 'Ошибка авторизации!'
+    }
+    showNotice(message, 'error')
+    return
   }
+  await getUser()
+  navigateTo(pathTo)
+
 
 }
 
-const onRefresh = () => {
-  $fetch('/api/auth/refresh')
+const onRefresh = async () => {
+  console.log(`before user: ${JSON.stringify(user, null, 2)}`)
+  await refreshUser()
+  console.log(`after user: ${JSON.stringify(user, null, 2)}`)
 }
 </script>
 

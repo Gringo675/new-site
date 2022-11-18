@@ -2,9 +2,8 @@
 import useBreadCrumbs from "~/composables/state/useBreadCrumbs";
 
 const props = defineProps({
-  productData: Object
+  productData: Object,
 })
-if (!props.productData) throw createError({statusCode: 404, statusMessage: 'Page Not Found!!!!', fatal: true})
 
 const productData = props.productData
 

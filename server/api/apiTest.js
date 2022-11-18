@@ -1,17 +1,19 @@
+import decodeAndCheckToken from "~/server/src/decodeAndCheckToken"
 
 export default defineEventHandler(async (event) => {
-
+    const cTime = new Date().toLocaleTimeString()
+    console.log(`from apiTest: ${cTime}`)
     await timer(2)
 
-    const cTime = new Date().toLocaleTimeString()
-
-    console.log(`from apiTest: ${cTime}`)
+    // const token = getRequestHeader(event, 'sessionToken')
+    // // console.log(`user token: ${JSON.stringify(token, null, 2)}`)
+    // if (!token || token === 'undefined') throw createError({ statusCode: 511, statusMessage: `Network Authentication Required!`})
 
     // const error = new Error(`error from throw Error`)
     // error.statusCode = 402
     // throw error
 
-    throw createError({ statusCode: 511, statusMessage: `Network Authentication Required in ${cTime}`})
+    throw createError({ statusCode: 456, statusMessage: `Error in ${cTime}`})
     // throw createError({ statusCode: 499, statusMessage: `Some error in ${cTime}`})
     // showError({ statusCode: 404, statusMessage: 'Page Not Found!!!!'})
 

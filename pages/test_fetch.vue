@@ -1,41 +1,56 @@
 <script setup>
 
-import myFetch from "~/composables/common/myFetch";
-const route = useRoute()
-const url = '/api/apiTest'
-
-// console.log(`HERE1`)
-// showError({ statusCode: 400, statusMessage: 'Paggie Not Found!!!!'})
-// console.log(`HERE2`)
-
-const {data, pending, error} = await myFetch(url, {
-  lazy: true,
-  auth: false,
-  server: true,
-  from: route.path
-})
-
-// watchEffect(async () => { // следим за ошибками
-//   if (!error.value) return
-//   console.log(`watchEffect error: ${JSON.stringify(error.value, null, 2)}`)
-//   if (error.value.statusCode === 511) {
-//     console.log(`auth redirect`)
-//     await navigateTo('/user/login?from=' + options.from)
-//   }
-//   else showError(error.value)
-//   // else throw createError({ statusCode: 498, statusMessage: `Some error in 000}`})
+// import myFetch from "~/composables/common/myFetch"
+//
+// const route = useRoute()
+// const url = '/api/apiTest'
+// console.log(`step1`)
+// const {data, pending} = await myFetch(url, {
+//   lazy: false,
+//   auth: true,
+//   from: route.path
 // })
+// console.log(`step2`)
+const pending = ref(true)
+
+console.log(`step1`)
+let test = {}
+if (process.server) {
+  test.data = null
+  test.pending = true
+}
+else {
+  test = await useAsyncData('test', async () => {
+    console.log(`from useAsyncData`)
+    await timer(5)
+    return 111
+  }, {
+    lazy: false, server: false
+  })
+}
+console.log(`step2`)
+console.log(`test: ${JSON.stringify(test, null, 2)}`)
+
+async function timer(sec) {
+  let promise = new Promise((resolve, reject) => {
+    setTimeout(() => resolve(), sec * 1000)
+  });
+  return await promise;
+}
 
 </script>
 
 <template>
   <div class="test_fetch">
-    <Transition name="page" mode="out-in">
-      <HelperInlineLoader v-if="pending || error"/>
-      <div v-else>
-        data: {{data}}
-      </div>
-    </Transition>
+    test: {{test.data}}
+<!--    <HelperInlineLoader v-if="pending"/>-->
+<!--    <TheTest v-else :data="data"/>-->
+    <!--    <Transition name="page" mode="out-in">-->
+    <!--      <HelperInlineLoader v-if="pending"/>-->
+    <!--      <TheTest v-else />-->
+    <!--      <TheTest v-if="!pending && !error"/>-->
+    <!--      <HelperInlineLoader v-else />-->
+    <!--    </Transition>-->
   </div>
 </template>
 

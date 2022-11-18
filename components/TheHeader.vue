@@ -31,7 +31,7 @@ const createMess = () => {
   <header class="w-full bg-cyan-200">
     <div class="flex">
 <!--      <TheCart />-->
-      <CatsMenu />
+<!--      <CatsMenu />-->
       <button @click="createDialog" class="button">Create dialog</button>
       <button @click="createMess" class="button">Create mess</button>
       <button @click="loader.show()" class="button">Show loader</button>

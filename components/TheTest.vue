@@ -1,13 +1,16 @@
 <script setup>
 
-const test = await useTest();
-console.log(`pending: ${test.pending.value} data: ${test.data.value}`);
+console.log(`!!!from test component!!!`)
 
+defineProps({
+  data: Object
+})
 </script>
 
 <template>
   <div class="TheTest">
-THE TEST component data: {{ test.data }}
+THE TEST component <br>
+    data: {{data}}
   </div>
 </template>
 

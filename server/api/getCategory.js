@@ -6,15 +6,15 @@ export default defineEventHandler(async (event) => {
     // console.log(`from getCategory`)
     // await timer(5)
 
-    const {alias} = useQuery(event)
-    if (!alias.length) throw createError({ statusCode: 500, statusMessage: 'Parsing alias error!', fatal: true})
+    const {alias} = getQuery(event)
+    if (!alias.length) throw createError({ statusCode: 500, statusMessage: 'Parsing alias error!'})
     // console.log(`API alias: ${alias}`);
 
     // получаем категорию
     let query = `SELECT * FROM i_categories WHERE alias = '${alias}'  AND published = 1`
     // console.log(`query: ${query}`)
     const catData = (await request(query))[0]
-    if (catData === undefined) throw createError({statusCode: 404, statusMessage: 'Page Not Found!!!!', fatal: true})
+    if (catData === undefined) throw createError({statusCode: 404, statusMessage: 'Page Not Found!!!!'})
     // console.log(`catData: ${JSON.stringify(catData)}`);
 
     // получаем дочерние категории
