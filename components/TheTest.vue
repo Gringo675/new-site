@@ -3,14 +3,16 @@
 console.log(`!!!from test component!!!`)
 
 defineProps({
-  data: Object
+  data: Object,
+  pending: Object
 })
 </script>
 
 <template>
   <div class="TheTest">
 THE TEST component <br>
-    data: {{data}}
+    data: {{data}} <br>
+    pending: {{pending}}
   </div>
 </template>
 

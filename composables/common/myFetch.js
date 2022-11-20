@@ -21,13 +21,16 @@ export default async (url, options = {}) => {
     options.server = options.server ?? !options.auth
     options.from = options.from ?? '/'
 
-    console.log(`options.lazy: ${JSON.stringify(options.lazy, null, 2)}`)
-    console.log(`options.server: ${JSON.stringify(options.server, null, 2)}`)
-
     const {value: user} = useUser()
-    const nuxtApp = useNuxtApp() // запоминаем "контекст"
+    const nuxtApp = useNuxtApp()
+
+    // очищаем для последующих заходов на страницу (lifehooks должны идти до первого await)
+    onUnmounted(() => {
+        if (unwatch) unwatch() // иначе будет добавляться по обработчику при каждом заходе, почему-то не удаляются автоматически
+    })
 
     const {data, pending, error} = await useAsyncData(url, async () => {
+        console.log(`from useAsyncData`)
         try {
             const fetchOptions = {}
             if (options.auth) {
@@ -39,9 +42,8 @@ export default async (url, options = {}) => {
                     sessionToken: user.sessionToken
                 }
             }
-            return await $fetch(url, fetchOptions)
+            return $fetch(url, fetchOptions)
         } catch (e) {
-            console.log(`from catch`)
             throw createError({statusCode: e.statusCode, statusMessage: e.statusMessage})
             return null
         }
@@ -49,20 +51,33 @@ export default async (url, options = {}) => {
         lazy: options.lazy, server: options.server
     })
 
-    const isError = () => {
-        if (!error.value) return false
-        console.log(`in error`)
-        if (error.value.statusCode === 401) callWithNuxt(nuxtApp, navigateTo, ['/user/login?from=' + options.from])
-        else callWithNuxt(nuxtApp, showError, [error.value])
-        callWithNuxt(nuxtApp, clearNuxtData, [url])
+    const _calculatePending = () => {
+        console.log(`from _calculatePending`)
+        // нужно учесть, что при повторном заходе начальное значение pending будет false,
+        // даже если данные еще не получены (предыдущий заход завершился ошибкой)
+        if (!pending.value && data.value) return false
+        if (error.value) handleError(error.value, url, nuxtApp)
         return true
     }
 
-    const _pending = computed(() => {
-        console.log(`from computed`)
-        if (pending.value) return true
-        return isError()
-    })
+    const _pending = ref(_calculatePending())
+
+    let unwatch
+    if (process.client && _pending.value) { // если запрос не разрешился синхронно, вешаем watcher
+        console.log(`from active pending`)
+        unwatch = watch(() => pending.value, () => {
+            console.log(`from watch`)
+            _pending.value = _calculatePending()
+        })
+    }
 
     return {data, pending: _pending}
+}
+
+const handleError = (error, url, nuxtApp) => {
+    console.log(`from handleError`)
+    // const nuxtApp = useNuxtApp()
+    if (error.statusCode === 401) callWithNuxt(nuxtApp, navigateTo, ['/user/login?from=' + options.from])
+    else callWithNuxt(nuxtApp, showError, [error])
+    callWithNuxt(nuxtApp, clearNuxtData, [url])
 }

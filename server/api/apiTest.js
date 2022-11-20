@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
     // error.statusCode = 402
     // throw error
 
-    throw createError({ statusCode: 456, statusMessage: `Error in ${cTime}`})
+    throw createError({ statusCode: 457, statusMessage: `Error in ${cTime}`})
     // throw createError({ statusCode: 499, statusMessage: `Some error in ${cTime}`})
     // showError({ statusCode: 404, statusMessage: 'Page Not Found!!!!'})
 

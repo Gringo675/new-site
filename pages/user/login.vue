@@ -42,6 +42,11 @@ const onRefresh = async () => {
   await refreshUser()
   console.log(`after user: ${JSON.stringify(user, null, 2)}`)
 }
+
+const onTest = () => {
+  const nuxtApp = useNuxtApp()
+  console.log(`nuxtApp._asyncData['/api/apiTest']: ${JSON.stringify(nuxtApp._asyncData['/api/apiTest'], null, 2)}`)
+}
 </script>
 
 <template>
@@ -49,6 +54,7 @@ const onRefresh = async () => {
     <h1>Login</h1>
     <button @click="onLogin" class="m-2 p-2 bg-cyan-500 rounded">Login</button>
     <button @click="onRefresh" class="m-2 p-2 bg-cyan-500 rounded">Refresh</button>
+    <button @click="onTest" class="m-2 p-2 bg-cyan-500 rounded">test</button>
   </div>
 </template>
 
