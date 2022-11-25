@@ -1,11 +1,13 @@
 <script setup>
-
 console.log(`!!!from test component!!!`)
+// throw createError({ statusCode: 404, statusMessage: 'Page Not Found!!!!'})
 
 defineProps({
   data: Object,
-  pending: Object
+  pending: Boolean
 })
+const aaa = JSON.stringify(data)
+
 </script>
 
 <template>

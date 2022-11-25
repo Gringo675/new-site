@@ -9,12 +9,12 @@
  * }
  */
 
-import request from "../src/mysql";
+import request from "~/server/src/mysql"
 
-export default defineEventHandler(async (req, res) => {
+export default defineEventHandler(async (event) => {
 
     try {
-        const cats = await useBody(req)
+        const cats = await readBody(event)
 
         for (const catID in cats) {
 

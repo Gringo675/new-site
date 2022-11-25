@@ -1,7 +1,12 @@
-import request from "../src/mysql";
+import request from "~/server/src/mysql"
+import decodeAndCheckToken from "~/server/src/decodeAndCheckToken"
+import useTimer from "~/server/src/useTimer"
 
-export default defineEventHandler(async () => {
-    // console.log(`from getProperties`);
+export default defineEventHandler(async (event) => {
+
+    await useTimer(1)
+    decodeAndCheckToken(event, {adminOnly: true})
+
     try {
         // const query = `SELECT * FROM i_properties WHERE group_id=0 ORDER by group_id, ordering`
         const query = `SELECT * FROM i_properties ORDER by group_id, ordering`

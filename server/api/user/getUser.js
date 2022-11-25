@@ -5,7 +5,7 @@ import decodeAndCheckToken from "~/server/src/decodeAndCheckToken";
 export default defineEventHandler(async (event) => {
     // по sessionToken получаем информацию о пользователе
 
-    const tokenUser = decodeAndCheckToken(event, 'session')
+    const tokenUser = decodeAndCheckToken(event)
 
     // получаем user'a
     const query = `SELECT *

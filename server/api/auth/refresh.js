@@ -4,7 +4,7 @@ import decodeAndCheckToken from "~/server/src/decodeAndCheckToken";
 
 export default defineEventHandler(async (event) => {
 
-    const tokenUser = decodeAndCheckToken(event, 'refresh')
+    const tokenUser = decodeAndCheckToken(event, {type: 'refresh'})
 
     // получаем user'a
     const query = `SELECT id, admin

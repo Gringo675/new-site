@@ -3,12 +3,13 @@
 import loader from "~/composables/common/loader"
 import message from "~/composables/common/message"
 import {showNotice} from "~/composables/common/notice"
+import useUser from "~/composables/user/useUser"
 
-// import {useTest, multiply} from "~/composables/common/test"
-// const test = useTest()
-// console.log(`testttt: ${JSON.stringify(test, null, 2)}`)
-//
+const test = () => {
+  const {value: user} = useUser()
 
+  console.log(`user: ${JSON.stringify(user, null, 2)}`)
+}
 
 const createDialog = () => {
   message.show('My very very large title', '<p>paragraph with <i>italic</i> word</p>', 'success', () => {
@@ -49,11 +50,18 @@ const createMess = () => {
         <NuxtLink to="/user/login">LOGIN</NuxtLink>
       </button>
       <button class="button">
+        <NuxtLink to="/user/orders">Orders</NuxtLink>
+      </button>
+      <button class="button">
         <NuxtLink to="/test_fetch">test_fetch</NuxtLink>
       </button>
       <button class="button">
-        <NuxtLink to="/test_err">test_err</NuxtLink>
+        <NuxtLink to="/admin/test">/admin/test</NuxtLink>
       </button>
+      <button class="button">
+        <NuxtLink to="/test1">/test1</NuxtLink>
+      </button>
+      <button class="button" @click="test">test</button>
     </div>
 
   </header>

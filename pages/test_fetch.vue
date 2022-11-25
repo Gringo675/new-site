@@ -1,41 +1,16 @@
 <script setup>
 
 // import myFetch from "~/composables/common/myFetchOld"
-import myFetch from "~/composables/common/myFetch"
+import dataFetch from "~/composables/common/dataFetch"
 
 const route = useRoute()
 const url = '/api/apiTest'
-const {data, pending} = await myFetch(url, {
+const {data, pending} = await dataFetch(url, {
   lazy: true,
   auth: false,
   from: route.path
 })
 
-
-// console.log(`step1`)
-// let test = {}
-// if (process.server) {
-//   test.data = null
-//   test.pending = true
-// }
-// else {
-//   test = await useAsyncData('test', async () => {
-//     console.log(`from useAsyncData`)
-//     await timer(3)
-//     return 111
-//   }, {
-//     lazy: false, server: false
-//   })
-// }
-// console.log(`step2`)
-// console.log(`test: ${JSON.stringify(test, null, 2)}`)
-
-async function timer(sec) {
-  let promise = new Promise((resolve, reject) => {
-    setTimeout(() => resolve(), sec * 1000)
-  });
-  return promise;
-}
 
 </script>
 

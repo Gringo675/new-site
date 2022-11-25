@@ -5,12 +5,12 @@
  * isChanged - измененное свойство (Update)
  */
 
-import request from "../src/mysql";
+import request from "~/server/src/mysql"
 
-export default defineEventHandler(async (req, res) => {
+export default defineEventHandler(async (event) => {
 
     try { await timer(3)
-        const props = await useBody(req)
+        const props = await readBody(event)
 
         for (const prop of props) {
 

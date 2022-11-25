@@ -1,15 +1,22 @@
 /*
-Из полученного event извлекаем токен, проверяем его, отдаем расшифрованный payload
-type - тип токена, 'session' || 'refresh'
+Из полученного event извлекаем токен, проверяем его, отдаем расшифрованный user
+options {
+    type - тип токена, 'session' || 'refresh'
+    adminOnly - дополнительная проверка на user = isAdmin
+}
  */
 
 import crypto from "crypto";
 
-export default (event, type = 'session') => {
+export default (event, options = {}) => {
+
+    // defaults
+    options.type = options.type ?? 'session'
+    options.adminOnly = options.adminOnly ?? false
 
     let token
-    if (type === 'session') token = getRequestHeader(event, 'sessionToken')
-    else if (type === 'refresh') token = getCookie(event, 'refreshToken')
+    if (options.type === 'session') token = getRequestHeader(event, 'sessionToken')
+    else if (options.type === 'refresh') token = getCookie(event, 'refreshToken')
     else throw createError({statusCode: 500, statusMessage: `Uncorrect token type!`})
 
     if (!token || token === 'undefined') throw createError({statusCode: 401, statusMessage: `Authentication Required!`})
@@ -20,13 +27,16 @@ export default (event, type = 'session') => {
         .createHmac('SHA256', process.env.JWT_TOKEN)
         .update(`${header}.${payload}`)
         .digest('base64')
-    if (correctSignature !== signature) throw createError({statusCode: 401, statusMessage: `Uncorrect token signature!`})
+    if (correctSignature !== signature) throw createError({statusCode: 503, statusMessage: `Uncorrect token signature!`})
 
     // extract data from payload
-    const data = JSON.parse(Buffer.from(payload, 'base64').toString('ascii'))
+    const user = JSON.parse(Buffer.from(payload, 'base64').toString('ascii'))
 
     // проверяем срок действия токена
-    if (Date.parse(data.expires) < Date.now()) throw createError({statusCode: 401, statusMessage: `Token outdated!`})
+    if (Date.parse(user.expires) < Date.now()) throw createError({statusCode: 401, statusMessage: `Token outdated!`})
 
-    return data
+    // проверяем isAdmin
+    if (options.adminOnly && !user.isAdmin) throw createError({statusCode: 403, statusMessage: `Forbidden!`})
+
+    return user
 }

@@ -1,29 +1,30 @@
 <script setup>
 
-const { data, pending, error } = await useAsyncData('test1', () => $fetch('/api/apiTest'))
+// console.log(`before error: ${JSON.stringify(error, null, 2)}`)
+// showError({statusCode: 511, statusMessage: `Network Authentication Required!`})
+// throw createError({statusCode: 511, statusMessage: `Network Authentication Required!`})
+// console.log(`step2`)
+// console.log(`after error: ${JSON.stringify(error, null, 2)}`)
+// const data = 111
+// throw createError({statusCode: 512, statusMessage: `Network Authentication Required!`})
 
-if (error.value) {
-  console.log(`error: ${JSON.stringify(error, null, 2)}`)
-  showError({statusCode: 404, statusMessage: 'Page Not Found!!!!'})
-}
+import dataFetch from "~/composables/common/dataFetch"
+// import myFetch from "~/composables/common/myFetch"
+
+
+const url = '/api/apiTest'
+
+const {data, pending} = await dataFetch(url, {lazy: true})
+
+console.log(`step2`)
+const aaa = JSON.stringify(data)
 
 </script>
 
 <template>
   <div class="">
-    <h1>Test1</h1>
-    <div class="m-2 p-2 ">
-      <NuxtLink to="/test2" class="text-sky-600">to test2</NuxtLink>
-    </div>
-    <div>
-      pending - {{ pending }}
-    </div>
-    <div>
-      data - {{ data }}
-    </div>
-    <div>
-      error - {{ error }}
-    </div>
+    data: {{data}}
+    pending: {{pending}}
   </div>
 </template>
 

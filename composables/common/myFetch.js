@@ -1,83 +1,72 @@
 /*
-composable универсальный fetch с поддержкой авторизации и обработкой ошибок
-url - адрес api русурса
+получение данных через $fetch с поддержкой авторизации и обработкой ошибок
+использовать только на клиенте!
+url - адрес api ресурса
 options {
-    lazy
-    auth
-    server
-    from - относительный путь страницы, откуда отправляем запрос. Используется для переадресации при неудачном запросе.
+    auth - истользовать с аутентификацией
+    silent - не показывать loader и не обрабатывать ошибки
+    method - get || post,
+    payload - данные для передачи с post,
 }
  */
 
 import useUser from "~/composables/user/useUser"
 import refreshUser from "~/composables/user/refreshUser"
-import {callWithNuxt} from '#app'
+import loader from "~/composables/common/loader"
 
 export default async (url, options = {}) => {
 
+    if (process.server) throw createError({statusCode: 511, statusMessage: `myFetch should be used only on client side!`})
+
     // defaults
-    options.lazy = options.lazy ?? true
     options.auth = options.auth ?? false
-    options.server = options.server ?? !options.auth
-    options.from = options.from ?? '/'
+    options.method = options.method ?? 'get'
+    options.payload = options.payload ?? ''
+    options.silent = options.silent ?? false
 
     const {value: user} = useUser()
-    const nuxtApp = useNuxtApp()
 
-    // очищаем для последующих заходов на страницу (lifehooks должны идти до первого await)
-    onUnmounted(() => {
-        if (unwatch) unwatch() // иначе будет добавляться по обработчику при каждом заходе, почему-то не удаляются автоматически
-    })
 
-    const {data, pending, error} = await useAsyncData(url, async () => {
-        console.log(`from useAsyncData`)
-        try {
-            const fetchOptions = {}
-            if (options.auth) {
-                if (!user.sessionToken || Date.parse(user.sessionExp) - 10e3 < Date.now()) {
-                    const isRefresh = await refreshUser()
-                    if (!isRefresh) throw createError({statusCode: 456, statusMessage: `Authentication Required!`})
-                }
-                fetchOptions.headers = {
-                    sessionToken: user.sessionToken
-                }
+    const fetchOptions = {}
+
+    if (options.auth) {
+        if (!user.sessionToken || Date.parse(user.sessionExp) - 10e3 < Date.now()) {
+            const isRefresh = await refreshUser()
+            if (!isRefresh) {
+                if (!options.silent) throw createError({statusCode: 401, statusMessage: `Authentication Required!`})
+                // showError({statusCode: 401, statusMessage: `Authentication Required!`})
+                return null
             }
-            return $fetch(url, fetchOptions)
-        } catch (e) {
-            throw createError({statusCode: e.statusCode, statusMessage: e.statusMessage})
-            return null
         }
-    }, {
-        lazy: options.lazy, server: options.server
-    })
-
-    const _calculatePending = () => {
-        console.log(`from _calculatePending`)
-        // нужно учесть, что при повторном заходе начальное значение pending будет false,
-        // даже если данные еще не получены (предыдущий заход завершился ошибкой)
-        if (!pending.value && data.value) return false
-        if (error.value) handleError(error.value, url, nuxtApp)
-        return true
+        fetchOptions.headers = {
+            sessionToken: user.sessionToken
+        }
     }
 
-    const _pending = ref(_calculatePending())
-
-    let unwatch
-    if (process.client && _pending.value) { // если запрос не разрешился синхронно, вешаем watcher
-        console.log(`from active pending`)
-        unwatch = watch(() => pending.value, () => {
-            console.log(`from watch`)
-            _pending.value = _calculatePending()
-        })
+    if (options.method === 'post') {
+        fetchOptions.method = 'post'
+        fetchOptions.body = options.payload
     }
 
-    return {data, pending: _pending}
-}
-
-const handleError = (error, url, nuxtApp) => {
-    console.log(`from handleError`)
-    // const nuxtApp = useNuxtApp()
-    if (error.statusCode === 401) callWithNuxt(nuxtApp, navigateTo, ['/user/login?from=' + options.from])
-    else callWithNuxt(nuxtApp, showError, [error])
-    callWithNuxt(nuxtApp, clearNuxtData, [url])
-}
+    if (!options.silent) loader.show()
+    let result = null
+    while (true) {
+        try {
+            result = await $fetch(url, fetchOptions)
+            break
+        } catch (e) {
+            // console.error(`Fetch error! ${e.statusCode}: ${e.statusMessage}`)
+            if (options.silent) break
+            if (e.statusCode === 401 || e.statusCode === 403) {
+                loader.hide()
+                throw createError(e)
+            }
+            else {
+                const repeat = confirm(`Ошибка при обращении к ${url}!\nError ${e.statusCode}: ${e.statusMessage}\nПовторить запрос?`)
+                if (!repeat) break
+            }
+        }
+    }
+    if (!options.silent) loader.hide()
+    return result
+ }

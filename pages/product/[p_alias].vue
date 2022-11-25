@@ -1,10 +1,10 @@
 <script setup>
-import myFetch from "~/composables/common/myFetch"
+import dataFetch from "~/composables/common/dataFetch"
 
 const route = useRoute()
 const url = '/api/getProduct?alias=' + route.params.p_alias
 
-const {data, pending} = await myFetch(url)
+const {data, pending} = await dataFetch(url)
 
 </script>
 
