@@ -6,9 +6,7 @@ import {showNotice} from "~/composables/common/notice"
 import useUser from "~/composables/user/useUser"
 
 const test = () => {
-  const {value: user} = useUser()
-
-  console.log(`user: ${JSON.stringify(user, null, 2)}`)
+  throw createError({ statusCode: 401, statusMessage: 'error 401'})
 }
 
 const createDialog = () => {

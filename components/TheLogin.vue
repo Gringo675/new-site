@@ -5,7 +5,6 @@ import refreshUser from "~/composables/user/refreshUser"
 import {showNotice} from "~/composables/common/notice"
 
 const user = useUser()
-const router = useRouter()
 
 const onLogin = async () => {
   try {
@@ -27,13 +26,9 @@ const onLogin = async () => {
     return
   }
   await getUser()
-  if (user.value.redirect) {
-    // router.push(user.value.redirect).catch(err => {})
-    // router.go(user.value.redirect)
-    // await navigateTo(user.value.redirect)
-  }
-  user.value.showLogin = false
-  delete user.value.redirect
+
+  onClose()
+
 }
 
 const onRefresh = async () => {
@@ -44,7 +39,6 @@ const onRefresh = async () => {
 
 const onClose = () => {
   user.value.showLogin = false
-  delete user.value.redirect
 }
 
 const onTest = () => {

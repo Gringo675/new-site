@@ -1,8 +1,13 @@
 <script setup>
-console.log(`!!!from test component!!!`)
-// throw createError({ statusCode: 404, statusMessage: 'Page Not Found!!!!'})
 
-defineProps({
+// import useUser from "../composables/user/useUser";
+//
+console.log(`!!!from test component!!!`)
+// const user = useUser()
+// if (!user.value.isAdmin) throw createError({ statusCode: 403, statusMessage: 'error 403'})
+
+
+let {data, pending} = defineProps({
   data: Object,
   pending: Boolean
 })

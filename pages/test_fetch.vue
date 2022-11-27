@@ -3,12 +3,10 @@
 // import myFetch from "~/composables/common/myFetchOld"
 import dataFetch from "~/composables/common/dataFetch"
 
-const route = useRoute()
 const url = '/api/apiTest'
 const {data, pending} = await dataFetch(url, {
   lazy: true,
   auth: false,
-  from: route.path
 })
 
 

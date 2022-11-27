@@ -1,30 +1,37 @@
 <script setup>
+import useUser from "../composables/user/useUser";
 
-// console.log(`before error: ${JSON.stringify(error, null, 2)}`)
-// showError({statusCode: 511, statusMessage: `Network Authentication Required!`})
-// throw createError({statusCode: 511, statusMessage: `Network Authentication Required!`})
-// console.log(`step2`)
-// console.log(`after error: ${JSON.stringify(error, null, 2)}`)
-// const data = 111
-// throw createError({statusCode: 512, statusMessage: `Network Authentication Required!`})
+// const someErrorLogger = () => {
+//   console.log(`from someErrorLogger`)
+// }
+//
+// const user = useUser()
+//
+// const handleError = (error) => {
+//   user.value.isAdmin = true
+//   console.log(`before error: ${JSON.stringify(error, null, 2)}`)
+//   error.value = null
+//   console.log(`after error: ${JSON.stringify(error, null, 2)}`)
+// }
 
-import dataFetch from "~/composables/common/dataFetch"
-// import myFetch from "~/composables/common/myFetch"
-
-
-const url = '/api/apiTest'
-
-const {data, pending} = await dataFetch(url, {lazy: true})
-
-console.log(`step2`)
-const aaa = JSON.stringify(data)
-
+console.log(`!!!from test1!!!`)
+const user = useUser()
+if (!user.value.sessionToken) throw createError({ statusCode: 401, statusMessage: 'error 401'})
+if (!user.value.isAdmin) throw createError({ statusCode: 403, statusMessage: 'error 403'})
 </script>
 
 <template>
-  <div class="">
-    data: {{data}}
-    pending: {{pending}}
+  <div>
+    test1
+<!--    <NuxtErrorBoundary @error="someErrorLogger">-->
+<!--      <TheTest/>-->
+<!--      <template #error="{ error }">-->
+<!--        You can display the error locally here.-->
+<!--        <button class="button" @click="handleError(error)">-->
+<!--          This will clear the error.-->
+<!--        </button>-->
+<!--      </template>-->
+<!--    </NuxtErrorBoundary>-->
   </div>
 </template>
 
