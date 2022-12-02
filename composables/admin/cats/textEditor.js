@@ -1,22 +1,22 @@
-export default {
-    get isActive() {
-        if (!this._isActive) this._isActive = useState('textEditorIsActive', () => false)
-        return this._isActive
-    },
+export default reactive({
+    isActive: false,
     parentIndex: null,
     childIndex: null,
     field: '',
-    show: function(parentIndex, childIndex, field) {
-        if (this.isActive.value) return
+    fieldRU: '',
+    show: function(parentIndex, childIndex, field, fieldRU) {
+        if (this.isActive) return
         this.parentIndex = parentIndex
         this.childIndex = childIndex
         this.field = field
-        this.isActive.value = true
+        this.fieldRU = fieldRU
+        this.isActive = true
     },
     hide: function() {
         this.parentIndex = null
         this.childIndex = null
         this.field = ''
-        this.isActive.value = false
+        this.fieldRU = ''
+        this.isActive = false
     }
-}
+})

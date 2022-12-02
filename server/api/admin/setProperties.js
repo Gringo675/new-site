@@ -6,57 +6,34 @@
  */
 
 import request from "~/server/src/mysql"
+import decodeAndCheckToken from "~/server/src/decodeAndCheckToken"
+import prepareString from "~/server/src/prepareString"
 
 export default defineEventHandler(async (event) => {
 
-    try { await timer(3)
-        const props = await readBody(event)
+    decodeAndCheckToken(event, {adminOnly: true})
 
-        for (const prop of props) {
+    const props = await readBody(event)
 
-            let query
+    for (const prop of props) {
 
-            if (prop.isDel) {
-                query = `DELETE FROM i_properties WHERE id = ${prop.id}`
-            } else if (prop.isNew) {
-                query = `INSERT INTO i_properties
-                         SET group_id = ${prop.group_id},
-                             name     = '${prepareStringForMysql(prop.name)}',
-                             ordering = ${prop.ordering}`
-            } else if (prop.isChanged) {
-                query = `UPDATE i_properties
-                         SET name     = '${prepareStringForMysql(prop.name)}',
-                             ordering = ${prop.ordering}
-                         WHERE id = ${prop.id}`
-            } else {
-                throw new Error("prop object don't have required field!")
-            }
-            await request(query)
+        let query
+
+        if (prop.isDel) {
+            query = `DELETE FROM i_properties WHERE id = ${prop.id}`
+        } else if (prop.isNew) {
+            query = `INSERT INTO i_properties
+                     SET group_id = ${prop.group_id}, name = '${prepareString(prop.name)}', ordering = ${prop.ordering}`
+        } else if (prop.isChanged) {
+            query = `UPDATE i_properties
+                     SET name     = '${prepareString(prop.name)}',
+                         ordering = ${prop.ordering}
+                     WHERE id = ${prop.id}`
+        } else {
+            throw createError({statusCode:500, statusMessage:"prop object don't have required field!"})
         }
-        return 'ok'
-
-    } catch (e) {
-        console.log(`setProperties ERROR! ${e.message}`);
-        return createError({
-            statusCode: 503,
-            statusMessage: e.message
-        })
+        await request(query)
     }
+    return true
+
 })
-
-function prepareStringForMysql(string) {
-    // функция экранирует спец. символы
-    if (typeof string === 'string') { // только для строк
-        string = string.replace(/\\/g, '\\\\')
-        string = string.replace(/'/g, "\\'")
-        string = string.replace(/\r\n/g, '\n')
-    }
-    return string
-}
-
-async function timer(sec) {
-    let promise = new Promise((resolve, reject) => {
-        setTimeout(() => resolve(), sec * 1000)
-    });
-    return await promise;
-}

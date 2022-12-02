@@ -1,5 +1,4 @@
 <script setup>
-import useCats from "~/composables/state/useCats";
 
 const {data: cats} = await useCats()
 

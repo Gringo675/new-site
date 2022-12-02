@@ -1,11 +1,10 @@
 <script setup>
-import useCatFields from "~/composables/admin/cats/useCatFields"
-const fields = useCatFields()
+import catFields from "~/composables/admin/cats/catFields"
 
 const masterButton = reactive({
-  checked: computed(() => fields.value.every(field => field.isActive)),
-  indeterminate: computed(() => fields.value.some(field => field.isActive) && fields.value.some(field => !field.isActive)),
-  onChange: (value) => fields.value.forEach(field => field.isActive = value)
+  checked: computed(() => catFields.every(field => field.isActive)),
+  indeterminate: computed(() => catFields.some(field => field.isActive) && catFields.some(field => !field.isActive)),
+  onChange: (value) => catFields.forEach(field => field.isActive = value)
 })
 
 const vIndeterminate = (el, binding) => { // custom directive v-indeterminate
@@ -27,7 +26,7 @@ const vIndeterminate = (el, binding) => { // custom directive v-indeterminate
       >
     </div>
     <div class="flex flex-wrap rounded-xl bg-cyan-50 p-1">
-      <div v-for="(field, i) in fields" :key="i" class="ml-3">
+      <div v-for="(field, i) in catFields" :key="i" class="ml-3">
         <input :id="'f_' + field.name" class="align-middle" type="checkbox" v-model="field.isActive">
         <label :for="'f_' + field.name" class="ml-1 align-middle"> {{ field.nameRU }} </label>
       </div>

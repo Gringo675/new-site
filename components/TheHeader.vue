@@ -1,16 +1,11 @@
 <script setup>
 
-import loader from "~/composables/common/loader"
-import message from "~/composables/common/message"
-import {showNotice} from "~/composables/common/notice"
-import useUser from "~/composables/user/useUser"
-
 const test = () => {
   throw createError({ statusCode: 401, statusMessage: 'error 401'})
 }
 
 const createDialog = () => {
-  message.show('My very very large title', '<p>paragraph with <i>italic</i> word</p>', 'success', () => {
+  showMessage('My very very large title', '<p>paragraph with <i>italic</i> word</p>', 'success', () => {
     localFn(localVar)
   })
 }
@@ -21,7 +16,7 @@ const localFn = (localWar) => {
 }
 
 const createMess = () => {
-  message.show('title2', 'body2')
+  showMessage('title2', 'body2')
 }
 
 </script>
@@ -33,7 +28,7 @@ const createMess = () => {
 <!--      <CatsMenu />-->
       <button @click="createDialog" class="button">Create dialog</button>
       <button @click="createMess" class="button">Create mess</button>
-      <button @click="loader.show()" class="button">Show loader</button>
+      <button @click="showLoader()" class="button">Show loader</button>
       <button @click="showNotice('some text', 'error')" class="button">Show notice</button>
       <!--      <button @click="multiply" class="button">Multuply</button>-->
     </div>

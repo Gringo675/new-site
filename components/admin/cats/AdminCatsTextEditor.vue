@@ -1,28 +1,20 @@
 <script setup>
+import catsG from "~/composables/admin/cats/catsG"
 import textEditor from "~/composables/admin/cats/textEditor"
-const isActive = textEditor.isActive
-const props = defineProps({
-  catsObj: Object,
-})
 
-let cat
-const title = ref('')
-const content = ref('')
+// const title = ref('')
+// const content = ref('')
 
-watch(isActive, (newValue) => {
-  if (newValue === true) {
-    cat = (textEditor.childIndex !== null ?
-        props.catsObj.items[textEditor.parentIndex].children[textEditor.childIndex] :
-        props.catsObj.items[textEditor.parentIndex])
-    title.value = `${textEditor.field} - ${cat.name}`
-    content.value = cat[textEditor.field]
-  }
-})
+const cat = textEditor.childIndex !== null ?
+    catsG.items[textEditor.parentIndex].children[textEditor.childIndex] :
+    catsG.items[textEditor.parentIndex]
+const content = ref(cat[textEditor.field])
+const title = `${textEditor.fieldRU} - ${cat.name}`
 
 const saveChanges = () => {
   if (content.value !== cat[textEditor.field]) {
     cat[textEditor.field] = content.value
-    props.catsObj.handleChanges(cat.id, textEditor.field, content.value)
+    catsG.handleChanges(cat.id, textEditor.field, content.value)
   }
   textEditor.hide()
 }
@@ -30,7 +22,7 @@ const saveChanges = () => {
 
 <template>
   <transition name="transition-fade">
-    <HelperModalWrapper v-if="isActive">
+    <HelperModalWrapper>
       <div class="modal-form w-[1000px] max-w-[95%]
          border border-amber-900 rounded-xl
          overflow-auto flex flex-col justify-start">

@@ -9,17 +9,21 @@ console.log(`!!!from test component!!!`)
 
 let {data, pending} = defineProps({
   data: Object,
-  pending: Boolean
+  pending: Object
 })
-const aaa = JSON.stringify(data)
+
+console.log(`data: ${JSON.stringify(data, null, 2)}`)
+console.log(`pending: ${JSON.stringify(pending, null, 2)}`)
+
+// const aaa = JSON.stringify(data)
 
 </script>
 
 <template>
   <div class="TheTest">
 THE TEST component <br>
-    data: {{data}} <br>
-    pending: {{pending}}
+<!--    data: {{data}} <br>-->
+<!--    pending: {{pending}}-->
   </div>
 </template>
 

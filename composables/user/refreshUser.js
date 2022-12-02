@@ -1,5 +1,3 @@
-import useUser from "~/composables/user/useUser"
-
 export default async () => {
     const { value: user } = useUser()
     try {

@@ -4,7 +4,6 @@ import useCatProps from "~/server/src/useCatProps"
 export default defineEventHandler(async (event) => {
     // const start = Date.now()
     // console.log(`from getCategory`)
-    // await timer(5)
 
     const {alias} = getQuery(event)
     if (!alias.length) throw createError({ statusCode: 500, statusMessage: 'Parsing alias error!'})

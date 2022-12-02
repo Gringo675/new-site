@@ -1,11 +1,26 @@
 <script setup>
-import message from "~/composables/common/message"
-const isActive = message.isActive
+
+const message = useMessage().value
+
+const closeMessage = () => {
+  message.title = ''
+  message.body = ''
+  message.type = ''
+  message.callback = null
+  message.isDialog = false
+  message.isActive = false
+}
+
+const positiveAction = () => {
+  if (message.isDialog) message.callback()
+  closeMessage()
+}
+
 </script>
 
 <template>
   <Transition name="transition-fade">
-    <HelperModalWrapper v-if="isActive">
+    <HelperModalWrapper v-if="message.isActive">
       <div class="modal-form w-96 max-w-[95%] max-h-[90vh]
          border border-amber-900 rounded-xl
          overflow-auto flex flex-col justify-start"
@@ -21,8 +36,8 @@ const isActive = message.isActive
           <div v-html="message.body"></div>
         </div>
         <div class="p-2.5 bg-orange-200 flex justify-end items-center">
-          <button v-if="message.isDialog" @click="message.hide" class="button px-2 py-1">Cancel</button>
-          <button @click="message.positiveAction" class="button px-2 py-1">OK</button>
+          <button v-if="message.isDialog" @click="closeMessage" class="button px-2 py-1">Cancel</button>
+          <button @click="positiveAction" class="button px-2 py-1">OK</button>
         </div>
       </div>
     </HelperModalWrapper>

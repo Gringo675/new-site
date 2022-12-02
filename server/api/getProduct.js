@@ -5,8 +5,6 @@ export default defineEventHandler(async (event) => {
     // функция по алиасу отдает информацию о товаре
     // const start = Date.now()
 
-    // await timer(2)
-
     const {alias} = getQuery(event)
     if (!alias.length) throw createError({statusCode: 500, statusMessage: 'Parsing alias error!'})
     // console.log(`API alias: ${alias}`);
@@ -123,10 +121,3 @@ export default defineEventHandler(async (event) => {
 
 
 })
-
-async function timer(sec) {
-    let promise = new Promise((resolve, reject) => {
-        setTimeout(() => resolve(), sec * 1000)
-    });
-    return await promise;
-}

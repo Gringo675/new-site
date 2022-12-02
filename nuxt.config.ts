@@ -5,5 +5,10 @@ export default defineNuxtConfig({
         '/admin/**': {ssr: false},
         '/user/**': {ssr: false},
         // '/test_fetch': {ssr: false}
+    },
+    imports: {
+        dirs: [
+            'composables/*' // scan modules nested one level deep
+        ]
     }
 })

@@ -1,8 +1,5 @@
 <script setup>
 
-import useUser from "~/composables/user/useUser"
-import getUser from "../composables/user/getUser";
-
 const {value: user} = useUser()
 
 onMounted(() => {

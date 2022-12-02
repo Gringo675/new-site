@@ -1,5 +1,4 @@
 <script setup>
-import myFetch from "~/composables/common/myFetch"
 
 const items = await myFetch('/api/adminGetProperties', {auth: true, lazy: true})
 

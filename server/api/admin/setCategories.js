@@ -10,66 +10,51 @@
  */
 
 import request from "~/server/src/mysql"
+import decodeAndCheckToken from "~/server/src/decodeAndCheckToken"
+import prepareString from "~/server/src/prepareString"
 
 export default defineEventHandler(async (event) => {
 
-    try {
-        const cats = await readBody(event)
+    decodeAndCheckToken(event, {adminOnly: true})
 
-        for (const catID in cats) {
+    const cats = await readBody(event)
 
-            const cat = cats[catID]
-            let query
+    for (const catID in cats) {
 
-            if (cat.isDel) {  // удаляем
-                query = `DELETE FROM i_categories WHERE id = ${catID}`
-                console.log(`query: ${query}`);
-                await request(query)
-            }
+        const cat = cats[catID]
+        let query
 
-            if (cat.isNew) {  // добавляем
-                query = `INSERT INTO i_categories
-                         SET id = ${catID}, `
-                for (const key in cat) {
-                    if (key !== 'isDel' && key !== 'isNew') query += `${key} = '${prepareStringForMysql(cat[key])}', `
-                }
-                query = query.slice(0, -2)
-                console.log(`query: ${query}`);
-                await request(query)
-            }
-
-            if (!cat.isDel && !cat.isNew) {  // обновляем
-                console.log(`cat: ${JSON.stringify(cat, null, 2)}`)
-                query = `UPDATE i_categories
-                         SET `
-                for (const key in cat) {
-                    query += `${key} = '${prepareStringForMysql(cat[key])}', `
-                }
-                query = query.slice(0, -2)
-                query += ` WHERE id = ${catID}`
-                console.log(`query: ${query}`);
-                await request(query)
-            }
+        if (cat.isDel) {  // удаляем
+            query = `DELETE FROM i_categories WHERE id = ${catID}`
+            // console.log(`query: ${query}`);
+            await request(query)
         }
 
-        return 'ok'
+        if (cat.isNew) {  // добавляем
+            query = `INSERT INTO i_categories
+                     SET id = ${catID}, `
+            for (const key in cat) {
+                if (key !== 'isDel' && key !== 'isNew') query += `${key} = '${prepareString(cat[key])}', `
+            }
+            query = query.slice(0, -2)
+            // console.log(`query: ${query}`);
+            await request(query)
+        }
 
-    } catch (e) {
-        console.log(`setCategories ERROR! ${e.message}`);
-        return createError({
-            statusCode: 503,
-            statusMessage: e.message
-        })
+        if (!cat.isDel && !cat.isNew) {  // обновляем
+            // console.log(`cat: ${JSON.stringify(cat, null, 2)}`)
+            query = `UPDATE i_categories
+                     SET `
+            for (const key in cat) {
+                query += `${key} = '${prepareString(cat[key])}', `
+            }
+            query = query.slice(0, -2)
+            query += ` WHERE id = ${catID}`
+            // console.log(`query: ${query}`);
+            await request(query)
+        }
     }
+
+    return true
 
 })
-
-function prepareStringForMysql(string) {
-    // функция экранирует спец. символы
-    if (typeof string === 'string') { // только для строк
-        string = string.replace(/\\/g, '\\\\')
-        string = string.replace(/'/g, "\\'")
-        string = string.replace(/\r\n/g, '\n')
-    }
-    return string
-}

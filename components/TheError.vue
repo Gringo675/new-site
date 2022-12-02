@@ -1,5 +1,5 @@
 <script setup>
-import useUser from "~/composables/user/useUser"
+
 const user = useUser()
 
 const props = defineProps({
@@ -13,6 +13,8 @@ const error = isGlobal ? ref(props.error) : props.error
 error.value.statusCode = Number(error.value.statusCode)
 // console.log(`error: ${JSON.stringify(error, null, 2)}`)
 // console.log(`isGlobal: ${JSON.stringify(isGlobal, null, 2)}`)
+
+console.error(error.value)
 
 let unregisterAfterEachHook, unwatch
 

@@ -1,5 +1,4 @@
 <script setup>
-import {useNotice} from "~/composables/common/notice"
 
 const notice = useNotice()
 

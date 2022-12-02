@@ -1,5 +1,4 @@
 <script setup>
-import useBreadCrumbs from "~/composables/state/useBreadCrumbs";
 
 const breadCrumbs = useBreadCrumbs()
 

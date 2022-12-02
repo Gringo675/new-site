@@ -1,31 +1,27 @@
 <script setup>
-import message from "~/composables/common/message"
-import useCatFields from "~/composables/admin/cats/useCatFields"
 import textEditor from "~/composables/admin/cats/textEditor"
 import propsEditor from "~/composables/admin/cats/propsEditor"
-
-const fields = useCatFields()
+import catFields from "~/composables/admin/cats/catFields"
+import propsG from "~/composables/admin/cats/propsG"
+import catsG from "~/composables/admin/cats/catsG"
 
 const props = defineProps({
   parentIndex: Number,
-  childIndex: Number,
-  catsObj: Object,
-  propersObj: Object
+  childIndex: Number
 })
 
-const cat = (props.childIndex !== null ? props.catsObj.items[props.parentIndex].children[props.childIndex] : props.catsObj.items[props.parentIndex])
-const propers = computed(() => props.propersObj.items) // без computed изменения в propsObj не будут отслеживаться
+const cat = (props.childIndex !== null ? catsG.items[props.parentIndex].children[props.childIndex] : catsG.items[props.parentIndex])
 
 const validateDelete = () => {
   showMenu.value = false
   if (cat.children?.length) {
-    message.show('Удаление отменено', '<p>В категории содержатся вложенные подкатегории.</p><p>Сначала удалите их.</p>')
+    showMessage('Удаление отменено', '<p>В категории содержатся вложенные подкатегории.</p><p>Сначала удалите их.</p>')
     return
   }
   // Задать вопрос Точно удалить?
-  message.show('Подтвердите удаление', `<p>Категория "${cat.name}" будет удалена.</p><p>Продолжить?</p>`,
+  showMessage('Подтвердите удаление', `<p>Категория "${cat.name}" будет удалена.</p><p>Продолжить?</p>`,
       'info', () => {
-        props.catsObj.deleteCat(props.parentIndex, props.childIndex)
+        catsG.deleteCat(props.parentIndex, props.childIndex)
       })
 }
 
@@ -35,15 +31,15 @@ const showChildren = ref(false)
 
 const addCat = () => {
   showMenu.value = false
-  props.catsObj.addCat(props.parentIndex, props.childIndex)
+  catsG.addCat(props.parentIndex, props.childIndex)
 }
 const addSubCat = () => {
   showMenu.value = false
-  props.catsObj.addCat(props.parentIndex)
+  catsG.addCat(props.parentIndex)
 }
 const copyCat = () => {
   showMenu.value = false
-  props.catsObj.addCat(props.parentIndex, props.childIndex, true)
+  catsG.addCat(props.parentIndex, props.childIndex, true)
 }
 
 const setChildHeight = (el) => {
@@ -52,17 +48,17 @@ const setChildHeight = (el) => {
 
 const isDraggingCat = computed(() => {
   if (props.childIndex === null) {
-    if (props.catsObj.draggableCatIndex.group === 'none' && props.catsObj.draggableCatIndex.item == props.parentIndex) return true
+    if (catsG.draggableCatIndex.group === 'none' && catsG.draggableCatIndex.item == props.parentIndex) return true
   } else {
-    if (props.catsObj.draggableCatIndex.group == props.parentIndex && props.catsObj.draggableCatIndex.item == props.childIndex) return true
+    if (catsG.draggableCatIndex.group == props.parentIndex && catsG.draggableCatIndex.item == props.childIndex) return true
   }
   return false
 })
 const isDraggingGroup = computed(() => {
   if (props.childIndex === null) {
-    if (props.catsObj.draggableCatIndex.group === 'none') return true
+    if (catsG.draggableCatIndex.group === 'none') return true
   } else {
-    if (props.catsObj.draggableCatIndex.group == props.parentIndex) return true
+    if (catsG.draggableCatIndex.group == props.parentIndex) return true
   }
   return false
 })
@@ -100,7 +96,7 @@ const isDraggingGroup = computed(() => {
       <div class="flex items-center flex-wrap mr-9 overflow-hidden transition-all duration-500"
            :class="(showParams ? 'max-h-44' : 'max-h-12')"
       >
-        <template v-for="(field, i) in fields" :key="i">
+        <template v-for="(field, i) in catFields" :key="i">
           <template v-if="field.isActive">
             <div v-if="field.type === 'text'"
                  class="m-2 flex"
@@ -109,23 +105,23 @@ const isDraggingGroup = computed(() => {
                      class="w-56"
                      :placeholder="field.nameRU"
                      :title="field.nameRU"
-                     @change="catsObj.handleChanges(cat.id, field.name, $event.target.value)">
+                     @change="catsG.handleChanges(cat.id, field.name, $event.target.value)">
               <img v-if="field.hasEditButton"
                    class="inline cursor-pointer select-none shrink-0 w-5 ml-1"
                    src="@/img/pencil-square.svg"
-                   @click="textEditor.show(parentIndex, childIndex, field.name)"
+                   @click="textEditor.show(parentIndex, childIndex, field.name, field.nameRU)"
               >
             </div>
             <div v-else-if="childIndex !== null && field.type === 'select'"
                  class="m-2 flex"
             >
-              <select @change="catsObj.handleChanges(cat.id, field.name, $event.target.value)"
+              <select @change="catsG.handleChanges(cat.id, field.name, $event.target.value)"
                       class="w-36"
                       :title="field.nameRU"
               >
                 <option disabled :selected="!cat[field.name]>0">{{ field.nameRU }}:</option>
                 <option value="0">Нет</option>
-                <option v-for="proper in propers[field.name]" :value="proper.id"
+                <option v-for="proper in propsG.items[field.name]" :value="proper.id"
                         :selected="proper.id===cat[field.name]">
                   {{ proper.name }}
                 </option>
@@ -140,7 +136,7 @@ const isDraggingGroup = computed(() => {
             >
               <label>
                 <input type="checkbox" :checked="cat[field.name]"
-                       @change="catsObj.handleChanges(parentIndex, childIndex, field.name, ($event.target.checked ? 1 : 0))">
+                       @change="catsG.handleChanges(cat.id, field.name, ($event.target.checked ? 1 : 0))">
                 {{ field.nameRU }}
               </label>
             </div>
@@ -196,8 +192,7 @@ const isDraggingGroup = computed(() => {
       <div class="ml-2 overflow-hidden" v-if="showChildren">
         <TransitionGroup name="transition-draggable-group">
           <div v-for="(childCat, childIndex) in cat.children" :key="childCat.id">
-            <AdminCatsItemBlock :parentIndex=parentIndex :childIndex=childIndex
-                                :catsObj=catsObj :propersObj="propersObj"/>
+            <AdminCatsItemBlock :parentIndex="parentIndex" :childIndex="childIndex" />
           </div>
         </TransitionGroup>
       </div>

@@ -1,4 +1,5 @@
 <script setup>
+await myFetch('/api/user/isAdmin', {auth: true}) // если не админ, выкинет ошибку
 
 </script>
 

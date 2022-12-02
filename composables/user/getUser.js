@@ -1,6 +1,3 @@
-import useUser from "~/composables/user/useUser"
-import refreshUser from "~/composables/user/refreshUser"
-import myFetch from "~/composables/common/myFetch"
 
 export default async () => {
 

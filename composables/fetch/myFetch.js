@@ -10,10 +10,6 @@ options {
 }
  */
 
-import useUser from "~/composables/user/useUser"
-import refreshUser from "~/composables/user/refreshUser"
-import loader from "~/composables/common/loader"
-
 export default async (url, options = {}) => {
 
     if (process.server) throw createError({statusCode: 511, statusMessage: `myFetch should be used only on client side!`})
@@ -24,7 +20,7 @@ export default async (url, options = {}) => {
     options.payload = options.payload ?? ''
     options.silent = options.silent ?? false
 
-    const {value: user} = useUser()
+    const user = useUser().value
 
 
     const fetchOptions = {}
@@ -48,7 +44,7 @@ export default async (url, options = {}) => {
         fetchOptions.body = options.payload
     }
 
-    if (!options.silent) loader.show()
+    if (!options.silent) showLoader()
     let result = null
     while (true) {
         try {
@@ -58,7 +54,7 @@ export default async (url, options = {}) => {
             // console.error(`Fetch error! ${e.statusCode}: ${e.statusMessage}`)
             if (options.silent) break
             if (e.statusCode === 401 || e.statusCode === 403) {
-                loader.hide()
+                hideLoader()
                 throw createError(e)
             }
             else {
@@ -67,6 +63,6 @@ export default async (url, options = {}) => {
             }
         }
     }
-    if (!options.silent) loader.hide()
+    if (!options.silent) hideLoader()
     return result
  }

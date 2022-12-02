@@ -1,5 +1,4 @@
 <script setup>
-import CatalogFilterGroup from "./CatalogFilterGroup";
 
 const props = defineProps({
   filter: Object,

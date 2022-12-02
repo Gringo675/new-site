@@ -1,8 +1,4 @@
 <script setup>
-import useUser from "~/composables/user/useUser"
-import getUser from "~/composables/user/getUser"
-import refreshUser from "~/composables/user/refreshUser"
-import {showNotice} from "~/composables/common/notice"
 
 const {value: user} = useUser()
 const route = useRoute()

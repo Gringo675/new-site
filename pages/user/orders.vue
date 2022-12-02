@@ -1,7 +1,5 @@
 <script setup>
 
-import myFetch from "~/composables/common/myFetch"
-
 let error
 
 try {

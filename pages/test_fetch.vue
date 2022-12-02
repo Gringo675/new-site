@@ -1,7 +1,5 @@
 <script setup>
 
-// import myFetch from "~/composables/common/myFetchOld"
-import dataFetch from "~/composables/common/dataFetch"
 
 const url = '/api/apiTest'
 const {data, pending} = await dataFetch(url, {

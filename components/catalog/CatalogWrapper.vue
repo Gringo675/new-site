@@ -1,19 +1,15 @@
 <script setup>
-import {showNotice} from "~/composables/common/notice"
-import usePageSetup from "~/composables/state/usePageSetup";
-import useBreadCrumbs from "~/composables/state/useBreadCrumbs";
 
 const pageSetup = usePageSetup()
 
 const props = defineProps({
-  fetchData: Object
+  data: Object
 })
-if (!props.fetchData) throw createError({ statusCode: 404, statusMessage: 'Page Not Found!!!!', fatal: true})
 
-const catData = props.fetchData.catData
-const products = props.fetchData.products
-const filter = reactive(JSON.parse(JSON.stringify(props.fetchData.filter))) // копия, чтобы сохранить стейт для повторных заходов
-const filterInitial = props.fetchData.filterInitial
+const catData = props.data.catData
+const products = props.data.products
+const filter = reactive(JSON.parse(JSON.stringify(props.data.filter))) // копия, чтобы сохранить стейт для повторных заходов
+const filterInitial = props.data.filterInitial
 
 const breadCrumbs = useBreadCrumbs()
 breadCrumbs.value = []

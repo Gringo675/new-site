@@ -1,22 +1,19 @@
-export default {
-    get isActive() {
-        if (!this._isActive) this._isActive = useState('propsEditorIsActive', () => false)
-        return this._isActive
-    },
+export default reactive({
+    isActive: false,
     groupName: '',
     groupNameRU: '',
     groupID: null,
-    show: function(groupName, groupNameRU, groupID) {
-        if (this.isActive.value) return
+    show(groupName, groupNameRU, groupID) {
+        if (this.isActive) return
         this.groupName = groupName
         this.groupNameRU = groupNameRU
         this.groupID = groupID
-        this.isActive.value = true
+        this.isActive = true
     },
-    hide: function() {
+    hide() {
         this.groupName = ''
         this.groupNameRU = ''
         this.groupID = null
-        this.isActive.value = false
+        this.isActive = false
     }
-}
+})

@@ -1,4 +1,3 @@
-import myFetch from "~/composables/common/myFetch"
 
 export default reactive({
     items: [],
@@ -31,13 +30,15 @@ export default reactive({
         })
 
         if (changedItems.length) {
-            await myFetch('/api/admin/setProperties', {
+            const success = await myFetch('/api/admin/setProperties', {
                 auth: true,
                 method: 'post',
                 payload: changedItems
             })
-            await this.getItems() // обновляем с новыми данными
+            if (success) await this.getItems() // обновляем с новыми данными
+            else return false
         }
+        return true
     }
 })
 

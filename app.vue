@@ -1,10 +1,7 @@
 <script setup>
 
-// import useUser from "./composables/user/useUser";
-
 onErrorCaptured((e) => {
-  console.log(`from onErrorCaptured`)
-  // console.log(`onErrorCaptured error: ${JSON.stringify(error, null, 2)}`)
+  // console.log(`onErrorCaptured error: ${JSON.stringify(e, null, 2)}`)
   showError(e)
   return false
 })

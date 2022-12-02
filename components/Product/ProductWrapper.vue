@@ -1,11 +1,10 @@
 <script setup>
-import useBreadCrumbs from "~/composables/state/useBreadCrumbs";
 
 const props = defineProps({
-  productData: Object,
+  data: Object,
 })
 
-const productData = props.productData
+const productData = props.data
 
 const breadCrumbs = useBreadCrumbs()
 breadCrumbs.value = [

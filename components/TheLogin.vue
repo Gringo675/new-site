@@ -1,8 +1,4 @@
 <script setup>
-import useUser from "~/composables/user/useUser"
-import getUser from "~/composables/user/getUser"
-import refreshUser from "~/composables/user/refreshUser"
-import {showNotice} from "~/composables/common/notice"
 
 const user = useUser()
 
@@ -14,15 +10,15 @@ const onLogin = async () => {
     user.sessionExp = response.sessionExp
 
   } catch (e) {
-    let message
+    let notice
     switch (e.statusCode) {
-      case 400: message = 'Заполните почту и пароль!'
+      case 400: notice = 'Заполните почту и пароль!'
         break
-      case 401: message = 'Ошибка! Проверьте введенные почту и пароль!'
+      case 401: notice = 'Ошибка! Проверьте введенные почту и пароль!'
         break
-      default: message = 'Ошибка авторизации!'
+      default: notice = 'Ошибка авторизации!'
     }
-    showNotice(message, 'error')
+    showNotice(notice, 'error')
     return
   }
   await getUser()
