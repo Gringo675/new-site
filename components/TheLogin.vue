@@ -1,9 +1,10 @@
 <script setup>
 
-const user = useUser()
+const user = useUser().value
 
 const onLogin = async () => {
   try {
+    // todo loader
     const response = await $fetch('/api/auth/login', {method: 'post', body: {mail: 'vik@mail.com', pass: '111222'}})
     // console.log(`login resnonse: ${JSON.stringify(response, null, 2)}`)
     user.sessionToken = response.sessionToken
@@ -34,13 +35,11 @@ const onRefresh = async () => {
 }
 
 const onClose = () => {
-  user.value.showLogin = false
+  user.showLogin = false
 }
 
 const onTest = () => {
-  if (user.value.redirect) navigateTo(user.value.redirect)
-  user.value.showLogin = false
-  delete user.value.redirect
+
 }
 </script>
 

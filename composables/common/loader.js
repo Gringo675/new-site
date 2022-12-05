@@ -10,7 +10,9 @@ export const useLoader = () => useState('loader', () => {
 export const showLoader = () => {
     if (process.server) return
     const loader = useLoader().value
+    clearTimeout(timer)
     timer = setTimeout(() => {
+        console.log(`activate loader`)
         loader.isActive = true
     }, debounce)
 }
@@ -19,9 +21,11 @@ export const hideLoader = () => {
     if (process.server) return
     const loader = useLoader().value
     clearTimeout(timer)
-    setTimeout(() => { // без задержки при быстрых последовательных включениях иногда не срабатывает реактивность
-        loader.isActive = false
-    }, 50)
+    loader.isActive = false
+    // setTimeout(() => { // без задержки при быстрых последовательных включениях иногда не срабатывает реактивность
+    //     console.log(`deactivate loader`)
+    //     loader.isActive = false
+    // }, 50)
 }
 
 // export default {

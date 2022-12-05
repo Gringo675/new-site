@@ -30,7 +30,6 @@ export default async (url, options = {}) => {
             const isRefresh = await refreshUser()
             if (!isRefresh) {
                 if (!options.silent) throw createError({statusCode: 401, statusMessage: `Authentication Required!`})
-                // showError({statusCode: 401, statusMessage: `Authentication Required!`})
                 return null
             }
         }
