@@ -17,7 +17,7 @@ const vIndeterminate = (el, binding) => { // custom directive v-indeterminate
   <div class="flex items-center p-2 border border-cyan-600 bg-cyan-100 rounded-xl">
     <div class="flex items-center mr-2 shrink-0">
       <img class="w-10"
-           src="@/img/funnel.svg"
+           src="/img/funnel.svg"
            title="Фильтр"
       >
       <input type="checkbox" :checked="masterButton.checked" @change="masterButton.onChange($event.target.checked)"

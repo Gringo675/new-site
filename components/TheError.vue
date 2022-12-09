@@ -70,6 +70,9 @@ const toMainPage = () => {
       <h2>Error 404</h2>
       <button class="m-2 p-2 bg-cyan-500" @click="toMainPage">На главную</button>
     </div>
+    <div v-else-if="error.statusCode === 423">
+      <h2>На сервере ведутся технические работы. Доступ временно закрыт.</h2>
+    </div>
     <div v-else>
       <h1>ERROR PAGE</h1>
       <h2>Code - {{ error.statusCode }}</h2>

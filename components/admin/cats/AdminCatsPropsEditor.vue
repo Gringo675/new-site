@@ -93,7 +93,7 @@ const handleOK = async () => {
                class="bg-orange-200 border border-orange-700 rounded-lg p-2 m-2 transition-opacity duration-300"
           >
             <img class="inline cursor-move select-none"
-                 src="@/img/arrows-move.svg"
+                 src="/img/arrows-move.svg"
                  data-draggable
             >
             <input type="text" v-model="item.name"
@@ -101,11 +101,11 @@ const handleOK = async () => {
             >
             <img @click="deleteItem(i)"
                  class="inline cursor-pointer select-none mx-1.5"
-                 src="@/img/dash-square.svg"
+                 src="/img/dash-square.svg"
             >
             <img @click="addItem(i)"
                  class="inline cursor-pointer select-none"
-                 src="@/img/plus-square.svg"
+                 src="/img/plus-square.svg"
             >
           </div>
         </TransitionGroup>

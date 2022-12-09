@@ -1,10 +1,12 @@
 import mysql2 from 'mysql2/promise'
 
+const config = useRuntimeConfig()
+
 const pool = mysql2.createPool({
-    host: process.env.DB_HOST_LOCAL,
-    user: process.env.DB_USER,
-    database: process.env.DB_DATABASE,
-    password: process.env.DB_PASSWORD,
+    host: config.dbHost,
+    user: config.dbUser,
+    database: config.dbName,
+    password: config.dbPassword,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0

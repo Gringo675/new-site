@@ -76,7 +76,7 @@ const isDraggingGroup = computed(() => {
               @click="showChildren = !showChildren"
               class="shrink-0 flex items-center border border-gray-200 rounded-lg bg-blue-200 m-1 p-1"
       >
-        <img src="@/img/chevron-down.svg"
+        <img src="/img/chevron-down.svg"
              class="transition-transform duration-500"
              :class="{'rotate-over': showChildren}"
         >
@@ -87,7 +87,7 @@ const isDraggingGroup = computed(() => {
       <button class="border border-gray-200 rounded-full bg-blue-200 m-1 p-2 shrink-0"
               @click="showParams = !showParams"
       >
-        <img src="@/img/chevron-down.svg"
+        <img src="/img/chevron-down.svg"
              class="transition-transform duration-500"
              :class="{'rotate-over': showParams}"
         >
@@ -108,7 +108,7 @@ const isDraggingGroup = computed(() => {
                      @change="catsG.handleChanges(cat.id, field.name, $event.target.value)">
               <img v-if="field.hasEditButton"
                    class="inline cursor-pointer select-none shrink-0 w-5 ml-1"
-                   src="@/img/pencil-square.svg"
+                   src="/img/pencil-square.svg"
                    @click="textEditor.show(parentIndex, childIndex, field.name, field.nameRU)"
               >
             </div>
@@ -127,7 +127,7 @@ const isDraggingGroup = computed(() => {
                 </option>
               </select>
               <img class="inline cursor-pointer select-none shrink-0 w-5 ml-1"
-                   src="@/img/pencil-square.svg"
+                   src="/img/pencil-square.svg"
                    @click="propsEditor.show(field.name, field.nameRU, field.groupID)"
               >
             </div>
@@ -149,25 +149,25 @@ const isDraggingGroup = computed(() => {
              :class="(showMenu ? 'max-w-[170px]' : 'max-w-0 opacity-0')"
         >
           <button class="shrink-0 mx-2" @click="addCat">
-            <img src="@/img/plus-circle.svg"
+            <img src="/img/plus-circle.svg"
                  class="w-7"
                  title="Добавить категорию"
             >
           </button>
           <button class="shrink-0 mx-1" v-if="childIndex === null" @click="addSubCat">
-            <img src="@/img/node-plus.svg"
+            <img src="/img/node-plus.svg"
                  class="w-7 rotate-90"
                  title="Добавить подкатегорию"
             >
           </button>
           <button class="shrink-0 mx-2" @click="copyCat">
-            <img src="@/img/hdd-stack.svg"
+            <img src="/img/hdd-stack.svg"
                  class="w-7"
                  title="Скопировать категорию"
             >
           </button>
           <button class="shrink-0 mx-2" @click="validateDelete">
-            <img src="@/img/trash.svg"
+            <img src="/img/trash.svg"
                  class="w-7"
                  title="Удалить категорию"
             >

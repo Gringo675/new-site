@@ -23,7 +23,7 @@ await catsG.getItems()
               title="Сохранить"
       >
         <img class="w-12"
-             src="@/img/send.svg"
+             src="/img/send.svg"
         >
       </button>
     </div>

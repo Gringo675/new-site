@@ -24,7 +24,7 @@ const unactivateVal = (val) => {
     >
       <span class="text-lg">{{ fGroup.name }}</span>
       <div class="my-1 p-1 bg-purple-300 rounded">
-        <img src="@/img/chevron-down.svg"
+        <img src="/img/chevron-down.svg"
              class="transition-transform duration-500"
              :class="{'rotate-over': showValues}"
         >
@@ -60,7 +60,7 @@ const unactivateVal = (val) => {
             {{ item.name }}
           </span>
             <button class="bg-violet-200 rounded" @click="unactivateVal(item.val)">
-              <img src="@/img/x.svg">
+              <img src="/img/x.svg">
             </button>
           </div>
         </div>
