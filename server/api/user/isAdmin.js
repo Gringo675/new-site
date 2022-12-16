@@ -5,7 +5,12 @@ import decodeAndCheckToken from "~/server/src/decodeAndCheckToken";
 
 export default defineEventHandler(async (event) => {
 
-    decodeAndCheckToken(event, {adminOnly: true})
+    // const {tokenType} = getQuery(event)
+
+    decodeAndCheckToken(event, {
+        // type: tokenType,
+        adminOnly: true
+    })
 
     return true
 })

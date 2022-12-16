@@ -17,7 +17,7 @@ export default (event, options = {}) => {
     let token
     if (options.type === 'session') token = getRequestHeader(event, 'sessionToken')
     else if (options.type === 'refresh') token = getCookie(event, 'refreshToken')
-    else throw createError({statusCode: 500, statusMessage: `Uncorrect token type!`})
+    else throw createError({statusCode: 500, statusMessage: `Uncorrected token type!`})
 
     if (!token || token === 'undefined') throw createError({statusCode: 401, statusMessage: `Authentication Required!`})
 

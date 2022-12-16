@@ -1,12 +1,11 @@
 <script setup>
-
-const aaa = useSome()
+// showError({ statusCode: 498, statusMessage: `Some error`})
+// throw createError({ statusCode: 498, statusMessage: `Some error`})
+// const aaa = await $fetch('/api/apiTest')
 
 </script>
 
 <template>
-<div>
- 111
-</div>
+  test1
 </template>
 

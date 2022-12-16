@@ -11,13 +11,14 @@ export default (user, event) => {
     // создаем refresh token и записываем его в cookie
     const refreshExp = new Date(Date.now() + 7776e6) // + 90 days
     const refreshHead = Buffer.from(JSON.stringify({alg: 'HS256', typ: 'jwt'})).toString('base64')
-    const refreshPayload = Buffer.from(JSON.stringify({userId: user.id, expires: refreshExp})).toString('base64')
+    const refreshPayload = Buffer.from(JSON.stringify({userId: user.id, isAdmin: !!user.admin, expires: refreshExp})).toString('base64')
     const refreshSignature = crypto
         .createHmac('SHA256', process.env.JWT_TOKEN)
         .update(`${refreshHead}.${refreshPayload}`)
         .digest('base64')
+    const path = !!user.admin ? '/' : '/api/auth' // для админов сохраняем в корневой директории
     setCookie(event, 'refreshToken', `${refreshHead}.${refreshPayload}.${refreshSignature}`, {
-        path: '/api/auth', expires: refreshExp, httpOnly: true, secure: true, sameSite: 'strict'
+        path, expires: refreshExp, httpOnly: true, secure: true, sameSite: 'strict'
     })
 
     // создаем session token

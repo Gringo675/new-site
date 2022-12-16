@@ -1,25 +1,24 @@
 <script setup>
-/*
-options:
-url - string,
-worker - component, defined in parent with: import { TheTest as worker } from '#components',
-lazy
- */
 
-const {options} = defineProps({
-  options: Object
+const props = defineProps({
+  url: {
+    type: String,
+    required: true
+  },
+  lazy: {
+    type: Boolean,
+    default: true
+  }
 })
-// defaults
-options.lazy = options.lazy ?? true
 
-const {data, pending, error} = await useAsyncData(options.url, async () => {
+const {data, pending, error} = await useAsyncData(props.url, async () => {
   try {
-    return await $fetch(options.url)
+    return await $fetch(props.url)
   } catch (e) {
     throw createError(e)
   }
 }, {
-  lazy: options.lazy
+  lazy: props.lazy
 })
 
 const calculateReady = () => {
@@ -49,7 +48,9 @@ if (!ready.value) { // если запрос не разрешился синх�
 <template>
   <div class="w-full p-2">
     <Transition name="page" mode="out-in">
-      <component v-if="ready" :is="options.worker" :data="data"/>
+      <div v-if="ready" >
+        <slot :data="data">some fallback</slot>
+      </div>
       <div v-else class="py-3 flex flex-col items-center justify-center cursor-progress">
         <div class="border-[16px] border-t-[#2578FBFF] border-r-[#42ecc8] border-b-[#f7ef72] border-l-[#f34a5f]
         rounded-full w-32 h-32 animate-[spin_2s_linear_infinite]">
@@ -58,7 +59,3 @@ if (!ready.value) { // если запрос не разрешился синх�
     </Transition>
   </div>
 </template>
-
-<style>
-
-</style>

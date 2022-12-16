@@ -8,13 +8,10 @@ const props = defineProps({
 })
 
 const isGlobal = props.isGlobal
-// let error = isGlobal ? props.error : props.error.value
-const error = isGlobal ? ref(props.error) : props.error
-error.value.statusCode = Number(error.value.statusCode)
-// console.log(`error: ${JSON.stringify(error, null, 2)}`)
-// console.log(`isGlobal: ${JSON.stringify(isGlobal, null, 2)}`)
 
-console.error(error.value)
+const error = isGlobal ? ref(props.error) : props.error
+
+error.value.code = Number(error.value.statusCode) // при некоторых ошибках не дает перезаписать statusCode, поэтому code
 
 let unregisterAfterEachHook, unwatch
 
@@ -56,26 +53,26 @@ const toMainPage = () => {
 
 <template>
   <div>
-    <div v-if="error.statusCode === 401">
+    <div v-if="error.code === 401">
       <h2>Для доступа к ресурсу необходима авторизация!</h2>
       <button class="m-2 p-2 bg-cyan-500" @click="showLogin">Войти</button>
       <button class="m-2 p-2 bg-cyan-500" @click="toMainPage">На главную</button>
     </div>
-    <div v-else-if="error.statusCode === 403">
+    <div v-else-if="error.code === 403">
       <h2>Отказано в доступе!</h2>
       <button class="m-2 p-2 bg-cyan-500" @click="showLogin">Перелогиниться</button>
       <button class="m-2 p-2 bg-cyan-500" @click="toMainPage">На главную</button>
     </div>
-    <div v-else-if="error.statusCode === 404">
+    <div v-else-if="error.code === 404">
       <h2>Error 404</h2>
       <button class="m-2 p-2 bg-cyan-500" @click="toMainPage">На главную</button>
     </div>
-    <div v-else-if="error.statusCode === 423">
+    <div v-else-if="error.code === 423">
       <h2>На сервере ведутся технические работы. Доступ временно закрыт.</h2>
     </div>
     <div v-else>
       <h1>ERROR PAGE</h1>
-      <h2>Code - {{ error.statusCode }}</h2>
+      <h2>Code - {{ error.code }}</h2>
       <h2>Message - {{ error.statusMessage }}</h2>
       <button class="m-2 p-2 bg-cyan-500" @click="toMainPage">На главную</button>
     </div>

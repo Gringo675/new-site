@@ -1,11 +1,13 @@
 <script setup>
 
-
 </script>
 
 <template>
-  <div class="p-2">
-
+  <div class="empty">
+    <slot></slot>
   </div>
 </template>
 
+<style>
+
+</style>

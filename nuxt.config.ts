@@ -1,8 +1,8 @@
-// https://v3.nuxtjs.org/docs/directory-structure/nuxt.config
 
 export default defineNuxtConfig({
     app: {
-        baseURL: process.env.NODE_ENV === 'production' ? '/test/' : '/',
+        // baseURL: process.env.NODE_ENV === 'production' ? '/test/' : '/',
+        baseURL: '/test/',
         head: {
             meta: [
                 {name: 'robots', content: 'noindex, nofollow'}
