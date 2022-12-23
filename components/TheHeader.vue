@@ -26,6 +26,9 @@ const createMess = () => {
     <div class="flex">
 <!--      <TheCart />-->
 <!--      <CatsMenu />-->
+      <button class="button">
+        <NuxtLink to="/admin">Admin</NuxtLink>
+      </button>
       <button @click="createDialog" class="button">Create dialog</button>
       <button @click="createMess" class="button">Create mess</button>
       <button @click="showLoader()" class="button">Show loader</button>

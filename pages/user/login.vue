@@ -1,4 +1,5 @@
 <script setup>
+// todo заменить все на компонент TheLogin + watch user.sessionId для перехода
 
 const {value: user} = useUser()
 const route = useRoute()

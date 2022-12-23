@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
     const user = (await request(query))[0]
     if (!user) throw createError({statusCode: 401, statusMessage: `User not found!`})
 
-    if (user.pass !== pass) throw createError({statusCode: 401, statusMessage: `Uncorrect password!`})
+    if (user.pass !== pass) throw createError({statusCode: 401, statusMessage: `Uncorrected password!`})
 
     const { sessionToken, sessionExp } = createTokens(user, event)
 

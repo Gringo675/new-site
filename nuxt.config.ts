@@ -1,8 +1,8 @@
 
 export default defineNuxtConfig({
     app: {
-        // baseURL: process.env.NODE_ENV === 'production' ? '/test/' : '/',
-        baseURL: '/test/',
+        baseURL: process.env.NODE_ENV === 'production' ? '/test/' : '/',
+        // baseURL: '/test/',
         head: {
             meta: [
                 {name: 'robots', content: 'noindex, nofollow'}
@@ -20,7 +20,8 @@ export default defineNuxtConfig({
         ]
     },
     runtimeConfig: {
-        dbHost: process.env.NODE_ENV === 'production' ? process.env.DB_HOST : process.env.DB_HOST_LOCAL,
+        // dbHost: process.env.NODE_ENV === 'production' ? process.env.DB_HOST : process.env.DB_HOST_LOCAL,
+        dbHost: process.env.DB_HOST_LOCAL,
         dbName: process.env.DB_NAME,
         dbUser: process.env.DB_USER,
         dbPassword: process.env.DB_PASSWORD

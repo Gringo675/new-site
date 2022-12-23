@@ -11,9 +11,11 @@ const props = defineProps({
   }
 })
 
+const headers = useRequestHeaders(['cookie']) // для запросов типа сервер - сервер, чтобы куки с клиента дошли до API
+
 const {data, pending, error} = await useAsyncData(props.url, async () => {
   try {
-    return await $fetch(props.url)
+    return await $fetch(props.url, {headers})
   } catch (e) {
     throw createError(e)
   }
@@ -33,7 +35,7 @@ const handleError = () => {
     statusCode: error.value.statusCode,
     statusMessage: error.value.statusMessage
   }
-  clearNuxtData(options.url)
+  clearNuxtData(props.url)
   throw createError(e)
 }
 
