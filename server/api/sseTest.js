@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { sendStream } from 'h3'
 
 const listeners = []
 
@@ -12,7 +13,7 @@ const sendRandom = () => {
         listener.event.node.res.write(`event: random\ndata: ${JSON.stringify(data)}\n\n`)
     })
 }
-setInterval(sendRandom, 5000)
+// setInterval(sendRandom, 5000)
 export default defineEventHandler(async (event) => {
 
     event.node.res.writeHead(200, {

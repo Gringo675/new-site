@@ -4,7 +4,7 @@ export default defineEventHandler(async (event) => {
     const cTime = new Date().toLocaleTimeString()
     console.log(`from apiTest: ${cTime}`)
     await timer(2)
-
+    console.log(``)
     // const body = await readBody(event)
     // console.log(`body: ${JSON.stringify(body, null, 2)}`)
     // const token = getRequestHeader(event, 'sessionToken')

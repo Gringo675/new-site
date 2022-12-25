@@ -1,11 +1,16 @@
 <script setup>
-let eventSource = new EventSource('/api/sseTest');
+let eventSource
 
-eventSource.onmessage = function (event) {
-  console.log("Новое сообщение", event.data);
+const start = () => {
+  eventSource = new EventSource('/api/sseTest2');
+
+  eventSource.onmessage = function (event) {
+    console.log("Новое сообщение", event.data);
+  }
 }
 
-const test = () => {
+const close = () => {
+  console.log(`from close`)
   eventSource.close()
 }
 </script>
@@ -13,7 +18,8 @@ const test = () => {
 <template>
   <div class="console">
     <h1>Console</h1>
-    <button class="button" @click="test">Test</button>
+    <button class="button" @click="start">start</button>
+    <button class="button" @click="close">close</button>
   </div>
 </template>
 
