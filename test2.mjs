@@ -1,18 +1,32 @@
-let i=0
+import { EventEmitter } from 'node:events'
+const emitter = new EventEmitter()
 
-const writeToStream = () => {
-    console.log(`i: ${JSON.stringify(i, null, 2)}`)
-    i++
+const buffer = {
+    data: [],
+    isReady: true,
+    timer: null,
+    addData (text) {
+        this.isReady = false
+        clearTimeout(this.timer)
+        this.data.push({
+            time: new Date().toLocaleTimeString(),
+            text
+        })
+        this.timer = setTimeout(() => {
+            this.isReady = true
+            emitter.emit('dataReady')
+        }, 1000)
+    },
+    async getData () {
+        if (!this.data.length || !this.isReady) {
+            await new Promise((resolve) => {
+                emitter.once('dataReady', () => resolve())
+            })
+        }
+        const response = JSON.stringify(this.data)
+        this.data.length = 0
+        return response
+    }
 }
-setInterval(writeToStream, 3000)
 
-const aaa = process.stdout
-console.log(`typeof process.stdout: ${JSON.stringify(typeof process.stdout, null, 2)}`)
-// process.stdin.on("data", data => {
-//     data = data.toString().toUpperCase()
-//     process.stdout.write(data + "\n")
-// })
-
-// process.stdout.on("data", data => {
-//     console.log(`from stdout`)
-// })
+buffer.getData().then((data) => console.log(`data: ${JSON.stringify(data, null, 2)}`))

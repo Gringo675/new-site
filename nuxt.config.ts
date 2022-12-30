@@ -21,7 +21,7 @@ export default defineNuxtConfig({
     },
     runtimeConfig: {
         // dbHost: process.env.NODE_ENV === 'production' ? process.env.DB_HOST : process.env.DB_HOST_LOCAL,
-        dbHost: process.env.DB_HOST_LOCAL,
+        dbHost: process.env.DB_HOST_LOCAL, // работает везде, и на localhost, и удаленно
         dbName: process.env.DB_NAME,
         dbUser: process.env.DB_USER,
         dbPassword: process.env.DB_PASSWORD

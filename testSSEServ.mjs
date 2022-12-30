@@ -4,8 +4,10 @@ const port = 8001
 const listeners = []
 
 const server = http.createServer((req, res) => {
+    // res.setHeader('Access-Control-Allow-Origin', '*')
     res.writeHead(200, {
-        Connection: 'keep-alive',
+        'Access-Control-Allow-Origin': '*',
+        'Connection': 'keep-alive',
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache'
     })

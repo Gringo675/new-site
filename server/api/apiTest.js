@@ -1,10 +1,10 @@
 import decodeAndCheckToken from "~/server/src/decodeAndCheckToken"
 
 export default defineEventHandler(async (event) => {
-    const cTime = new Date().toLocaleTimeString()
-    console.log(`from apiTest: ${cTime}`)
-    await timer(2)
-    console.log(``)
+    // const cTime = new Date().toLocaleTimeString()
+    // console.log(`from apiTest: ${cTime}`)
+    // await timer(2)
+    // console.log(``)
     // const body = await readBody(event)
     // console.log(`body: ${JSON.stringify(body, null, 2)}`)
     // const token = getRequestHeader(event, 'sessionToken')
@@ -20,13 +20,20 @@ export default defineEventHandler(async (event) => {
     // showError({ statusCode: 404, statusMessage: 'Page Not Found!!!!'})
 
     // return `Current Time -  ${cTime}`
-    return {
-        'Current time': cTime,
-        aaa: [111, 222, 333]
-    }
+    // return {
+    //     'Current time': cTime,
+    //     aaa: [111, 222, 333]
+    // }
 
 })
 
+const listener = {
+    active: null,
+    setNew(event) {
+
+    }
+
+}
 async function timer(sec) {
     let promise = new Promise((resolve, reject) => {
         setTimeout(() => resolve(), sec * 1000)

@@ -1,11 +1,32 @@
 <script setup>
-// showError({ statusCode: 498, statusMessage: `Some error`})
-// throw createError({ statusCode: 498, statusMessage: `Some error`})
-// const aaa = await $fetch('/api/apiTest')
+
+const write = () => {
+  const cTime = new Date().toLocaleTimeString()
+  cv(`from test1 time: ${cTime}`)
+}
+
+const someArray = [1, 2, 'some text', {val1: 444, val2: 'lalalala'}]
+
+const someObject = {
+  val1: 333,
+  val2: 'www',
+  val3: [2,3,5]
+}
+
+const someInt = 555
+
+if (process.server) {
+  // for (let i=0; i<10; i++) {
+  //   write()
+  // }
+  cv({someArray}, {someObject}, {someInt})
+  cv('just text')
+}
+
 
 </script>
 
 <template>
-  test1
+  <button class="button" @click="write">write to cc</button>
 </template>
 

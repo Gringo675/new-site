@@ -13,12 +13,12 @@ const writeToTunnel = () => {
     tunnel.write(`event: random\ndata: ${JSON.stringify(i)}\n\n`)
 }
 
-setInterval(writeToTunnel, 3000)
+// setInterval(writeToTunnel, 3000)
 
 export default defineEventHandler((event) => {
     event.node.res.writeHead(200, {
         'Cache-Control': 'no-cache',
-        Connection: 'keep-alive',
+        'Connection': 'keep-alive',
         'Content-Type': 'text/event-stream',
     });
 
