@@ -24,6 +24,7 @@ export default defineNuxtConfig({
         dbHost: process.env.DB_HOST_LOCAL, // работает везде, и на localhost, и удаленно
         dbName: process.env.DB_NAME,
         dbUser: process.env.DB_USER,
-        dbPassword: process.env.DB_PASSWORD
+        dbPassword: process.env.DB_PASSWORD,
+        JWT_TOKEN: process.env.JWT_TOKEN
     },
 })

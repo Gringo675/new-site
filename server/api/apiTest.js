@@ -1,7 +1,7 @@
 import decodeAndCheckToken from "~/server/src/decodeAndCheckToken"
 
 export default defineEventHandler(async (event) => {
-    // const cTime = new Date().toLocaleTimeString()
+    const cTime = new Date().toLocaleTimeString()
     // console.log(`from apiTest: ${cTime}`)
     // await timer(2)
     // console.log(``)
@@ -19,7 +19,9 @@ export default defineEventHandler(async (event) => {
     // throw createError({ statusCode: 499, statusMessage: `Some error in ${cTime}`})
     // showError({ statusCode: 404, statusMessage: 'Page Not Found!!!!'})
 
-    // return `Current Time -  ${cTime}`
+    setCookie(event, 'someCook', `someValue`)
+
+    return `Current Time -  ${cTime}`
     // return {
     //     'Current time': cTime,
     //     aaa: [111, 222, 333]
@@ -27,13 +29,6 @@ export default defineEventHandler(async (event) => {
 
 })
 
-const listener = {
-    active: null,
-    setNew(event) {
-
-    }
-
-}
 async function timer(sec) {
     let promise = new Promise((resolve, reject) => {
         setTimeout(() => resolve(), sec * 1000)

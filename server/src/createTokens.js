@@ -5,6 +5,7 @@
 
 import crypto from 'crypto'
 import request from "~/server/src/mysql"
+const config = useRuntimeConfig()
 
 export default (user, event) => {
 
@@ -17,7 +18,7 @@ export default (user, event) => {
         expires: refreshExp
     })).toString('base64')
     const refreshSignature = crypto
-        .createHmac('SHA256', process.env.JWT_TOKEN)
+        .createHmac('SHA256', config.JWT_TOKEN)
         .update(`${refreshHead}.${refreshPayload}`)
         .digest('base64')
     // const path = !!user.admin ? '/' : '/api/auth' // для админов сохраняем в корневой директории
@@ -26,7 +27,6 @@ export default (user, event) => {
     setCookie(event, 'refreshToken', `${refreshHead}.${refreshPayload}.${refreshSignature}`, {
         path, expires: refreshExp, httpOnly: true, secure: true, sameSite: 'strict'
     })
-
     // создаем session token
     const sessionExp = new Date(Date.now() + 18e5) // + 30 min
     // const sessionExp = new Date(Date.now() + 3e4) // + 30 sec
@@ -37,7 +37,7 @@ export default (user, event) => {
         expires: sessionExp
     })).toString('base64')
     const sessionSignature = crypto
-        .createHmac('SHA256', process.env.JWT_TOKEN)
+        .createHmac('SHA256', config.JWT_TOKEN)
         .update(`${sessionHead}.${sessionPayload}`)
         .digest('base64')
 

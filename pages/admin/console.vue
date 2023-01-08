@@ -1,36 +1,34 @@
 <script setup>
 
-let eventSource
-const isConnected = ref(false)
+const isListen = ref(false)
 const messages = reactive([])
 
-const startConnection = () => {
-  // eventSource = new EventSource('http://localhost:8001/');
-  let baseURL = useRuntimeConfig().app.baseURL
-  if (baseURL[baseURL.length-1] === '/') baseURL = baseURL.substring(0, baseURL.length-1) // убираем слеш в конце
-  eventSource = new EventSource(baseURL + '/api/console');
-
-  eventSource.addEventListener('newConnection', event => {
-    isConnected.value = true
-    console.log(event.data); // Установлено новое соединение
-  });
-
-  eventSource.addEventListener('cv', event => {
-    // console.log("Новое сообщение", JSON.parse(event.data));
-    messages.push({
-      time: new Date().toLocaleTimeString(),
-      text: JSON.parse(event.data)
-    })
-  });
+const startListen = async () => {
+  isListen.value = true
+  console.log(`listen...`)
+  while (isListen.value) {
+    try {
+      const data = await $fetch('/api/console', {method: 'post'})
+      if (isListen.value) {
+        console.log(`data: ${JSON.stringify(data, null, 2)}`)
+        if (data.length) {
+          const newMessages = JSON.parse(data)
+          if (newMessages.length) messages.push(...newMessages)
+        }
+      }
+    } catch (e) {
+      console.error(e.message)
+      isListen.value = confirm(`Ошибка получения данных!\nError ${e.statusCode}: ${e.statusMessage}\nПовторить?`)
+    }
+  }
 }
-const closeConnection = () => {
-  eventSource.close()
-  isConnected.value = false
-  console.log(`Соединение закрыто.`)
+const stopListen = () => {
+  isListen.value = false
+  console.log(`stop listen`)
 }
-const toggleConnection = () => {
-  if (isConnected.value) closeConnection()
-  else startConnection()
+const toggleListen = () => {
+  if (isListen.value) stopListen()
+  else startListen()
 }
 
 const clearMessages = () => {
@@ -38,9 +36,28 @@ const clearMessages = () => {
 }
 
 // onMounted(() => {
-//   startConnection()
+//   startListen()
 // })
 
+const sendTestData = async () => {
+  // console.log(`send...`)
+  const data = await $fetch('/api/console', {
+    method: 'POST',
+    body: 'Test'
+  })
+  // console.log(`data: ${JSON.stringify(data, null, 2)}`)
+}
+
+const test = async () => {
+  console.log(`test...`)
+  try {
+    const data = await $fetch('/api/apiTest')
+    console.log(`data: ${JSON.stringify(data, null, 2)}`)
+  } catch (e) {
+    console.log(`e: ${JSON.stringify(e, null, 2)}`)
+  }
+
+}
 
 </script>
 
@@ -48,10 +65,9 @@ const clearMessages = () => {
   <div class="console">
     <div class="flex items-center">
       <h1>Console</h1>
-      <div class="m-5 w-5 h-5 rounded-full bg-red-400"
-           :class="{'bg-green-400': isConnected, 'bg-red-400': !isConnected}"></div>
-      <button class="button" @click="toggleConnection">{{ isConnected ? 'Close' : 'Open' }}</button>
+      <button class="button" @click="toggleListen">{{ isListen ? 'Stop' : 'Start' }}</button>
       <button class="button" @click="clearMessages">Clear</button>
+      <button class="button" @click="sendTestData">Test</button>
     </div>
     <div class="m-2 p-2 border border-green-300 rounded-2xl">
       <div class="my-1 p-1 hover:bg-gray-100 rounded-xl" v-for="mess in messages">

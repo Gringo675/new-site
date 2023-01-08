@@ -6,7 +6,8 @@ options {
 }
  */
 
-import crypto from "crypto";
+import crypto from "crypto"
+const config = useRuntimeConfig()
 
 export default (event, options = {}) => {
 
@@ -24,7 +25,7 @@ export default (event, options = {}) => {
     const [header, payload, signature] = token.split('.')
 
     const correctSignature = crypto
-        .createHmac('SHA256', process.env.JWT_TOKEN)
+        .createHmac('SHA256', config.JWT_TOKEN)
         .update(`${header}.${payload}`)
         .digest('base64')
     if (correctSignature !== signature) throw createError({statusCode: 503, statusMessage: `Uncorrect token signature!`})

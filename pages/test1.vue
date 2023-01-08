@@ -21,6 +21,7 @@ if (process.server) {
   // }
   cv({someArray}, {someObject}, {someInt})
   cv('just text')
+  cv('some text', someObject)
 }
 
 

@@ -1,3 +1,9 @@
+/**
+ * example:
+ * cv({var1}, {var2}, {var3})
+ * cv('just text')
+ * cv('some text, var1}
+ */
 export default (...args) => {
 
     // на /api/ нет process.server, поэтому при запросах оттуда дописывается специальный ключ последним аргументом
@@ -19,6 +25,9 @@ export default (...args) => {
     console.log(text)
 
     if (process.server || fromAPI) {
-        process.cvStream.write(`event: cv\ndata: ${JSON.stringify(text)}\n\n`)
+        $fetch('/api/console', {
+            method: 'POST',
+            body: text
+        })
     }
 }
