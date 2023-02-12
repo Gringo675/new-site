@@ -24,7 +24,7 @@ if (process.server) {
   cv('some text', someObject)
 }
 
-
+const aaa = 111
 </script>
 
 <template>
