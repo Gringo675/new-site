@@ -14,6 +14,8 @@ const props = defineProps({
 const headers = useRequestHeaders(['cookie']) // для запросов типа сервер - сервер, чтобы куки с клиента дошли до API
 
 const {data, pending, error} = await useAsyncData(props.url, async () => {
+  const oldValue = useNuxtData(props.url).data.value
+  if (oldValue) return oldValue // иначе функция вернет старое значение и pending false, а бекграундом запустит обновление данных
   try {
     return await $fetch(props.url, {headers})
   } catch (e) {
@@ -22,6 +24,10 @@ const {data, pending, error} = await useAsyncData(props.url, async () => {
 }, {
   lazy: props.lazy
 })
+
+console.log(`pending: ${JSON.stringify(pending.value, null, 2)}`)
+console.log(`data: ${JSON.stringify(data.value !== null, null, 2)}`)
+console.log(`error: ${JSON.stringify(error.value, null, 2)}`)
 
 const calculateReady = () => {
   // нужно учесть, что при повторном заходе начальное значение pending будет false,

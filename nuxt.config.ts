@@ -1,8 +1,8 @@
 
 export default defineNuxtConfig({
     app: {
-        baseURL: process.env.NODE_ENV === 'production' ? '/test/' : '/',
-        // baseURL: '/test/',
+        // baseURL: process.env.NODE_ENV === 'production' ? '/test/' : '/',
+        baseURL: '/test/',
         head: {
             meta: [
                 {name: 'robots', content: 'noindex, nofollow'}
