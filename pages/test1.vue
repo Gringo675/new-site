@@ -1,11 +1,14 @@
 <script setup>
-const time = await useTime()
-console.log(`test1 time.pending.value: ${JSON.stringify(time.pending.value, null, 2)}`)
-console.log(`test1 time.data.value: ${JSON.stringify(time.data.value, null, 2)}`)
+throw createError({statusCode: 481, statusMessage: `Random error`})
+console.log(`after error`)
+const {pending, data, error} = useAsyncData('test', () => $fetch('/api/apiTest'))
+console.log(`pending.value: ${JSON.stringify(pending.value, null, 2)}`)
 </script>
 
 <template>
   <h1>Test1</h1>
-  <div>time: {{time.data}}</div>
+  <div>pending: {{pending}}</div>
+  <div>data: {{data}}</div>
+  <div>error: {{error}}</div>
 </template>
 

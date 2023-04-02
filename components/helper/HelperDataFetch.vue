@@ -14,8 +14,8 @@ const props = defineProps({
 const headers = useRequestHeaders(['cookie']) // для запросов типа сервер - сервер, чтобы куки с клиента дошли до API
 
 const {data, pending, error} = await useAsyncData(props.url, async () => {
-  const oldValue = useNuxtData(props.url).data.value
-  if (oldValue) return oldValue // иначе функция вернет старое значение и pending false, а бекграундом запустит обновление данных
+  // const oldValue = useNuxtData(props.url).data.value
+  // if (oldValue) return oldValue // иначе функция вернет старое значение и pending false, а бекграундом запустит обновление данных
   try {
     return await $fetch(props.url, {headers})
   } catch (e) {

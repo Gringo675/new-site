@@ -8,6 +8,7 @@ onErrorCaptured((e) => { // для ловли ошибок вне NuxtErrorBound
 
 const someErrorLogger = (e) => {
   console.log(`NuxtErrorBoundary caught error`)
+  console.log(`e: ${JSON.stringify(e, null, 2)}`)
 }
 
 </script>

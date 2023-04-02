@@ -1,5 +1,5 @@
 <script setup>
-
+console.log(`from catalogWrapper`)
 const pageSetup = usePageSetup()
 
 const props = defineProps({

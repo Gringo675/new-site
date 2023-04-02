@@ -1,7 +1,17 @@
 <script setup>
 
+import {useNuxtApp} from "#app/nuxt.js";
+
 const test = () => {
-  throw createError({ statusCode: 401, statusMessage: 'error 401'})
+  const key = "/api/getCategory?alias=shtangentsirkuli"
+  // let data = useNuxtData(url).data
+  // console.log(`data: ${JSON.stringify(data, null, 2)}`)
+  // let error = useNuxtData(url).error
+  // console.log(`error: ${JSON.stringify(error, null, 2)}`)
+  const nuxt = useNuxtApp();
+  const errors = nuxt.payload._errors
+  console.log(`errors: ${JSON.stringify(errors, null, 2)}`)
+
 }
 
 const createDialog = () => {

@@ -2,9 +2,9 @@ import decodeAndCheckToken from "~/server/src/decodeAndCheckToken"
 
 export default defineEventHandler(async (event) => {
     const cTime = new Date().toLocaleTimeString()
-    // console.log(`from apiTest: ${cTime}`)
-    // await timer(2)
-    // console.log(``)
+    console.log(`from apiTest: ${cTime}`)
+    await timer(2)
+    if (Math.random() < .3) throw createError({statusCode: 481, statusMessage: `Random error on ${cTime}`})
     // const body = await readBody(event)
     // console.log(`body: ${JSON.stringify(body, null, 2)}`)
     // const token = getRequestHeader(event, 'sessionToken')
@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
     // throw createError({ statusCode: 499, statusMessage: `Some error in ${cTime}`})
     // showError({ statusCode: 404, statusMessage: 'Page Not Found!!!!'})
 
-    setCookie(event, 'someCook', `someValue`)
+    // setCookie(event, 'someCook', `someValue`)
 
     return `Current Time -  ${cTime}`
     // return {

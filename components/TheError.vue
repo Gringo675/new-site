@@ -6,7 +6,7 @@ const props = defineProps({
   error: Object,
   isGlobal: Boolean
 })
-
+console.log(`props.error: ${JSON.stringify(props.error, null, 2)}`)
 const isGlobal = props.isGlobal
 
 const error = isGlobal ? ref(props.error) : props.error
