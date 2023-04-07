@@ -11,7 +11,10 @@ user.value.showLogin = true
 
 <template>
   <div class="login">
-    admin login
+    <h1>admin login</h1>
+    <button class="button">
+      <NuxtLink to="/">На главную</NuxtLink>
+    </button>
   </div>
 </template>
 

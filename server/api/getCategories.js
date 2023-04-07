@@ -1,5 +1,3 @@
-import request from "~/server/src/mysql"
-
 export default defineEventHandler(async () => {
     // console.log(`from getCategories`);
     // const query = `SELECT * FROM i_categories WHERE id = 12 OR id = 1201`;

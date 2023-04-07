@@ -6,12 +6,16 @@ const props = defineProps({
   error: Object,
   isGlobal: Boolean
 })
-console.log(`props.error: ${JSON.stringify(props.error, null, 2)}`)
+// console.log(`props.error: ${JSON.stringify(props.error, null, 2)}`)
 const isGlobal = props.isGlobal
 
 const error = isGlobal ? ref(props.error) : props.error
 
 error.value.code = Number(error.value.statusCode) // при некоторых ошибках не дает перезаписать statusCode, поэтому code
+
+if (error.value.code === 423 && !isGlobal) { // полноэкранная ошибка для закрытого сайта
+  showError(error.value)
+}
 
 let unregisterAfterEachHook, unwatch
 
@@ -83,7 +87,8 @@ const test = () => {
 </script>
 
 <template>
-  <div>
+  <div class="bg-red-400">
+    <h1>Error component</h1>
     <button class="m-2 p-2 bg-cyan-500" @click="test">Test</button>
     <div v-if="error.code === 401">
       <h2>Для доступа к ресурсу необходима авторизация!</h2>
@@ -101,9 +106,10 @@ const test = () => {
     </div>
     <div v-else-if="error.code === 423">
       <h2>На сервере ведутся технические работы. Доступ временно закрыт.</h2>
+      <button class="m-2 p-2 bg-cyan-500" @click="showLogin">Вход для администраторов</button>
     </div>
     <div v-else>
-      <h1>ERROR PAGE</h1>
+      <h2 class="font-bold">ERROR PAGE</h2>
       <h2>Code - {{ error.code }}</h2>
       <h2>Message - {{ error.statusMessage }}</h2>
       <button class="m-2 p-2 bg-cyan-500" @click="toMainPage">На главную</button>

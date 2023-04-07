@@ -3,8 +3,6 @@
  * При пустом запросе отдает текущее состояние сайте.
  */
 
-import decodeAndCheckToken from "~/server/src/decodeAndCheckToken"
-
 export default defineEventHandler(async (event) => {
 
     decodeAndCheckToken(event, {adminOnly: true})
@@ -13,6 +11,6 @@ export default defineEventHandler(async (event) => {
 
     if (setStatus === '0' || setStatus === '1') process.env.IS_SITE_CLOSED = setStatus
 
-    return process.env.IS_SITE_CLOSED
+    return process.env.IS_SITE_CLOSED ?? '0'
 
 })

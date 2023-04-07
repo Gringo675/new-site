@@ -1,11 +1,10 @@
-import request from "~/server/src/mysql"
-import useCatProps from "~/server/src/useCatProps"
-
 export default defineEventHandler(async (event) => {
+    const time = performance.now()
+    cv(time)
     // const start = Date.now()
-    console.log(`from getCategory`)
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    if (Math.random() < .5) throw createError({statusCode: 481, statusMessage: 'Random error.'})
+    // console.log(`from getCategory`)
+    // await new Promise(resolve => setTimeout(resolve, 500))
+    // if (Math.random() < .5) throw createError({statusCode: 481, statusMessage: 'Random error.'})
     const {alias} = getQuery(event)
     if (!alias.length) throw createError({ statusCode: 500, statusMessage: 'Parsing alias error!'})
     // console.log(`API alias: ${alias}`);

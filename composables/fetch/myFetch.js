@@ -52,9 +52,14 @@ export default async (url, options = {}) => {
         } catch (e) {
             // console.error(`Fetch error! ${e.statusCode}: ${e.statusMessage}`)
             if (options.silent) break
-            if (e.statusCode === 401 || e.statusCode === 403) {
+            else if (e.statusCode === 401 || e.statusCode === 403) {
                 hideLoader()
                 throw createError(e)
+            }
+            else if (e.statusCode === 423) { // site closed
+                user.showLogin = false
+                showError(e)
+                break
             }
             else {
                 const repeat = confirm(`Ошибка при обращении к ${url}!\nError ${e.statusCode}: ${e.statusMessage}\nПовторить запрос?`)

@@ -13,6 +13,9 @@ await myFetch('/api/user/isAdmin', {auth: true}) // если не админ, в
   <button class="button">
     <NuxtLink to="/admin/options">Options</NuxtLink>
   </button>
+  <button class="button">
+    <NuxtLink to="/admin/console">Console</NuxtLink>
+  </button>
 </div>
   </div>
 </template>

@@ -1,6 +1,5 @@
 
 export default async () => {
-
     const url = '/api/user/getUser'
     const response = await myFetch(url, {auth: true})
     if (response) {

@@ -1,5 +1,5 @@
 <script setup>
-// todo заменить все на компонент TheLogin + watch user.sessionId для перехода
+// todo заменить все на компонент TheLogin + watch user.sessionId для перехода (или совсем убрать страницу)
 
 const {value: user} = useUser()
 const route = useRoute()

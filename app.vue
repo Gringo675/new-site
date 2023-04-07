@@ -1,14 +1,14 @@
 <script setup>
 
 onErrorCaptured((e) => { // для ловли ошибок вне NuxtErrorBoundary
-  // console.log(`onErrorCaptured error: ${JSON.stringify(e, null, 2)}`)
+  console.log(`onErrorCaptured error: ${JSON.stringify(e, null, 2)}`)
   showError(e)
   return false
 })
 
 const someErrorLogger = (e) => {
   console.log(`NuxtErrorBoundary caught error`)
-  console.log(`e: ${JSON.stringify(e, null, 2)}`)
+  // console.log(`e: ${JSON.stringify(e, null, 2)}`)
 }
 
 </script>

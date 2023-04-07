@@ -1,6 +1,3 @@
-import request from "~/server/src/mysql"
-import useCatProps from "~/server/src/useCatProps"
-
 export default defineEventHandler(async (event) => {
     // функция по алиасу отдает информацию о товаре
     // const start = Date.now()

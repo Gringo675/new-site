@@ -1,9 +1,11 @@
 /**
  * example:
  * cv({var1}, {var2}, {var3})
+ * cv({var1, var2, var3})
  * cv('just text')
- * cv('some text, var1}
+ * cv('some text', var1}
  */
+
 export default (...args) => {
 
     // на /api/ нет process.server, поэтому при запросах оттуда дописывается специальный ключ последним аргументом
@@ -12,6 +14,8 @@ export default (...args) => {
 
     let text = ''
     for (const arg of args) {
+        // const isRef = isRef(arg)
+        // console.log(`isRef: ${JSON.stringify(isRef, null, 2)}`)
         if (typeof arg === 'object') {
             for (const key in arg) {
                 // console.log(`${key}: ${JSON.stringify(arg[key], null, 2)}`)

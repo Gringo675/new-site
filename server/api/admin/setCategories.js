@@ -9,10 +9,6 @@
  * }
  */
 
-import request from "~/server/src/mysql"
-import decodeAndCheckToken from "~/server/src/decodeAndCheckToken"
-import prepareString from "~/server/src/prepareString"
-
 export default defineEventHandler(async (event) => {
 
     decodeAndCheckToken(event, {adminOnly: true})

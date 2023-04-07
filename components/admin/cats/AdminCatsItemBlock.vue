@@ -176,7 +176,7 @@ const isDraggingGroup = computed(() => {
         <button class="rounded-lg bg-blue-200 py-1 transition" @click="showMenu = !showMenu"
                 :class="{'scale-125 bg-amber-500': isDraggingGroup, 'opacity-20': isDraggingCat}"
         >
-          <img :src="(showMenu ? '/_nuxt/img/x.svg' : '/_nuxt/img/three-dots-vertical.svg')"
+          <img :src="(showMenu ? '/img/x.svg' : '/img/three-dots-vertical.svg')"
                class="w-7 transition-opacity"
                :data-drag-group="(childIndex === null ? 'none' : parentIndex)"
                :data-drag-item="(childIndex === null ? parentIndex : childIndex)"

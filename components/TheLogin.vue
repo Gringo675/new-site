@@ -2,11 +2,15 @@
 
 const user = useUser().value
 
+const inputData = reactive({
+  mail: '',
+  pass: ''
+})
+
 const onLogin = async () => {
   try {
-    // todo loader
-    const response = await $fetch('/api/auth/login', {method: 'post', body: {mail: 'vik@mail.com', pass: '111222'}})
-    // console.log(`login resnonse: ${JSON.stringify(response, null, 2)}`)
+    // todo data verification
+    const response = await myFetch('/api/auth/login', {method: 'post', payload: inputData})
     user.sessionToken = response.sessionToken
     user.sessionExp = response.sessionExp
 
@@ -52,10 +56,16 @@ const onTest = () => {
       >
         <div class="login">
           <h1>Login</h1>
-          <button @click="onLogin" class="m-2 p-2 bg-cyan-500 rounded">Login</button>
-          <button @click="onRefresh" class="m-2 p-2 bg-cyan-500 rounded">Refresh</button>
-          <button @click="onClose" class="m-2 p-2 bg-cyan-500 rounded">Close</button>
-          <button @click="onTest" class="m-2 p-2 bg-cyan-500 rounded">Test</button>
+          <div>
+            <input v-model="inputData.mail" class="mx-2" type="password" placeholder="a->3"/>
+            <input v-model="inputData.pass" type="password" placeholder="1->3"/>
+          </div>
+          <div>
+            <button @click="onLogin" class="m-2 p-2 bg-cyan-500 rounded">Login</button>
+<!--            <button @click="onRefresh" class="m-2 p-2 bg-cyan-500 rounded">Refresh</button>-->
+            <button @click="onClose" class="m-2 p-2 bg-cyan-500 rounded">Close</button>
+            <button @click="onTest" class="m-2 p-2 bg-cyan-500 rounded">Test</button>
+          </div>
         </div>
       </div>
     </HelperModalWrapper>

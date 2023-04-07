@@ -1,7 +1,3 @@
-import request from "~/server/src/mysql"
-import createTokens from "~/server/src/createTokens";
-import decodeAndCheckToken from "~/server/src/decodeAndCheckToken";
-
 export default defineEventHandler(async (event) => {
 
     const tokenUser = decodeAndCheckToken(event, {type: 'refresh'})

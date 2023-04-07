@@ -5,64 +5,44 @@ const props = defineProps({
     type: String,
     required: true
   },
-  lazy: {
-    type: Boolean,
-    default: true
-  }
 })
 
 const headers = useRequestHeaders(['cookie']) // для запросов типа сервер - сервер, чтобы куки с клиента дошли до API
 
-const {data, pending, error} = await useAsyncData(props.url, async () => {
-  // const oldValue = useNuxtData(props.url).data.value
-  // if (oldValue) return oldValue // иначе функция вернет старое значение и pending false, а бекграундом запустит обновление данных
-  try {
-    return await $fetch(props.url, {headers})
-  } catch (e) {
-    throw createError(e)
-  }
-}, {
-  lazy: props.lazy
+const _pending = ref(false)
+const _error = ref(false)
+const {pending, data, error} = await useLazyAsyncData(props.url, () => {
+  const cachedData = useNuxtData(props.url).data?.value
+  if (cachedData) return cachedData
+  return $fetch(props.url, {headers})
 })
 
-console.log(`pending: ${JSON.stringify(pending.value, null, 2)}`)
-console.log(`data: ${JSON.stringify(data.value !== null, null, 2)}`)
-console.log(`error: ${JSON.stringify(error.value, null, 2)}`)
+watch(pending, (pendingValue) => {
+  if (pendingValue && data.value) _pending.value = false // заход в useAsyncData для обновления данных (которого не будет)
+  else if (!pendingValue && error.value) _pending.value = true // при заходе на страницу с ошибкой первое значение pending = false
+  else _pending.value = pendingValue
+}, {immediate: true})
 
-const calculateReady = () => {
-  // нужно учесть, что при повторном заходе начальное значение pending будет false,
-  // даже если данные еще не получены (предыдущий заход завершился ошибкой)
-  if (!pending.value && data.value) return true
-  if (error.value) handleError()
-  return false
-}
-const handleError = () => {
-  const e = {
-    statusCode: error.value.statusCode,
-    statusMessage: error.value.statusMessage
+watch(error, (errorValue) => {
+  if (errorValue) {
+    if (process.client && !pending.value) return // повторный заход на страницу, где была ошибка
+    _error.value = true
+    throw createError(errorValue)
   }
-  clearNuxtData(props.url)
-  throw createError(e)
-}
-
-const ready = ref(calculateReady())
-
-if (!ready.value) { // если запрос не разрешился синхронно, вешаем watcher
-  watch(() => pending.value, () => ready.value = calculateReady())
-}
+}, {immediate: true})
 
 </script>
 
 <template>
-  <div class="w-full p-2">
+  <div v-if="!_error" class="w-full p-2">
     <Transition name="page" mode="out-in">
-      <div v-if="ready" >
-        <slot :data="data">some fallback</slot>
-      </div>
-      <div v-else class="py-3 flex flex-col items-center justify-center cursor-progress">
+      <div v-if="_pending" class="py-3 flex flex-col items-center justify-center cursor-progress">
         <div class="border-[16px] border-t-[#2578FBFF] border-r-[#42ecc8] border-b-[#f7ef72] border-l-[#f34a5f]
         rounded-full w-32 h-32 animate-[spin_2s_linear_infinite]">
         </div>
+      </div>
+      <div v-else>
+        <slot :data="data">some fallback</slot>
       </div>
     </Transition>
   </div>

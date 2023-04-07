@@ -2,7 +2,6 @@ import {EventEmitter} from 'node:events'
 
 // todo 2 listeners перебивают друг друга?
 
-
 const emitter = new EventEmitter()
 
 const buffer = {
