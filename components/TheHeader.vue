@@ -62,9 +62,6 @@ const createMess = () => {
         <NuxtLink to="/test_fetch">test_fetch</NuxtLink>
       </button>
       <button class="button">
-        <NuxtLink to="/admin/test">/admin/test</NuxtLink>
-      </button>
-      <button class="button">
         <NuxtLink to="/test1">/test1</NuxtLink>
       </button>
       <button class="button">

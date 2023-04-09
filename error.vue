@@ -9,6 +9,11 @@ const props = defineProps({
 </script>
 
 <template>
-  from globalError
   <TheError :error="error" :isGlobal="true"/>
+  <ClientOnly>
+    <LazyTheMessage/>
+    <LazyTheLoader/>
+    <LazyTheNotice/>
+    <LazyTheLogin/>
+  </ClientOnly>
 </template>

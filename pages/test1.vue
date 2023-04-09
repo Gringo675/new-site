@@ -11,7 +11,8 @@ const bbb = ref({
 
 const ccc = 'some text'
 
-cv({aaa, bbb, ccc})
+cv({aaa}, {bbb}, {ccc})
+// cv(aaa, bbb, ccc)
 </script>
 
 <template>

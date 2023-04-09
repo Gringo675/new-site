@@ -3,6 +3,7 @@ export default defineEventHandler((event) => {
     // console.log(`url: ${JSON.stringify(event.node.req.url, null, 2)}`)
     if (process.env.IS_SITE_CLOSED !== '1' ) return
     if (event.node.req.url === '/api/auth/login' ||
+        event.node.req.url === '/api/console' ||
         event.node.req.url === '/favicon.ico' ||
         event.node.req.url.startsWith('/__nuxt_error')) return
 

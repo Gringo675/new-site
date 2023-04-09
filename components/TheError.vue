@@ -65,22 +65,23 @@ const toMainPage = () => {
 // if (error.statusCode === 401) showLogin()
 
 const test = () => {
-  const routerPath = (useRoute()).fullPath
-  console.log(`routerPath: ${JSON.stringify(routerPath, null, 2)}`)
-
-  let locationPath = window.location.pathname
-
-  let baseURL = useRuntimeConfig().app.baseURL
-  if (baseURL !== '/') { // вырезаем baseURL
-    if (baseURL[baseURL.length-1] === '/') baseURL = baseURL.substring(0, baseURL.length-1) // убираем слеш в конце
-    try {
-      const regexp = new RegExp(`${baseURL}(.+)`)
-      locationPath = locationPath.match(regexp)[1]
-    } catch (e) {
-      locationPath = '/'
-    }
-  }
-  console.log(`locationPath: ${JSON.stringify(locationPath, null, 2)}`)
+  showLoader()
+  // const routerPath = (useRoute()).fullPath
+  // console.log(`routerPath: ${JSON.stringify(routerPath, null, 2)}`)
+  //
+  // let locationPath = window.location.pathname
+  //
+  // let baseURL = useRuntimeConfig().app.baseURL
+  // if (baseURL !== '/') { // вырезаем baseURL
+  //   if (baseURL[baseURL.length-1] === '/') baseURL = baseURL.substring(0, baseURL.length-1) // убираем слеш в конце
+  //   try {
+  //     const regexp = new RegExp(`${baseURL}(.+)`)
+  //     locationPath = locationPath.match(regexp)[1]
+  //   } catch (e) {
+  //     locationPath = '/'
+  //   }
+  // }
+  // console.log(`locationPath: ${JSON.stringify(locationPath, null, 2)}`)
   // navigateTo(locationPath)
 }
 
@@ -114,8 +115,5 @@ const test = () => {
       <h2>Message - {{ error.statusMessage }}</h2>
       <button class="m-2 p-2 bg-cyan-500" @click="toMainPage">На главную</button>
     </div>
-    <ClientOnly>
-      <TheLogin v-if="isGlobal"/>
-    </ClientOnly>
   </div>
 </template>

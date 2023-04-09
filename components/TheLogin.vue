@@ -43,7 +43,9 @@ const onClose = () => {
 }
 
 const onTest = () => {
-  console.log(`user: ${JSON.stringify(user, null, 2)}`)
+  cv('from test')
+  showNotice('some notice', 'info')
+  // console.log(`user: ${JSON.stringify(user, null, 2)}`)
 }
 </script>
 

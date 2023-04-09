@@ -1,7 +1,5 @@
 export default defineEventHandler(async (event) => {
-    const time = performance.now()
-    cv(time)
-    // const start = Date.now()
+    const start = performance.now()
     // console.log(`from getCategory`)
     // await new Promise(resolve => setTimeout(resolve, 500))
     // if (Math.random() < .5) throw createError({statusCode: 481, statusMessage: 'Random error.'})
@@ -150,7 +148,8 @@ export default defineEventHandler(async (event) => {
     delete catData.parent_id
     delete catData.published
 
-    // console.log(`deltaF: ${Date.now() - start}`)
+    const catPerformance = Math.round(performance.now() - start)
+    cv({catPerformance})
 
     return {catData, products, filter, filterInitial}
 
