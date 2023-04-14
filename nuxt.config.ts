@@ -1,4 +1,5 @@
 
+// @ts-ignore
 export default defineNuxtConfig({
     app: {
         // baseURL: process.env.NODE_ENV === 'production' ? '/test/' : '/',
@@ -13,6 +14,7 @@ export default defineNuxtConfig({
     routeRules: {
         '/admin/**': {ssr: false},
         '/user/**': {ssr: false},
+        '/test1': {ssr: false}
     },
     imports: {
         dirs: [
@@ -25,6 +27,11 @@ export default defineNuxtConfig({
         dbName: process.env.DB_NAME,
         dbUser: process.env.DB_USER,
         dbPassword: process.env.DB_PASSWORD,
-        JWT_TOKEN: process.env.JWT_TOKEN
+        JWT_TOKEN: process.env.JWT_TOKEN,
+        GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+        AAA: process.env.AAA,
+        public: {
+            GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID
+        }
     },
 })

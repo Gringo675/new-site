@@ -2,26 +2,29 @@
 
 const user = useUser().value
 
-const inputData = reactive({
-  mail: '',
-  pass: ''
-})
+const inputMail = ref('')
+const isVerifyMail = ref(false)
+const isGoogleInProcess = ref(false)
 
 const onLogin = async () => {
+  isVerifyMail.value = true
   try {
     // todo data verification
-    const response = await myFetch('/api/auth/login', {method: 'post', payload: inputData})
+    const response = await myFetch('/api/auth/login', {method: 'post', payload: inputMail})
     user.sessionToken = response.sessionToken
     user.sessionExp = response.sessionExp
 
   } catch (e) {
     let notice
     switch (e.statusCode) {
-      case 400: notice = 'Заполните почту и пароль!'
+      case 400:
+        notice = 'Заполните почту и пароль!'
         break
-      case 401: notice = 'Ошибка! Проверьте введенные почту и пароль!'
+      case 401:
+        notice = 'Ошибка! Проверьте введенные почту и пароль!'
         break
-      default: notice = 'Ошибка авторизации!'
+      default:
+        notice = 'Ошибка авторизации!'
     }
     showNotice(notice, 'error')
     return
@@ -32,10 +35,9 @@ const onLogin = async () => {
 
 }
 
-const onRefresh = async () => {
-  console.log(`before user: ${JSON.stringify(user, null, 2)}`)
-  await refreshUser()
-  console.log(`after user: ${JSON.stringify(user, null, 2)}`)
+const onGoogle = () => {
+  isGoogleInProcess.value = true
+  window.open('https://google.com')
 }
 
 const onClose = () => {
@@ -57,17 +59,28 @@ const onTest = () => {
          overflow-auto flex flex-col justify-start"
       >
         <div class="login">
-          <h1>Login</h1>
-          <div>
-            <input v-model="inputData.mail" class="mx-2" type="password" placeholder="a->3"/>
-            <input v-model="inputData.pass" type="password" placeholder="1->3"/>
+          <!--          header-->
+          <div class="flex bg-emerald-200">
+            <h1>Login</h1>
+            <button @click="onTest" class="m-2 px-2 bg-cyan-500 rounded">Test</button>
+            <button @click="onClose" class="m-2 px-2 bg-cyan-500 rounded">Close</button>
           </div>
-          <div>
-            <button @click="onLogin" class="m-2 p-2 bg-cyan-500 rounded">Login</button>
-<!--            <button @click="onRefresh" class="m-2 p-2 bg-cyan-500 rounded">Refresh</button>-->
-            <button @click="onClose" class="m-2 p-2 bg-cyan-500 rounded">Close</button>
-            <button @click="onTest" class="m-2 p-2 bg-cyan-500 rounded">Test</button>
-          </div>
+          <template v-if="!isVerifyMail">
+            <div>
+              <span>Введите почту:</span>
+              <input v-model="inputMail" type="email" class="mx-2" placeholder="a1->3"/>
+              <button @click="onLogin" class="m-2 p-2 bg-cyan-500 rounded">Войти</button>
+            </div>
+            <div>
+              <span>Или</span>
+              <button @click="onGoogle" class="m-2 p-2 bg-cyan-500 rounded">Войти через google</button>
+            </div>
+          </template>
+          <template v-else>
+            <span>Проверочный код:</span>
+            <input type="number" class="mx-2" placeholder="a1->3"/>
+            <button class="m-2 p-2 bg-cyan-500 rounded">OK</button>
+          </template>
         </div>
       </div>
     </HelperModalWrapper>

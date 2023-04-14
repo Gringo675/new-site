@@ -19,7 +19,6 @@ const createDialog = () => {
     localFn(localVar)
   })
 }
-
 const localVar = 111
 const localFn = (localWar) => {
   console.log(`localWar: ${localWar}`)
@@ -29,6 +28,19 @@ const createMess = () => {
   showMessage('title2', 'body2')
 }
 
+const user = useUser()
+const handleLogin = () => {
+  if (user.value.isAuth) { // выходим из аккаунта
+    Object.keys(user.value).forEach(key => delete user.value[key])
+    user.value.isAuth = false
+    // todo delete cookie
+    // document.cookie = "cookiename= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
+    // todo check page. If only for auth, go to home page
+  } else { // входим
+    user.value.showLogin = true
+  }
+}
+
 </script>
 
 <template>
@@ -36,6 +48,7 @@ const createMess = () => {
     <div class="flex">
 <!--      <TheCart />-->
 <!--      <CatsMenu />-->
+      <button class="button" @click="handleLogin"> {{ user.isAuth ? 'Log Out' : 'Log In'}}</button>
       <button class="button">
         <NuxtLink to="/admin">Admin</NuxtLink>
       </button>
@@ -51,9 +64,6 @@ const createMess = () => {
       </button>
       <button class="button">
         <NuxtLink to="/catalog/shtangentsirkuli-shts-i-s-glubinomerom">ШЦ с глубиномером</NuxtLink>
-      </button>
-      <button class="button">
-        <NuxtLink to="/user/login">LOGIN</NuxtLink>
       </button>
       <button class="button">
         <NuxtLink to="/user/orders">Orders</NuxtLink>
