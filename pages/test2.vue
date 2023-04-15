@@ -1,6 +1,7 @@
 <script setup>
 const aaa = await $fetch('/api/admin/system/siteStatus')
 const bbb = 222
+const ccc = 333
 
 </script>
 
