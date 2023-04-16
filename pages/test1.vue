@@ -1,7 +1,5 @@
 <script setup>
 
-const aaa = 111
-
 const getGoogleOAuthURL = () => {
 
   try {

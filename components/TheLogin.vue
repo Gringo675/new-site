@@ -10,7 +10,7 @@ const onLogin = async () => {
   isVerifyMail.value = true
   try {
     // todo data verification
-    const response = await myFetch('/api/auth/login', {method: 'post', payload: inputMail})
+    const response = await myFetch('/api/auth/login', { method: 'post', payload: inputMail })
     user.sessionToken = response.sessionToken
     user.sessionExp = response.sessionExp
 
@@ -37,7 +37,44 @@ const onLogin = async () => {
 
 const onGoogle = () => {
   isGoogleInProcess.value = true
-  window.open('https://google.com')
+  const googleUrl = getGoogleOAuthURL()
+  // const googleUrl = '/test/catalog/shtangentsirkuli'
+  const params = `status=no,location=no,toolbar=no,menubar=no,width=500,height=500,left=0,top=0`
+  const oauthWin = window.open(googleUrl, 'oauth', params)
+  const timer = setInterval(() => {
+    if (oauthWin.closed) {
+      clearInterval(timer)
+      cv('popup closed!')
+    }
+  }, 1000)
+}
+const getGoogleOAuthURL = () => {
+
+try {
+
+  const config = useRuntimeConfig()
+  const fullBaseUrl = window.location.origin + config.app.baseURL
+  const googleRootUrl = 'https://accounts.google.com/o/oauth2/v2/auth'
+
+  const options = {
+    redirect_uri: fullBaseUrl + 'api/auth/oauth/google',
+    client_id: config.GOOGLE_CLIENT_ID,
+    access_type: 'offline',
+    response_type: 'code',
+    prompt: 'consent',
+    scope: [
+      'https://www.googleapis.com/auth/userinfo.email',
+      'https://www.googleapis.com/auth/userinfo.profile'
+    ].join(' ')
+
+  }
+  const qs = new URLSearchParams(options)
+
+  return `${googleRootUrl}?${qs.toString()}`
+
+} catch(e) {
+  console.error(e)
+}
 }
 
 const onClose = () => {
@@ -55,9 +92,8 @@ const onTest = () => {
   <Transition name="transition-fade">
     <HelperModalWrapper v-if="user.showLogin">
       <div class="modal-form w-[800px] max-w-[95%] max-h-[90vh] bg-slate-200 p-2
-         border border-amber-900 rounded-xl
-         overflow-auto flex flex-col justify-start"
-      >
+             border border-amber-900 rounded-xl
+             overflow-auto flex flex-col justify-start">
         <div class="login">
           <!--          header-->
           <div class="flex bg-emerald-200">
@@ -68,7 +104,7 @@ const onTest = () => {
           <template v-if="!isVerifyMail">
             <div>
               <span>Введите почту:</span>
-              <input v-model="inputMail" type="email" class="mx-2" placeholder="a1->3"/>
+              <input v-model="inputMail" type="email" class="mx-2" placeholder="a1->3" />
               <button @click="onLogin" class="m-2 p-2 bg-cyan-500 rounded">Войти</button>
             </div>
             <div>
@@ -78,7 +114,7 @@ const onTest = () => {
           </template>
           <template v-else>
             <span>Проверочный код:</span>
-            <input type="number" class="mx-2" placeholder="a1->3"/>
+            <input type="number" class="mx-2" placeholder="a1->3" />
             <button class="m-2 p-2 bg-cyan-500 rounded">OK</button>
           </template>
         </div>
@@ -87,6 +123,4 @@ const onTest = () => {
   </Transition>
 </template>
 
-<style>
-
-</style>
+<style></style>
