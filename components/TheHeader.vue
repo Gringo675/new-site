@@ -3,15 +3,21 @@
 import {useNuxtApp} from "#app/nuxt.js";
 
 const test = () => {
-  const key = "/api/getCategory?alias=shtangentsirkuli"
+  // const key = "/api/getCategory?alias=shtangentsirkuli"
   // let data = useNuxtData(url).data
   // console.log(`data: ${JSON.stringify(data, null, 2)}`)
   // let error = useNuxtData(url).error
   // console.log(`error: ${JSON.stringify(error, null, 2)}`)
-  const nuxt = useNuxtApp();
-  const errors = nuxt.payload._errors
-  console.log(`errors: ${JSON.stringify(errors, null, 2)}`)
+  // const nuxt = useNuxtApp();
+  // const errors = nuxt.payload._errors
+  // console.log(`errors: ${JSON.stringify(errors, null, 2)}`)
 
+  // console.log(`Try delete cookie23`)
+  // document.cookie = "refreshToken=; expires = Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=localhost;"
+  // let decodedCookie = decodeURIComponent(document.cookie);
+  // cv({decodedCookie})
+  // console.log(`document.cookie: ${JSON.stringify(document.cookie, null, 2)}`)
+  $fetch('/api/auth/logout')
 }
 
 const createDialog = () => {
@@ -29,13 +35,13 @@ const createMess = () => {
 }
 
 const user = useUser()
-const handleLogin = () => {
+const handleLogin = async () => {
   if (user.value.isAuth) { // выходим из аккаунта
     Object.keys(user.value).forEach(key => delete user.value[key])
     user.value.isAuth = false
-    // todo delete cookie
-    // document.cookie = "cookiename= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
-    // todo check page. If only for auth, go to home page
+    // удаляем cookie (refreshToken)
+    await $fetch('/api/auth/logout')
+    navigateTo('/')
   } else { // входим
     user.value.showLogin = true
   }

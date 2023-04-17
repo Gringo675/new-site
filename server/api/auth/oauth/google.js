@@ -1,20 +1,22 @@
 export default defineEventHandler(async (event) => {
-    const config = useRuntimeConfig()
-
-    const code = getQuery(event).code
-
-    const googleUrl = 'https://oauth2.googleapis.com/token'
-
-    const values = {
-        code,
-        client_id: config.public.GOOGLE_CLIENT_ID,
-        client_secret: config.GOOGLE_CLIENT_SECRET,
-        redirect_uri: 'http://localhost:3000/test/api/auth/oauth/google',
-        grant_type: 'authorization_code'
-    }
-    const body = Object.keys(values).map(key => `${key}=${encodeURI(values[key])}`).join('&')
-
+    let resultText = ''
     try {
+
+        const config = useRuntimeConfig()
+
+        const code = getQuery(event).code
+
+        const googleUrl = 'https://oauth2.googleapis.com/token'
+
+        const values = {
+            code,
+            client_id: config.public.GOOGLE_CLIENT_ID,
+            client_secret: config.GOOGLE_CLIENT_SECRET,
+            redirect_uri: 'http://localhost:3000/test/api/auth/oauth/google',
+            grant_type: 'authorization_code'
+        }
+        const body = Object.keys(values).map(key => `${key}=${encodeURI(values[key])}`).join('&')
+
         const { id_token } = await $fetch(googleUrl, {
             method: 'post',
             body,
@@ -24,7 +26,7 @@ export default defineEventHandler(async (event) => {
         })
 
         const googleUser = JSON.parse(Buffer.from(id_token.split('.')[1], 'base64').toString())
-        cv({ googleUser })
+
         // проверяем, есть ли юзер с данной почтой в базе
         let query = `SELECT id, ver_code, admin FROM i_users 
         WHERE mail = '${googleUser.email}' LIMIT 1`;
@@ -33,26 +35,34 @@ export default defineEventHandler(async (event) => {
             if (user.ver_code !== 0) { // верифицируем юзера
                 query = `UPDATE i_users SET ver_code = 0 WHERE id = ${user.id}`
                 await request(query)
-                delete user.ver_code
             }
         } else { // добавляем
             user = {}
-             query = `INSERT INTO i_users (mail, name)
-             VALUES('${googleUser.email}', '${googleUser.name}')`
-             user.id = (await request(query)).insertId
-             user.admin = 0
+            query = `INSERT INTO i_users (mail, name, created)
+             VALUES('${googleUser.email}', '${googleUser.name}', '${new Date().toISOString()}')`
+            user.id = (await request(query)).insertId
+            user.admin = 0
         }
 
-        cv({user})
-        
-        createTokens(user, event) // устанавливаем cookie
+        createTokens(user, event) // устанавливаем cookie (refresh token)
 
-        return `<h1>Success!</h1>`
+        resultText = 'Данные успешно получены!'
+
     } catch (e) {
         console.log(`error: ${JSON.stringify(e.data, null, 2)}`)
-        return `<h1>Error!</h1>`
+        resultText = 'Ошибка при получении данных!'
     }
 
-    return code
+    return `<!DOCTYPE html>
+            <html lang="ru">
+            <head><meta charset="utf-8"></head>
+            <body>
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <h2>${resultText}</h2>
+                    <button style="margin: 20px; padding: 10px 20px; font-size: 16px;" 
+                            onclick="window.open('', '_self', ''); window.close();">Закрыть окно</button>
+                </div>
+            </body>
+            </html>`
 
 })

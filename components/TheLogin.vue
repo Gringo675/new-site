@@ -4,7 +4,6 @@ const user = useUser().value
 
 const inputMail = ref('')
 const isVerifyMail = ref(false)
-const isGoogleInProcess = ref(false)
 
 const onLogin = async () => {
   isVerifyMail.value = true
@@ -36,15 +35,18 @@ const onLogin = async () => {
 }
 
 const onGoogle = () => {
-  isGoogleInProcess.value = true
+  showLoader()
+
   const googleUrl = getGoogleOAuthURL()
   // const googleUrl = '/test/catalog/shtangentsirkuli'
-  const params = `status=no,location=no,toolbar=no,menubar=no,width=500,height=500,left=0,top=0`
+  const params = `status=no,location=no,toolbar=no,menubar=no,width=500,height=500,left=200,top=0`
   const oauthWin = window.open(googleUrl, 'oauth', params)
-  const timer = setInterval(() => {
+  const timer = setInterval(async () => {
     if (oauthWin.closed) {
       clearInterval(timer)
-      cv('popup closed!')
+      await refreshUser()
+      hideLoader()
+      if (user.isAuth) onClose()
     }
   }, 1000)
 }

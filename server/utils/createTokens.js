@@ -4,7 +4,6 @@
  */
 
 import crypto from 'crypto'
-import request from "~/server/src/mysql"
 const config = useRuntimeConfig()
 
 export default (user, event) => {
