@@ -34,19 +34,6 @@ const createMess = () => {
   showMessage('title2', 'body2')
 }
 
-const user = useUser()
-const handleLogin = async () => {
-  if (user.value.isAuth) { // выходим из аккаунта
-    Object.keys(user.value).forEach(key => delete user.value[key])
-    user.value.isAuth = false
-    // удаляем cookie (refreshToken)
-    await $fetch('/api/auth/logout')
-    navigateTo('/')
-  } else { // входим
-    user.value.showLogin = true
-  }
-}
-
 </script>
 
 <template>
@@ -54,7 +41,7 @@ const handleLogin = async () => {
     <div class="flex">
 <!--      <TheCart />-->
 <!--      <CatsMenu />-->
-      <button class="button" @click="handleLogin"> {{ user.isAuth ? 'Log Out' : 'Log In'}}</button>
+      <TheUser />
       <button class="button">
         <NuxtLink to="/admin">Admin</NuxtLink>
       </button>
