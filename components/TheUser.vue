@@ -3,10 +3,10 @@
 const user = useUser().value
 const showMenu = ref(false)
 
-onMounted(() => {
+onMounted(async () => {
     setTimeout(() => {
-        refreshUser()
-    }, 5000);
+        getUser()
+    }, 2000);
 })
 
 const handleLogin = () => {

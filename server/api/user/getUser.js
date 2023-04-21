@@ -12,7 +12,12 @@ export default defineEventHandler(async (event) => {
 
     return {
         name: user.name,
+        mail: user.mail,
         isAdmin: !!user.admin,
+        org: user.org,
+        inn: user.inn,
+        address: user.address,
+        phone:user.phone,
         cart: user.cart,
     }
 })

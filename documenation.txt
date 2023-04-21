@@ -1,6 +1,15 @@
-    ToDo
-labels
-cashing
+ToDo:
+время жизни кода верификации
+перенести страницу OAuth регистрации с сервера на клиент
+переименовать request на dbReq
+
+RoadMap:
+Login trough email
+Change user data (/user/profile)
+Добавить OAuth (Apple, VK)
+Cart
+Cashing?
+Labels
 
     ТЕЗИСЫ
 Все товары принадлежат категориям (не подкатегориям).

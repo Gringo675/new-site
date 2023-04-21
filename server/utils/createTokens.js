@@ -20,11 +20,9 @@ export default (user, event) => {
         .createHmac('SHA256', config.JWT_TOKEN)
         .update(`${refreshHead}.${refreshPayload}`)
         .digest('base64')
-    // const path = !!user.admin ? '/' : '/api/auth' // для админов сохраняем в корневой директории
-    // пока для всех буду сохранять в корень, т.к. иначе нужно дописывать baseURL (типа /test/api/auth)
-    const path = '/'
+    // сохраняем в корень, т.к. токен используется для входа на закрытый сайт
     setCookie(event, 'refreshToken', `${refreshHead}.${refreshPayload}.${refreshSignature}`, {
-        path, expires: refreshExp, httpOnly: true, secure: true, sameSite: 'strict'
+        path: '/', expires: refreshExp, httpOnly: true, secure: true, sameSite: 'strict'
     })
     // создаем session token
     const sessionExp = new Date(Date.now() + 18e5) // + 30 min

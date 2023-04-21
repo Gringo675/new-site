@@ -3,6 +3,10 @@
 import {useNuxtApp} from "#app/nuxt.js";
 
 const test = () => {
+  const config = useRuntimeConfig()
+  const baseUrl = config.app.baseURL
+  cv({baseUrl})
+  // throw createError({statusCode: 411, statusMessage: `Authentication Required!`})
   // const key = "/api/getCategory?alias=shtangentsirkuli"
   // let data = useNuxtData(url).data
   // console.log(`data: ${JSON.stringify(data, null, 2)}`)

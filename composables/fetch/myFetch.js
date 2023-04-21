@@ -27,7 +27,7 @@ export default async (url, options = {}) => {
 
     if (options.auth) {
         if (!user.sessionToken || Date.parse(user.sessionExp) - 10e3 < Date.now()) {
-            const isRefresh = await refreshUser()
+            const isRefresh = await refreshUser(user)
             if (!isRefresh) {
                 if (!options.silent) throw createError({statusCode: 401, statusMessage: `Authentication Required!`})
                 return null
@@ -70,3 +70,16 @@ export default async (url, options = {}) => {
     if (!options.silent) hideLoader()
     return result
  }
+
+const refreshUser = async (user) => {
+
+    try {
+        const response = await $fetch('/api/auth/refresh')
+        user.sessionToken = response.sessionToken
+        user.sessionExp = response.sessionExp
+        return true
+    } catch (e) {
+        console.log(`Can't refresh user!`)
+        return false
+    }
+}

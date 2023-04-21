@@ -1,6 +1,6 @@
 <script setup>
 
-const user = useUser()
+const user = useUser().value
 
 const props = defineProps({
   error: Object,
@@ -27,20 +27,17 @@ onUnmounted(() => {
   if (unwatch) unwatch()
 })
 
-const showLogin = () => {
+const showLogin = async (options) => {
+
   if (unwatch) unwatch() // чтобы не навесить больше одного
-  user.value.showLogin = true
-  // user.value.sessionToken = ''
-  unwatch = watch(() => user.value.sessionToken, () => {
-    // console.log(`from watch`)
+  user.showLogin = true
+  unwatch = watch(() => user.sessionToken, () => {
     refreshPage()
-    // navigateTo('/test1')
   })
 }
 
 const refreshPage = () => {
-  // const currentPath = useRoute().fullPath
-  // похоже с rc14 useRouts стал подменять адрес на предыдущий в случае ошибки, поэтому получаем через window.location
+
   let currentPath = window.location.pathname
   let baseURL = useRuntimeConfig().app.baseURL
   if (baseURL !== '/') { // вырезаем baseURL
@@ -98,7 +95,6 @@ const test = () => {
     </div>
     <div v-else-if="error.code === 403">
       <h2>Отказано в доступе!</h2>
-      <button class="m-2 p-2 bg-cyan-500" @click="showLogin">Перелогиниться</button>
       <button class="m-2 p-2 bg-cyan-500" @click="toMainPage">На главную</button>
     </div>
     <div v-else-if="error.code === 404">
@@ -107,7 +103,7 @@ const test = () => {
     </div>
     <div v-else-if="error.code === 423">
       <h2>На сервере ведутся технические работы. Доступ временно закрыт.</h2>
-      <button class="m-2 p-2 bg-cyan-500" @click="showLogin">Вход для администраторов</button>
+      <button class="m-2 p-2 bg-cyan-500" @click="showLogin">Вход для администраторов (hidden)</button>
     </div>
     <div v-else>
       <h2 class="font-bold">ERROR PAGE</h2>
