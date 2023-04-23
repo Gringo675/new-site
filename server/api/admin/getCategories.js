@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
         // const query = `SELECT * FROM i_categories WHERE id IN (12, 13) OR parent_id IN (12, 13) ORDER by id`;
         const query = `SELECT * FROM i_categories ORDER by id`;
 
-        const rowCats = await request(query)
+        const rowCats = await dbReq(query)
         // делаем "правильный" массив из натегорий (подкатегории вложены в родительские категории)
         // rowCats отсортирован по ИД, значит сначала наверняка будут основыные категории
         let cats = {}

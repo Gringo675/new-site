@@ -1,6 +1,26 @@
 export default defineEventHandler(async (event) => {
     const cTime = new Date().toLocaleTimeString()
     console.log(`from apiTest: ${cTime}`)
+
+    // const aaa = getRequestURL(event).toString().match(/(^.+)\/api\//)[1]
+    // const ttt = typeof aaa
+    // cv({ aaa, ttt })
+
+    // for (const key in aaa) {
+    //     const val = aaa[key]
+    //     cv({key, val})
+    // }
+
+    // const origin = getRequestURL(event).origin
+    // const baseURL = useRuntimeConfig().app.baseURL
+    // let baseURL = '/'
+    // let baseURL = '/test/'
+    // if (baseURL[baseURL.length - 1] !== '/') baseURL += '/' // проверяем слеш в конце
+    // const match = baseURL.match(/\/?(.+)[\/$]?/)
+    // const match = baseURL.match(/\/?(.+)[\/$]/)
+    // cv({origin, baseURL})
+
+ 
     // await timer(2)
     // if (Math.random() < .3) throw createError({statusCode: 481, statusMessage: `Random error on ${cTime}`})
     throw createError({statusCode: 482, statusMessage: `Some error on ${cTime}`})
@@ -13,10 +33,6 @@ export default defineEventHandler(async (event) => {
     // const error = new Error(`error from throw Error`)
     // error.statusCode = 402
     // throw error
-
-    // throw createError({ statusCode: 401, statusMessage: `Error in ${cTime}`})
-    // throw createError({ statusCode: 499, statusMessage: `Some error in ${cTime}`})
-    // showError({ statusCode: 404, statusMessage: 'Page Not Found!!!!'})
 
     // setCookie(event, 'someCook', `someValue`)
 

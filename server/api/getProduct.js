@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
     // console.log(`API alias: ${alias}`);
 
     let query = `SELECT * FROM i_products WHERE alias = '${alias}' AND published = 1`
-    const productData = (await request(query))[0]
+    const productData = (await dbReq(query))[0]
     if (productData === undefined) throw createError({statusCode: 404, statusMessage: 'Page Not Found!'})
     // console.log(`productData: ${JSON.stringify(productData)}`);
 
@@ -17,19 +17,19 @@ export default defineEventHandler(async (event) => {
     // получаем данные о категории
     query = `SELECT name, alias FROM i_categories 
                  WHERE id = '${productData.category_id}'`
-    productData.category = (await request(query))[0]
+    productData.category = (await dbReq(query))[0]
     // отбираем подкатегории, к которым относится данный продукт
     query = `SELECT name, alias FROM i_categories 
                  WHERE parent_id = '${productData.category_id}' 
                  ${props.map(prop => `AND (${prop} = 0 OR ${prop} = ${productData[prop]}) `).join('')}
                  ORDER BY ordering`
-    productData.subCats = await request(query)
+    productData.subCats = await dbReq(query)
 
     // отбираем related prods (из той же категории и максимально совпадающие по параметрам)
     query = `SELECT name, alias, price, images, ${props.join()} 
                  FROM i_products 
                  WHERE category_id = ${productData.category_id} AND id != ${productData.id} AND published = 1`
-    const related = await request(query)
+    const related = await dbReq(query)
     related.forEach(rel => {
         rel.points = 0
         props.forEach(prop => {
@@ -59,7 +59,7 @@ export default defineEventHandler(async (event) => {
     query = `SELECT id, name
                  FROM i_properties 
                  WHERE id IN (${productData.props.map(prop => prop.val).join()})`
-    const decipherP = await request(query)
+    const decipherP = await dbReq(query)
     const catProps = useCatProps(productData.category_id)
     let brandIndex // нужно вытащить из характеристик производителя в отдельное свойство
     productData.props.forEach((prop, i) => {
@@ -79,7 +79,7 @@ export default defineEventHandler(async (event) => {
     query = `SELECT full_name, image
                  FROM i_brands 
                  WHERE short_name = '${productData.brand.shortName}' LIMIT 1`
-    const brand = (await request(query))[0]
+    const brand = (await dbReq(query))[0]
     productData.brand.fullName = brand.full_name
     productData.brand.image = brand.image
 
@@ -88,17 +88,17 @@ export default defineEventHandler(async (event) => {
     if (productData.standart_ids.length) {
         query = `SELECT number, name, file FROM i_docs_stnd
                  WHERE id IN (${productData.standart_ids.replace(' ', ', ')})`
-        productData.docs.stnd = await request(query)
+        productData.docs.stnd = await dbReq(query)
     }
     if (productData.reestr_ids.length) {
         query = `SELECT number, name, type_si, brand, date, file_ot, file_mp, file_svid FROM i_docs_rstr
                  WHERE id IN (${productData.reestr_ids.replace(' ', ', ')})`
-        productData.docs.rstr = await request(query)
+        productData.docs.rstr = await dbReq(query)
     }
     if (productData.pasport_ids.length) {
         query = `SELECT name, file FROM i_docs_pasp
                  WHERE id IN (${productData.pasport_ids.replace(' ', ', ')})`
-        productData.docs.pasp = await request(query)
+        productData.docs.pasp = await dbReq(query)
     }
 
     productData.images = productData.images.split(' ') // изображения из строки в массив

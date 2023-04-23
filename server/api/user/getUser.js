@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
     const query = `SELECT *
                    FROM i_users WHERE id = ${tokenUser.id} LIMIT 1`;
     // console.log(`query: ${query}`);
-    const user = (await request(query))[0]
+    const user = (await dbReq(query))[0]
     if (!user) throw createError({statusCode: 401, statusMessage: `User not found!`})
 
     return {

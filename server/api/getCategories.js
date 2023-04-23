@@ -5,7 +5,7 @@ export default defineEventHandler(async () => {
     const query = `SELECT id, parent_id, name, alias, image, ordering 
                    FROM i_categories WHERE published = 1 ORDER by id`;
 
-    const rowCats = await request(query)
+    const rowCats = await dbReq(query)
     // делаем "правильный" массив из натегорий (подкатегории вложены в родительские категории)
     // rowCats отсортирован по ИД, значит сначала наверняка будут основыные категории
     let cats = {}

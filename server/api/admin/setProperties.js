@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
         } else {
             throw createError({statusCode:500, statusMessage:"prop object don't have required field!"})
         }
-        await request(query)
+        await dbReq(query)
     }
     return true
 

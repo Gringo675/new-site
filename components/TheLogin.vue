@@ -3,31 +3,60 @@
 const user = useUser().value
 
 const form = reactive({
-  mail: '',
+  mail: 'gringo675g@gmail.com',
   code: '',
   verifyScreen: false
 })
 
 const sendCode = async () => {
-  // todo: verify mail
-  //   const notice = 'Некорректный адрес!'
-  //   showNotice(notice, 'error')
-  // return
 
-  const isCodeSend = await myFetch('/api/auth/login-create-code', {
+  // if (!validateMail(form.mail)) {
+  //   showNotice('Введите правильный адрес!', 'error')
+  //   return
+  // }
+
+  const isCodeSend = await myFetch('/api/auth/login/createCode', {
     method: 'post',
-    payload: {mail: form.mail}
+    payload: { mail: form.mail }
   })
 
   if (isCodeSend) {
     form.verifyScreen = true
+    getUserTimer.run()
   }
-
 }
+
+const getUserTimer = {
+  // если юзер зашел по ссылке в письме, на сайт установится cookie refreshToken
+  timer: null,
+  run() {
+    this.timer = setInterval(async () => {
+      console.log(`from timer`)
+      await getUser()
+      if (user.isAuth) {
+        this.stop()
+        closeLogin()
+      }
+    }, 5000)
+  },
+  stop() {
+    clearInterval(this.timer)
+  }
+}
+
+watch(() => form.code, () => {  // запускаем верификацию
+
+  if (form.code.length === 5) verifyCode()
+})
 
 const verifyCode = async () => {
 
-  const verified = await myFetch('/api/auth/login-verify-code', {
+  if (isNaN(form.code) || form.code.length !== 5) {
+    showNotice('Введите пятизначное число!', 'error')
+    return
+  }
+
+  const verified = await myFetch('/api/auth/login/verifyCode', {
     method: 'post',
     payload: {
       mail: form.mail,
@@ -35,49 +64,34 @@ const verifyCode = async () => {
     }
   })
 
-  if (verified?.isError ?? true) {
-    showNotice('Ошибка! Проверьте введенный код!', 'error')
+  if (verified === null) { // ошибка при запросе, обрабатывается myFetch
+    showNotice('Ошибка при проверке кода!', 'error')
+    return
+  }
+  if (verified.isError) {
+    showNotice(`${verified.message} Осталось попыток: ${verified.attemptsLeft}.`, 'error')
+    if (verified.attemptsLeft === 0) {
+      form.code = ''
+      form.verifyScreen = false
+    }
     return
   }
 
   user.sessionToken = verified.sessionToken
   user.sessionExp = verified.sessionExp
   await getUser()
-  user.showLogin = false
+  getUserTimer.stop()
+  closeLogin()
   showNotice('Успех!', 'success')
 
   // todo: ссылка на /user/profile?
 
 }
 
-// const onLogin = async () => {
-//   isVerifyMail.value = true
-//   try {
-//     // todo data verification
-//     const response = await myFetch('/api/auth/login', { method: 'post', payload: inputMail })
-//     user.sessionToken = response.sessionToken
-//     user.sessionExp = response.sessionExp
-
-//   } catch (e) {
-//     let notice
-//     switch (e.statusCode) {
-//       case 400:
-//         notice = 'Заполните почту и пароль!'
-//         break
-//       case 401:
-//         notice = 'Ошибка! Проверьте введенные почту и пароль!'
-//         break
-//       default:
-//         notice = 'Ошибка авторизации!'
-//     }
-//     showNotice(notice, 'error')
-//     return
-//   }
-//   await getUser()
-
-//   onClose()
-
-// }
+const onMailScreen = () => {
+  form.verifyScreen = false
+  getUserTimer.stop()
+}
 
 const onGoogle = () => {
   showLoader()
@@ -96,7 +110,7 @@ const onGoogle = () => {
       }
       await getUser()
       hideLoader()
-      if (user.isAuth) onClose()
+      if (user.isAuth) closeLogin()
     }
   }, 1000)
 }
@@ -129,7 +143,10 @@ const getGoogleOAuthURL = () => {
   }
 }
 
-const onClose = () => {
+const closeLogin = () => {
+  form.code = ''
+  form.verifyScreen = false
+  getUserTimer.stop()
   user.showLogin = false
 }
 
@@ -151,13 +168,13 @@ const onTest = () => {
           <div class="flex bg-emerald-200">
             <h1>Login</h1>
             <button @click="onTest" class="m-2 px-2 bg-cyan-500 rounded">Test</button>
-            <button @click="onClose" class="m-2 px-2 bg-cyan-500 rounded">Close</button>
+            <button @click="closeLogin" class="m-2 px-2 bg-cyan-500 rounded">Close</button>
           </div>
           <!-- mailScreen -->
           <template v-if="!form.verifyScreen">
             <div>
               <span>Введите почту:</span>
-              <input v-model="form.mail" type="email" class="mx-2"/>
+              <input v-model="form.mail" type="text" class="mx-2" />
               <button @click="sendCode" class="m-2 p-2 bg-cyan-500 rounded">Получить код</button>
             </div>
             <div>
@@ -169,8 +186,8 @@ const onTest = () => {
           <template v-else>
             <div>На почту {{ form.mail }} было отправлено письмо, содержащее код для входа на сайт...</div>
             <div>
-              <button @click='form.verifyScreen = false' class="m-2 p-2 bg-cyan-500 rounded">Назад</button>
-              <input v-model="form.code" type="number" class="mx-2"/>
+              <button @click='onMailScreen' class="m-2 p-2 bg-cyan-500 rounded">Назад</button>
+              <input v-model="form.code" type="text" maxlength="5" class="mx-2 text-4xl w-28" />
               <button @click='verifyCode' class="m-2 p-2 bg-cyan-500 rounded">OK</button>
             </div>
 

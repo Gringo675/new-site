@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
     // получаем категорию
     let query = `SELECT * FROM i_categories WHERE alias = '${alias}'  AND published = 1`
     // console.log(`query: ${query}`)
-    const catData = (await request(query))[0]
+    const catData = (await dbReq(query))[0]
     if (catData === undefined) throw createError({statusCode: 404, statusMessage: 'Page Not Found!!!!'})
     // console.log(`catData: ${JSON.stringify(catData)}`);
 
@@ -18,17 +18,17 @@ export default defineEventHandler(async (event) => {
     query = `SELECT name, alias, image FROM i_categories 
                  WHERE parent_id = '${catData.id}' AND published = 1
                  ORDER BY ordering`
-    catData.childCats = await request(query)
+    catData.childCats = await dbReq(query)
 
     // для подкатегорий получаем смежные категории и родительскую категорию
     if (catData.parent_id > 0) {
         query = `SELECT name, alias, image FROM i_categories 
                  WHERE parent_id = '${catData.parent_id}' AND id != '${catData.id}' AND published = 1
                  ORDER BY ordering`
-        catData.siblingCats = await request(query)
+        catData.siblingCats = await dbReq(query)
         query = `SELECT name, alias FROM i_categories 
                  WHERE id = '${catData.parent_id}'`
-        catData.parentCat = (await request(query))[0]
+        catData.parentCat = (await dbReq(query))[0]
     }
 
     // получаем все товары
@@ -38,7 +38,7 @@ export default defineEventHandler(async (event) => {
                  standart_ids, reestr_ids, pasport_ids
                  FROM i_products WHERE category_id = '${productsCatID}' AND published = 1`;
     // query += ` AND old_id IN (11010301, 11010801, 11011501)`
-    const products = await request(query)
+    const products = await dbReq(query)
     // console.log(`products: ${JSON.stringify(products, null, 2)}`)
 
     // на основе полученных продуктов создаем фильтр
@@ -75,7 +75,7 @@ export default defineEventHandler(async (event) => {
     query = `SELECT id, name, ordering
                 FROM i_properties 
                 WHERE id IN (${Array.from(allProps).join(',')})`
-    const propsArr = await request(query)
+    const propsArr = await dbReq(query)
 
     const props = {} // для удобства создаем объект из всех пропсов
     propsArr.forEach((prop) => {
@@ -131,17 +131,17 @@ export default defineEventHandler(async (event) => {
     if (stnds.size) {
         query = `SELECT number, name, file FROM i_docs_stnd
                  WHERE id IN (${Array.from(stnds).join(', ')})`
-        catData.docs.stnd = await request(query)
+        catData.docs.stnd = await dbReq(query)
     }
     if (rstrs.size) {
         query = `SELECT number, name, type_si, brand, date, file_ot, file_mp, file_svid FROM i_docs_rstr
                  WHERE id IN (${Array.from(rstrs).join(', ')})`
-        catData.docs.rstr = await request(query)
+        catData.docs.rstr = await dbReq(query)
     }
     if (pasps.size) {
         query = `SELECT name, file FROM i_docs_pasp
                  WHERE id IN (${Array.from(pasps).join(', ')})`
-        catData.docs.pasp = await request(query)
+        catData.docs.pasp = await dbReq(query)
     }
 
     // удаляем ненужное

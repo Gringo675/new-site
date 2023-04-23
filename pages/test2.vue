@@ -1,5 +1,7 @@
 <script setup>
-// const result = await $fetch('/api/mailTest')
+
+
+const aaa = myFetch('/api/apiTest')
 
 
 </script>
@@ -7,7 +9,7 @@
 <template>
   <div>
     <h1>Test2</h1>
-    <div>result: {{result}}</div>
+
   </div>
 
 </template>

@@ -23,7 +23,7 @@ export default defineEventHandler(async (event) => {
         if (cat.isDel) {  // удаляем
             query = `DELETE FROM i_categories WHERE id = ${catID}`
             // console.log(`query: ${query}`);
-            await request(query)
+            await dbReq(query)
         }
 
         if (cat.isNew) {  // добавляем
@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
             }
             query = query.slice(0, -2)
             // console.log(`query: ${query}`);
-            await request(query)
+            await dbReq(query)
         }
 
         if (!cat.isDel && !cat.isNew) {  // обновляем
@@ -47,7 +47,7 @@ export default defineEventHandler(async (event) => {
             query = query.slice(0, -2)
             query += ` WHERE id = ${catID}`
             // console.log(`query: ${query}`);
-            await request(query)
+            await dbReq(query)
         }
     }
 

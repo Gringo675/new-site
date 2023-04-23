@@ -30,17 +30,17 @@ export default defineEventHandler(async (event) => {
         // проверяем, есть ли юзер с данной почтой в базе
         let query = `SELECT id, ver_code, admin FROM i_users 
         WHERE mail = '${googleUser.email}' LIMIT 1`;
-        let user = (await request(query))[0]
+        let user = (await dbReq(query))[0]
         if (user) { // есть в базе
             if (user.ver_code !== 0) { // верифицируем юзера
                 query = `UPDATE i_users SET ver_code = 0 WHERE id = ${user.id}`
-                await request(query)
+                await dbReq(query)
             }
         } else { // добавляем
             user = {}
             query = `INSERT INTO i_users (mail, name, created)
              VALUES('${googleUser.email}', '${googleUser.name}', '${new Date().toISOString()}')`
-            user.id = (await request(query)).insertId
+            user.id = (await dbReq(query)).insertId
             user.admin = 0
         }
 

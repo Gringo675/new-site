@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
 
     if (!artist || !track) return {}
 
-    return await doRequest(artist, track)
+    return await dodbReq(artist, track)
 })
 
 const doRequest = (artist, track) => {

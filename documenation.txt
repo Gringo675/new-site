@@ -1,12 +1,14 @@
 ToDo:
-время жизни кода верификации
+login: tests
+проверить getUser на экране Сайт закрыт (перелогин)
 перенести страницу OAuth регистрации с сервера на клиент
-переименовать request на dbReq
+
+
 
 RoadMap:
 Login trough email
-Change user data (/user/profile)
 Добавить OAuth (Apple, VK)
+Change user data (/user/profile)
 Cart
 Cashing?
 Labels

@@ -42,7 +42,7 @@ export default (user, event) => {
     const query = `UPDATE i_users
                    SET last_refresh = '${new Date().toISOString()}'
                    WHERE id = ${user.id}`;
-    request(query)
+    dbReq(query)
 
     return {
         refreshToken: `${refreshHead}.${refreshPayload}.${refreshSignature}`,

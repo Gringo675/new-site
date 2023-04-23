@@ -52,7 +52,7 @@ export default async (url, options = {}) => {
         } catch (e) {
             // console.error(`Fetch error! ${e.statusCode}: ${e.statusMessage}`)
             if (options.silent) break
-            else if (e.statusCode === 400 ||e.statusCode === 401 || e.statusCode === 403) {
+            else if (e.statusCode === 401 || e.statusCode === 403) {
                 hideLoader()
                 throw createError(e)
             }
@@ -79,7 +79,6 @@ const refreshUser = async (user) => {
         user.sessionExp = response.sessionExp
         return true
     } catch (e) {
-        console.log(`Can't refresh user!`)
         return false
     }
 }
