@@ -1,17 +1,17 @@
 ToDo:
-login: tests
-проверить getUser на экране Сайт закрыт (перелогин)
-перенести страницу OAuth регистрации с сервера на клиент
-
-
+login: mail valid visualizer, code valid visualizer
+profile:
+- validate data
+- phone mask
+- button Save active/inactive
+- verify mail
 
 RoadMap:
-Login trough email
-Добавить OAuth (Apple, VK)
 Change user data (/user/profile)
 Cart
 Cashing?
 Labels
+Search
 
     ТЕЗИСЫ
 Все товары принадлежат категориям (не подкатегориям).

@@ -29,12 +29,16 @@ export default defineNuxtConfig({
         dbPassword: process.env.DB_PASSWORD,
         JWT_TOKEN: process.env.JWT_TOKEN,
         GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+        VK_CLIENT_SECRET: process.env.VK_CLIENT_SECRET,
+        MAILRU_CLIENT_SECRET: process.env.MAILRU_CLIENT_SECRET,
         MAIL_HOST: process.env.MAIL_HOST,
         MAIL_PORT: process.env.MAIL_PORT,
         MAIL_USER: process.env.MAIL_USER,
         MAIL_PASS: process.env.MAIL_PASS,
         public: {
-            GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID
+            GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+            VK_CLIENT_ID: process.env.VK_CLIENT_ID,
+            MAILRU_CLIENT_ID: process.env.MAILRU_CLIENT_ID
         }
     },
 })

@@ -7,7 +7,6 @@
 
   </div>import {EventEmitter} from 'node:events'
 
-  // todo frontend (+ data format)
 
 
   const emitter = new EventEmitter()

@@ -1,35 +1,28 @@
 export default defineEventHandler(async (event) => {
+    
     let resultText = ''
+    
     try {
 
-        const config = useRuntimeConfig()
-
-        const code = getQuery(event).code
-
-        const googleUrl = 'https://oauth2.googleapis.com/token'
-
-        const values = {
-            code,
-            client_id: config.public.GOOGLE_CLIENT_ID,
-            client_secret: config.GOOGLE_CLIENT_SECRET,
-            redirect_uri: 'http://localhost:3000/test/api/auth/oauth/google',
-            grant_type: 'authorization_code'
+        let oUser    // .email & .name
+        const provider = event.context.params.provider
+        switch (provider) {
+            case 'google':
+                oUser = await getGoogleUser(event)
+                break
+            case 'vk':
+                oUser = await getVkUser(event)
+                break
+            case 'mailru':
+                oUser = await getMailruUser(event)
+                break
+            default:
+                throw createError({ statusCode: 404, statusMessage: `Unsupported provider!` })
         }
-        const body = Object.keys(values).map(key => `${key}=${encodeURI(values[key])}`).join('&')
 
-        const { id_token } = await $fetch(googleUrl, {
-            method: 'post',
-            body,
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-        })
-
-        const googleUser = JSON.parse(Buffer.from(id_token.split('.')[1], 'base64').toString())
-
-        // проверяем, есть ли юзер с данной почтой в базе
+        // проверяем, есть ли юзер с полученной почтой в базе
         let query = `SELECT id, ver_code, admin FROM i_users 
-        WHERE mail = '${googleUser.email}' LIMIT 1`;
+        WHERE mail = '${oUser.email}' LIMIT 1`;
         let user = (await dbReq(query))[0]
         if (user) { // есть в базе
             if (user.ver_code !== 0) { // верифицируем юзера
@@ -39,7 +32,7 @@ export default defineEventHandler(async (event) => {
         } else { // добавляем
             user = {}
             query = `INSERT INTO i_users (mail, name, created)
-             VALUES('${googleUser.email}', '${googleUser.name}', '${new Date().toISOString()}')`
+             VALUES('${oUser.email}', '${oUser.name}', '${new Date().toISOString()}')`
             user.id = (await dbReq(query)).insertId
             user.admin = 0
         }
@@ -49,7 +42,7 @@ export default defineEventHandler(async (event) => {
         resultText = 'Данные успешно получены!'
 
     } catch (e) {
-        console.log(`error: ${JSON.stringify(e.data, null, 2)}`)
+        console.log(`error: ${JSON.stringify(e, null, 2)}`)
         resultText = 'Ошибка при получении данных!'
     }
 

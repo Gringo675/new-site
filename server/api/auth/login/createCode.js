@@ -21,16 +21,12 @@ export default defineEventHandler(async (event) => {
         await dbReq(query)
 
         // собираем ссылку для автоматического входа
-        // getRequestURL почему-то не учитывает baseURL, поэтому приходится собирать вручную
-        const origin = getRequestURL(event).origin
-        let baseURL = useRuntimeConfig().app.baseURL
-        if (baseURL[baseURL.length - 1] !== '/') baseURL += '/' // проверяем слеш в конце
-        let url = origin + baseURL + 'user/verification'
+        let loginURL = getSiteFullOrigin(event) + 'user/verification'
         const values = {
             mail,
             code: code / 10
         }
-        url = url + '?' + Object.keys(values).map(key => `${key}=${encodeURI(values[key])}`).join('&')
+        loginURL = loginURL + '?' + Object.keys(values).map(key => `${key}=${encodeURI(values[key])}`).join('&')
 
         const mailData = {
             to: mail,
@@ -39,7 +35,7 @@ export default defineEventHandler(async (event) => {
                         <h2>Ваш код авторизации:</h2>
                         <div style="font-size: 20px"> ${code / 10} </div>
                         <span>Ссылка для автоматического входа:</span>
-                        <a href="${url}">${url}</a>
+                        <a href="${loginURL}">${loginURL}</a>
                   </div>`
         }
         // await sendMail(mailData)

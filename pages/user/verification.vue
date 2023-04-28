@@ -3,9 +3,11 @@
 const user = useUser().value
 
 try {
+
     const { mail, code } = useRoute().query
-    // todo: check mail
-    if (isNaN(code) || code.length !== 5) throw new Error('Incorrect code!')
+
+    if (!validateMail(mail)) throw new Error('Incorrect mail format!')
+    if (isNaN(code) || code.length !== 5) throw new Error('Incorrect code format!')
 
     const result = await myFetch('/api/auth/login/verifyCode', {
         method: 'post',

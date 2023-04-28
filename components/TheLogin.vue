@@ -2,18 +2,28 @@
 
 const user = useUser().value
 
+watch(() => user.showLogin, async (val) => {
+  if (val) { // при открытии модуля
+    await getUser() // пробуем сначала обновить юзера
+    form.code = ''
+    isCodeValid.value = false
+    form.verifyScreen = false
+  }
+})
+
 const form = reactive({
   mail: 'gringo675g@gmail.com',
   code: '',
   verifyScreen: false
 })
+const isMailValid = computed(() => validateMail(form.mail))
 
 const sendCode = async () => {
 
-  // if (!validateMail(form.mail)) {
-  //   showNotice('Введите правильный адрес!', 'error')
-  //   return
-  // }
+  if (!isMailValid.value) {
+    showNotice('Введите правильный адрес!', 'error')
+    return
+  }
 
   const isCodeSend = await myFetch('/api/auth/login/createCode', {
     method: 'post',
@@ -28,10 +38,10 @@ const sendCode = async () => {
 
 const getUserTimer = {
   // если юзер зашел по ссылке в письме, на сайт установится cookie refreshToken
+  // данный таймер позволяет автоматически залогиниться и на странице ввода кода
   timer: null,
   run() {
     this.timer = setInterval(async () => {
-      console.log(`from timer`)
       await getUser()
       if (user.isAuth) {
         this.stop()
@@ -44,17 +54,20 @@ const getUserTimer = {
   }
 }
 
+// const isCodeValid = computed(() => !isNaN(form.code) && form.code.length === 5)
+const isCodeValid = ref(false)
 watch(() => form.code, () => {  // запускаем верификацию
-
-  if (form.code.length === 5) verifyCode()
-})
-
-const verifyCode = async () => {
-
-  if (isNaN(form.code) || form.code.length !== 5) {
+  if (isNaN(form.code)) {
     showNotice('Введите пятизначное число!', 'error')
     return
   }
+  if (form.code.length === 5) {
+    isCodeValid.value = true
+    verifyCode()
+  }
+})
+
+const verifyCode = async () => {
 
   const verified = await myFetch('/api/auth/login/verifyCode', {
     method: 'post',
@@ -66,10 +79,12 @@ const verifyCode = async () => {
 
   if (verified === null) { // ошибка при запросе, обрабатывается myFetch
     showNotice('Ошибка при проверке кода!', 'error')
+    isCodeValid.value = false
     return
   }
   if (verified.isError) {
     showNotice(`${verified.message} Осталось попыток: ${verified.attemptsLeft}.`, 'error')
+    isCodeValid.value = false
     if (verified.attemptsLeft === 0) {
       form.code = ''
       form.verifyScreen = false
@@ -88,64 +103,30 @@ const verifyCode = async () => {
 
 }
 
-const onMailScreen = () => {
+const backOnMailScreen = () => {
   form.verifyScreen = false
+  form.code = ''
   getUserTimer.stop()
 }
 
-const onGoogle = () => {
-  showLoader()
+const runOAuth = (provider) => {
 
-  const googleUrl = getGoogleOAuthURL()
-  // const googleUrl = '/test/catalog/shtangentsirkuli'
-  const params = `status=no,location=no,toolbar=no,menubar=no,width=500,height=500,left=200,top=0`
-  const oauthWin = window.open(googleUrl, 'oauth', params)
+  showLoader()
+  const url = getOAuthURL(provider)
+  const oauthWinParams = `status=no,location=no,toolbar=no,menubar=no,width=500,height=500,left=200,top=0`
+  const oauthWin = window.open(url, 'oauth', oauthWinParams)
   const timer = setInterval(async () => {
     if (oauthWin.closed) {
       clearInterval(timer)
-      if (user.isAuth) {
-        // для экзотических случаев, когда логинится уже залогиненный юзер (что возможно),
-        // сначала удалим sessionToken, чтобы получить юзера по refreshToken
-        delete user.sessionToken
-      }
       await getUser()
       hideLoader()
       if (user.isAuth) closeLogin()
     }
   }, 1000)
-}
-const getGoogleOAuthURL = () => {
 
-  try {
-
-    const config = useRuntimeConfig()
-    const fullBaseUrl = window.location.origin + config.app.baseURL
-    const googleRootUrl = 'https://accounts.google.com/o/oauth2/v2/auth'
-
-    const options = {
-      redirect_uri: fullBaseUrl + 'api/auth/oauth/google',
-      client_id: config.GOOGLE_CLIENT_ID,
-      access_type: 'offline',
-      response_type: 'code',
-      prompt: 'consent',
-      scope: [
-        'https://www.googleapis.com/auth/userinfo.email',
-        'https://www.googleapis.com/auth/userinfo.profile'
-      ].join(' ')
-
-    }
-    const qs = new URLSearchParams(options)
-
-    return `${googleRootUrl}?${qs.toString()}`
-
-  } catch (e) {
-    console.error(e)
-  }
 }
 
 const closeLogin = () => {
-  form.code = ''
-  form.verifyScreen = false
   getUserTimer.stop()
   user.showLogin = false
 }
@@ -160,6 +141,7 @@ const onTest = () => {
 <template>
   <Transition name="transition-fade">
     <HelperModalWrapper v-if="user.showLogin">
+
       <div class="modal-form w-[800px] max-w-[95%] max-h-[90vh] bg-slate-200 p-2
                border border-amber-900 rounded-xl
                overflow-auto flex flex-col justify-start">
@@ -170,28 +152,37 @@ const onTest = () => {
             <button @click="onTest" class="m-2 px-2 bg-cyan-500 rounded">Test</button>
             <button @click="closeLogin" class="m-2 px-2 bg-cyan-500 rounded">Close</button>
           </div>
-          <!-- mailScreen -->
-          <template v-if="!form.verifyScreen">
-            <div>
-              <span>Введите почту:</span>
-              <input v-model="form.mail" type="text" class="mx-2" />
-              <button @click="sendCode" class="m-2 p-2 bg-cyan-500 rounded">Получить код</button>
-            </div>
-            <div>
-              <span>Или</span>
-              <button @click="onGoogle" class="m-2 p-2 bg-cyan-500 rounded">Войти через google</button>
-            </div>
+          <template v-if="user.isAuth">
+            <div>Вы вошли на сайт под именем {{ user.name }}.</div>
           </template>
-          <!-- verifyScreen -->
           <template v-else>
-            <div>На почту {{ form.mail }} было отправлено письмо, содержащее код для входа на сайт...</div>
-            <div>
-              <button @click='onMailScreen' class="m-2 p-2 bg-cyan-500 rounded">Назад</button>
-              <input v-model="form.code" type="text" maxlength="5" class="mx-2 text-4xl w-28" />
-              <button @click='verifyCode' class="m-2 p-2 bg-cyan-500 rounded">OK</button>
-            </div>
-
+            <!-- mailScreen -->
+            <template v-if="!form.verifyScreen">
+              <div>
+                <span>Введите почту:</span>
+                <input v-model="form.mail" type="text" v-focus class="mx-2 border-2 some-very-big-class"
+                  :class="{ ' border-green-500': isMailValid }" />
+                <button @click="sendCode" :disabled="!isMailValid" class="m-2 p-2 bg-cyan-500 rounded">Получить
+                  код</button>
+              </div>
+              <div>
+                <span>Или</span>
+                <button @click="runOAuth('google')" class="m-2 p-2 bg-cyan-500 rounded">Войти через google</button>
+                <button @click="runOAuth('vk')" class="m-2 p-2 bg-cyan-500 rounded">Войти через VK</button>
+                <button @click="runOAuth('mailru')" class="m-2 p-2 bg-cyan-500 rounded">Войти через mail.ru</button>
+              </div>
+            </template>
+            <!-- verifyScreen -->
+            <template v-else>
+              <div>На почту {{ form.mail }} было отправлено письмо, содержащее код для входа на сайт...</div>
+              <div>
+                <button @click='backOnMailScreen' class="m-2 p-2 bg-cyan-500 rounded">Назад</button>
+                <input v-model="form.code" type="text" maxlength="5" v-focus class="mx-2 text-4xl w-28 border-2"
+                  :class="{ 'border-green-500': isCodeValid }" />
+              </div>
+            </template>
           </template>
+
         </div>
       </div>
     </HelperModalWrapper>

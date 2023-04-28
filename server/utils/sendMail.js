@@ -2,7 +2,7 @@
  * скрипт для отправки почты через beget
  * @param {*} mail 
  * from: от кого, должно быть привязано к Бегету
- * to: кому
+ * to: кому (должна валидироваться заранее!)
  * subject: тема
  * html: тело письма
  */
@@ -15,7 +15,6 @@ export default async (mail) => {
     mail.from = mail.from ?? 'admin@chelinstrument.ru'
     mail.subject = mail.subject ?? 'Сообщение с сайта chelinstrument.ru'
 
-    // todo: validate data
     if (!mail.to.length || !mail.html.length) throw new Error('Incorrect data provided!')
     const config = useRuntimeConfig()
 
