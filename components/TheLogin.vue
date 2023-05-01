@@ -1,25 +1,27 @@
 <script setup>
-
 const user = useUser().value
 
-watch(() => user.showLogin, async (val) => {
-  if (val) { // при открытии модуля
-    await getUser() // пробуем сначала обновить юзера
-    form.code = ''
-    isCodeValid.value = false
-    form.verifyScreen = false
+watch(
+  () => user.showLogin,
+  async val => {
+    if (val) {
+      // при открытии модуля
+      await getUser() // пробуем сначала обновить юзера
+      form.code = ''
+      isCodeValid.value = false
+      form.verifyScreen = false
+    }
   }
-})
+)
 
 const form = reactive({
   mail: 'gringo675g@gmail.com',
   code: '',
-  verifyScreen: false
+  verifyScreen: false,
 })
 const isMailValid = computed(() => validateMail(form.mail))
 
 const sendCode = async () => {
-
   if (!isMailValid.value) {
     showNotice('Введите правильный адрес!', 'error')
     return
@@ -27,7 +29,7 @@ const sendCode = async () => {
 
   const isCodeSend = await myFetch('/api/auth/login/createCode', {
     method: 'post',
-    payload: { mail: form.mail }
+    payload: { mail: form.mail },
   })
 
   if (isCodeSend) {
@@ -43,7 +45,7 @@ const getUserTimer = {
   run() {
     this.timer = setInterval(async () => {
       await getUser()
-      if (user.isAuth) {
+      if (user.auth) {
         this.stop()
         closeLogin()
       }
@@ -51,33 +53,26 @@ const getUserTimer = {
   },
   stop() {
     clearInterval(this.timer)
-  }
+  },
 }
 
-// const isCodeValid = computed(() => !isNaN(form.code) && form.code.length === 5)
 const isCodeValid = ref(false)
-watch(() => form.code, () => {  // запускаем верификацию
-  if (isNaN(form.code)) {
-    showNotice('Введите пятизначное число!', 'error')
-    return
-  }
-  if (form.code.length === 5) {
-    isCodeValid.value = true
-    verifyCode()
-  }
+watch(isCodeValid, value => {
+  // запускаем верификацию
+  if (value) verifyCode()
 })
 
 const verifyCode = async () => {
-
   const verified = await myFetch('/api/auth/login/verifyCode', {
     method: 'post',
     payload: {
       mail: form.mail,
-      code: form.code
-    }
+      code: form.code,
+    },
   })
 
-  if (verified === null) { // ошибка при запросе, обрабатывается myFetch
+  if (verified === null) {
+    // ошибка при запросе, обрабатывается myFetch
     showNotice('Ошибка при проверке кода!', 'error')
     isCodeValid.value = false
     return
@@ -100,7 +95,6 @@ const verifyCode = async () => {
   showNotice('Успех!', 'success')
 
   // todo: ссылка на /user/profile?
-
 }
 
 const backOnMailScreen = () => {
@@ -109,8 +103,7 @@ const backOnMailScreen = () => {
   getUserTimer.stop()
 }
 
-const runOAuth = (provider) => {
-
+const runOAuth = provider => {
   showLoader()
   const url = getOAuthURL(provider)
   const oauthWinParams = `status=no,location=no,toolbar=no,menubar=no,width=500,height=500,left=200,top=0`
@@ -120,10 +113,9 @@ const runOAuth = (provider) => {
       clearInterval(timer)
       await getUser()
       hideLoader()
-      if (user.isAuth) closeLogin()
+      if (user.auth) closeLogin()
     }
   }, 1000)
-
 }
 
 const closeLogin = () => {
@@ -141,18 +133,27 @@ const onTest = () => {
 <template>
   <Transition name="transition-fade">
     <HelperModalWrapper v-if="user.showLogin">
-
-      <div class="modal-form w-[800px] max-w-[95%] max-h-[90vh] bg-slate-200 p-2
-               border border-amber-900 rounded-xl
-               overflow-auto flex flex-col justify-start">
+      <div
+        class="modal-form w-[800px] max-w-[95%] max-h-[90vh] bg-slate-200 p-2 border border-amber-900 rounded-xl overflow-auto flex flex-col justify-start"
+      >
         <div class="login">
           <!--          header-->
           <div class="flex bg-emerald-200">
             <h1>Login</h1>
-            <button @click="onTest" class="m-2 px-2 bg-cyan-500 rounded">Test</button>
-            <button @click="closeLogin" class="m-2 px-2 bg-cyan-500 rounded">Close</button>
+            <button
+              @click="onTest"
+              class="m-2 px-2 bg-cyan-500 rounded"
+            >
+              Test
+            </button>
+            <button
+              @click="closeLogin"
+              class="m-2 px-2 bg-cyan-500 rounded"
+            >
+              Close
+            </button>
           </div>
-          <template v-if="user.isAuth">
+          <template v-if="user.auth">
             <div>Вы вошли на сайт под именем {{ user.name }}.</div>
           </template>
           <template v-else>
@@ -160,29 +161,66 @@ const onTest = () => {
             <template v-if="!form.verifyScreen">
               <div>
                 <span>Введите почту:</span>
-                <input v-model="form.mail" type="text" v-focus class="mx-2 border-2 some-very-big-class"
-                  :class="{ ' border-green-500': isMailValid }" />
-                <button @click="sendCode" :disabled="!isMailValid" class="m-2 p-2 bg-cyan-500 rounded">Получить
-                  код</button>
+                <input
+                  v-model="form.mail"
+                  type="text"
+                  v-focus
+                  class="mx-2 border-2 some-very-big-class"
+                  :class="{ ' border-green-500': isMailValid }"
+                />
+                <button
+                  @click="sendCode"
+                  :disabled="!isMailValid"
+                  class="m-2 p-2 bg-cyan-500 rounded"
+                >
+                  Получить код
+                </button>
               </div>
               <div>
                 <span>Или</span>
-                <button @click="runOAuth('google')" class="m-2 p-2 bg-cyan-500 rounded">Войти через google</button>
-                <button @click="runOAuth('vk')" class="m-2 p-2 bg-cyan-500 rounded">Войти через VK</button>
-                <button @click="runOAuth('mailru')" class="m-2 p-2 bg-cyan-500 rounded">Войти через mail.ru</button>
+                <button
+                  @click="runOAuth('google')"
+                  class="m-2 p-2 bg-cyan-500 rounded"
+                >
+                  Войти через google
+                </button>
+                <button
+                  @click="runOAuth('vk')"
+                  class="m-2 p-2 bg-cyan-500 rounded"
+                >
+                  Войти через VK
+                </button>
+                <button
+                  @click="runOAuth('mailru')"
+                  class="m-2 p-2 bg-cyan-500 rounded"
+                >
+                  Войти через mail.ru
+                </button>
               </div>
             </template>
             <!-- verifyScreen -->
             <template v-else>
               <div>На почту {{ form.mail }} было отправлено письмо, содержащее код для входа на сайт...</div>
               <div>
-                <button @click='backOnMailScreen' class="m-2 p-2 bg-cyan-500 rounded">Назад</button>
-                <input v-model="form.code" type="text" maxlength="5" v-focus class="mx-2 text-4xl w-28 border-2"
-                  :class="{ 'border-green-500': isCodeValid }" />
+                <button
+                  @click="backOnMailScreen"
+                  class="m-2 p-2 bg-cyan-500 rounded"
+                >
+                  Назад
+                </button>
+                <input
+                  v-mask.code="form.code"
+                  @maskData="form.code = $event.detail.value"
+                  @maskComplete="isCodeValid = $event.detail.value"
+                  type="text"
+                  maxlength="5"
+                  v-focus
+                  class="mx-2 text-4xl w-28 border-2"
+                  :class="{ 'border-green-500': isCodeValid }"
+                />
               </div>
             </template>
           </template>
-
         </div>
       </div>
     </HelperModalWrapper>

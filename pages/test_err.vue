@@ -1,11 +1,7 @@
 <script setup>
-
-const items = await myFetch('/api/adminGetProperties', {auth: true, lazy: true})
-
+const items = await myFetch('/api/adminGetProperties')
 </script>
 
 <template>
-  <div class="test_err">
-
-  </div>
+  <div class="test_err"></div>
 </template>

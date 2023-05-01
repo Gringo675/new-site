@@ -9,7 +9,7 @@ onErrorCaptured((e) => { // для ловли ошибок вне NuxtErrorBound
 
 const someErrorLogger = (e) => {
   console.log(`NuxtErrorBoundary caught error`)
-  // console.log(`e: ${JSON.stringify(e, null, 2)}`)
+  console.log(`e: ${JSON.stringify(e.message, null, 2)}`)
 }
 
 </script>
@@ -18,17 +18,17 @@ const someErrorLogger = (e) => {
   <div>
     <NuxtLayout>
       <NuxtErrorBoundary @error="someErrorLogger">
-        <NuxtPage/>
+        <NuxtPage />
         <template #error="{ error }">
-          <TheError :error="error"/>
+          <TheError :error="error" />
         </template>
       </NuxtErrorBoundary>
     </NuxtLayout>
     <ClientOnly>
-      <LazyTheMessage/>
-      <LazyTheLoader/>
-      <LazyTheNotice/>
-      <LazyTheLogin/>
+      <LazyTheMessage />
+      <LazyTheLoader />
+      <LazyTheNotice />
+      <LazyTheLogin />
     </ClientOnly>
   </div>
 </template>

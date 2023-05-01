@@ -5,31 +5,28 @@
  * isChanged - измененное свойство (Update)
  */
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async event => {
+  await checkToken(event, { adminOnly: true })
 
-    decodeAndCheckToken(event, {adminOnly: true})
+  const props = await readBody(event)
 
-    const props = await readBody(event)
+  for (const prop of props) {
+    let query
 
-    for (const prop of props) {
-
-        let query
-
-        if (prop.isDel) {
-            query = `DELETE FROM i_properties WHERE id = ${prop.id}`
-        } else if (prop.isNew) {
-            query = `INSERT INTO i_properties
+    if (prop.isDel) {
+      query = `DELETE FROM i_properties WHERE id = ${prop.id}`
+    } else if (prop.isNew) {
+      query = `INSERT INTO i_properties
                      SET group_id = ${prop.group_id}, name = '${prepareString(prop.name)}', ordering = ${prop.ordering}`
-        } else if (prop.isChanged) {
-            query = `UPDATE i_properties
+    } else if (prop.isChanged) {
+      query = `UPDATE i_properties
                      SET name     = '${prepareString(prop.name)}',
                          ordering = ${prop.ordering}
                      WHERE id = ${prop.id}`
-        } else {
-            throw createError({statusCode:500, statusMessage:"prop object don't have required field!"})
-        }
-        await dbReq(query)
+    } else {
+      throw createError({ statusCode: 500, statusMessage: "prop object don't have required field!" })
     }
-    return true
-
+    await dbReq(query)
+  }
+  return true
 })

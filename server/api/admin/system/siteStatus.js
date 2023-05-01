@@ -3,14 +3,12 @@
  * При пустом запросе отдает текущее состояние сайте.
  */
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async event => {
+  await checkToken(event, { adminOnly: true })
 
-    decodeAndCheckToken(event, {adminOnly: true})
+  const setStatus = (await readBody(event)).setStatus
 
-    const setStatus = (await readBody(event)).setStatus
+  if (setStatus === '0' || setStatus === '1') process.env.IS_SITE_CLOSED = setStatus
 
-    if (setStatus === '0' || setStatus === '1') process.env.IS_SITE_CLOSED = setStatus
-
-    return process.env.IS_SITE_CLOSED ?? '0'
-
+  return process.env.IS_SITE_CLOSED ?? '0'
 })

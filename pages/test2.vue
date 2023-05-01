@@ -1,59 +1,119 @@
 <script setup>
+const aaa = ref('9517753408')
 
-const vMask = (el, binding) => {
+const vMyDir = {
+  mounted(el, binding) {
+    console.log(`from mounted`)
 
-  try {
+    const handler = () => {
+      console.log(`from handler`)
 
+      // const el = event.target
+      el.dispatchEvent(
+        new CustomEvent('myEvent', {
+          detail: {
+            someData: 999,
+          },
+        })
+      )
+    }
+    handler()
+    el.addEventListener('input', handler)
+  },
+}
+
+const vMask2 = {
+  mounted(el, binding) {
     if (binding.modifiers.phone) var mask = '### ###-##-##'
     else if (binding.modifiers.code) var mask = '#####'
     else return
 
-    const elVal = el.value
-    const digitVal = el.value.replace(/\D/g, "")
+    el.value = binding.value
 
-    const caretPosition = el.selectionEnd
-    const isCaretInEnd = caretPosition === elVal.length
+    const handler = () => {
+      try {
+        const digitVal = el.value.replace(/\D/g, '')
 
-    let di = 0 // digital index
-    let newVal = ''
-    for (let i = 0; i < mask.length; i++) {
-      const symb = mask[i]
-      if (symb === '#') {
-        if (digitVal[di] === undefined) break
-        else {
-          newVal += digitVal[di++]
-          if (digitVal[di] === undefined) break // больше нет цифр
+        const caretPosition = el.selectionEnd
+        const isCaretInEnd = caretPosition === el.value.length
+
+        let di = 0 // digitVal index
+        let newVal = ''
+        if (digitVal.length) {
+          for (let i = 0; i < mask.length; i++) {
+            const symb = mask[i]
+            if (symb === '#') {
+              newVal += digitVal[di++]
+              if (digitVal[di] === undefined) break // больше нет цифр
+            } else newVal += symb
+          }
         }
+
+        if (el.value !== newVal) {
+          el.value = newVal
+          if (!isCaretInEnd) {
+            el.setSelectionRange(caretPosition, caretPosition)
+          }
+        }
+
+        el.dispatchEvent(
+          new CustomEvent('maskData', {
+            detail: {
+              value: el.value,
+            },
+          })
+        )
+        el.dispatchEvent(
+          new CustomEvent('maskComplete', {
+            detail: {
+              value: el.value.length === mask.length,
+            },
+          })
+        )
+      } catch (e) {
+        console.error(`mask error: ${e.message}`)
       }
-      else newVal += symb
     }
 
-    if (elVal !== newVal) {
-      el.value = newVal
-      if (!isCaretInEnd) {
-        const newCaretPosition = caretPosition + newVal.length - elVal.length
-        el.setSelectionRange(caretPosition, caretPosition)
-      }
-      el.dispatchEvent(new CustomEvent('input'))
-    }
-
-  } catch (e) {
-    console.error(`mask error: ${e.message}`)
-  }
+    handler()
+    el.addEventListener('input', handler)
+  },
 }
 
-const aaa = ref('')
+const userPhone = reactive({
+  data: '7867688',
+  complete: false,
+})
+const bbb = ref(false)
 
-const bbb = ref('2-3')
+const ccc = ref('222')
 
+const fff = (event) => {
+  console.log(`from fff`)
+  console.log(`event: ${JSON.stringify(event, null, 2)}`)
+}
 </script>
 
 <template>
   <div>
     <h1>Test2</h1>
-    <div class="m-3">
-      <input v-mask.code v-model="aaa" type="text" placeholder="999 999-99-99">
-      <div> {{ aaa }}</div>
+    <div
+      class="m-3"
+      style="display: flex; color: red"
+    >
+      <input
+        v-mask.phone="userPhone.data"
+        @maskData="userPhone.data = $event.detail.value"
+        @maskComplete="userPhone.complete = $event.detail.value"
+        type="text"
+        placeholder="999 999-99-99"
+      />
+      <div>{{ userPhone }}</div>
     </div>
+    <!-- <div class="m-3">
+      <input v-my-dir @myEvent="fff($event.detail)" type="text">
+      <div> {{ bbb }}</div>
+      <div> {{ ccc }}</div>
+    </div> -->
   </div>
 </template>

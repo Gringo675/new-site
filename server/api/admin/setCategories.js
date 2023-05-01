@@ -9,48 +9,48 @@
  * }
  */
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async event => {
+  await checkToken(event, { adminOnly: true })
 
-    decodeAndCheckToken(event, {adminOnly: true})
+  const cats = await readBody(event)
 
-    const cats = await readBody(event)
+  for (const catID in cats) {
+    const cat = cats[catID]
+    let query
 
-    for (const catID in cats) {
-
-        const cat = cats[catID]
-        let query
-
-        if (cat.isDel) {  // удаляем
-            query = `DELETE FROM i_categories WHERE id = ${catID}`
-            // console.log(`query: ${query}`);
-            await dbReq(query)
-        }
-
-        if (cat.isNew) {  // добавляем
-            query = `INSERT INTO i_categories
-                     SET id = ${catID}, `
-            for (const key in cat) {
-                if (key !== 'isDel' && key !== 'isNew') query += `${key} = '${prepareString(cat[key])}', `
-            }
-            query = query.slice(0, -2)
-            // console.log(`query: ${query}`);
-            await dbReq(query)
-        }
-
-        if (!cat.isDel && !cat.isNew) {  // обновляем
-            // console.log(`cat: ${JSON.stringify(cat, null, 2)}`)
-            query = `UPDATE i_categories
-                     SET `
-            for (const key in cat) {
-                query += `${key} = '${prepareString(cat[key])}', `
-            }
-            query = query.slice(0, -2)
-            query += ` WHERE id = ${catID}`
-            // console.log(`query: ${query}`);
-            await dbReq(query)
-        }
+    if (cat.isDel) {
+      // удаляем
+      query = `DELETE FROM i_categories WHERE id = ${catID}`
+      // console.log(`query: ${query}`);
+      await dbReq(query)
     }
 
-    return true
+    if (cat.isNew) {
+      // добавляем
+      query = `INSERT INTO i_categories
+                     SET id = ${catID}, `
+      for (const key in cat) {
+        if (key !== 'isDel' && key !== 'isNew') query += `${key} = '${prepareString(cat[key])}', `
+      }
+      query = query.slice(0, -2)
+      // console.log(`query: ${query}`);
+      await dbReq(query)
+    }
 
+    if (!cat.isDel && !cat.isNew) {
+      // обновляем
+      // console.log(`cat: ${JSON.stringify(cat, null, 2)}`)
+      query = `UPDATE i_categories
+                     SET `
+      for (const key in cat) {
+        query += `${key} = '${prepareString(cat[key])}', `
+      }
+      query = query.slice(0, -2)
+      query += ` WHERE id = ${catID}`
+      // console.log(`query: ${query}`);
+      await dbReq(query)
+    }
+  }
+
+  return true
 })

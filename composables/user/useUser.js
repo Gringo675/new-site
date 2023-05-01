@@ -1,8 +1,7 @@
 export default () => {
-    return useState('user', () => {
-            return {
-                isAuth: false
-            }
-        }
-    )
+  return useState('user', () => {
+    return {
+      auth: false,
+    }
+  })
 }
