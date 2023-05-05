@@ -1,12 +1,13 @@
 <script setup>
 const user = useUser().value
-const showMenu = ref(false)
 
 onMounted(async () => {
   setTimeout(() => {
-    getUser()
-  }, 2000)
+    getUser({ hidden: true })
+  }, 1000)
 })
+
+const showMenu = ref(false)
 
 const handleLogin = () => {
   user.showLogin = true

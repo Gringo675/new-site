@@ -6,7 +6,7 @@ watch(
   async val => {
     if (val) {
       // при открытии модуля
-      await getUser() // пробуем сначала обновить юзера
+      await getUser({ hidden: true }) // пробуем сначала обновить юзера
       form.code = ''
       isCodeValid.value = false
       form.verifyScreen = false
@@ -44,7 +44,7 @@ const getUserTimer = {
   timer: null,
   run() {
     this.timer = setInterval(async () => {
-      await getUser()
+      await getUser({ hidden: true })
       if (user.auth) {
         this.stop()
         closeLogin()
@@ -57,9 +57,9 @@ const getUserTimer = {
 }
 
 const isCodeValid = ref(false)
-watch(isCodeValid, value => {
+watch(isCodeValid, async value => {
   // запускаем верификацию
-  if (value) verifyCode()
+  if (value) await verifyCode()
 })
 
 const verifyCode = async () => {
@@ -71,30 +71,15 @@ const verifyCode = async () => {
     },
   })
 
-  if (verified === null) {
-    // ошибка при запросе, обрабатывается myFetch
-    showNotice('Ошибка при проверке кода!', 'error')
-    isCodeValid.value = false
-    return
+  if (verified) {
+    getUserTimer.stop()
+    await getUser()
+    closeLogin()
+    showNotice('Успех!', 'success')
+  } else {
+    isCodeValid.value = null
+    showNotice('Неверный код!', 'error')
   }
-  if (verified.isError) {
-    showNotice(`${verified.message} Осталось попыток: ${verified.attemptsLeft}.`, 'error')
-    isCodeValid.value = false
-    if (verified.attemptsLeft === 0) {
-      form.code = ''
-      form.verifyScreen = false
-    }
-    return
-  }
-
-  user.sessionToken = verified.sessionToken
-  user.sessionExp = verified.sessionExp
-  await getUser()
-  getUserTimer.stop()
-  closeLogin()
-  showNotice('Успех!', 'success')
-
-  // todo: ссылка на /user/profile?
 }
 
 const backOnMailScreen = () => {
@@ -111,7 +96,7 @@ const runOAuth = provider => {
   const timer = setInterval(async () => {
     if (oauthWin.closed) {
       clearInterval(timer)
-      await getUser()
+      await getUser({ hidden: true })
       hideLoader()
       if (user.auth) closeLogin()
     }
@@ -125,7 +110,8 @@ const closeLogin = () => {
 
 const onTest = () => {
   cv('from test')
-  showNotice('some notice', 'info')
+
+  // showNotice('some notice', 'info')
   // console.log(`user: ${JSON.stringify(user, null, 2)}`)
 }
 </script>
@@ -216,7 +202,7 @@ const onTest = () => {
                   maxlength="5"
                   v-focus
                   class="mx-2 text-4xl w-28 border-2"
-                  :class="{ 'border-green-500': isCodeValid }"
+                  :class="{ 'border-green-500': isCodeValid, 'border-red-500': isCodeValid === null }"
                 />
               </div>
             </template>

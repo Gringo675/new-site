@@ -1,5 +1,5 @@
 /*
-получение данных через $fetch с обработкой ошибок
+получение данных через $fetch со спиннером и обработкой ошибок
 url - адрес api ресурса
 options {
     silent - не показывать loader и не обрабатывать ошибки
@@ -7,8 +7,6 @@ options {
     payload - данные для передачи с post,
 }
  */
-
-// todo: переделать для использования на сервере
 
 export default async (url, options = {}) => {
   if (process.server)
@@ -18,8 +16,6 @@ export default async (url, options = {}) => {
   options.method = options.method ?? 'get'
   options.payload = options.payload ?? ''
   options.silent = options.silent ?? false
-
-  const user = useUser().value
 
   const fetchOptions = {}
 
@@ -42,7 +38,6 @@ export default async (url, options = {}) => {
         throw createError(e)
       } else if (e.statusCode === 423) {
         // site closed
-        user.showLogin = false
         showError(e)
         break
       } else {

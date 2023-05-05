@@ -1,10 +1,5 @@
-import { createHash } from 'node:crypto'
+const str = 'first secont third'
 
-function hash(string) {
-  return createHash('sha256').update(string).digest('hex')
-}
+const first = str.match(/\S+/)[0]
 
-const aaa = '12345'
-const bbb = hash(aaa)
-
-console.log(`bbb: ${JSON.stringify(bbb, null, 2)}`)
+console.log(`first: ${JSON.stringify(first, null, 2)}`)

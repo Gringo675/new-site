@@ -1,11 +1,10 @@
 <script setup>
-
-import {useNuxtApp} from "#app/nuxt.js";
+import { useNuxtApp } from '#app/nuxt.js'
 
 const test = () => {
   const config = useRuntimeConfig()
   const baseUrl = config.app.baseURL
-  cv({baseUrl})
+  cv({ baseUrl })
   // throw createError({statusCode: 411, statusMessage: `Authentication Required!`})
   // const key = "/api/getCategory?alias=shtangentsirkuli"
   // let data = useNuxtData(url).data
@@ -30,29 +29,51 @@ const createDialog = () => {
   })
 }
 const localVar = 111
-const localFn = (localWar) => {
+const localFn = localWar => {
   console.log(`localWar: ${localWar}`)
 }
 
 const createMess = () => {
   showMessage('title2', 'body2')
 }
-
 </script>
 
 <template>
   <header class="w-full bg-cyan-200">
     <div class="flex">
-<!--      <TheCart />-->
-<!--      <CatsMenu />-->
-      <TheUser />
+      <!--      <CatsMenu />-->
+      <ClientOnly>
+        <TheUser />
+        <TheCart />
+      </ClientOnly>
+
       <button class="button">
         <NuxtLink to="/admin">Admin</NuxtLink>
       </button>
-      <button @click="createDialog" class="button">Create dialog</button>
-      <button @click="createMess" class="button">Create mess</button>
-      <button @click="showLoader()" class="button">Show loader</button>
-      <button @click="showNotice('some text', 'error')" class="button">Show notice</button>
+      <button
+        @click="createDialog"
+        class="button"
+      >
+        Create dialog
+      </button>
+      <button
+        @click="createMess"
+        class="button"
+      >
+        Create mess
+      </button>
+      <button
+        @click="showLoader()"
+        class="button"
+      >
+        Show loader
+      </button>
+      <button
+        @click="showNotice('some text', 'error')"
+        class="button"
+      >
+        Show notice
+      </button>
       <!--      <button @click="multiply" class="button">Multuply</button>-->
     </div>
     <div>
@@ -74,8 +95,12 @@ const createMess = () => {
       <button class="button">
         <NuxtLink to="/test2">/test2</NuxtLink>
       </button>
-      <button class="button" @click="test">test</button>
+      <button
+        class="button"
+        @click="test"
+      >
+        test
+      </button>
     </div>
-
   </header>
 </template>

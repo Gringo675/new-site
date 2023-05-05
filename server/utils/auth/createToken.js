@@ -28,4 +28,10 @@ export default (user, event) => {
     secure: true,
     sameSite: 'strict',
   })
+
+  // записываем в базу время обновления
+  const query = `UPDATE i_users
+                   SET last_refresh = '${new Date().toISOString()}'
+                   WHERE id = ${user.id}`
+  dbReq(query)
 }

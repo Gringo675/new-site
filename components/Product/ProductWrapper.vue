@@ -1,5 +1,4 @@
 <script setup>
-
 const props = defineProps({
   data: Object,
 })
@@ -10,25 +9,24 @@ const breadCrumbs = useBreadCrumbs()
 breadCrumbs.value = [
   {
     name: 'Каталог',
-    link: '/catalog'
+    link: '/catalog',
   },
   {
     name: productData.category.name,
-    link: '/catalog/' + productData.category.alias
-  }
+    link: '/catalog/' + productData.category.alias,
+  },
 ]
-
-
 </script>
 
 <template>
   <div class="">
     <!--    breadcrumbs-->
-    <BreadCrumbs/>
+    <BreadCrumbs />
     <!--    subCats-->
     <div class="flex my-1">
-      <div v-for="tag in productData.subCats"
-           class="px-2 mr-2 rounded-md bg-slate-300"
+      <div
+        v-for="tag in productData.subCats"
+        class="px-2 mr-2 rounded-md bg-slate-300"
       >
         <NuxtLink :to="'/catalog/' + tag.alias">{{ tag.name }}</NuxtLink>
       </div>
@@ -36,45 +34,49 @@ breadCrumbs.value = [
     <!--    name  -->
     <h1>{{ productData.name }}</h1>
     <!--    id-->
-    <div>
-      id: {{ productData.id }}
-    </div>
+    <div>id: {{ productData.id }}</div>
     <!--    brand-->
     <div class="flex items-center">
-      <div class="">
-        Производитель: {{ productData.brand.shortName }} ({{ productData.brand.fullName }})
-      </div>
+      <div class="">Производитель: {{ productData.brand.shortName }} ({{ productData.brand.fullName }})</div>
       <div class="ml-5">
-        <img :src="'https://chelinstrument.ru/components/com_jshopping/files/img_manufs/' + productData.brand.image">
+        <img :src="'https://chelinstrument.ru/components/com_jshopping/files/img_manufs/' + productData.brand.image" />
       </div>
     </div>
     <!--    price-->
+    <div>Цена: {{ productData.price }}</div>
+    <!-- to cart -->
     <div>
-      Цена: {{ productData.price }}
+      <button
+        class="m-2 px-2 py-1 bg-indigo-300 rounded-md"
+        @click="addProductToCart(productData)"
+      >
+        To cart
+      </button>
     </div>
     <!--    характеристики-->
     <div class="">
-      <div v-for="prop in productData.props"
-           class=""
+      <div
+        v-for="prop in productData.props"
+        class=""
       >
         {{ prop.name }}: {{ prop.val }}
       </div>
     </div>
     <!--images-->
     <div v-for="image in productData.images">
-      <img :src="'https://chelinstrument.ru/components/com_jshopping/files/img_products/' + image">
+      <img :src="'https://chelinstrument.ru/components/com_jshopping/files/img_products/' + image" />
     </div>
     <!--    related-->
     <div class="">
       <h2>Похожие товары</h2>
       <div class="">
-        <HelperProductCard v-for="prod in productData.relatedProds" :prod="prod"/>
-
+        <HelperProductCard
+          v-for="prod in productData.relatedProds"
+          :prod="prod"
+        />
       </div>
     </div>
   </div>
 </template>
 
-<style>
-
-</style>
+<style></style>

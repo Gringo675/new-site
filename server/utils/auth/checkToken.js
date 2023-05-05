@@ -16,7 +16,6 @@ export default async (event, options = {}) => {
   options.adminOnly = options.adminOnly ?? false
 
   const token = getCookie(event, 'token')
-
   if (!token || token === 'undefined')
     throw createError({
       statusCode: 401,

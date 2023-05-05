@@ -16,6 +16,7 @@ const newUser = reactive({
     val: user.mail,
     changed: computed(() => newUser.mail.val !== user.mail),
     valid: computed(() => validateMail(newUser.mail.val)),
+    verified: false,
   },
   org: {
     val: user.org,
@@ -53,18 +54,72 @@ const saveData = async () => {
   for (const key in newUser) {
     if (newUser[key].changed && newUser[key].valid) payload[key] = newUser[key].val
   }
-  cv({ data: payload })
-  await myFetch('/api/user/changeUser', {
+
+  if (payload.mail && !newUser.mail.verified) {
+    await verifyNewMail()
+    return
+  }
+  const response = await myFetch('/api/user/changeUser', {
     method: 'post',
     payload,
   })
 
-  showNotice('Данные успешно обновлены!', 'success')
+  if (response) {
+    showNotice('Данные успешно обновлены!', 'success')
 
-  await getUser({ force: true }) // Обновляем данные на странице
-  for (const key in newUser) {
-    newUser[key].val = user[key]
+    await getUser({ force: true }) // Обновляем данные на странице
+    for (const key in newUser) {
+      newUser[key].val = user[key]
+    }
+    newUser.mail.verified = false
+  } else {
+    showNotice('При обновлении данных произошла ошибка!', 'error')
   }
+}
+
+const newMailVerifier = reactive({
+  show: false,
+  serverHashHex: '',
+  code: '',
+  codeValid: false,
+})
+const verifyNewMail = async mail => {
+  newMailVerifier.serverHashHex = await myFetch('/api/user/verifyNewMail', {
+    method: 'post',
+    payload: { mail: newUser.mail.val },
+  })
+  if (!newMailVerifier.serverHashHex) {
+    showNotice('Ошибка при обновлении почты', 'error')
+    return
+  }
+  newMailVerifier.show = true
+  watch(
+    () => newMailVerifier.codeValid,
+    async value => {
+      if (value) await checkCode()
+    }
+  )
+}
+const checkCode = async () => {
+  const utf8 = new TextEncoder().encode(newMailVerifier.code)
+  const hashBuffer = await crypto.subtle.digest('SHA-256', utf8)
+  const hashArray = Array.from(new Uint8Array(hashBuffer))
+  const hashHex = hashArray.map(bytes => bytes.toString(16).padStart(2, '0')).join('')
+
+  if (hashHex === newMailVerifier.serverHashHex) {
+    newUser.mail.verified = true
+    closeNewMailVerifier()
+    saveData()
+  } else {
+    newMailVerifier.codeValid = null
+    showNotice('Неверный код!', 'error')
+  }
+}
+const closeNewMailVerifier = () => {
+  newMailVerifier.show = false
+  newMailVerifier.serverHashHex = ''
+  newMailVerifier.code = ''
+  newMailVerifier.codeValid = false
 }
 </script>
 
@@ -160,4 +215,46 @@ const saveData = async () => {
       Войти
     </button>
   </div>
+  <Transition name="transition-fade">
+    <HelperModalWrapper v-if="newMailVerifier.show">
+      <div
+        class="modal-form w-[500px] max-w-[95%] max-h-[90vh] border border-amber-900 rounded-xl overflow-auto flex flex-col justify-start"
+      >
+        <div class="flex flex-row justify-between items-center bg-orange-300 p-2.5">
+          <div class="max-w-full whitespace-nowrap overflow-hidden overflow-ellipsis size text-xl">
+            Подтверждение новой почты
+          </div>
+        </div>
+        <div class="p-5 overflow-auto bg-amber-100">
+          <div class="">
+            На адрес {{ newUser.mail.val }} было отправлено письмо, содержащее проверочный код. Пожалуйста проверьте
+            почтовый ящик и введите код в данное поле.
+          </div>
+          <div>
+            <input
+              v-mask.code="newMailVerifier.code"
+              @maskData="newMailVerifier.code = $event.detail.value"
+              @maskComplete="newMailVerifier.codeValid = $event.detail.value"
+              type="text"
+              maxlength="5"
+              v-focus
+              class="mx-2 text-4xl w-28 border-2"
+              :class="{
+                'border-green-500': newMailVerifier.codeValid,
+                'border-red-500': newMailVerifier.codeValid === null,
+              }"
+            />
+          </div>
+        </div>
+        <div class="p-2.5 bg-orange-200 flex justify-end items-center">
+          <button
+            @click="closeNewMailVerifier"
+            class="button px-2 py-1"
+          >
+            Отмена
+          </button>
+        </div>
+      </div>
+    </HelperModalWrapper>
+  </Transition>
 </template>

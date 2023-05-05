@@ -1,3 +1,5 @@
+import crypto from 'crypto'
+
 export default defineEventHandler(async event => {
   const { mail, code } = await readBody(event)
 
@@ -7,25 +9,13 @@ export default defineEventHandler(async event => {
   let query = `SELECT id, ver_code, admin FROM i_users WHERE mail = '${mail}' LIMIT 1`
   const user = (await dbReq(query))[0]
   if (!user) throw createError({ statusCode: 400, statusMessage: `Bad request!` })
-  if (user.ver_code < 100000 || user.ver_code > 999999)
-    throw createError({ statusCode: 400, statusMessage: `Bad request!` })
 
-  // разбиваем ver_code на код и число оставшихся попыток
-  user.attemptsLeft = 10 - (user.ver_code % 10)
-  user.code = Math.floor(user.ver_code / 10)
-  if (user.code !== Number(code)) {
-    user.attemptsLeft--
-    const newVerCode = user.attemptsLeft > 0 ? ++user.ver_code : 377
-    const query = `UPDATE i_users SET ver_code = ${newVerCode} WHERE id = ${user.id}`
-    await dbReq(query)
-    return {
-      isError: true,
-      message: `Неверный код!`,
-      attemptsLeft: user.attemptsLeft,
-    }
-  }
+  const [hash, salt] = user.ver_code.split('.')
+  const currentHash = crypto.createHmac('SHA256', salt).update(`${code}`).digest('base64')
 
-  query = `UPDATE i_users SET ver_code = 0 WHERE id = ${user.id}`
+  if (currentHash !== hash) return false
+
+  query = `UPDATE i_users SET ver_code = '' WHERE id = ${user.id}`
   await dbReq(query)
 
   createToken(user, event)

@@ -1,21 +1,13 @@
 <script setup>
-
-const {value: user} = useUser()
-
-onMounted(() => {
-  setTimeout(async () => {
-    getUser()
-  }, 3000)
-})
-
+//
+getCartFromLocalStore()
+// onMounted(() =>
+//   setTimeout(() => {
+//     getCartFromLocalStore()
+//   }, 2000)
+// )
 </script>
 
 <template>
-  <div class="">
-    Hi{{(user.name ? ' ' + user.name : '')}}!
-  </div>
+  <div>111</div>
 </template>
-
-<style>
-
-</style>
