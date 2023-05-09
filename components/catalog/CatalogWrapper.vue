@@ -2,7 +2,7 @@
 const pageSetup = usePageSetup()
 
 const props = defineProps({
-  data: Object
+  data: Object,
 })
 
 const catData = props.data.catData
@@ -14,17 +14,18 @@ const breadCrumbs = useBreadCrumbs()
 breadCrumbs.value = []
 breadCrumbs.value.push({
   name: 'Каталог',
-  link: '/catalog'
+  link: '/catalog',
 })
-if (catData.parentCat) breadCrumbs.value.push({
-  name: catData.parentCat.name,
-  link: '/catalog/' + catData.parentCat.alias
-})
+if (catData.parentCat)
+  breadCrumbs.value.push({
+    name: catData.parentCat.name,
+    link: '/catalog/' + catData.parentCat.alias,
+  })
 
 const pagination = reactive({
   activePage: 1,
   showPages: 1, // кнопка Показать еще позволяет показать несколько страниц
-  totalPages: 0
+  totalPages: 0,
 })
 
 const sortProducts = () => {
@@ -68,7 +69,7 @@ sortProducts()
 const activeFilter = reactive([]) //массив из всех активных групп фильтра
 const createActiveFilter = () => {
   activeFilter.length = 0
-  filter.forEach((fGroup) => {
+  filter.forEach(fGroup => {
     const activeValues = fGroup.values.filter(value => value.active).map(value => value.val)
     if (activeValues.length) activeFilter.push(activeValues)
   })
@@ -108,13 +109,17 @@ watch(filter, () => {
     productsWrapper.value.classList.remove('opacity-0')
     // показываем количество отфильтрованных товаров
     const prodsQuantity = activeProducts.value.length
-    const text = (prodsQuantity > 0 ? `Найдено товаров - ${prodsQuantity}` : 'Не найдено подходящих товаров.<br>Попробуйте изменить условия.')
+    const text =
+      prodsQuantity > 0
+        ? `Найдено товаров - ${prodsQuantity}`
+        : 'Не найдено подходящих товаров.<br>Попробуйте изменить условия.'
     showNotice(text)
   }, 300)
 })
 
 // реагируем на изменение сортировки и кол-ва товаров на странице
-watch(pageSetup.value, (newS, oldS) => { // ???
+watch(pageSetup.value, (newS, oldS) => {
+  // ???
   // console.log(`newS: ${JSON.stringify(newS, null, 2)}`)
   // console.log(`oldS: ${JSON.stringify(oldS, null, 2)}`)
   // if (newS.sortBy !== oldS.sortBy) sortProducts()
@@ -123,7 +128,6 @@ watch(pageSetup.value, (newS, oldS) => { // ???
   pagination.showPages = 1
   pagination.totalPages = Math.ceil(activeProducts.value.length / pageSetup.value.prodsOnPage)
 })
-
 </script>
 
 <template>
@@ -133,16 +137,18 @@ watch(pageSetup.value, (newS, oldS) => { // ???
     <!--    name-->
     <h1>{{ catData.name }}</h1>
     <!--    description-->
-    <div class="my-2 p-2 bg-slate-100 rounded-xl shadow-md"
-         v-html="catData.description"
-    >
-    </div>
+    <div
+      class="my-2 p-2 bg-slate-100 rounded-xl shadow-md"
+      v-html="catData.description"
+    ></div>
     <!--    subcats-->
-    <div v-if="catData.childCats.length"
-         class="w-full my-2 bg-sky-100 rounded-xl flex items-center justify-center"
+    <div
+      v-if="catData.childCats.length"
+      class="w-full my-2 bg-sky-100 rounded-xl flex items-center justify-center"
     >
-      <div v-for="child in catData.childCats"
-           class="px-3 text-center"
+      <div
+        v-for="child in catData.childCats"
+        class="px-3 text-center"
       >
         <NuxtLink :to="'/catalog/' + child.alias">
           {{ child.name }}
@@ -154,7 +160,10 @@ watch(pageSetup.value, (newS, oldS) => { // ???
       <!--      first column-->
       <div class="w-60 mr-4">
         <!--      filter-->
-        <CatalogFilter :filter="filter" :filterInitial="filterInitial"/>
+        <CatalogFilter
+          :filter="filter"
+          :filterInitial="filterInitial"
+        />
       </div>
       <!--      second column-->
       <div class="w-full">
@@ -167,7 +176,10 @@ watch(pageSetup.value, (newS, oldS) => { // ???
             <option value="priceAcs">сначала дешевые</option>
             <option value="priceDes">сначала дорогие</option>
           </select>
-          <select v-model="pageSetup.prodsOnPage" class="ml-5">
+          <select
+            v-model="pageSetup.prodsOnPage"
+            class="ml-5"
+          >
             <option disabled>На странице:</option>
             <option>10</option>
             <option>20</option>
@@ -176,24 +188,26 @@ watch(pageSetup.value, (newS, oldS) => { // ???
           </select>
         </div>
         <!--  products-->
-        <div class="products" id="pageProducts">
+        <div
+          class="products"
+          id="pageProducts"
+        >
           <h2>PRODUCTS</h2>
-          <div ref="productsWrapper" class="transition-opacity">
+          <div
+            ref="productsWrapper"
+            class="transition-opacity"
+          >
             <template v-if="visibleProducts.length">
-              <HelperProductCard v-for="product in visibleProducts" :prod="product"/>
+              <CatalogProductCard
+                v-for="product in visibleProducts"
+                :prod="product"
+              />
             </template>
-            <div v-else>
-              Подходящих товаров не найдено!
-            </div>
-
+            <div v-else>Подходящих товаров не найдено!</div>
           </div>
-          <HelperPaginator :pageProps="pagination"/>
+          <HelperPaginator :pageProps="pagination" />
         </div>
       </div>
-
-
     </div>
-
   </div>
 </template>
-

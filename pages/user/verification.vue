@@ -5,9 +5,9 @@ try {
   const { mail, code } = useRoute().query
 
   if (!validateMail(mail)) throw new Error('Incorrect mail format!')
-  if (isNaN(code) || code.length !== 5) throw new Error('Incorrect code format!')
+  if (isNaN(Number(code)) || code.length !== 5) throw new Error('Incorrect code format!')
 
-  const result = await myFetch('/api/auth/login/verifyCode', {
+  await myFetch('/api/auth/login/verifyCode', {
     method: 'post',
     payload: {
       mail,
@@ -15,11 +15,6 @@ try {
     },
     silent: true,
   })
-
-  if (result?.sessionToken) {
-    user.sessionToken = result.sessionToken
-    user.sessionExp = result.sessionExp
-  }
 } catch (e) {
   console.error(e)
 }

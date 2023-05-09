@@ -1,13 +1,17 @@
 <script setup>
 //
-getCartFromLocalStore()
-// onMounted(() =>
-//   setTimeout(() => {
-//     getCartFromLocalStore()
-//   }, 2000)
-// )
+const cart = useCart()
+
+await updateCartFromLocalStore()
+
+window.addEventListener('storage', event => {
+  if (event.storageArea !== localStorage || event.key !== 'CART') return
+  updateCartFromLocalStore()
+})
+
+const cartItems = computed(() => cart.reduce((acc, item) => acc + item.quantity, 0))
 </script>
 
 <template>
-  <div>111</div>
+  <div>{{ cartItems }}</div>
 </template>

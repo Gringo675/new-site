@@ -1,6 +1,6 @@
 <script setup>
 const f1 = async () => {
-  await f2()
+  // await f2()
 }
 const f2 = async () => {
   throw createError({ statusCode: 418, statusMessage: `Some error` })

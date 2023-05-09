@@ -83,7 +83,7 @@ const newMailVerifier = reactive({
   code: '',
   codeValid: false,
 })
-const verifyNewMail = async mail => {
+const verifyNewMail = async () => {
   newMailVerifier.serverHashHex = await myFetch('/api/user/verifyNewMail', {
     method: 'post',
     payload: { mail: newUser.mail.val },

@@ -7,7 +7,7 @@ export default defineNuxtConfig({
       meta: [{ name: 'robots', content: 'noindex, nofollow' }],
     },
   },
-  modules: ['@nuxtjs/tailwindcss'],
+  modules: ['@nuxtjs/tailwindcss',],
   routeRules: {
     '/admin/**': { ssr: false },
     '/user/**': { ssr: false },

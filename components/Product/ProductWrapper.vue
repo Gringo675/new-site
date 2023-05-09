@@ -45,14 +45,9 @@ breadCrumbs.value = [
     <!--    price-->
     <div>Цена: {{ productData.price }}</div>
     <!-- to cart -->
-    <div>
-      <button
-        class="m-2 px-2 py-1 bg-indigo-300 rounded-md"
-        @click="addProductToCart(productData)"
-      >
-        To cart
-      </button>
-    </div>
+    <ClientOnly>
+      <ProductCartButton :prod="productData" />
+    </ClientOnly>
     <!--    характеристики-->
     <div class="">
       <div
@@ -70,7 +65,7 @@ breadCrumbs.value = [
     <div class="">
       <h2>Похожие товары</h2>
       <div class="">
-        <HelperProductCard
+        <CatalogProductCard
           v-for="prod in productData.relatedProds"
           :prod="prod"
         />
