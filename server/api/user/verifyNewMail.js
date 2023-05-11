@@ -10,7 +10,8 @@ export default defineEventHandler(async event => {
   const { mail } = await readBody(event)
   if (!validateMail(mail)) throw createError({ statusCode: 400, statusMessage: `Incorrect mail format!` })
 
-  const code = getRandomCode().toString()
+  // const code = getRandomCode().toString()
+  const code = '11111'
   const hashCode = createHash('sha256').update(code).digest('hex')
 
   const mailData = {
@@ -21,7 +22,7 @@ export default defineEventHandler(async event => {
               <div style="font-size: 20px"> ${code} </div>
           </div>`,
   }
-  await sendMail(mailData)
+  // await sendMail(mailData)
 
   return hashCode
 })

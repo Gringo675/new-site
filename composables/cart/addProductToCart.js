@@ -10,7 +10,5 @@ export default product => {
 
   cart.push({ id, name, alias, price, image, quantity })
 
-  cv({ cart })
-
   setCartToLocalStore()
 }

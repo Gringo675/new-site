@@ -1,5 +1,5 @@
 ToDo:
-verification.vue
+новая почта уже есть в базе?
 
 
 RoadMap:

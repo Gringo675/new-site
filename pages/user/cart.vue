@@ -4,10 +4,19 @@ vue
 const cart = useCart()
 const user = useUser().value
 
+const showUserProfile = ref(false)
+
 const createOrder = () => {
   if (!user.auth) {
     user.showLogin = true
-  }
+    const unwatch = watch(
+      () => user.showLogin,
+      () => {
+        nextTick(() => unwatch()) // watch only once
+        if (user.auth) showUserProfile.value = true
+      }
+    )
+  } else showUserProfile.value = true
 }
 </script>
 
@@ -35,6 +44,12 @@ const createOrder = () => {
         Delete
       </button>
     </div>
+  </div>
+  <TheUserProfile
+    v-if="showUserProfile"
+    :from-cart="true"
+  />
+  <div v-else>
     <button
       class="button"
       @click="createOrder"

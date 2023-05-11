@@ -1,4 +1,6 @@
 <script setup>
+//
+const router = useRouter()
 const user = useUser().value
 user.showLogin = false
 hideLoader() // на всякий случай
@@ -7,35 +9,25 @@ const props = defineProps({
   error: Object,
   isGlobal: Boolean,
 })
-// console.log(`props.error: ${JSON.stringify(props.error, null, 2)}`)
+
 const isGlobal = props.isGlobal
-
 const error = isGlobal ? ref(props.error) : props.error
-
 error.value.code = Number(error.value.statusCode) // при некоторых ошибках не дает перезаписать statusCode, поэтому code
 
-if (error.value.code === 423 && !isGlobal) {
-  // полноэкранная ошибка для закрытого сайта
-  showError(error.value)
-}
+// полноэкранная ошибка для закрытого сайта
+if (error.value.code === 423 && !isGlobal) showError(error.value)
 
-let unregisterAfterEachHook, unwatch
-
-const router = useRouter()
+let unregisterAfterEachHook = () => {}
 if (!isGlobal) unregisterAfterEachHook = router.afterEach(() => (error.value = null))
+onUnmounted(() => unregisterAfterEachHook())
 
-onUnmounted(() => {
-  if (unregisterAfterEachHook) unregisterAfterEachHook()
-  if (unwatch) unwatch()
-})
-
-const showLogin = async options => {
-  if (unwatch) unwatch() // чтобы не навесить больше одного
+const showLogin = () => {
   user.showLogin = true
-  unwatch = watch(
-    () => user.auth,
+  const unwatch = watch(
+    () => user.showLogin,
     () => {
-      refreshPage()
+      nextTick(() => unwatch()) // watch only once
+      if (user.auth) refreshPage()
     }
   )
 }
@@ -61,8 +53,6 @@ const toMainPage = () => {
   if (isGlobal) clearError({ redirect: '/' })
   else navigateTo('/')
 }
-
-// if (error.statusCode === 401) showLogin()
 
 const test = () => {
   showLoader()

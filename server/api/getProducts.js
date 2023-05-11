@@ -9,8 +9,9 @@ export default defineEventHandler(async event => {
   )}) AND published = 1`
 
   const products = await dbReq(query)
+  if (!Array.isArray(products)) return false
+
   // берем только первое изображение
-  // @ts-ignore
   products.forEach(product => {
     product.image = product.images.match(/\S+/)[0]
     delete product.images

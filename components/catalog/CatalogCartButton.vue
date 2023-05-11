@@ -1,10 +1,10 @@
-<script setup>
+<script setup lang="ts">
 //
 const props = defineProps({
   prod: Object,
 })
 const prod = props.prod
-cv({ prod })
+
 const cart = useCart()
 const productCartIndex = computed(() => cart.findIndex(cartItem => cartItem.id === prod.id))
 </script>
@@ -27,7 +27,7 @@ const productCartIndex = computed(() => cart.findIndex(cartItem => cartItem.id =
     </button>
     <input
       :value="cart[productCartIndex].quantity"
-      @change="changeCartQuantity(productCartIndex, Number($event.target.value))"
+      @change="changeCartQuantity(productCartIndex, Number(($event.target as HTMLInputElement).value))"
       type="number"
       class="w-12"
     />

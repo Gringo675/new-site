@@ -1,17 +1,13 @@
-<script setup>
-async function hash(string) {
-  const utf8 = new TextEncoder().encode(string)
-  const hashBuffer = await crypto.subtle.digest('SHA-256', utf8)
-  const hashArray = Array.from(new Uint8Array(hashBuffer))
-  const hashHex = hashArray.map(bytes => bytes.toString(16).padStart(2, '0')).join('')
-  return hashHex
+<script setup lang="ts">
+type Person = {
+  age: number
 }
 
-const aaa = '12345'
-const bbb = await hash(aaa)
+const aaa = ref({} as Person)
+aaa.value.age = 111
 </script>
 
 <template>
   <h1>Test1</h1>
-  <div>{{ bbb }}</div>
+  <div>{{ aaa.age }}</div>
 </template>

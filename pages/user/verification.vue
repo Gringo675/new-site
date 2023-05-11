@@ -1,4 +1,5 @@
 <script setup>
+// страница авторизации по ссылке в письме
 const user = useUser().value
 
 try {

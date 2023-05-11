@@ -5,7 +5,7 @@ export default async () => {
 
   const addedProducts = []
 
-  if (storCart.length) {
+  if (storCart?.length) {
     for (const storCartItem of storCart) {
       const cartItemIndex = cart.findIndex(cartItem => cartItem.id === storCartItem.id)
       if (cartItemIndex === -1) {
@@ -13,9 +13,6 @@ export default async () => {
       } else cart[cartItemIndex].quantity = storCartItem.quantity
     }
   }
-
-  // проверяем на удаленные с другой вкладки товары
-  // cart.filter(cartItem => storCart.some(storCartItem => storCartItem.id === cartItem.id))
 
   // проверяем на удаленные с другой вкладки товары
   cart.forEach((cartItem, cartIndex, cartArr) => {

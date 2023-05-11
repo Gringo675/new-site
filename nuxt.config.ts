@@ -1,4 +1,3 @@
-// @ts-ignore
 export default defineNuxtConfig({
   app: {
     // baseURL: process.env.NODE_ENV === 'production' ? '/test/' : '/',
@@ -7,7 +6,7 @@ export default defineNuxtConfig({
       meta: [{ name: 'robots', content: 'noindex, nofollow' }],
     },
   },
-  modules: ['@nuxtjs/tailwindcss',],
+  modules: ['@nuxtjs/tailwindcss'],
   routeRules: {
     '/admin/**': { ssr: false },
     '/user/**': { ssr: false },
@@ -18,6 +17,13 @@ export default defineNuxtConfig({
       'composables/*', // scan modules nested one level deep
     ],
   },
+  components: [
+    {
+      path: '~/components/unprefixed',
+      pathPrefix: false,
+    },
+    '~/components',
+  ],
   runtimeConfig: {
     // dbHost: process.env.NODE_ENV === 'production' ? process.env.DB_HOST : process.env.DB_HOST_LOCAL,
     dbHost: process.env.DB_HOST_LOCAL, // работает везде, и на localhost, и удаленно

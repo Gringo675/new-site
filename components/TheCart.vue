@@ -13,5 +13,10 @@ const cartItems = computed(() => cart.reduce((acc, item) => acc + item.quantity,
 </script>
 
 <template>
-  <div>{{ cartItems }}</div>
+  <button
+    @click="navigateTo('/user/cart')"
+    class="m-2 p-2 bg-orange-400 rounded-3xl"
+  >
+    Товаров: {{ cartItems }}
+  </button>
 </template>
