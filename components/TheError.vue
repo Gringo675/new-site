@@ -3,7 +3,9 @@
 const router = useRouter()
 const user = useUser().value
 user.showLogin = false
-hideLoader() // на всякий случай
+hideLoader()
+
+onUnmounted(() => (user.showLogin = false))
 
 const props = defineProps({
   error: Object,

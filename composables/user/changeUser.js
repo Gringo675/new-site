@@ -1,12 +1,12 @@
 /**
- * Получает объект типа {поле: новое_значение} и отправляет данные на сервер,
+ * Получает массив из измененных значений и отправляет данные на сервер,
  * после чего обновляет пользователя
  */
 
-export default async newData => {
+export default async changedUserData => {
   const response = await myFetch('/api/user/changeUser', {
     method: 'post',
-    payload: newData,
+    payload: changedUserData,
   })
 
   if (response) {

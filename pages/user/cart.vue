@@ -3,7 +3,6 @@ vue
 //
 const cart = useCart()
 const user = useUser().value
-
 const showUserProfile = ref(false)
 
 const createOrder = () => {
@@ -17,6 +16,10 @@ const createOrder = () => {
       }
     )
   } else showUserProfile.value = true
+}
+
+const test = () => {
+  console.log(`fomr test`)
 }
 </script>
 
@@ -45,10 +48,10 @@ const createOrder = () => {
       </button>
     </div>
   </div>
-  <TheUserProfile
-    v-if="showUserProfile"
-    :from-cart="true"
-  />
+  <div v-if="showUserProfile">
+    <TheUserProfile />
+  </div>
+
   <div v-else>
     <button
       class="button"

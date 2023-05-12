@@ -10,8 +10,12 @@ export default defineEventHandler(async event => {
   const { mail } = await readBody(event)
   if (!validateMail(mail)) throw createError({ statusCode: 400, statusMessage: `Incorrect mail format!` })
 
-  // const code = getRandomCode().toString()
-  const code = '11111'
+  // проверяем на отсутствие в базе (уникальность)
+  const query = `SELECT id FROM i_users WHERE mail = '${mail}' LIMIT 1`
+  if ((await dbReq(query))[0]) return { error: true, message: 'Почтовый адрес уже принадлежит другому пользователю!' }
+
+  const code = getRandomCode().toString()
+  // const code = '11111'
   const hashCode = createHash('sha256').update(code).digest('hex')
 
   const mailData = {
@@ -22,7 +26,7 @@ export default defineEventHandler(async event => {
               <div style="font-size: 20px"> ${code} </div>
           </div>`,
   }
-  // await sendMail(mailData)
+  await sendMail(mailData)
 
   return hashCode
 })

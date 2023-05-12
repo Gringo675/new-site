@@ -2,9 +2,9 @@
 // Компонент для управления данными пользователя. Используется на страницах /user/profile && /user/cart
 // Перед выводом компонента нужно удостовериться, что пользователь авторизован.
 
-// const props = defineProps({
-//   fromCart: Boolean,
-// })
+const props = defineProps({
+  fromCart: Boolean,
+})
 
 const user = useUser().value
 
@@ -42,46 +42,32 @@ const newUser = reactive({
     valid: computed(() => newUser.phone.complete || !newUser.phone.val),
   },
 })
+const dataKeys = ['name', 'org', 'inn', 'address', 'phone'] // без почты, для нее отдельный компонент
 
-const dataKeys = ['name', 'org', 'inn', 'address', 'phone'] // без почты
-const isUserDataChanged = computed(() => Object.keys(newUser).some(key => newUser[key].changed))
-const isUserDataCorrect = computed(() => {
-  for (const key in newUser) {
-    if (newUser[key].changed && !newUser[key].valid) return false
+const isButtonDisabled = computed(() => {
+  if (newUser.mail.changed) return true
+  let isSomethingChanged = false
+  for (const key of dataKeys) {
+    if (newUser[key].changed) {
+      isSomethingChanged = true
+      if (!newUser[key].valid) return true
+    }
   }
-  return true
+  if (!props.fromCart && !isSomethingChanged) return true
+  return false
 })
 
-// const mainHandler = async () => {
-//   if (isUserDataChanged) {
-//     saveData()
-//     return
-//   }
-//   if (props.fromCart) sendOrder()
-// }
+const buttonHandler = async () => {
+  const changedUserData = dataKeys
+    .filter(key => newUser[key].changed && newUser[key].valid)
+    .map(key => {
+      return { field: key, value: newUser[key].val }
+    })
 
-// const saveData = async () => {
-//   if (!isUserDataCorrect) return
+  if (changedUserData.length) await changeUser(changedUserData)
 
-//   if (newUser.mail.changed && !newUser.mail.verified) {
-//     verifyNewMail()
-//     return
-//   }
-//   const userDataChanged = Object.keys(newUser)
-//     .filter(key => newUser[key].changed && newUser[key].valid)
-//     .map(key => {
-//       return {
-//         prop: key,
-//         value: newUser[key].val,
-//       }
-//     })
-// }
-
-// const verifyNewMail = async () => {
-//   if (!newUser.mail.changed || !newUser.mail.verified) return
-// }
-
-// const sendOrder = async () => {}
+  // if (props.fromCart) await createOrder()
+}
 </script>
 
 <template>
@@ -164,12 +150,14 @@ const isUserDataCorrect = computed(() => {
         placeholder="999 999-99-99"
       />
     </div>
-    <!-- <button
-      class="button"
-      :disabled="!isUserDataCorrect || (fromCart ? false : !isUserDataChanged)"
-      @click="mainHandler"
-    >
-      {{ fromCart ? 'Отправить заказ' : 'Сохранить' }}
-    </button> -->
+    <div>
+      <button
+        @click="buttonHandler"
+        :disabled="isButtonDisabled"
+        class="button"
+      >
+        {{ fromCart ? 'Отправить заказ' : 'Сохранить' }}
+      </button>
+    </div>
   </div>
 </template>

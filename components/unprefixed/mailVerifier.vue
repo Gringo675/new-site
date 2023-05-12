@@ -13,16 +13,19 @@ const inputData = reactive({
 let serverHashHex = ''
 
 const sendCode = async () => {
-  serverHashHex = await myFetch('/api/user/verifyNewMail', {
+  //
+  const response = await myFetch('/api/user/verifyNewMail', {
     method: 'post',
     payload: { mail: props.mail },
   })
 
-  if (!serverHashHex?.length) {
-    showNotice('Ошибка при обновлении почты', 'error')
-    return
+  if (typeof response === 'string' && response.length === 64) {
+    serverHashHex = response
+    showCodeInput.value = true
+  } else {
+    const errorMessage = response.error ? response.message : 'Ошибка при обновлении почты!'
+    showNotice(errorMessage, 'error')
   }
-  showCodeInput.value = true
 }
 
 watch(
@@ -39,7 +42,7 @@ const checkCode = async () => {
   const hashHex = hashArray.map(bytes => bytes.toString(16).padStart(2, '0')).join('')
 
   if (hashHex === serverHashHex) {
-    changeUser({ mail: props.mail })
+    changeUser([{ field: 'mail', value: props.mail }])
   } else {
     inputData.codeValid = null
     showNotice('Неверный код!', 'error')
@@ -48,7 +51,7 @@ const checkCode = async () => {
 </script>
 
 <template>
-  <div class="m-2 p-2 border border-blue-300 rounded-md w-[350px]">
+  <div class="m-2 p-2 border border-yellow-300 rounded-md w-[350px]">
     <div
       v-if="!showCodeInput"
       class="flex flex-col"
