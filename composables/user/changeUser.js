@@ -3,14 +3,17 @@
  * после чего обновляет пользователя
  */
 
-export default async changedUserData => {
+export default async (changedUserData, options = {}) => {
+  //
+  options.hidden = options.hidden ?? false
+
   const response = await myFetch('/api/user/changeUser', {
     method: 'post',
     payload: changedUserData,
   })
 
   if (response) {
-    showNotice('Изменения сохранены!', 'success')
+    if (!options.hidden) showNotice('Изменения сохранены!', 'success')
     await getUser({ force: true })
   } else showNotice('Ошибка при обновлении данных!', 'error')
 }

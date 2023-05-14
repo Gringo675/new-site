@@ -1,10 +1,13 @@
 <script setup>
-// Компонент для управления данными пользователя. Используется на страницах /user/profile && /user/cart
+// Компонент показа и сохранения изменений в даннымх пользователя.
+// Используется на страницах / user / profile && /user/cart.
+// После обработки (сохранения) изменений эмитит событие 'changesHandled'.
 // Перед выводом компонента нужно удостовериться, что пользователь авторизован.
 
 const props = defineProps({
   fromCart: Boolean,
 })
+const emit = defineEmits(['changesHandled'])
 
 const user = useUser().value
 
@@ -64,9 +67,9 @@ const buttonHandler = async () => {
       return { field: key, value: newUser[key].val }
     })
 
-  if (changedUserData.length) await changeUser(changedUserData)
+  if (changedUserData.length) await changeUser(changedUserData, { hidden: props.fromCart })
 
-  // if (props.fromCart) await createOrder()
+  emit('changesHandled')
 }
 </script>
 
