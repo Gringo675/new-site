@@ -3,10 +3,15 @@ vue
 //
 const cart = useCart()
 const user = useUser().value
-const orderAttachments = reactive({
-  comment: '',
-  file: '',
-})
+
+const checkFileSize = event => {
+  // > 5 Mb
+  if (event.target.files[0]?.size > 5242880) {
+    showNotice('Слишком большой файл!', 'error')
+    event.target.value = ''
+  }
+}
+
 const showUserProfile = ref(false)
 
 const createOrder = () => {
@@ -22,8 +27,15 @@ const createOrder = () => {
   } else showUserProfile.value = true
 }
 
-const sendOrder = () => {
+const sendOrder = async () => {
   console.log(`fomr sendOrder`)
+  const form = document.forms[0] // comments and file
+  const formData = new FormData(form)
+  formData.append('cart', JSON.stringify(cart))
+  await myFetch('/api/user/createOrder', {
+    method: 'post',
+    payload: formData,
+  })
 }
 </script>
 
@@ -53,19 +65,19 @@ const sendOrder = () => {
     <!-- attach comment and file -->
     <div>
       <h2>Комментарии к заказу</h2>
-      <div class="">
-        <div class="">
-          <textarea
-            v-model="orderAttachments.comment"
-            placeholder="Комментарий"
-          ></textarea>
-        </div>
-        <div class="">
-          <input type="file" />
-        </div>
-      </div>
+      <form>
+        <textarea
+          name="comment"
+          class="m-2 p-2 border-2 border-blue-300"
+          placeholder="Комментарий"
+        ></textarea>
+        <input
+          name="file"
+          type="file"
+          @change="checkFileSize"
+        />
+      </form>
     </div>
-    <div class="">222</div>
     <!-- user info -->
     <div v-if="showUserProfile">
       <TheUserProfile
