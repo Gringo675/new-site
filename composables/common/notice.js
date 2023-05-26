@@ -1,20 +1,27 @@
 let timer
 
-export const useNotice = () => useState('notice', () => {
-    return {
-        isActive: false,
-        type: '', // info, error, success
-        text: '',
-    }
+const notice = reactive({
+  isActive: false,
 })
 
-export const showNotice = (text, type = 'info') => {
-    if (process.server) return
-    const notice = useNotice().value
-    notice.text = text
-    notice.type = type
-    clearTimeout(timer)
-    notice.isActive = true
-    timer = setTimeout(() => notice.isActive = false, 4000)
+const noticeData = {
+  type: '', // info, error, success
+  text: '',
+}
 
+export const useNotice = () => {
+  return notice
+}
+
+export const useNoticeData = () => {
+  return noticeData
+}
+
+export const showNotice = (text, type = 'info') => {
+  if (process.server) return
+  noticeData.text = text
+  noticeData.type = type
+  clearTimeout(timer)
+  notice.isActive = true
+  timer = setTimeout(() => (notice.isActive = false), 4000)
 }

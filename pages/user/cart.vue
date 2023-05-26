@@ -13,6 +13,7 @@ const checkFileSize = event => {
 }
 
 const showUserProfile = ref(false)
+const orderNumber = ref(0)
 
 const createOrder = () => {
   if (!user.auth) {
@@ -28,20 +29,29 @@ const createOrder = () => {
 }
 
 const sendOrder = async () => {
-  console.log(`fomr sendOrder`)
   const form = document.forms[0] // comments and file
   const formData = new FormData(form)
   formData.append('cart', JSON.stringify(cart))
-  await myFetch('/api/user/createOrder', {
+  orderNumber.value = await myFetch('/api/user/createOrder', {
     method: 'post',
     payload: formData,
   })
+  showUserProfile.value = false
+  clearCart()
 }
 </script>
 
 <template>
   <h1>Cart</h1>
-  <div v-if="!cart.length">Корзина пуста!</div>
+  <div v-if="!cart.length">
+    <div v-if="orderNumber > 0">Заказ №{{ orderNumber }} успешно создан!</div>
+    <div
+      class=""
+      v-else
+    >
+      Корзина пуста!
+    </div>
+  </div>
   <div v-else>
     <!-- products wrapper -->
     <div class="flex flex-col border-2 border-emerald-400 rounded m-2 p-2">

@@ -1,24 +1,37 @@
-export const useMessage = () => useState('message', () => {
-    return {
-        isActive: false,
-        title: '',
-        body: '',
-        type: '', // info, error, success
-        callback: null,
-        isDialog: false,
-    }
+const message = reactive({
+  isActive: false,
 })
 
+const messageData = {
+  title: '',
+  body: '',
+  type: '', // info, error, success
+  callback: null,
+}
+
+export const useMessage = () => {
+  return message
+}
+
+export const useMessageData = () => {
+  return messageData
+}
+
 export const showMessage = (title, body, type = 'info', callback = null) => {
-    if (process.server) return
-    const message = useMessage().value
-    if (message.isActive) return
-    message.title = title
-    message.body = body
-    message.type = type
-    if (typeof callback === 'function') {
-        message.callback = callback
-        message.isDialog = true
-    }
-    message.isActive = true
+  if (process.server) return
+  if (message.isActive) return
+  messageData.title = title
+  messageData.body = body
+  messageData.type = type
+  messageData.callback = callback
+  message.isActive = true
+}
+
+export const closeMessage = () => {
+  if (process.server) return
+  messageData.title = ''
+  messageData.body = ''
+  messageData.type = ''
+  messageData.callback = null
+  message.isActive = false
 }

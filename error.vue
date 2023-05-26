@@ -12,10 +12,11 @@ const props = defineProps({
     :error="error"
     :isGlobal="true"
   />
-  <ClientOnly>
+  <HelperClientComponents />
+  <!-- <ClientOnly>
     <LazyTheMessage />
     <LazyTheLoader />
     <LazyTheNotice />
     <LazyTheLogin />
-  </ClientOnly>
+  </ClientOnly> -->
 </template>

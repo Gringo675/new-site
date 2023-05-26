@@ -24,9 +24,10 @@ const test = () => {
 }
 
 const createDialog = () => {
-  showMessage('My very very large title', '<p>paragraph with <i>italic</i> word</p>', 'success', () => {
-    localFn(localVar)
-  })
+  // showMessage('My very very large title', '<p>paragraph with <i>italic</i> word</p>', 'success', () => {
+  //   localFn(localVar)
+  // })
+  showFeedback('my title', 'my text')
 }
 const localVar = 111
 const localFn = localWar => {
@@ -63,7 +64,7 @@ const createMess = () => {
         Create mess
       </button>
       <button
-        @click="showLoader()"
+        @click="showLoader"
         class="button"
       >
         Show loader

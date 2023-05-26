@@ -22,21 +22,8 @@ export default defineEventHandler(async event => {
         if (!cart.length) throw createError({ statusCode: 511, statusMessage: `No products in cart!` })
       }
     }
-
-    // console.log(`name: ${formItem.name}`)
-    // console.log(`data: ${formItem.data.toString()}`)
-    // console.log(`filename: ${JSON.stringify(formItem.filename, null, 2)}`)
-    // if (formItem.filename?.length) {
-    //   console.log(`type: ${formItem.type}`)
-    //   console.log(`filename: formItem.filename}`)
-    //   console.log(`length: ${formItem.data.length}`)
-    //   // fs.writeFileSync(`${formItem.filename}`, formItem.data)
-    //   sendFileToMail(formItem.filename, formItem.data)
-    //   console.log(`file ${formItem.filename} saved!`)
-    // } else {
-    //   console.log(`data: ${formItem.data.toString()}`)
-    // }
   }
+
   order.created = new Date().toISOString()
   order.user_id = tokenUser.id
   order.id = await saveOrder(order)
