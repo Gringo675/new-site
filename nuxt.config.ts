@@ -10,6 +10,7 @@ export default defineNuxtConfig({
   routeRules: {
     '/admin/**': { ssr: false },
     '/user/**': { ssr: false },
+    '/search/**': { ssr: false },
     '/test1': { ssr: false },
   },
   imports: {

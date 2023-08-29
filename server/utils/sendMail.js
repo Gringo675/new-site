@@ -31,7 +31,6 @@ export default async mail => {
   })
 
   const result = await transporter.sendMail(mail)
-
   if (result.rejected.length === 0) return true
   else throw new Error('Server rejected email!')
 }

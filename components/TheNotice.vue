@@ -16,5 +16,3 @@ const noticeData = useNoticeData()
     ></div>
   </div>
 </template>
-
-<style></style>

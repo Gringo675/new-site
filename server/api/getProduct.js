@@ -11,6 +11,7 @@ export default defineEventHandler(async event => {
   if (productData === undefined) throw createError({ statusCode: 404, statusMessage: 'Page Not Found!' })
   // console.log(`productData: ${JSON.stringify(productData)}`);
 
+  // хелпер для запросов
   const props = [
     'p0_brand',
     'p1_type',
@@ -21,7 +22,7 @@ export default defineEventHandler(async event => {
     'p6_class',
     'p7_feature',
     'p8_pack',
-  ] // хелпер для запросов
+  ]
 
   // получаем данные о категории
   query = `SELECT name, alias FROM i_categories 
@@ -114,13 +115,24 @@ export default defineEventHandler(async event => {
 
   productData.images = productData.images.split(' ') // изображения из строки в массив
 
-  // ++label
+  // проверяем, есть ли на продукт спец. цена
+  if (productData.special_price > 0) {
+    productData.priceRegular = productData.price
+    productData.price = productData.special_price
+  }
+  // проверяем лейбл
+  if (productData.label_id > 0) {
+    query = `SELECT name, image FROM i_labels
+                 WHERE id = ${productData.label_id} LIMIT 1`
+    productData.label = (await dbReq(query))[0]
+  }
 
   // удаляем ненужное
   const toDelete = [
     'category_id',
     'old_id',
     'brand_eans',
+    'special_price',
     'old_price',
     'vendor_price',
     'vendor_old_price',

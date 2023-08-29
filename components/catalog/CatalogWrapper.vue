@@ -7,7 +7,8 @@ const props = defineProps({
 
 const catData = props.data.catData
 const products = props.data.products
-const filter = reactive(JSON.parse(JSON.stringify(props.data.filter))) // копия, чтобы сохранить стейт для повторных заходов
+const activeProducts = reactive([])
+const filter = props.data.filter
 const filterInitial = props.data.filterInitial
 
 const breadCrumbs = useBreadCrumbs()
@@ -66,67 +67,96 @@ const sortProducts = () => {
 }
 sortProducts()
 
-const activeFilter = reactive([]) //массив из всех активных групп фильтра
-const createActiveFilter = () => {
-  activeFilter.length = 0
+const initializeFilter = () => {
+  // устанавливаем начальные значения
+  console.log(`filterInitial: ${JSON.stringify(filterInitial, null, 2)}`)
   filter.forEach(fGroup => {
-    const activeValues = fGroup.values.filter(value => value.active).map(value => value.val)
-    if (activeValues.length) activeFilter.push(activeValues)
+    fGroup.values.forEach(value => {
+      value.active = filterInitial.includes(value.val)
+      value.disabled = false
+    })
   })
+  handleFilter()
 }
-createActiveFilter()
+initializeFilter()
 
-const activeProducts = computed(() => {
-  const activeProducts = []
+function handleFilter() {
+  // создаем массив из всех активных групп фильтра
+  const activeFilter = filter.map(fGroup => fGroup.values.filter(value => value.active).map(value => value.val))
+  // отбираем по фильтру товары
+  activeProducts.length = 0
   products.forEach(product => {
-    let isProductMatch = true
-    for (const fGroup of activeFilter) {
-      if (!fGroup.some(value => product.props.includes(value))) {
-        isProductMatch = false
-        break
-      }
-    }
+    const isProductMatch = activeFilter.every(fGroup =>
+      fGroup.length ? fGroup.some(activeVal => product.props.includes(activeVal)) : true
+    )
     if (isProductMatch) activeProducts.push(product)
   })
-  pagination.totalPages = Math.ceil(activeProducts.length / pageSetup.value.prodsOnPage) // side effect
-  return activeProducts
-})
+  // Вычисляем неактивные пункты в фильтре. Проверяем каждое отдельное значение, добавляя его к актуальному фильтру.
+  // Если для получившейся комбинации нет подходящих товаров, деактивируем.
+  filter.forEach((fGroup, i) => {
+    fGroup.values
+      .filter(value => value.active === false)
+      .forEach(value => {
+        const localFilter = activeFilter.map(group => [...group]) // делаем копию
+        localFilter[i] = [value.val] // проверяемое значение должно быть одно в группе
+        value.disabled = !products.some(product =>
+          localFilter.every(fGroup =>
+            fGroup.length ? fGroup.some(activeVal => product.props.includes(activeVal)) : true
+          )
+        )
+      })
+  })
+  // считаем количество страниц
+  pagination.totalPages = Math.ceil(activeProducts.length / pageSetup.value.prodsOnPage)
+}
 
 const visibleProducts = computed(() => {
   const startProd = (pagination.activePage - 1) * pageSetup.value.prodsOnPage
   const endProd = startProd + pageSetup.value.prodsOnPage * pagination.showPages
-  return activeProducts.value.slice(startProd, endProd)
+  return activeProducts.slice(startProd, endProd)
 })
 
-// реагируем на изменение фильтра
 const productsWrapper = ref(null)
-watch(filter, () => {
+const changesHandler = (from = 'filter') => {
+  // функция, управляющая отображением изменений в фильтре товаров и настройках страницы
+  // from = filter, resetFilter, pageSetup
   productsWrapper.value.classList.add('opacity-0')
+  setTimeout(() => {
+    if (from === 'resetFilter') initializeFilter()
+    else {
+      if (from === 'pageSetup') sortProducts()
+      handleFilter()
+    }
+  }, 10)
   setTimeout(() => {
     pagination.activePage = 1
     pagination.showPages = 1
-    createActiveFilter()
     productsWrapper.value.classList.remove('opacity-0')
     // показываем количество отфильтрованных товаров
-    const prodsQuantity = activeProducts.value.length
-    const text =
-      prodsQuantity > 0
-        ? `Найдено товаров - ${prodsQuantity}`
-        : 'Не найдено подходящих товаров.<br>Попробуйте изменить условия.'
-    showNotice(text)
+    if (from !== 'pageSetup') {
+      showNotice(
+        activeProducts.length > 0
+          ? `Найдено товаров - ${activeProducts.length}`
+          : 'Не найдено подходящих товаров.<br>Попробуйте изменить условия.'
+      )
+    }
+    if (from === 'filter') addFilterToURL()
   }, 300)
-})
+}
+
+const addFilterToURL = () => {
+  const activeFilterIds = filter.reduce((acc, fGroup) => {
+    acc.push(...fGroup.values.filter(value => value.active).map(value => value.val))
+    return acc
+  }, [])
+  const url = new URL(window.location)
+  url.searchParams.set('f', activeFilterIds.join('-'))
+  window.history.replaceState({}, '', url)
+}
 
 // реагируем на изменение сортировки и кол-ва товаров на странице
-watch(pageSetup.value, (newS, oldS) => {
-  // ???
-  // console.log(`newS: ${JSON.stringify(newS, null, 2)}`)
-  // console.log(`oldS: ${JSON.stringify(oldS, null, 2)}`)
-  // if (newS.sortBy !== oldS.sortBy) sortProducts()
-  sortProducts()
-  pagination.activePage = 1
-  pagination.showPages = 1
-  pagination.totalPages = Math.ceil(activeProducts.value.length / pageSetup.value.prodsOnPage)
+watch(pageSetup.value, () => {
+  changesHandler('pageSetup')
 })
 </script>
 
@@ -143,7 +173,7 @@ watch(pageSetup.value, (newS, oldS) => {
     ></div>
     <!--    subcats-->
     <div
-      v-if="catData.childCats.length"
+      v-if="catData.childCats"
       class="w-full my-2 bg-sky-100 rounded-xl flex items-center justify-center"
     >
       <div
@@ -162,7 +192,7 @@ watch(pageSetup.value, (newS, oldS) => {
         <!--      filter-->
         <CatalogFilter
           :filter="filter"
-          :filterInitial="filterInitial"
+          :changesHandler="changesHandler"
         />
       </div>
       <!--      second column-->

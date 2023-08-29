@@ -1,24 +1,29 @@
 <script setup>
-// throw new Error('some///')
-// const v = null
-// console.log(v.toString())
+//
+const controller = new AbortController()
 
-const f1 = async () => {
-  f2()
-}
-const f2 = async () => {
-  throw createError({ statusCode: 418, statusMessage: `Some error` })
+const startFunc = async () => {
+  try {
+    console.log(`response started`)
+    const response = await fetch('/test/api/getSearch?q=ttt', { signal: controller.signal })
+    console.log(`response ended`)
+  } catch (e) {
+    console.log(`e: ${JSON.stringify(e, null, 2)}`)
+  }
 }
 </script>
 
 <template>
-  <div>test 2</div>
-  <div>
-    <button
-      @click="f1"
-      class="button"
-    >
-      test11
-    </button>
-  </div>
+  <button
+    class="button"
+    @click="startFunc"
+  >
+    Start
+  </button>
+  <button
+    class="button"
+    @click="controller.abort()"
+  >
+    Abort
+  </button>
 </template>

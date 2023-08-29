@@ -22,8 +22,6 @@ const someErrorLogger = e => {
   console.log(`NuxtErrorBoundary caught error`)
   console.log(`e: ${JSON.stringify(e.message, null, 2)}`)
 }
-
-const feedback = useFeedback()
 </script>
 
 <template>
@@ -37,11 +35,5 @@ const feedback = useFeedback()
       </NuxtErrorBoundary>
     </NuxtLayout>
     <HelperClientComponents />
-    <!-- <ClientOnly> -->
-    <!-- <LazyTheMessage /> -->
-    <!-- <LazyTheLoader /> -->
-    <!-- <LazyTheNotice /> -->
-    <!-- <LazyTheLogin /> -->
-    <!-- </ClientOnly> -->
   </div>
 </template>

@@ -2,6 +2,23 @@ export default defineEventHandler(async event => {
   const cTime = new Date().toLocaleTimeString()
   console.log(`from apiTest: ${cTime}`)
 
+  const aaa = {
+    par1: 111,
+    par2: 222,
+  }
+
+  const response = await $fetch(
+    'https://script.google.com/macros/s/AKfycbxEyV5I_SX6XZtsYzpUhUFxJ4Oq0bXTeDw2Nj2coP4/dev',
+    {
+      redirect: 'follow',
+      method: 'POST',
+      body: JSON.stringify(aaa),
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8',
+      },
+    }
+  )
+  console.log(`response: ${JSON.stringify(response, null, 2)}`)
   // const aaa = getRequestURL(event).toString().match(/(^.+)\/api\//)[1]
   // const ttt = typeof aaa
   // cv({ aaa, ttt })
@@ -41,10 +58,3 @@ export default defineEventHandler(async event => {
   //     aaa: [111, 222, 333]
   // }
 })
-
-async function timer(sec) {
-  let promise = new Promise((resolve, reject) => {
-    setTimeout(() => resolve(), sec * 1000)
-  })
-  return await promise
-}

@@ -1,51 +1,43 @@
 /**
- * Получает formData c тремя полями: cart, comment, file
+ * Получает formData c тремя полями: cart (JSON), comment, files; и поле user при быстром заказе.
+ * Быстрые заказы не сохраняются в базе, для них всегда возвращается номер (id) = 1.
  */
 
 export default defineEventHandler(async event => {
   //
-  const tokenUser = await checkToken(event)
 
-  const formData = await readMultipartFormData(event)
-  // console.log(`formData: ${JSON.stringify(formData, null, 2)}`)
-  const order = {}
-  let cart, attachedFile
-  for (const formItem of formData) {
-    if (formItem.name === 'file') {
-      order.file = formItem.filename
-      attachedFile = formItem.data
-      if (attachedFile.length > 5242880) throw createError({ statusCode: 511, statusMessage: `Very big file!` })
-    } else {
-      order[formItem.name] = formItem.data.toString()
-      if (formItem.name === 'cart') {
-        cart = JSON.parse(order.cart)
-        if (!cart.length) throw createError({ statusCode: 511, statusMessage: `No products in cart!` })
-      }
-    }
+  const order = await getFormData(event)
+  order.fastOrder = order.user !== undefined
+  if (!order.fastOrder) {
+    const tokenUser = await checkToken(event)
+    order.user_id = tokenUser.id
   }
-
   order.created = new Date().toISOString()
-  order.user_id = tokenUser.id
   order.id = await saveOrder(order)
-  await sendMails(order, cart, attachedFile)
+  await sendMails(order)
 
   return order.id
 })
 
 const saveOrder = async order => {
   // сохраняем заказ в базе и возвращаем id (номер) заказа
-  const query = `INSERT INTO i_orders SET ${Object.keys(order)
-    .map(key => `${key} = '${prepareString(order[key])}'`)
-    .join(', ')}`
+  if (order.fastOrder) return 1
+  const query = `INSERT INTO i_orders SET created = '${order.created}', user_id = '${order.user_id}',
+                  cart = '${prepareString(order.cart)}', comment = '${prepareString(order.comment)}',
+                  files = '${
+                    order.files.length ? prepareString(order.files.map(file => file.filename).join(', ')) : ''
+                  }'`
   // @ts-ignore
-  return (await dbReq(query)).insertId
+  return Number((await dbReq(query)).insertId)
 }
 
-const sendMails = async (order, cart, attachedFile) => {
+const sendMails = async order => {
   // посылаем письма клиенту и менеджеру
-  const query = `SELECT mail, name, org, inn, address, phone FROM i_users WHERE id = ${order.user_id} LIMIT 1`
-  const client = (await dbReq(query))[0]
-  cv({ client })
+  const client =
+    order.user ||
+    (await dbReq(`SELECT mail, name, org, inn, address, phone FROM i_users WHERE id = ${order.user_id} LIMIT 1`))[0]
+
+  const cart = JSON.parse(order.cart)
   const cartTemplate =
     cart.reduce((acc, item) => {
       return (
@@ -62,13 +54,13 @@ const sendMails = async (order, cart, attachedFile) => {
 
   const sellerMail = {
     to: 'gringo675@mail.ru',
-    subject: `Новый заказ №${order.id}`,
-    attachments: order.file.length ? [{ filename: order.file, content: attachedFile }] : [],
+    subject: order.fastOrder ? 'Сайт - Быстрый заказ' : `Сайт - Новый заказ №${order.id}`,
+    attachments: order.files,
   }
   sellerMail.html = `
   <h1>Заголовок</h1>
   ${cartTemplate}
-  <div>Примечание к заказу: ${order.comment}</div>
+  <div>Примечание к заказу: <pre>${order.comment}</pre></div>
   <div>Client name: ${client.name}</div>
   <div>Client mail: ${client.mail}</div>
   <div>Client org: ${client.org}</div>
@@ -79,7 +71,7 @@ const sendMails = async (order, cart, attachedFile) => {
 
   const clientMail = {
     to: client.mail,
-    subject: `chelinstrument.ru - Информация по заказу №${order.id}`,
+    subject: `chelinstrument.ru - Информация по заказу` + order.fastOrder ? '' : ` №${order.id}`,
   }
   clientMail.html = `
   <h1>Благодарим за заказ!</h1>

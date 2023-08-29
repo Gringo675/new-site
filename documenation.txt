@@ -1,17 +1,16 @@
 ToDo:
-изменить логику компонентов TheMessage etc.
-проверить TheLogin
-корзина - быстрый заказ без регистрации через форму обратной связи
-загрузка файлов:
-- кириллица
-
+sub-sub-Cats?
+поиск: 
+упорядочить товары
+упорядочить категории
+labels on products
+cats filter to url query
 
 RoadMap:
-Форма обратной связи
-Cashing?
-Labels
 Search
-ErrorLogger
+админка товары
+Cashing?
+ErrorLogger (+ ошибки при отсутствии интернета)
 try vuetify?
 
     ТЕЗИСЫ

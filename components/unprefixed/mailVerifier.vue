@@ -42,7 +42,14 @@ const checkCode = async () => {
   const hashHex = hashArray.map(bytes => bytes.toString(16).padStart(2, '0')).join('')
 
   if (hashHex === serverHashHex) {
-    changeUser([{ field: 'mail', value: props.mail }])
+    const isChangesSaved = await myFetch('/api/user/changeUser', {
+      method: 'post',
+      payload: [{ field: 'mail', value: props.mail }],
+    })
+    if (isChangesSaved) {
+      user.mail = props.mail
+      showNotice('Почта успешно изменена!', 'success')
+    } else showNotice('Ошибка при изменении почты!', 'error')
   } else {
     inputData.codeValid = null
     showNotice('Неверный код!', 'error')

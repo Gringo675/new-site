@@ -12,6 +12,8 @@ export default async (changedUserData, options = {}) => {
     payload: changedUserData,
   })
 
+  console.log(`response: ${JSON.stringify(response, null, 2)}`)
+
   if (response) {
     if (!options.hidden) showNotice('Изменения сохранены!', 'success')
     await getUser({ force: true })

@@ -2,10 +2,12 @@
 /**
  * Компонент показа и сохранения изменений в данных пользователя.
  * Используется на странице данных пользователя (/user/profile), в корзине (/user/cart) и на форме обратной связи.
- * Нужные данные эмитятся в родитель.
  * Если пользователь авторизован, все изменения в данных записываются в базу.
  * Если нет, введенные данные просто записываются в переменную user.
+ * После обработки изменений эмитит событие 'userDataHandled'.
  */
+
+const emit = defineEmits(['userDataHandled'])
 
 await getUser({ hidden: true })
 const user = useUser().value
@@ -65,7 +67,7 @@ const isUserDataValid = computed(
     newUser.phone.valid
 )
 
-const saveUserData = async () => {
+const actionHandler = async () => {
   try {
     if (!isUserDataValid) return
     if (isUserDataChanged) {
@@ -88,16 +90,11 @@ const saveUserData = async () => {
         user[key] = newUser[key].val
       }
     }
-    return true
+    emit('userDataHandled')
   } catch (e) {
     showNotice('Ошибка при сохранении данных пользователя!', 'error')
   }
 }
-
-const emit = defineEmits(['setIsUserDataChanged', 'setIsUserDataValid', 'setSaveUserData'])
-emit('setIsUserDataChanged', isUserDataChanged)
-emit('setIsUserDataValid', isUserDataValid)
-emit('setSaveUserData', saveUserData)
 </script>
 
 <template>
@@ -179,6 +176,22 @@ emit('setSaveUserData', saveUserData)
         }"
         placeholder="999 999-99-99"
       />
+    </div>
+    <div>
+      <slot
+        name="buttonsArea"
+        :isUserDataChanged="isUserDataChanged"
+        :isUserDataValid="isUserDataValid"
+        :actionHandler="actionHandler"
+      >
+        <button
+          @click="actionHandler"
+          :disabled="!isUserDataValid"
+          class="button"
+        >
+          OK
+        </button>
+      </slot>
     </div>
   </div>
 </template>

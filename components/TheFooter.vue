@@ -1,9 +1,5 @@
 <script setup>
 const user = useUser().value
-
-const feedback = useFeedback()
-
-const showFeedback = () => (feedback.value.isActive = true)
 </script>
 
 <template>
@@ -11,7 +7,7 @@ const showFeedback = () => (feedback.value.isActive = true)
     <div>user: {{ user }}</div>
     <div class="">
       <button
-        @click="showFeedback"
+        @click="showFeedback('my title', 'my text')"
         class="button"
       >
         feedback

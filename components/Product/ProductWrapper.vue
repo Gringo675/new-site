@@ -31,8 +31,15 @@ breadCrumbs.value = [
         <NuxtLink :to="'/catalog/' + tag.alias">{{ tag.name }}</NuxtLink>
       </div>
     </div>
-    <!--    name  -->
-    <h1>{{ productData.name }}</h1>
+    <!--    name + label  -->
+    <div class="flex items-end">
+      <h1>{{ productData.name }}</h1>
+      <img
+        v-if="productData.label"
+        :src="'/img/labels/' + productData.label.image"
+        class="w-12"
+      />
+    </div>
     <!--    id-->
     <div>id: {{ productData.id }}</div>
     <!--    brand-->
@@ -43,7 +50,13 @@ breadCrumbs.value = [
       </div>
     </div>
     <!--    price-->
-    <div>Цена: {{ productData.price }}</div>
+    <div>
+      Цена: {{ productData.price }}
+      <sup v-if="productData.priceRegular">
+        <del>{{ productData.priceRegular }}</del></sup
+      >
+      руб. без НДС
+    </div>
     <!-- to cart -->
     <ClientOnly>
       <ProductCartButton :prod="productData" />

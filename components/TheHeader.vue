@@ -2,32 +2,21 @@
 import { useNuxtApp } from '#app/nuxt.js'
 
 const test = () => {
-  const config = useRuntimeConfig()
-  const baseUrl = config.app.baseURL
-  cv({ baseUrl })
-  // throw createError({statusCode: 411, statusMessage: `Authentication Required!`})
-  // const key = "/api/getCategory?alias=shtangentsirkuli"
-  // let data = useNuxtData(url).data
-  // console.log(`data: ${JSON.stringify(data, null, 2)}`)
-  // let error = useNuxtData(url).error
-  // console.log(`error: ${JSON.stringify(error, null, 2)}`)
-  // const nuxt = useNuxtApp();
-  // const errors = nuxt.payload._errors
-  // console.log(`errors: ${JSON.stringify(errors, null, 2)}`)
-
-  // console.log(`Try delete cookie23`)
-  // document.cookie = "refreshToken=; expires = Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=localhost;"
-  // let decodedCookie = decodeURIComponent(document.cookie);
-  // cv({decodedCookie})
-  // console.log(`document.cookie: ${JSON.stringify(document.cookie, null, 2)}`)
-  $fetch('/api/auth/logout')
+  const route = useRoute()
+  console.log(`route: ${JSON.stringify(route, null, 2)}`)
+  const router = useRouter()
+  // const nQuery = { ...route.query, aaa: 222 }
+  // console.log(`nQuery: ${JSON.stringify(nQuery, null, 2)}`)
+  // router.replace({ query: nQuery })
+  const url = new URL(window.location)
+  url.searchParams.set('f', '64-25-15')
+  window.history.replaceState({}, '', url)
 }
 
 const createDialog = () => {
-  // showMessage('My very very large title', '<p>paragraph with <i>italic</i> word</p>', 'success', () => {
-  //   localFn(localVar)
-  // })
-  showFeedback('my title', 'my text')
+  showMessage('My very very large title', '<p>paragraph with <i>italic</i> word</p>', 'success', () => {
+    localFn(localVar)
+  })
 }
 const localVar = 111
 const localFn = localWar => {
@@ -103,5 +92,6 @@ const createMess = () => {
         test
       </button>
     </div>
+    <TheSearch />
   </header>
 </template>

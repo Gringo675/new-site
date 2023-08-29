@@ -15,7 +15,7 @@ export const useFeedbackData = () => {
   return feedbackData
 }
 
-export const showFeedback = (title, text) => {
+export const showFeedback = (title = 'Обратная связь', text = '') => {
   if (process.server) return
   if (feedback.isActive) return
   feedbackData.title = title
