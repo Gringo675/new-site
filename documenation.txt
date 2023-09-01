@@ -1,10 +1,7 @@
 ToDo:
 sub-sub-Cats?
 поиск: 
-упорядочить товары
-упорядочить категории
 labels on products
-cats filter to url query
 
 RoadMap:
 Search

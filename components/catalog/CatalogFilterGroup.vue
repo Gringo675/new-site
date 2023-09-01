@@ -68,7 +68,10 @@ const inactivateVal = val => {
             v-for="item in activeValues"
             class="mb-1 ml-2 flex w-fit bg-violet-100 rounded"
           >
-            <span class="px-1">
+            <span
+              class="px-1"
+              :class="{ 'line-through': item.disabled }"
+            >
               {{ item.name }}
             </span>
             <button

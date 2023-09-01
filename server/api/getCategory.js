@@ -9,14 +9,14 @@ export default defineEventHandler(async event => {
   const catData = (await dbReq(query))[0]
   if (catData === undefined) throw createError({ statusCode: 404, statusMessage: 'Page Not Found!!!!' })
 
-  // если основная категория получаем дочерние подкатегории
+  const catActiveProps = [] // для основных категорий будет пустой массив, для подкатегорий добавим ниже
+
   if (catData.parent_id === 0) {
     query = `SELECT name, alias, image FROM i_categories 
                  WHERE parent_id = '${catData.id}' AND published = 1
                  ORDER BY ordering`
     catData.childCats = await dbReq(query)
   } else {
-    // для подкатегории получаем смежные подкатегории и родительскую категорию
     query = `SELECT name, alias, image FROM i_categories 
                  WHERE parent_id = '${catData.parent_id}' AND id != '${catData.id}' AND published = 1
                  ORDER BY ordering`
@@ -24,72 +24,70 @@ export default defineEventHandler(async event => {
     query = `SELECT name, alias FROM i_categories 
                  WHERE id = '${catData.parent_id}'`
     catData.parentCat = (await dbReq(query))[0]
+    for (const key in catData) {
+      if (/^p\d_/.test(key) && catData[key] > 0) catActiveProps.push([key, catData[key]]) // [name, value]
+    }
   }
 
-  // получаем все товары (товары относятся к основным категориям)
+  // получаем товары
   const productsCatID = catData.parent_id > 0 ? catData.parent_id : catData.id
   query = `SELECT id, name, alias, price, special_price, images, label_id,
                  p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature, p8_pack,
                  standart_ids, reestr_ids, pasport_ids
-                 FROM i_products WHERE category_id = '${productsCatID}' AND published = 1`
+                 FROM i_products WHERE category_id = '${productsCatID}' 
+                 ${catActiveProps.reduce((acc, prop) => {
+                   acc += `AND ${prop[0]} = ${prop[1]} `
+                   return acc
+                 }, '')}
+                 AND published = 1`
   const products = await dbReq(query)
 
   // на основе полученных продуктов создаем фильтр
   const filterGroups = useCatProps(productsCatID)
-
-  let filter = {}
+  const catActivePropsIds = catActiveProps.map(item => item[1]) // только значения
   let allProps = new Set() // набор из всех уникальных id, для запроса в базу
-  const filterInitial = [] // массив из активных для данной категории пропсов
 
   for (let propKey in filterGroups) {
-    if (catData[propKey] > 0) filterInitial.push(catData[propKey])
+    if (filterGroups[propKey].disabled) continue
+    filterGroups[propKey].valuesIds = new Set()
 
     products.forEach(product => {
-      if (product[propKey] > 0) {
-        if (filter[propKey] === undefined) {
-          // первое обращение, нужно создать
-          filter[propKey] = filterGroups[propKey]
-          filter[propKey].values = new Set()
-        }
-        filter[propKey].values.add(product[propKey])
+      if (product[propKey] > 0 && !catActivePropsIds.includes(product[propKey])) {
+        filterGroups[propKey].valuesIds.add(product[propKey])
         allProps.add(product[propKey])
         if (product.props === undefined) product.props = [] // собираем все пропсы в 1 массив, чтобы легче работать с фильтром
         product.props.push(product[propKey])
-        // console.log(`filter ${propKey} size: ${filter[propKey].values.size}`);
       }
       delete product[propKey] // удаляем, больше не понадобится
     })
   }
-
-  // console.log(`filter: ${JSON.stringify(filter)}`);
-  // console.log(`allProps: ${Array.from(allProps).join(',')}`);
-  // console.log(`catActivePropsSet: ${Array.from(catActivePropsSet).join(',')}`);
 
   // получаем пропсы
   query = `SELECT id, name, ordering
                 FROM i_properties 
                 WHERE id IN (${Array.from(allProps).join(',')})`
   const propsArr = await dbReq(query)
-
   const props = {} // для удобства создаем объект из всех пропсов
   propsArr.forEach(prop => {
     props[prop.id] = { name: prop.name, order: prop.ordering }
   })
-  filter = Object.values(filter).sort((a, b) => a.ordering - b.ordering) // преобразуем объект в массив и сортируем
+
+  // создаем фильтр: отбираем группы в которых больше 1 пропсов, сортируем группы
+  const filter = Object.values(filterGroups)
+    .filter(fGroup => fGroup.valuesIds?.size > 1)
+    .sort((a, b) => a.ordering - b.ordering)
   filter.forEach(fGroup => {
-    let values = []
-    fGroup.values.forEach(valueSet => {
-      const value = {
-        val: valueSet,
-        name: props[valueSet].name,
-        order: props[valueSet].order,
-      }
-      values.push(value)
+    fGroup.values = []
+    fGroup.valuesIds.forEach(id => {
+      fGroup.values.push({
+        val: id,
+        name: props[id].name,
+      })
     })
-    values.sort((a, b) => a.order - b.order)
-    values.forEach(value => delete value.order) // больше не нужно
-    fGroup.values = values
-    delete fGroup.ordering // больше не нужно
+    fGroup.values.sort((a, b) => props[a.val].order - props[b.val].order)
+    // удаляем ненужное
+    delete fGroup.ordering
+    delete fGroup.valuesIds
   })
 
   // упорядочиваем товары по фильтру
@@ -162,5 +160,5 @@ export default defineEventHandler(async event => {
   // const catPerformance = Math.round(performance.now() - start)
   // cv({ catPerformance })
 
-  return { catData, products, filter, filterInitial }
+  return { catData, products, filter }
 })

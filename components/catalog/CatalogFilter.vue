@@ -3,6 +3,8 @@ const props = defineProps({
   filter: Object,
   changesHandler: Function,
 })
+
+const resetButtonDisabled = computed(() => props.filter.every(fGroup => fGroup.values.every(value => !value.active)))
 </script>
 
 <template>
@@ -14,7 +16,8 @@ const props = defineProps({
       />
     </template>
     <button
-      class="m-auto block py-2 px-3 bg-purple-200 rounded cursor-pointer hover:shadow hover:bg-purple-300 transition-colors"
+      class="m-auto block py-2 px-3 bg-purple-200 rounded hover:shadow hover:bg-purple-300 transition-colors"
+      :disabled="resetButtonDisabled"
       @click="props.changesHandler('resetFilter')"
     >
       Сбросить

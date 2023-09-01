@@ -3,7 +3,7 @@
 const searchQuery = useRoute().params.s_query
 const searchData = searchQuery.length > 2 ? await myFetch(`/api/getSearch?q=${searchQuery}`) : null
 
-console.log(`searchData: ${JSON.stringify(searchData, null, 2)}`)
+// console.log(`searchData: ${JSON.stringify(searchData, null, 2)}`)
 
 for (const cat of searchData.cats) {
   cat.active = true
@@ -20,13 +20,10 @@ const pagination = reactive({
 })
 
 const activeProducts = computed(() =>
-  searchData.products.filter(
-    product =>
-      !cats.value.some(cat =>
-        cat.childs.some(
-          subCat => !subCat.active && subCat.activeProps.every(prop => product.activeProps[prop[0]] === prop[1])
-        )
-      )
+  searchData.products.filter(product =>
+    cats.value
+      .find(cat => cat.id === product.catId)
+      .childs.some(subCat => subCat.active && subCat.props.every(prop => product.props.includes(prop)))
   )
 )
 
@@ -73,7 +70,10 @@ const visibleProducts = computed(() => {
       </div>
       <!--      second column-->
       <div class="w-full">
-        <div v-for="product in activeProducts">{{ product.name }}</div>
+        <CatalogProductCard
+          v-for="product in activeProducts"
+          :prod="product"
+        />
       </div>
     </div>
   </div>
