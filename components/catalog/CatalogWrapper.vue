@@ -4,9 +4,8 @@ const pageSetup = usePageSetup()
 const pagination = reactive({
   activePage: 1,
   showPages: 1, // кнопка Показать еще позволяет показать несколько страниц
-  totalPages: null,
+  totalPages: computed(() => Math.ceil(activeProducts.length / pageSetup.value.prodsOnPage)),
 })
-pagination.totalPages = computed(() => Math.ceil(activeProducts.length / pageSetup.value.prodsOnPage))
 
 const props = defineProps({
   data: Object,

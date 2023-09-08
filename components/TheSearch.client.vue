@@ -9,9 +9,12 @@ const searchState = reactive({
 const searchHelper = {
   timer: null,
   activeRequests: 0,
+  showAllActive: false,
 }
 
 const debounceSearch = () => {
+  // todo: reset data?
+  searchHelper.showAllActive = false
   clearTimeout(searchHelper.timer)
   if (searchState.query.length > 2) searchHelper.timer = setTimeout(getSearch, 1000)
 }
@@ -24,7 +27,7 @@ const getSearch = async () => {
     if (searchHelper.activeRequests > 0) return // за время ожидания ответа был запущен другой запрос
     searchState.pending = false
     searchState.data = response
-    if (!searchState.showResults) showSearchResults()
+    if (!searchState.showResults && !searchHelper.showAllActive) showSearchResults()
   } catch (e) {
     showNotice('Ошибка при поисковом запросе!', 'error')
     searchState.pending = false
@@ -47,14 +50,9 @@ const onInputClick = () => {
 }
 
 const showAllResults = async () => {
+  searchHelper.showAllActive = true
   hideSearchResults()
   await navigateTo(`/search/${searchState.query}`)
-  // await navigateTo({
-  //   path: '/search',
-  //   query: {
-  //     q: searchState.query,
-  //   },
-  // })
 }
 </script>
 

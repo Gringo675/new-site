@@ -1,6 +1,8 @@
 ToDo:
 sub-sub-Cats?
 поиск: 
+inputs interconnection
+транслитерация
 labels on products
 
 RoadMap:

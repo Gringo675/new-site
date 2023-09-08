@@ -3,35 +3,32 @@
 const searchQuery = useRoute().params.s_query
 const searchData = searchQuery.length > 2 ? await myFetch(`/api/getSearch?q=${searchQuery}`) : null
 
-// console.log(`searchData: ${JSON.stringify(searchData, null, 2)}`)
-
 for (const cat of searchData.cats) {
   cat.active = true
   for (const subCat of cat.childs) {
     subCat.active = true
   }
 }
-const cats = ref(searchData.cats)
+const cats = reactive(searchData.cats)
 
-const pagination = reactive({
-  activePage: 1,
-  showPages: 1, // кнопка Показать еще позволяет показать несколько страниц
-  totalPages: 0,
-})
-
-const activeProducts = computed(() =>
-  searchData.products.filter(product =>
-    cats.value
-      .find(cat => cat.id === product.catId)
-      .childs.some(subCat => subCat.active && subCat.props.every(prop => product.props.includes(prop)))
+const activeProducts = computed(() => {
+  console.log(`from activeProducts`)
+  const inactiveCats = {}
+  for (const cat of cats) {
+    inactiveCats[cat.id] = cat.childs.filter(child => !child.active).map(child => child.props)
+  }
+  return searchData.products.filter(
+    product => !inactiveCats[product.catId].some(activeProps => activeProps.every(prop => product.props.includes(prop)))
   )
-)
-
-const visibleProducts = computed(() => {
-  const startProd = (pagination.activePage - 1) * pageSetup.value.prodsOnPage
-  const endProd = startProd + pageSetup.value.prodsOnPage * pagination.showPages
-  return activeProducts.value.slice(startProd, endProd)
 })
+
+const vIndeterminate = (el, binding) => {
+  // custom directive v-indeterminate
+  // console.log(`from indeterminate`)
+  const targetCat = cats[binding.value]
+  el.indeterminate = targetCat.childs.some(subCat => subCat.active) && targetCat.childs.some(subCat => !subCat.active)
+  if (!el.indeterminate) targetCat.active = targetCat.childs.every(subCat => subCat.active)
+}
 </script>
 
 <template>
@@ -48,13 +45,17 @@ const visibleProducts = computed(() => {
       <!--      first column-->
       <div class="w-60 mr-4">
         <label
-          v-for="cat of cats"
+          v-for="(cat, i) of cats"
           class="block ml-2"
         >
           <input
             type="checkbox"
             v-model="cat.active"
+            v-indeterminate="i"
+            @change="cat.childs.forEach(subCat => (subCat.active = $event.target.checked))"
           />
+          <!-- @change="cat.childs.forEach(subCat => (subCat.active = $event.target.checked))" -->
+
           {{ cat.name }}
           <label
             v-for="subCat of cat.childs"
@@ -70,10 +71,11 @@ const visibleProducts = computed(() => {
       </div>
       <!--      second column-->
       <div class="w-full">
-        <CatalogProductCard
+        <CatalogProductsWrapper :products="activeProducts" />
+        <!-- <CatalogProductCard
           v-for="product in activeProducts"
           :prod="product"
-        />
+        /> -->
       </div>
     </div>
   </div>

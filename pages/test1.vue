@@ -1,38 +1,73 @@
 <script setup>
 //
-const showTheTest = ref(false)
+const cats = ref([
+  {
+    name: 'cat1',
+    active: true,
+  },
+  {
+    name: 'cat2',
+    active: true,
+  },
+  {
+    name: 'cat3',
+    active: true,
+  },
+])
+// console.log(`cats: ${JSON.stringify(cats, null, 2)}`)
+watch(
+  cats,
+  () => {
+    console.log(`cats changed`)
+  },
+  { deep: true }
+)
 
-const TheTestData = reactive({
-  sum1: null,
-  sum2: null,
-  f1: null,
+const someObj = reactive({
+  aaa: { name: 111 },
+  bbb: { name: 222 },
+  ccc: { name: 333 },
+})
+watch(someObj, () => {
+  console.log(`obj changed`)
 })
 
-const someAction = async () => {
-  await TheTestData.f1()
-  console.log(`after someAction`)
-}
+const someStr = ref('aaa')
+// console.log(`someStr: ${JSON.stringify(someStr, null, 2)}`)
+watch(someStr, () => {
+  console.log(`str changed`)
+})
 </script>
 
 <template>
-  <button
-    class="button"
-    @click="showTheTest = !showTheTest"
-  >
-    show
-  </button>
-  <LazyTheTest
-    v-if="showTheTest"
-    @set-sum1="value => (TheTestData.sum1 = value)"
-    @set-sum2="value => (TheTestData.sum2 = value)"
-    @set-f1="value => (TheTestData.f1 = value)"
-  />
-  <p>from parent sum1: {{ TheTestData.sum1 }}</p>
-  <p>from parent sum2: {{ TheTestData.sum2 }}</p>
-  <button
-    class="button"
-    @click="someAction"
-  >
-    OK
-  </button>
+  <div>
+    <h2>Array</h2>
+    <label
+      v-for="cat of cats"
+      class="block ml-2"
+    >
+      <input
+        type="checkbox"
+        v-model="cat.active"
+      />
+      {{ cat.name }}
+    </label>
+  </div>
+  <div>
+    <h2>Object</h2>
+    <input
+      v-for="key in someObj"
+      type="text"
+      v-model="key.name"
+      class="block ml-2"
+    />
+  </div>
+  <div>
+    <h2>String</h2>
+    <input
+      type="text"
+      v-model="someStr"
+      class="block ml-2"
+    />
+  </div>
 </template>
