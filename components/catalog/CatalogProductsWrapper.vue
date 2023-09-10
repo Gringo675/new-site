@@ -64,7 +64,7 @@ const changesHandler = (turnPage = 0, showMore = 0, productsChanged = 0) => {
    * если turnPage = 1, переходим на бОльшую страницу (вправо), если = -1, на меньшую (влево)
    */
   if (turnPage) {
-    classProductsWrapper.value = `${turnPage === 1 ? '-' : ''}translate-x-10 transition-transform`
+    classProductsWrapper.value = `${turnPage === 1 ? '-' : ''}translate-x-20 transition-transform duration-1000	`
     document.getElementById('pageProducts').scrollIntoView({ behavior: 'smooth' }) // перемотка наверх
   } else if (!showMore) {
     classProductsWrapper.value = 'opacity-0'
@@ -73,9 +73,9 @@ const changesHandler = (turnPage = 0, showMore = 0, productsChanged = 0) => {
     pagination.showPages = 1
   }
   setTimeout(() => {
-    classProductsWrapper.value = ''
-  }, 400)
-  setVisibleProducts()
+    // classProductsWrapper.value = ''
+    setVisibleProducts()
+  }, 1000)
 }
 // вешаем вотчеры на данные
 // слежением за изменением текущей страницы следит компонент HelperPagination, эмитит событие turnPage
@@ -128,7 +128,7 @@ watch(
   >
     <h2>PRODUCTS</h2>
     <div
-      class="transition-opacity"
+      class="-translate-x-20"
       :class="classProductsWrapper"
     >
       <template v-if="visibleProducts.length">

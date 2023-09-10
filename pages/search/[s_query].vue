@@ -4,7 +4,6 @@ const searchQuery = useRoute().params.s_query
 const searchData = searchQuery.length > 2 ? await myFetch(`/api/getSearch?q=${searchQuery}`) : null
 
 for (const cat of searchData.cats) {
-  cat.active = true
   for (const subCat of cat.childs) {
     subCat.active = true
   }
@@ -22,12 +21,11 @@ const activeProducts = computed(() => {
   )
 })
 
-const vIndeterminate = (el, binding) => {
-  // custom directive v-indeterminate
-  // console.log(`from indeterminate`)
+const vIndeterminateChecked = (el, binding) => {
+  // custom directive v-indeterminate-checked
   const targetCat = cats[binding.value]
   el.indeterminate = targetCat.childs.some(subCat => subCat.active) && targetCat.childs.some(subCat => !subCat.active)
-  if (!el.indeterminate) targetCat.active = targetCat.childs.every(subCat => subCat.active)
+  if (!el.indeterminate) el.checked = targetCat.childs.every(subCat => subCat.active)
 }
 </script>
 
@@ -50,12 +48,9 @@ const vIndeterminate = (el, binding) => {
         >
           <input
             type="checkbox"
-            v-model="cat.active"
-            v-indeterminate="i"
+            v-indeterminate-checked="i"
             @change="cat.childs.forEach(subCat => (subCat.active = $event.target.checked))"
           />
-          <!-- @change="cat.childs.forEach(subCat => (subCat.active = $event.target.checked))" -->
-
           {{ cat.name }}
           <label
             v-for="subCat of cat.childs"
