@@ -159,3 +159,9 @@
 .page-leave-active {
   transition: opacity 0.2s linear;
 }
+
+.productsWrapperTransition {
+  transition-property: transform, opacity, height;
+  transition-timing-function: linear;
+  transition-duration: 400ms;
+}

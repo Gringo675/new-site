@@ -1,4 +1,5 @@
-const changeKeyboardLayout = text => {
+export default text => {
+  // получаем строку и изменяем раскладку с латинских символов на русские
   const replacer = {
     q: 'й',
     w: 'ц',
@@ -11,7 +12,9 @@ const changeKeyboardLayout = text => {
     o: 'щ',
     p: 'з',
     '[': 'х',
+    '{': 'х',
     ']': 'ъ',
+    '}': 'ъ',
     a: 'ф',
     s: 'ы',
     d: 'в',
@@ -23,6 +26,7 @@ const changeKeyboardLayout = text => {
     l: 'д',
     ';': 'ж',
     "'": 'э',
+    '"': 'э',
     z: 'я',
     x: 'ч',
     c: 'с',
@@ -31,22 +35,15 @@ const changeKeyboardLayout = text => {
     n: 'т',
     m: 'ь',
     ',': 'б',
+    '<': 'б',
     '.': 'ю',
+    '>': 'ю',
     '/': '.',
+    '?': ',',
   }
 
-  return text.replace(/[A-z/,.;\'\]\[]/g, function (x) {
-    return x == x.toLowerCase() ? replacer[x] : replacer[x.toLowerCase()].toUpperCase()
+  return text.replace(/[A-z/,.;\'\"\]\[\}\{<>\?]/g, function (x) {
+    // return x == x.toLowerCase() ? replacer[x] : replacer[x.toLowerCase()].toUpperCase()
+    return replacer[x.toLowerCase()]
   })
 }
-
-const test = {
-  '[': 'aaa',
-  '{': 'bbb',
-}
-
-const ccc = '{'.toLowerCase()
-
-const ddd = test[ccc]
-
-console.log(`ddd: ${JSON.stringify(ddd, null, 2)}`)

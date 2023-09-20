@@ -1,19 +1,11 @@
 <script setup>
-const pageSetup = usePageSetup()
-
-const pagination = reactive({
-  activePage: 1,
-  showPages: 1, // кнопка Показать еще позволяет показать несколько страниц
-  totalPages: computed(() => Math.ceil(activeProducts.length / pageSetup.value.prodsOnPage)),
-})
-
 const props = defineProps({
   data: Object,
 })
-
-const catData = props.data.catData
-const products = props.data.products
-const activeProducts = reactive([])
+// убираем ненужную реактивность
+const catData = JSON.parse(JSON.stringify(props.data.catData))
+const products = JSON.parse(JSON.stringify(props.data.products))
+const activeProducts = shallowReactive([])
 const filter = props.data.filter
 
 const breadCrumbs = useBreadCrumbs()
@@ -28,42 +20,11 @@ if (catData.parentCat)
     link: '/catalog/' + catData.parentCat.alias,
   })
 
-const sortProducts = () => {
-  switch (pageSetup.value.sortBy) {
-    case 'order':
-      products.sort((a, b) => a.order - b.order)
-      break
-    case 'priceAcs':
-      products.sort((a, b) => a.price - b.price)
-      break
-    case 'priceDes':
-      products.sort((a, b) => b.price - a.price)
-      break
-    case 'brand':
-      sortByBrand()
-      break
-  }
-
-  function sortByBrand() {
-    const brandProps = filter.find(fGroup => fGroup.name === 'Производитель').values.map(value => value.val)
-    products.sort((a, b) => {
-      let aOrder, bOrder
-      for (const [index, prop] of brandProps.entries()) {
-        if (a.props.includes(prop)) aOrder = index
-        if (b.props.includes(prop)) bOrder = index
-        if (aOrder !== undefined && bOrder !== undefined) break
-      }
-      return aOrder - bOrder
-    })
-  }
-}
-if (pageSetup.value.sortBy !== 'order') sortProducts()
-
 const urlFilter = useRoute().query.f
 if (urlFilter) setFilterFromURL()
 else initializeFilter()
 
-function initializeFilter() {
+function initializeFilter(fromReset = false) {
   // устанавливаем начальные значения
   filter.forEach(fGroup => {
     fGroup.values.forEach(value => {
@@ -73,7 +34,8 @@ function initializeFilter() {
   })
   activeProducts.length = 0
   products.forEach(product => activeProducts.push(product))
-  // pagination.totalPages = Math.ceil(activeProducts.length / pageSetup.value.prodsOnPage)
+
+  if (fromReset) addFilterToURL()
 }
 
 function setFilterFromURL() {
@@ -84,10 +46,11 @@ function setFilterFromURL() {
       value.disabled = false
     })
   )
-  handleFilter()
+  handleFilter(true)
 }
 
-function handleFilter() {
+function handleFilter(filterFromURL = false) {
+  // filterFromURL - когда обрабатываем фильтр, полученный из url query
   // создаем массив из всех активных групп фильтра
   const activeFilter = filter.map(fGroup =>
     fGroup.values.filter(value => value.active && !value.disabled).map(value => value.val)
@@ -114,45 +77,18 @@ function handleFilter() {
       )
     })
   })
-  // считаем количество страниц
-  // pagination.totalPages = Math.ceil(activeProducts.length / pageSetup.value.prodsOnPage)
+  if (filterFromURL) return
+  // засовываем фильтр в url
+  addFilterToURL()
+  // показываем уведомление
+  showNotice(
+    activeProducts.length > 0
+      ? `Найдено товаров - ${activeProducts.length}`
+      : 'Не найдено подходящих товаров.<br>Попробуйте изменить условия.'
+  )
 }
 
-const visibleProducts = computed(() => {
-  const startProd = (pagination.activePage - 1) * pageSetup.value.prodsOnPage
-  const endProd = startProd + pageSetup.value.prodsOnPage * pagination.showPages
-  return activeProducts.slice(startProd, endProd)
-})
-
-const productsWrapper = ref(null)
-const changesHandler = (from = 'filter') => {
-  // функция, управляющая отображением изменений в фильтре товаров и настройках страницы
-  // from = filter, resetFilter, pageSetup
-  productsWrapper.value.classList.add('opacity-0')
-  setTimeout(() => {
-    if (from === 'resetFilter') initializeFilter()
-    else {
-      if (from === 'pageSetup') sortProducts()
-      handleFilter()
-    }
-  }, 10)
-  setTimeout(() => {
-    pagination.activePage = 1
-    pagination.showPages = 1
-    productsWrapper.value.classList.remove('opacity-0')
-    // показываем количество отфильтрованных товаров
-    if (from !== 'pageSetup') {
-      showNotice(
-        activeProducts.length > 0
-          ? `Найдено товаров - ${activeProducts.length}`
-          : 'Не найдено подходящих товаров.<br>Попробуйте изменить условия.'
-      )
-    }
-    if (from === 'filter' || from === 'resetFilter') addFilterToURL()
-  }, 300)
-}
-
-const addFilterToURL = () => {
+function addFilterToURL() {
   const activeFilterIds = filter.reduce((acc, fGroup) => {
     acc.push(...fGroup.values.filter(value => value.active).map(value => value.val))
     return acc
@@ -162,11 +98,6 @@ const addFilterToURL = () => {
   else url.searchParams.delete('f')
   window.history.replaceState({}, '', url)
 }
-
-// реагируем на изменение сортировки и кол-ва товаров на странице
-watch(pageSetup.value, () => {
-  changesHandler('pageSetup')
-})
 </script>
 
 <template>
@@ -201,51 +132,13 @@ watch(pageSetup.value, () => {
         <!--      filter-->
         <CatalogFilter
           :filter="filter"
-          :changesHandler="changesHandler"
+          @filterChanged="handleFilter"
+          @resetFilter="initializeFilter(true)"
         />
       </div>
       <!--      second column-->
       <div class="w-full">
-        <!--        order and quantity-->
-        <div class="w-full flex justify-end">
-          <select v-model="pageSetup.sortBy">
-            <option disabled>Упорядочить:</option>
-            <option value="order">по типоразмеру</option>
-            <option value="brand">по производителю</option>
-            <option value="priceAcs">сначала дешевые</option>
-            <option value="priceDes">сначала дорогие</option>
-          </select>
-          <select
-            v-model="pageSetup.prodsOnPage"
-            class="ml-5"
-          >
-            <option disabled>На странице:</option>
-            <option>10</option>
-            <option>20</option>
-            <option>50</option>
-            <option>100</option>
-          </select>
-        </div>
-        <!--  products-->
-        <div
-          class="products"
-          id="pageProducts"
-        >
-          <h2>PRODUCTS</h2>
-          <div
-            ref="productsWrapper"
-            class="transition-opacity"
-          >
-            <template v-if="visibleProducts.length">
-              <CatalogProductCard
-                v-for="product in visibleProducts"
-                :prod="product"
-              />
-            </template>
-            <div v-else>Подходящих товаров не найдено!</div>
-          </div>
-          <HelperPaginator :pageProps="pagination" />
-        </div>
+        <CatalogProductsWrapper :products="activeProducts" />
       </div>
     </div>
   </div>

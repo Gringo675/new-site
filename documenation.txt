@@ -1,12 +1,11 @@
 ToDo:
-sub-sub-Cats?
-поиск: 
-inputs interconnection
-транслитерация
-labels on products
+search: 
+    labels on products
+sub-sub-Cats:
+    id's? - in order, without parent_id. - with parent_id (then may delete parent_id field in base)
+
 
 RoadMap:
-Search
 админка товары
 Cashing?
 ErrorLogger (+ ошибки при отсутствии интернета)

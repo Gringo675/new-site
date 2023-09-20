@@ -1,16 +1,15 @@
 <script setup>
 const props = defineProps({
   fGroup: Object,
-  onFilterChanged: Function,
 })
-
+const emit = defineEmits(['filterChanged'])
 const showValues = ref(false)
 
 const activeValues = computed(() => props.fGroup.values.filter(item => item.active))
 const inactivateVal = val => {
   const target = props.fGroup.values.find(item => item.val === val)
   target.active = false
-  props.onFilterChanged()
+  emit('filterChanged')
 }
 </script>
 
@@ -48,7 +47,7 @@ const inactivateVal = val => {
               type="checkbox"
               v-model="value.active"
               :disabled="value.disabled"
-              @input="props.onFilterChanged()"
+              @change="emit('filterChanged')"
             />
             {{ value.name }}
           </label>

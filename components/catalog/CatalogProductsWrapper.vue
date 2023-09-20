@@ -14,7 +14,6 @@ const pagination = reactive({
 })
 
 const sortProducts = () => {
-  console.log(`from sort`)
   switch (pageSetup.value.sortBy) {
     case 'order':
       props.products.sort((a, b) => a.order - b.order)
@@ -46,56 +45,73 @@ const sortProducts = () => {
 const visibleProducts = ref([])
 let productsSortedBy = 'order' // продукты поступают с 'дефолтной' сортировкой
 const setVisibleProducts = () => {
-  console.log(`from set visibleProducts`)
   if (productsSortedBy !== pageSetup.value.sortBy) sortProducts()
   const startProd = (pagination.activePage - 1) * pageSetup.value.prodsOnPage
   const endProd = startProd + pageSetup.value.prodsOnPage * pagination.showPages
   visibleProducts.value = props.products?.slice(startProd, endProd)
 }
-
-// if (pageSetup.value.sortBy !== 'order') sortProducts()
 setVisibleProducts()
 
-const classProductsWrapper = ref('')
-const changesHandler = (turnPage = 0, showMore = 0, productsChanged = 0) => {
+const productsWrapper = ref(null)
+const productsWrapperHelper = ref(null) // вложенный div для управления анимацией высоты
+const changesHandler = (options = {}) => {
   /**
    * функция управляет отображением изменений в данных на странице
    * выполняется при изменении товаров, сортировки, кол-ва на странице, пагинации, кнопки Показать еще
    * если turnPage = 1, переходим на бОльшую страницу (вправо), если = -1, на меньшую (влево)
    */
-  if (turnPage) {
-    classProductsWrapper.value = `${turnPage === 1 ? '-' : ''}translate-x-20 transition-transform duration-1000	`
-    document.getElementById('pageProducts').scrollIntoView({ behavior: 'smooth' }) // перемотка наверх
-  } else if (!showMore) {
-    classProductsWrapper.value = 'opacity-0'
-    if (productsChanged) productsSortedBy = 'order'
-    pagination.activePage = 1
-    pagination.showPages = 1
+  // defaults
+  options.fromProducts = options.fromProducts ?? false
+  options.fromPageSetup = options.fromPageSetup ?? false // orderBy, showBy
+  options.fromShowMore = options.fromShowMore ?? false
+  options.fromPagination = options.fromPagination ?? false
+  options.paginationToRight = options.paginationToRight ?? false
+  //step1 - до изменения visibleProducts
+  if (!productsWrapper.value.style.height)
+    productsWrapper.value.style.height = productsWrapper.value.offsetHeight + 'px' // запоминаем высоту враппера для анимации
+  if (options.fromShowMore) {
+    step2()
+  } else {
+    if (options.fromPagination) {
+      productsWrapper.value.style.transform = `translateX(${options.paginationToRight ? '-' : ''}50px)`
+      // перемотка вверх
+      const wrapperTop = productsWrapper.value.getBoundingClientRect().top
+      if (wrapperTop < 0)
+        window.scrollBy({
+          top: wrapperTop - 20,
+          left: 0,
+          behavior: 'smooth',
+        })
+    } else {
+      // fromProducts || from pageSetup
+      pagination.activePage = 1
+      pagination.showPages = 1
+      if (options.fromProducts) productsSortedBy = 'order'
+    }
+    productsWrapper.value.style.opacity = '0'
+    productsWrapper.value.addEventListener('transitionend', step2, { once: true })
   }
-  setTimeout(() => {
-    // classProductsWrapper.value = ''
+
+  async function step2() {
     setVisibleProducts()
-  }, 1000)
+    // отображаем изменения
+    if (options.fromPagination) {
+      productsWrapper.value.style.transform = `translateX(${options.paginationToRight ? '' : '-'}50px)`
+      productsWrapper.value.style.transitionDuration = '0s'
+      await new Promise(resolve => setTimeout(resolve, 0))
+    } else await nextTick() // ждем применения изменений в Dom
+    productsWrapper.value.style.transform = ''
+    productsWrapper.value.style.transitionDuration = ''
+    productsWrapper.value.style.opacity = ''
+    productsWrapper.value.style.height = productsWrapperHelper.value.offsetHeight + 'px' // новая высота враппера
+  }
 }
+
 // вешаем вотчеры на данные
-// слежением за изменением текущей страницы следит компонент HelperPagination, эмитит событие turnPage
-watch(pageSetup.value, () => {
-  changesHandler()
-})
-watch(
-  () => props.products,
-  () => {
-    console.log(`products changed`)
-    changesHandler(0, 0, 1)
-  }
-)
-watch(
-  () => pagination.showPages,
-  () => {
-    console.log(`from show more`)
-    changesHandler(0, 1)
-  }
-)
+// за переходом на другую страницу и нажатием на "Показать еще" следит компонент HelperPagination
+// из категорий продукты поступают реактивными, из поиска нет (у computed пропадает реактивность)
+watch(isReactive(props.products) ? props.products : () => props.products, () => changesHandler({ fromProducts: true }))
+watch(pageSetup.value, () => changesHandler({ fromPageSetup: true }))
 </script>
 
 <template>
@@ -123,25 +139,28 @@ watch(
   </div>
   <!--  products-->
   <div
-    class="products"
+    class="overflow-x-hidden"
     id="pageProducts"
   >
     <h2>PRODUCTS</h2>
     <div
-      class="-translate-x-20"
-      :class="classProductsWrapper"
+      class="productsWrapperTransition overflow-hidden"
+      ref="productsWrapper"
     >
-      <template v-if="visibleProducts.length">
-        <CatalogProductCard
-          v-for="product in visibleProducts"
-          :prod="product"
-        />
-      </template>
-      <div v-else>Подходящих товаров не найдено!</div>
+      <div ref="productsWrapperHelper">
+        <template v-if="visibleProducts.length">
+          <CatalogProductCard
+            v-for="product in visibleProducts"
+            :prod="product"
+          />
+        </template>
+        <div v-else>Подходящих товаров не найдено!</div>
+      </div>
     </div>
     <HelperPaginator
       :pageProps="pagination"
       @turnPage="changesHandler"
+      @showMore="changesHandler"
     />
   </div>
 </template>

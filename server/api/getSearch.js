@@ -1,3 +1,5 @@
+import changeToRusLayout from '../utils/changeToRusLayout'
+
 /**
  * выполняет поиск по каталогу
  * q - строка поиска
@@ -9,12 +11,28 @@ export default defineEventHandler(async event => {
   if (typeof q !== 'string' || q.length < 3) throw createError({ statusCode: 505, statusMessage: `Incorrect request!` })
   const fastSearch = f === '1'
 
-  let query = `SELECT id, name, alias, category_id, price, special_price, images, p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature, p8_pack FROM i_products WHERE name LIKE '%${q}%' LIMIT ${
-    fastSearch ? '10' : '100'
-  }`
-  let products = await dbReq(query)
+  const getProducts = (q, fastSearch) => {
+    try {
+      q = q.replaceAll("'", "\\'")
+      const query = `SELECT id, name, alias, category_id, price, special_price, images, p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature, p8_pack FROM i_products WHERE name LIKE '%${q}%' LIMIT ${
+        fastSearch ? '10' : '100'
+      }`
+      return dbReq(query)
+    } catch (e) {
+      return null
+    }
+  }
 
-  if (!products.length) return null
+  let products = await getProducts(q, fastSearch)
+
+  if (!products.length) {
+    // если нет результатов, пробуем изменить раскладку и повторить поиск
+    console.log(`here`)
+    const newQ = changeToRusLayout(q)
+    console.log(`newQ: ${JSON.stringify(newQ, null, 2)}`)
+    if (newQ !== q) products = await getProducts(newQ, fastSearch)
+    if (!products.length) return null
+  }
 
   const catsSet = new Set() // собираем все категории
   const propsSet = new Set() // собираем все пропсы
@@ -43,7 +61,7 @@ export default defineEventHandler(async event => {
   }
   // получаем категории
   const catsID = Array.from(catsSet).join(', ')
-  query = `SELECT name, id, parent_id, p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature, p8_pack, ordering FROM i_categories WHERE id IN (${catsID}) OR parent_id IN (${catsID})`
+  let query = `SELECT name, id, parent_id, p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature, p8_pack, ordering FROM i_categories WHERE id IN (${catsID}) OR parent_id IN (${catsID})`
   const catsBase = await dbReq(query)
 
   const catsOrder = {} // вспомогательный объект типа catID: orderingValue для сортировки товаров

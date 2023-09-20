@@ -1,9 +1,9 @@
 <script setup>
 const props = defineProps({
   filter: Object,
-  changesHandler: Function,
 })
 
+const emit = defineEmits(['filterChanged', 'resetFilter'])
 const resetButtonDisabled = computed(() => props.filter.every(fGroup => fGroup.values.every(value => !value.active)))
 </script>
 
@@ -12,17 +12,15 @@ const resetButtonDisabled = computed(() => props.filter.every(fGroup => fGroup.v
     <template v-for="fGroup in filter">
       <CatalogFilterGroup
         :fGroup="fGroup"
-        :onFilterChanged="changesHandler"
+        @filterChanged="emit('filterChanged')"
       />
     </template>
     <button
       class="m-auto block py-2 px-3 bg-purple-200 rounded hover:shadow hover:bg-purple-300 transition-colors"
       :disabled="resetButtonDisabled"
-      @click="props.changesHandler('resetFilter')"
+      @click="emit('resetFilter')"
     >
       Сбросить
     </button>
   </div>
 </template>
-
-<style></style>
