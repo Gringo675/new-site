@@ -1,4 +1,5 @@
 <script setup>
+//
 const props = defineProps({
   data: Object,
 })
@@ -8,17 +9,17 @@ const products = JSON.parse(JSON.stringify(props.data.products))
 const activeProducts = shallowReactive([])
 const filter = props.data.filter
 
-const breadCrumbs = useBreadCrumbs()
-breadCrumbs.value = []
-breadCrumbs.value.push({
-  name: 'Каталог',
-  link: '/catalog',
-})
-if (catData.parentCat)
-  breadCrumbs.value.push({
-    name: catData.parentCat.name,
-    link: '/catalog/' + catData.parentCat.alias,
-  })
+// const breadCrumbs = useBreadCrumbs()
+// breadCrumbs.value = []
+// breadCrumbs.value.push({
+//   name: 'Каталог',
+//   link: '/catalog',
+// })
+// if (catData.parentCat)
+//   breadCrumbs.value.push({
+//     name: catData.parentCat.name,
+//     link: '/catalog/' + catData.parentCat.alias,
+//   })
 
 const urlFilter = useRoute().query.f
 if (urlFilter) setFilterFromURL()
@@ -103,7 +104,7 @@ function addFilterToURL() {
 <template>
   <div class="w-full p-2">
     <!--    breadcrumbs-->
-    <BreadCrumbs />
+    <BreadCrumbs :catId="catData.id" />
     <!--    name-->
     <h1>{{ catData.name }}</h1>
     <!--    description-->

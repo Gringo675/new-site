@@ -1,3 +1,5 @@
+import sortCategories from '../utils/sortCategories'
+
 export default defineEventHandler(async event => {
   // функция по алиасу отдает информацию о товаре
   // const start = Date.now()
@@ -28,12 +30,24 @@ export default defineEventHandler(async event => {
   query = `SELECT name, alias FROM i_categories 
                  WHERE id = '${productData.category_id}'`
   productData.category = (await dbReq(query))[0]
-  // отбираем подкатегории, к которым относится данный продукт
-  query = `SELECT name, alias FROM i_categories 
-                 WHERE parent_id = '${productData.category_id}' 
-                 ${props.map(prop => `AND (${prop} = 0 OR ${prop} = ${productData[prop]}) `).join('')}
-                 ORDER BY ordering`
-  productData.subCats = await dbReq(query)
+  // отбираем под- и под-под-категории, к которым относится данный продукт
+  query = `SELECT id, parent_id, name, alias, ordering FROM i_categories 
+            WHERE (parent_id = ${productData.category_id} OR 
+            parent_id IN (SELECT id FROM i_categories WHERE parent_id = ${productData.category_id})) 
+            ${props.map(prop => `AND (${prop} = 0 OR ${prop} = ${productData[prop]}) `).join('')}`
+  const rawCats = await dbReq(query)
+  productData.category.subCats = sortCategories(rawCats, productData.category_id).map(cat => {
+    return {
+      name: cat.name,
+      alias: cat.alias,
+      childs: cat.children?.map(cat => {
+        return {
+          name: cat.name,
+          alias: cat.alias,
+        }
+      }),
+    }
+  })
 
   // отбираем related prods (из той же категории и максимально совпадающие по параметрам)
   query = `SELECT id, name, alias, price, images, ${props.join()} 

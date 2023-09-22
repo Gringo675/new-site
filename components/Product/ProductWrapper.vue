@@ -23,12 +23,19 @@ breadCrumbs.value = [
     <!--    breadcrumbs-->
     <BreadCrumbs />
     <!--    subCats-->
-    <div class="flex my-1">
+    <h3>В категориях:</h3>
+    <div class="my-1">
       <div
-        v-for="tag in productData.subCats"
-        class="px-2 mr-2 rounded-md bg-slate-300"
+        v-for="subCat in productData.category.subCats"
+        class="px-2"
       >
-        <NuxtLink :to="'/catalog/' + tag.alias">{{ tag.name }}</NuxtLink>
+        <NuxtLink :to="'/catalog/' + subCat.alias">{{ subCat.name }}</NuxtLink>
+        <div
+          v-for="subSubCat in subCat.childs"
+          class="px-2"
+        >
+          <NuxtLink :to="'/catalog/' + subSubCat.alias">{{ subSubCat.name }}</NuxtLink>
+        </div>
       </div>
     </div>
     <!--    name + label  -->

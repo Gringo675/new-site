@@ -26,12 +26,16 @@ const localFn = localWar => {
 const createMess = () => {
   showMessage('title2', 'body2')
 }
+
+console.log(`from header`)
+const test2 = await useTest()
+console.log(`test2: ${JSON.stringify(test2, null, 2)}`)
 </script>
 
 <template>
   <header class="w-full bg-cyan-200">
     <div class="flex">
-      <!--      <CatsMenu />-->
+      <!-- <CatsMenu /> -->
       <ClientOnly>
         <TheUser />
         <TheCart />

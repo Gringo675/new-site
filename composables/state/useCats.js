@@ -1,2 +1,4 @@
-
-export default async () => useFetch('/api/getCategories')
+export default async () => {
+  console.log(`from useCats`)
+  return useFetch('/api/getCategories')
+}

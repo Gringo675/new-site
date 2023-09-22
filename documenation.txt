@@ -3,7 +3,8 @@ search:
     labels on products
 sub-sub-Cats:
     id's? - in order, without parent_id. - with parent_id (then may delete parent_id field in base)
-
+clearCats ??????
+from getCategories  2 times ?
 
 RoadMap:
 админка товары

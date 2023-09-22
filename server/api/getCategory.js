@@ -14,20 +14,20 @@ export default defineEventHandler(async event => {
   if (catData.parent_id === 0) {
     // основная категория
     // ищем дочерние категории
-    query = `SELECT name, alias, image FROM i_categories 
-                 WHERE parent_id = '${catData.id}' AND published = 1
-                 ORDER BY ordering`
-    catData.childCats = await dbReq(query)
+    // query = `SELECT name, alias, image FROM i_categories
+    //              WHERE parent_id = '${catData.id}' AND published = 1
+    //              ORDER BY ordering`
+    // catData.childCats = await dbReq(query)
   } else {
     // ищем смежные категории
-    query = `SELECT name, alias, image FROM i_categories 
-                 WHERE parent_id = '${catData.parent_id}' AND id != '${catData.id}' AND published = 1
-                 ORDER BY ordering`
-    catData.siblingCats = await dbReq(query)
+    // query = `SELECT name, alias, image FROM i_categories
+    //              WHERE parent_id = '${catData.parent_id}' AND id != '${catData.id}' AND published = 1
+    //              ORDER BY ordering`
+    // catData.siblingCats = await dbReq(query)
     // ищем все родительские категории
-    query = `SELECT name, alias FROM i_categories 
-                 WHERE id = '${catData.parent_id}'`
-    catData.parentCat = (await dbReq(query))[0]
+    // query = `SELECT name, alias FROM i_categories
+    //              WHERE id = '${catData.parent_id}'`
+    // catData.parentCat = (await dbReq(query))[0]
     // достаем пропсы категории
     for (const key in catData) {
       if (/^p\d_/.test(key) && catData[key] > 0) catActiveProps.push([key, catData[key]]) // [name, value]
