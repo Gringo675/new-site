@@ -3,35 +3,38 @@ const props = defineProps({
   data: Object,
 })
 
-const productData = props.data
+const productData = JSON.parse(JSON.stringify(props.data))
 
-const breadCrumbs = useBreadCrumbs()
-breadCrumbs.value = [
-  {
-    name: 'Каталог',
-    link: '/catalog',
-  },
-  {
-    name: productData.category.name,
-    link: '/catalog/' + productData.category.alias,
-  },
-]
+// формируем вложенные категории, в которых присутствует товар
+const subCats = JSON.parse(
+  JSON.stringify(
+    (await useCats())
+      .find(cat => cat.id === productData.category_id)
+      .children.filter(subCat => productData.subCatsId.includes(subCat.id))
+  )
+)
+subCats.forEach(subCat => {
+  subCat.children = subCat.children?.filter(subSubCat => productData.subCatsId.includes(subSubCat.id))
+})
 </script>
 
 <template>
   <div class="">
     <!--    breadcrumbs-->
-    <BreadCrumbs />
+    <BreadCrumbsWrapper
+      forProduct
+      :catId="productData.category_id"
+    />
     <!--    subCats-->
     <h3>В категориях:</h3>
     <div class="my-1">
       <div
-        v-for="subCat in productData.category.subCats"
+        v-for="subCat in subCats"
         class="px-2"
       >
         <NuxtLink :to="'/catalog/' + subCat.alias">{{ subCat.name }}</NuxtLink>
         <div
-          v-for="subSubCat in subCat.childs"
+          v-for="subSubCat in subCat.children"
           class="px-2"
         >
           <NuxtLink :to="'/catalog/' + subSubCat.alias">{{ subSubCat.name }}</NuxtLink>

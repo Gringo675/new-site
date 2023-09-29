@@ -32,7 +32,7 @@ export default defineEventHandler(async event => {
     if (!products.length) return null
   }
 
-  // const catsSet = new Set() // собираем все категории
+  const catsSet = new Set() // собираем все категории
   const propsSet = new Set() // собираем все пропсы
   // вспомогательный массив для сбора пропсов и дальнейшего упорядочивания товаров (без p8_pack)
   const propsGroupOrder = [
@@ -45,68 +45,62 @@ export default defineEventHandler(async event => {
     { name: 'p6_class', order: 6 },
     { name: 'p7_feature', order: 7 },
   ]
-  // для получения подкатегорий создаем объект из id категорий, в котором для каждой категории собираем наборы из пропсов входящих в нее товаров
-  const catsWithProductProps = []
   for (const product of products) {
-    product.props = []
+    catsSet.add(product.category_id)
+    product.props = [] // собираем активные пропсы
     for (const propsGroup of propsGroupOrder) {
-      product.props.push(product[propsGroup.name])
-      if (product[propsGroup.name] > 0) propsSet.add(product[propsGroup.name])
+      if (product[propsGroup.name] > 0) {
+        product.props.push(product[propsGroup.name])
+        propsSet.add(product[propsGroup.name])
+      }
     }
-    if (catsWithProductProps[product.category_id] === undefined)
-      catsWithProductProps[product.category_id] = [product.props]
-    else catsWithProductProps[product.category_id].push(product.props)
-
     product.image = product.images.match(/\S+/)[0] // берем только первое изображение
     product.price = product.special_price > 0 ? product.special_price : product.price // проверяем наличие спец.цены
   }
   // получаем категории
-  const qWhere = []
-  for (const key in catsWithProductProps) {
-    const productsProps = []
-    for (const props of catsWithProductProps[key]) {
-      const chunks = []
-      for (let i = 0; i < 8; i++) {
-        chunks.push(`${propsGroupOrder[i].name} ${props[i] === 0 ? `= ${props[i]}` : `IN (0, ${props[i]})`}`)
-      }
-      productsProps.push(`(${chunks.join(' AND ')})`)
-    }
-    const chunk = `(id = ${key} OR ((parent_id = ${key} OR parent_id IN (SELECT id FROM i_categories WHERE parent_id = ${key})) AND ${`(${productsProps.join(
-      ' OR '
-    )})`}))`
-    qWhere.push(chunk)
-  }
-  let query = `SELECT name, id, parent_id, p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature, ordering FROM i_categories WHERE ${qWhere.join(
-    ' OR '
-  )}`
-  const rawCats = await dbReq(query)
-  const cats = sortCategories(rawCats)
+  const catsID = Array.from(catsSet).join(', ')
+  // let query = `SELECT name, id, parent_id, p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature, p8_pack, ordering FROM i_categories WHERE id IN (${catsID}) OR parent_id IN (${catsID})`
+  // получаем под- и под-под-категории
+  let query = `SELECT id, parent_id, p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature,ordering FROM i_categories 
+            WHERE id IN (${catsID}) OR parent_id IN (${catsID}) OR
+            parent_id IN (SELECT id FROM i_categories WHERE parent_id IN (${catsID}))`
+  const catsBase = await dbReq(query)
+  console.log(`catsBase: ${JSON.stringify(catsBase, null, 2)}`)
 
-  // обрабатываем полученные категории
   const catsOrder = {} // вспомогательный объект типа catID: orderingValue для сортировки товаров
-  const collectPropsAndClear = cat => {
-    cat.props = []
-    for (const propsGroup of propsGroupOrder) {
-      if (cat[propsGroup.name] > 0) cat.props.push(cat[propsGroup.name])
-      delete cat[propsGroup.name]
-    }
-    delete cat.parent_id
-    delete cat.ordering
-  }
-  for (const cat of cats) {
-    catsOrder[cat.id] = cat.ordering
-    collectPropsAndClear(cat)
-    if (cat.children) {
-      for (const subCat of cat.children) {
-        collectPropsAndClear(subCat)
-        if (subCat.children) {
-          for (const subSubCat of subCat.children) {
-            collectPropsAndClear(subSubCat)
+
+  // вкладываем подкатегории в родительские категории, сортируем
+  const cats = catsBase
+    .filter(cat => cat.parent_id === 0)
+    .sort((a, b) => a.ordering - b.ordering)
+    .map(cat => {
+      catsOrder[cat.id] = cat.ordering
+      const cProducts = products.filter(product => product.category_id === cat.id)
+
+      const childs = catsBase
+        .filter(subCat => {
+          if (subCat.parent_id !== cat.id) return false
+          subCat.props = []
+          for (const propsGroup of propsGroupOrder) {
+            // if (subCat[propsGroup.name] > 0) subCat.props.push([propsGroup.name, subCat[propsGroup.name]]) // [name, value]
+            if (subCat[propsGroup.name] > 0) subCat.props.push(subCat[propsGroup.name])
           }
-        }
+          return cProducts.some(product => subCat.props.every(prop => product.props.includes(prop)))
+        })
+        .sort((a, b) => a.ordering - b.ordering)
+        .map(subCat => {
+          // удаляем лишнее
+          return {
+            name: subCat.name,
+            props: subCat.props,
+          }
+        })
+      return {
+        id: cat.id,
+        name: cat.name,
+        childs,
       }
-    }
-  }
+    })
 
   // получаем пропсы
   query = `SELECT id, group_id, name, ordering FROM i_properties WHERE id IN (${Array.from(propsSet).join(', ')})`
@@ -141,7 +135,7 @@ export default defineEventHandler(async event => {
         alias: product.alias,
         image: product.image,
         price: product.price,
-        props: product.props.filter(prop => prop > 0), // оставляем только активные значения
+        props: product.props,
         order: index,
       }
     })

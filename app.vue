@@ -21,6 +21,7 @@ const someErrorLogger = e => {
   // логгер должен быть в TheError, наверно
   console.log(`NuxtErrorBoundary caught error`)
   console.log(`e: ${JSON.stringify(e.message, null, 2)}`)
+  console.log(`stack: ${JSON.stringify(e.stack, null, 2)}`)
 }
 </script>
 

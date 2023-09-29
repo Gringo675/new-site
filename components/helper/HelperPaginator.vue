@@ -65,9 +65,7 @@ const handlePaginator = val => {
     })
   }
 }
-const hideShowMoreButton = computed(
-  () => paginator.value.length === 1 || paginator.value[paginator.value.length - 1].isActive
-)
+const hideShowMoreButton = computed(() => paginator.value[paginator.value.length - 1]?.isActive ?? true)
 </script>
 
 <template>

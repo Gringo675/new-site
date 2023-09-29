@@ -1,9 +1,10 @@
 <script setup>
 const props = defineProps({
   fGroup: Object,
+  index: Number,
 })
 const emit = defineEmits(['filterChanged'])
-const showValues = ref(false)
+const showValues = ref(props.index < 3) // раскрытые для первых трех групп
 
 const activeValues = computed(() => props.fGroup.values.filter(item => item.active))
 const inactivateVal = val => {

@@ -9,37 +9,27 @@ export default defineEventHandler(async event => {
   const catData = (await dbReq(query))[0]
   if (catData === undefined) throw createError({ statusCode: 404, statusMessage: 'Page Not Found!!!!' })
 
-  const catActiveProps = [] // для основных категорий будет пустой массив, для подкатегорий добавим ниже
-
-  if (catData.parent_id === 0) {
-    // основная категория
-    // ищем дочерние категории
-    // query = `SELECT name, alias, image FROM i_categories
-    //              WHERE parent_id = '${catData.id}' AND published = 1
-    //              ORDER BY ordering`
-    // catData.childCats = await dbReq(query)
-  } else {
-    // ищем смежные категории
-    // query = `SELECT name, alias, image FROM i_categories
-    //              WHERE parent_id = '${catData.parent_id}' AND id != '${catData.id}' AND published = 1
-    //              ORDER BY ordering`
-    // catData.siblingCats = await dbReq(query)
-    // ищем все родительские категории
-    // query = `SELECT name, alias FROM i_categories
-    //              WHERE id = '${catData.parent_id}'`
-    // catData.parentCat = (await dbReq(query))[0]
-    // достаем пропсы категории
+  const catActiveProps = [] // для основных категорий будет пустой массив, для подкатегорий добавляем ниже
+  if (catData.parent_id !== 0) {
     for (const key in catData) {
       if (/^p\d_/.test(key) && catData[key] > 0) catActiveProps.push([key, catData[key]]) // [name, value]
     }
   }
 
   // получаем товары
-  const productsCatID = catData.parent_id > 0 ? catData.parent_id : catData.id
+  // т.к. товары принадлежат главным категориям, необходимо найти id этого первого родителя
+  let productsCatId
+  if (catData.parent_id === 0) productsCatId = catData.id
+  else {
+    // т.к. на данный момент в категориях максимум 2 уровня вложенности, достаточно одного запроса для определения первого родителя
+    query = `SELECT parent_id FROM i_categories WHERE id = '${catData.parent_id}' LIMIT 1`
+    const parentParentId = (await dbReq(query))[0].parent_id
+    productsCatId = parentParentId > 0 ? parentParentId : catData.parent_id
+  }
   query = `SELECT id, name, alias, price, special_price, images, label_id,
                  p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature, p8_pack,
                  standart_ids, reestr_ids, pasport_ids
-                 FROM i_products WHERE category_id = '${productsCatID}' 
+                 FROM i_products WHERE category_id = '${productsCatId}' 
                  ${catActiveProps.reduce((acc, prop) => {
                    acc += `AND ${prop[0]} = ${prop[1]} `
                    return acc
@@ -47,8 +37,8 @@ export default defineEventHandler(async event => {
                  AND published = 1`
   const products = await dbReq(query)
 
-  // на основе полученных продуктов создаем фильтр
-  const filterGroups = useCatProps(productsCatID)
+  // на основе полученных товаров создаем фильтр
+  const filterGroups = useCatProps(productsCatId)
   const catActivePropsIds = catActiveProps.map(item => item[1]) // только значения
   let allProps = new Set() // набор из всех уникальных id, для запроса в базу
 

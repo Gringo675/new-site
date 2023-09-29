@@ -20,9 +20,9 @@ export default defineEventHandler(async event => {
   // const match = baseURL.match(/\/?(.+)[\/$]/)
   // cv({origin, baseURL})
 
-  // await timer(2)
+  await timer(1)
   // if (Math.random() < .3) throw createError({statusCode: 481, statusMessage: `Random error on ${cTime}`})
-  // throw createError({statusCode: 482, statusMessage: `Some error on ${cTime}`})
+  // throw createError({ statusCode: 482, statusMessage: `Some error on ${cTime}` })
   // const body = await readBody(event)
   // console.log(`body: ${JSON.stringify(body, null, 2)}`)
   // const token = getRequestHeader(event, 'sessionToken')

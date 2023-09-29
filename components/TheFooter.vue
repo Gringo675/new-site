@@ -1,5 +1,9 @@
 <script setup>
 const user = useUser().value
+
+// console.log(`from footer`)
+// const testF = await useTest()
+// console.log(`testF: ${JSON.stringify(testF, null, 2)}`)
 </script>
 
 <template>

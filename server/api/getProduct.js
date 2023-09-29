@@ -26,28 +26,12 @@ export default defineEventHandler(async event => {
     'p8_pack',
   ]
 
-  // получаем данные о категории
-  query = `SELECT name, alias FROM i_categories 
-                 WHERE id = '${productData.category_id}'`
-  productData.category = (await dbReq(query))[0]
   // отбираем под- и под-под-категории, к которым относится данный продукт
-  query = `SELECT id, parent_id, name, alias, ordering FROM i_categories 
+  query = `SELECT id FROM i_categories 
             WHERE (parent_id = ${productData.category_id} OR 
             parent_id IN (SELECT id FROM i_categories WHERE parent_id = ${productData.category_id})) 
             ${props.map(prop => `AND (${prop} = 0 OR ${prop} = ${productData[prop]}) `).join('')}`
-  const rawCats = await dbReq(query)
-  productData.category.subCats = sortCategories(rawCats, productData.category_id).map(cat => {
-    return {
-      name: cat.name,
-      alias: cat.alias,
-      childs: cat.children?.map(cat => {
-        return {
-          name: cat.name,
-          alias: cat.alias,
-        }
-      }),
-    }
-  })
+  productData.subCatsId = (await dbReq(query)).map(item => item.id)
 
   // отбираем related prods (из той же категории и максимально совпадающие по параметрам)
   query = `SELECT id, name, alias, price, images, ${props.join()} 
@@ -143,7 +127,6 @@ export default defineEventHandler(async event => {
 
   // удаляем ненужное
   const toDelete = [
-    'category_id',
     'old_id',
     'brand_eans',
     'special_price',

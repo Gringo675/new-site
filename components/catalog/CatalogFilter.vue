@@ -9,9 +9,10 @@ const resetButtonDisabled = computed(() => props.filter.every(fGroup => fGroup.v
 
 <template>
   <div class="w-[250px] p-2 bg-orange-50 rounded-xl">
-    <template v-for="fGroup in filter">
+    <template v-for="(fGroup, index) in filter">
       <CatalogFilterGroup
         :fGroup="fGroup"
+        :index="index"
         @filterChanged="emit('filterChanged')"
       />
     </template>
