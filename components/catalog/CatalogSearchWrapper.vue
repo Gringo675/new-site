@@ -45,28 +45,63 @@ const vIndeterminateChecked = (el, binding) => {
   if (!el.indeterminate) el.checked = targetCat.children.every(subCat => subCat.active)
 }
 
-const inputsHandler = (inputValue, i1, i2, i3) => {
-  // получает значение чекбокса и до трех индексов вложенности целевой категории
+const inputsHandler = (inputValue, indexes) => {
+  // получает значение чекбокса и массив из индексов вложенности целевой категории
   console.log(`from inputsHandler`)
-  cv(i1, i2, i3)
-  let tCat = cats[i1] // target cat
-  if (i2 !== undefined) tCat = tCat.children[i2]
-  if (i3 !== undefined) tCat = tCat.children[i3]
-  console.log(`tCat.name: ${JSON.stringify(tCat.name, null, 2)}`)
+
+  const getCatFromIndexes = indexes => {
+    switch (indexes.length) {
+      case 1:
+        return cats[indexes[0]]
+      case 2:
+        return cats[indexes[0]].children[indexes[1]]
+      case 3:
+        return cats[indexes[0]].children[indexes[1]].children[indexes[2]]
+    }
+  }
+
+  const tCat = getCatFromIndexes(indexes) // target cat
   tCat.active = inputValue
   tCat.indeterminate = false
 
   const changeChildren = cats => {
     for (const cat of cats) {
       cat.active = inputValue
-      tCat.indeterminate = false
+      cat.indeterminate = false
       if (cat.children) changeChildren(cat.children)
     }
   }
   if (tCat.children) changeChildren(tCat.children)
 
-  // todo: changeParents
+  const changeParent = indexes => {
+    const cat = getCatFromIndexes(indexes)
+    console.log(`from changeParent`)
+    cat.indeterminate =
+      cat.children.some(subCat => subCat.indeterminate) ||
+      (cat.children.some(subCat => subCat.active) && cat.children.some(subCat => !subCat.active))
+    if (cat.indeterminate || cat.children.every(subCat => !subCat.active)) cat.active = false
+    else if (cat.children.every(subCat => subCat.active)) cat.active = true
+
+    if (indexes.length > 1) changeParent(indexes.slice(0, -1))
+  }
+  if (indexes.length > 1) changeParent(indexes.slice(0, -1))
+
+  // const calculateIndeterminate = cat => {
+  //   if (cat.children) {
+  //     cat.indeterminate = cat.children.some(subCat => subCat.active) && cat.children.some(subCat => !subCat.active)
+  //     for (const subCat of cat.children) calculateIndeterminate(subCat)
+  //   }
+  // }
+  // calculateIndeterminate(cats[i1])
 }
+
+// const vIndeterminate = (el, binding) => {
+//   // custom directive v-indeterminate
+//   console.log(`from indeterminate`)
+//   console.log(`binding: ${JSON.stringify(binding, null, 2)}`)
+//   const tCat = cats[binding.value]
+//   el.indeterminate = tCat.indeterminate
+// }
 </script>
 
 <template>
@@ -76,39 +111,37 @@ const inputsHandler = (inputValue, i1, i2, i3) => {
     <!--      first column-->
     <div class="w-60 mr-4">
       <h2>В категориях:</h2>
-      <label
-        v-for="(cat, i1) of cats"
-        class="block ml-2 bg-blue-100"
-      >
-        <input
-          type="checkbox"
-          :checked="cat.active"
-          @input="inputsHandler($event.target.checked, i1)"
-        />
-        {{ cat.name }}
-        <label
-          v-for="(subCat, i2) of cat.children"
-          class="block ml-4 bg-teal-100"
-        >
+      <template v-for="(cat, i1) of cats">
+        <label class="block ml-2 bg-blue-100">
           <input
             type="checkbox"
-            :checked="subCat.active"
-            @input="inputsHandler($event.target.checked, i1, i2)"
+            :checked="cat.active"
+            @input="inputsHandler($event.target.checked, [i1])"
+            :indeterminate="cat.indeterminate"
           />
-          {{ subCat.name }}
-          <label
-            v-for="(subSubCat, i3) of subCat.children"
-            class="block ml-4 bg-purple-100"
-          >
+          {{ cat.name }}
+        </label>
+        <template v-for="(subCat, i2) of cat.children">
+          <label class="block ml-2 pl-2 bg-teal-100">
             <input
               type="checkbox"
-              :checked="subSubCat.active"
-              @input="inputsHandler($event.target.checked, i1, i2, i3)"
+              :checked="subCat.active"
+              @input="inputsHandler($event.target.checked, [i1, i2])"
             />
-            {{ subSubCat.name }}
+            {{ subCat.name }}
           </label>
-        </label>
-      </label>
+          <template v-for="(subSubCat, i3) of subCat.children">
+            <label class="block ml-2 pl-4 bg-purple-100">
+              <input
+                type="checkbox"
+                :checked="subSubCat.active"
+                @input="inputsHandler($event.target.checked, [i1, i2, i3])"
+              />
+              {{ subSubCat.name }}
+            </label>
+          </template>
+        </template>
+      </template>
     </div>
     <!--      second column-->
     <div class="w-full">
