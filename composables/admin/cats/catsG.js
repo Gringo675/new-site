@@ -1,9 +1,23 @@
 export default reactive({
-  items: [],
-  async getItems() {
-    this.items = await myFetch('/api/admin/getCategories')
-  },
+  cats: [],
   changedCats: {},
+  draggableCatIndex: {
+    group: null,
+    item: null,
+  },
+  async getCats() {
+    this.cats = await myFetch('/api/admin/getCategories')
+  },
+  getCat(indexes) {
+    switch (indexes.length) {
+      case 1:
+        return this.cats[indexes[0]]
+      case 2:
+        return this.cats[indexes[0]].children[indexes[1]]
+      case 3:
+        return this.cats[indexes[0]].children[indexes[1]].children[indexes[2]]
+    }
+  },
   handleChanges(catID, key, newContent) {
     if (this.changedCats[catID] === undefined) this.changedCats[catID] = {}
     this.changedCats[catID][key] = newContent
@@ -11,72 +25,83 @@ export default reactive({
   async saveChanges() {
     if (!Object.keys(this.changedCats).length) return
 
-    await myFetch('/api/admin/setCategories', {
+    const success = await myFetch('/api/admin/setCategories', {
       method: 'post',
       payload: this.changedCats,
     })
-
-    this.changedCats = {}
+    if (success) {
+      this.changedCats = {}
+      this.cats.length = 0
+      this.getCats()
+    }
   },
-  addCat(parentIndex, childIndex, isCopy) {
+  addCat(indexes, options = {}) {
     /**
      * У функции три варианта добавления категории:
-     * Копирование - определяется по флагу isCopy. Таргет-категория просто копируется рядом с новым ID.
-     * Добавление - новая пустая категория с сгенерированным ID вставляется на одном уровне с таргет-категорией (рядом).
-     * Добавление подкатегории - возможна только для "главных" категорий. Определяется по childIndex === undefined (не
-     * передается в функцию). Добавляет пустую подкатегорию для таргет-категории (в конец).
+     * Добавление - новая пустая категория вставляется на одном уровне с таргет-категорией (рядом).
+     * Копирование - options.copy - таргет-категория копируется рядом.
+     * Добавление подкатегории - options.subcat - добавляет пустую подкатегорию для таргет-категории (в конец)
      */
 
-    const isAddSubCat = childIndex === undefined
-    const targetCat =
-      childIndex >= 0 && childIndex !== null ? this.items[parentIndex].children[childIndex] : this.items[parentIndex]
-    if (isAddSubCat && targetCat.children === undefined) targetCat.children = []
-    const targetArray = childIndex !== null ? this.items[parentIndex].children : this.items // куда будем вставлять
+    options.copy = options.copy ?? false
+    options.subcat = options.subcat ?? false
 
-    const newID = targetArray.length
-      ? Math.max.apply(
-          null,
-          targetArray.map(cat => cat.id)
-        ) + 1
-      : targetCat.id * 100 + 1
-    const newCat = isCopy ? JSON.parse(JSON.stringify(targetCat)) : {}
+    const tCat = this.getCat(indexes)
+    let tArray, parentId // куда будем вставлять
+    if (options.subcat) {
+      parentId = tCat.id
+      if (tCat.children === undefined) tCat.children = []
+      tArray = tCat.children
+    } else {
+      if (indexes.length === 1) {
+        parentId = 0
+        tArray = this.cats
+      } else {
+        const parentCat = this.getCat(indexes.slice(0, -1))
+        parentId = parentCat.id
+        tArray = parentCat.children
+      }
+    }
+
+    const newCat = options.copy ? JSON.parse(JSON.stringify(tCat)) : {}
     delete newCat.children // при копировании дети не копируются
-    newCat.id = newID
-    if (isAddSubCat) {
+    newCat.id = Date.now() // temp id
+    newCat.parent_id = parentId
+    newCat.published = 1
+    if (options.subcat) {
+      // наследуем пропсы от родительской категории
+      for (const key in tCat) {
+        if (/^p\d_/.test(key) && tCat[key] > 0) newCat[key] = tCat[key]
+      }
       // вставляем в конец
-      targetArray.push(newCat)
+      tArray.push(newCat)
     } else {
       // вставляем рядом
-      const targetIndex = (childIndex >= 0 && childIndex !== null ? childIndex : parentIndex) + 1
-      targetArray.splice(targetIndex, 0, newCat)
+      tArray.splice(indexes[indexes.length - 1] + 1, 0, newCat)
     }
     // сохраняем изменения в спец. объекте
-    const wasDeleted = this.changedCats[newCat.id]?.isDel // проверяем, не была ли категория с таким же ID предварительна удалена
     this.changedCats[newCat.id] = JSON.parse(JSON.stringify(newCat))
-    if (wasDeleted) this.changedCats[newCat.id].isDel = true // возвращаем флаг, чтобы при обработке на сервере предварительно удалить старую
     this.changedCats[newCat.id].isNew = true
     delete this.changedCats[newCat.id].id // убираем дублирование ID
 
     // обрабатываем новый порядок категорий
-    this.createNewCatsOrder(targetArray)
+    this.createNewCatsOrder(tArray)
   },
-  deleteCat(parentIndex, childIndex) {
-    const targetCat = childIndex !== null ? this.items[parentIndex].children[childIndex] : this.items[parentIndex]
-    const targetArray = childIndex !== null ? this.items[parentIndex].children : this.items // откуда будем удалять
-    const targetIndex = childIndex !== null ? childIndex : parentIndex
-    const targetID = targetCat.id
+  deleteCat(indexes) {
+    const tCat = this.getCat(indexes)
+    const tArray = indexes.length === 1 ? this.cats : this.getCat(indexes.slice(0, -1)).children
 
-    if (this.changedCats[targetID]?.isNew) {
+    if (this.changedCats[tCat.id]?.isNew) {
       // если до этого добавили эту категорию
-      delete this.changedCats[targetID] // просто удаляем
+      delete this.changedCats[tCat.id] // просто удаляем
     } else {
-      this.changedCats[targetID] = {}
-      this.changedCats[targetID].isDel = true
+      this.changedCats[tCat.id] = {}
+      this.changedCats[tCat.id].isDel = true
     }
-    targetArray.splice(targetIndex, 1)
+    tArray.splice(indexes[indexes.length - 1], 1)
 
     // обрабатываем новый порядок категорий
-    this.createNewCatsOrder(targetArray)
+    this.createNewCatsOrder(tArray)
   },
   createNewCatsOrder(targetCats) {
     // присваивает переданным в массиве категориям новое значение ordering
@@ -88,9 +113,5 @@ export default reactive({
         this.changedCats[cat.id].ordering = cat.ordering
       }
     })
-  },
-  draggableCatIndex: {
-    group: null,
-    item: null,
   },
 })

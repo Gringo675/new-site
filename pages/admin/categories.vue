@@ -6,7 +6,7 @@ import propsEditor from '~/composables/admin/cats/propsEditor'
 import textEditor from '~/composables/admin/cats/textEditor'
 
 await propsG.getItems()
-await catsG.getItems()
+await catsG.getCats()
 </script>
 
 <template>
@@ -36,13 +36,10 @@ await catsG.getItems()
     >
       <TransitionGroup name="transition-draggable-group">
         <div
-          v-for="(parentCat, parentIndex) in catsG.items"
-          :key="parentCat.id"
+          v-for="(cat, index) in catsG.cats"
+          :key="cat.id"
         >
-          <AdminCatsItemBlock
-            :parentIndex="parentIndex"
-            :childIndex="null"
-          />
+          <AdminCatsItemBlock :indexes="[index]" />
         </div>
       </TransitionGroup>
     </div>

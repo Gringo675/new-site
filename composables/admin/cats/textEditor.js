@@ -1,20 +1,17 @@
 export default reactive({
     isActive: false,
-    parentIndex: null,
-    childIndex: null,
+    indexes: null,
     field: '',
     fieldRU: '',
-    show: function(parentIndex, childIndex, field, fieldRU) {
+    show(indexes, field, fieldRU) {
         if (this.isActive) return
-        this.parentIndex = parentIndex
-        this.childIndex = childIndex
+        this.indexes = indexes
         this.field = field
         this.fieldRU = fieldRU
         this.isActive = true
     },
-    hide: function() {
-        this.parentIndex = null
-        this.childIndex = null
+    hide() {
+        this.indexes = null
         this.field = ''
         this.fieldRU = ''
         this.isActive = false

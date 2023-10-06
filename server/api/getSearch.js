@@ -10,11 +10,12 @@ export default defineEventHandler(async event => {
   const { q, f } = getQuery(event)
   if (typeof q !== 'string' || q.length < 3) throw createError({ statusCode: 505, statusMessage: `Incorrect request!` })
   const fastSearch = f === '1'
+  // экранируем и меняем пробел на паттерн % - любая строка любой длины
+  const qExpression = q.replaceAll("'", "\\'").replaceAll(' ', '%')
 
-  const getProducts = (q, fastSearch) => {
+  const getProducts = (qExpression, fastSearch) => {
     try {
-      q = q.replaceAll("'", "\\'")
-      const query = `SELECT id, name, alias, category_id, price, special_price, images, p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature, p8_pack FROM i_products WHERE name LIKE '%${q}%' LIMIT ${
+      const query = `SELECT id, name, alias, category_id, price, special_price, images, p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature, p8_pack FROM i_products WHERE name LIKE '%${qExpression}%' LIMIT ${
         fastSearch ? '10' : '100'
       }`
       return dbReq(query)
@@ -23,12 +24,12 @@ export default defineEventHandler(async event => {
     }
   }
 
-  let products = await getProducts(q, fastSearch)
+  let products = await getProducts(qExpression, fastSearch)
 
   if (!products.length) {
     // если нет результатов, пробуем изменить раскладку и повторить поиск
-    const newQ = changeToRusLayout(q)
-    if (newQ !== q) products = await getProducts(newQ, fastSearch)
+    const newQ = changeToRusLayout(qExpression)
+    if (newQ !== qExpression) products = await getProducts(newQ, fastSearch)
     if (!products.length) return null
   }
 

@@ -1,10 +1,9 @@
 ToDo:
 search: 
-    labels on products
+    категории: возможно убрать indeterminate и изменение родителей (будет понятно после окончательного формирования категорий, будут ли подкатегории на 100% покрывать родителей) (наверно лучше убрать совсем фильтр с подкатегорий, оставив только главные, и добавить линки)
 sub-sub-Cats:
     id's? - in order, without parent_id. - with parent_id (then may delete parent_id field in base)
 clearCats ??????
-from getCategories  2 times ?
 
 RoadMap:
 админка товары

@@ -93,13 +93,20 @@ const showAllResults = async () => {
               <NuxtLink :to="'/catalog/' + cat.alias">
                 {{ cat.name }}
               </NuxtLink>
-              <NuxtLink
-                v-for="subCat in cat.childs"
-                :to="'/catalog/' + subCat.alias"
-                class="pl-2 block"
-              >
-                {{ subCat.name }}
-              </NuxtLink>
+              <template v-for="subCat in cat.children">
+                <NuxtLink
+                  :to="'/catalog/' + subCat.alias"
+                  class="pl-2 block"
+                >
+                  {{ subCat.name }}
+                </NuxtLink>
+                <NuxtLink
+                  v-for="subSubCat in subCat.children"
+                  :to="'/catalog/' + subSubCat.alias"
+                  class="pl-4 block"
+                  >{{ subSubCat.name }}</NuxtLink
+                >
+              </template>
             </div>
           </div>
           <!-- products -->

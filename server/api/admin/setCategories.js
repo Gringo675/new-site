@@ -3,8 +3,7 @@
  * {
  *     catID: { // объект с измененными полями. Может содержать спец. ключи:
  *         isNew -  метка новой категории,
- *         isDel - метка удаленной категории (причем эти две метки могут быть одновременно, когда одну категорию удалили,
- *         а ее id достался новой категории)
+ *         isDel - метка удаленной категории
  *     }, ...
  * }
  */
@@ -23,31 +22,24 @@ export default defineEventHandler(async event => {
       query = `DELETE FROM i_categories WHERE id = ${catID}`
       // console.log(`query: ${query}`);
       await dbReq(query)
-    }
-
-    if (cat.isNew) {
+    } else if (cat.isNew) {
       // добавляем
-      query = `INSERT INTO i_categories
-                     SET id = ${catID}, `
+      delete cat.isNew
+      const params = []
       for (const key in cat) {
-        if (key !== 'isDel' && key !== 'isNew') query += `${key} = '${prepareString(cat[key])}', `
+        params.push(`${key} = '${prepareString(cat[key])}'`)
       }
-      query = query.slice(0, -2)
+      query = `INSERT INTO i_categories SET ${params.join(', ')}`
       // console.log(`query: ${query}`);
       await dbReq(query)
-    }
-
-    if (!cat.isDel && !cat.isNew) {
+    } else {
       // обновляем
-      // console.log(`cat: ${JSON.stringify(cat, null, 2)}`)
-      query = `UPDATE i_categories
-                     SET `
+      const params = []
       for (const key in cat) {
-        query += `${key} = '${prepareString(cat[key])}', `
+        params.push(`${key} = '${prepareString(cat[key])}'`)
       }
-      query = query.slice(0, -2)
-      query += ` WHERE id = ${catID}`
-      // console.log(`query: ${query}`);
+      query = `UPDATE i_categories SET ${params.join(', ')}  WHERE id = ${catID}`
+      // console.log(`query: ${query}`)
       await dbReq(query)
     }
   }

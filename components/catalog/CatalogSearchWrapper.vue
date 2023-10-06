@@ -18,32 +18,40 @@ for (const cat of props.searchData.cats) {
 const cats = reactive(props.searchData.cats)
 
 const activeProducts = computed(() => {
-  console.log(`from activeProducts`)
-
-  const inactiveCats = {}
+  // идеального алгоритма нет, нужно либо убирать неактивные, либо вычислять активные
+  // убираем неактивные
+  // const inactiveCats = {}
+  // for (const cat of cats) {
+  //   inactiveCats[cat.id] = []
+  //   for (const subCat of cat.children) {
+  //     if (!subCat.active) inactiveCats[cat.id].push(subCat.props)
+  //     if (subCat.children) {
+  //       for (const subSubCat of subCat.children) {
+  //         if (!subSubCat.active) inactiveCats[cat.id].push(subSubCat.props)
+  //       }
+  //     }
+  //   }
+  // }
+  // return props.searchData.products.filter(
+  //   product => !inactiveCats[product.catId].some(activeProps => activeProps.every(prop => product.props.includes(prop)))
+  // )
+  // вычисляем активные
+  const activeCats = {}
   for (const cat of cats) {
-    inactiveCats[cat.id] = []
+    activeCats[cat.id] = []
     for (const subCat of cat.children) {
-      if (!subCat.active) inactiveCats[cat.id].push(subCat.props)
+      if (subCat.active) activeCats[cat.id].push(subCat.props)
       if (subCat.children) {
         for (const subSubCat of subCat.children) {
-          if (!subSubCat.active) inactiveCats[cat.id].push(subSubCat.props)
+          if (subSubCat.active) activeCats[cat.id].push(subSubCat.props)
         }
       }
     }
   }
-  return props.searchData.products.filter(
-    product => !inactiveCats[product.catId].some(activeProps => activeProps.every(prop => product.props.includes(prop)))
+  return props.searchData.products.filter(product =>
+    activeCats[product.catId].some(activeProps => activeProps.every(prop => product.props.includes(prop)))
   )
 })
-
-const vIndeterminateChecked = (el, binding) => {
-  // custom directive v-indeterminate-checked
-  const targetCat = cats[binding.value]
-  el.indeterminate =
-    targetCat.children.some(subCat => subCat.active) && targetCat.children.some(subCat => !subCat.active)
-  if (!el.indeterminate) el.checked = targetCat.children.every(subCat => subCat.active)
-}
 
 const inputsHandler = (inputValue, indexes) => {
   // получает значение чекбокса и массив из индексов вложенности целевой категории
@@ -79,29 +87,13 @@ const inputsHandler = (inputValue, indexes) => {
     cat.indeterminate =
       cat.children.some(subCat => subCat.indeterminate) ||
       (cat.children.some(subCat => subCat.active) && cat.children.some(subCat => !subCat.active))
-    if (cat.indeterminate || cat.children.every(subCat => !subCat.active)) cat.active = false
-    else if (cat.children.every(subCat => subCat.active)) cat.active = true
+    if (cat.children.every(subCat => !subCat.active)) cat.active = false
+    else if (cat.indeterminate || cat.children.every(subCat => subCat.active)) cat.active = true
 
     if (indexes.length > 1) changeParent(indexes.slice(0, -1))
   }
   if (indexes.length > 1) changeParent(indexes.slice(0, -1))
-
-  // const calculateIndeterminate = cat => {
-  //   if (cat.children) {
-  //     cat.indeterminate = cat.children.some(subCat => subCat.active) && cat.children.some(subCat => !subCat.active)
-  //     for (const subCat of cat.children) calculateIndeterminate(subCat)
-  //   }
-  // }
-  // calculateIndeterminate(cats[i1])
 }
-
-// const vIndeterminate = (el, binding) => {
-//   // custom directive v-indeterminate
-//   console.log(`from indeterminate`)
-//   console.log(`binding: ${JSON.stringify(binding, null, 2)}`)
-//   const tCat = cats[binding.value]
-//   el.indeterminate = tCat.indeterminate
-// }
 </script>
 
 <template>
