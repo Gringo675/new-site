@@ -3,11 +3,21 @@
 const props = defineProps({
   data: Object,
 })
+
 // убираем ненужную реактивность
 const catData = JSON.parse(JSON.stringify(props.data.catData))
 const products = JSON.parse(JSON.stringify(props.data.products))
 const activeProducts = shallowReactive([])
 const filter = props.data.filter
+
+useSeoMeta({
+  title: catData.name + ' - цены, фото, характеристики',
+})
+useServerSeoMeta({
+  description: `Купить ${catData.name}${
+    catData.docs?.stnd.length ? ' ' + catData.docs.stnd.map(stnd => stnd.number).join(', ') : ''
+  } по ценам производителя с доставкой по России. Весь измерительный инструмент с поверкой и калибровкой в нашем онлайн-каталоге.`,
+})
 
 const urlFilter = useRoute().query.f
 if (urlFilter) setFilterFromURL()

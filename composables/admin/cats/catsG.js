@@ -1,10 +1,7 @@
 export default reactive({
   cats: [],
   changedCats: {},
-  draggableCatIndex: {
-    group: null,
-    item: null,
-  },
+  draggingCatIndexes: [],
   async getCats() {
     this.cats = await myFetch('/api/admin/getCategories')
   },

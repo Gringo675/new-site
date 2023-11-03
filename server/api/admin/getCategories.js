@@ -1,5 +1,3 @@
-import sortCategories from '~/server/utils/sortCategories'
-
 export default defineEventHandler(async event => {
   await checkToken(event, { adminOnly: true })
 

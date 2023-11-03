@@ -3,6 +3,9 @@ export default defineNuxtConfig({
     // baseURL: process.env.NODE_ENV === 'production' ? '/test/' : '/',
     baseURL: '/test/',
     head: {
+      htmlAttrs: {
+        lang: 'ru',
+      },
       meta: [{ name: 'robots', content: 'noindex, nofollow' }],
     },
   },

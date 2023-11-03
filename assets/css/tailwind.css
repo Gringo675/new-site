@@ -102,21 +102,6 @@
   transition: all 0.5s ease;
 }
 
-.transition-catchild-enter-active,
-.transition-catchild-leave-active {
-  transition: all 0.5s linear;
-}
-.transition-catchild-enter-from,
-.transition-catchild-leave-to {
-  opacity: 0;
-  max-height: 0;
-}
-.transition-catchild-enter-to,
-.transition-catchild-leave-from {
-  opacity: 1;
-  max-height: var(--child-height);
-}
-
 .transition-informer-enter-from,
 .transition-informer-leave-to {
   opacity: 0.2;

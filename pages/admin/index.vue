@@ -10,6 +10,9 @@ await myFetch('/api/user/isAdmin') // если не админ, выкинет �
   <button class="button">
     <NuxtLink to="/admin/categories">Менеджер категорий</NuxtLink>
   </button>
+    <button class="button">
+    <NuxtLink to="/admin/products">Менеджер товаров</NuxtLink>
+  </button>
   <button class="button">
     <NuxtLink to="/admin/options">Options</NuxtLink>
   </button>

@@ -55,7 +55,6 @@ const activeProducts = computed(() => {
 
 const inputsHandler = (inputValue, indexes) => {
   // получает значение чекбокса и массив из индексов вложенности целевой категории
-  console.log(`from inputsHandler`)
 
   const getCatFromIndexes = indexes => {
     switch (indexes.length) {
@@ -83,7 +82,6 @@ const inputsHandler = (inputValue, indexes) => {
 
   const changeParent = indexes => {
     const cat = getCatFromIndexes(indexes)
-    console.log(`from changeParent`)
     cat.indeterminate =
       cat.children.some(subCat => subCat.indeterminate) ||
       (cat.children.some(subCat => subCat.active) && cat.children.some(subCat => !subCat.active))

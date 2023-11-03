@@ -41,31 +41,61 @@ const copyCat = () => {
   catsG.addCat(props.indexes, { copy: true })
 }
 
-const setChildHeight = el => {
-  el.style.setProperty('--child-height', cat.children?.length * 70 + 'px')
-  // console.log(`from setChildHeight`)
-  // const height = el.offsetHeight
-  // cv({ height })
-  // el.style.setProperty('--child-height', height + 'px')
+// анимация открытия/закрытия подкатегорий
+const onEnter = async (el, done) => {
+  const height = el.offsetHeight
+  el.style.setProperty('height', '0')
+  await new Promise(resolve => setTimeout(resolve, 0))
+  el.style.setProperty('height', height + 'px')
+  el.style.setProperty('transition', 'height .4s linear')
+  el.addEventListener(
+    'transitionend',
+    () => {
+      el.style.removeProperty('height')
+      el.style.removeProperty('transition')
+      done()
+    },
+    { once: true }
+  )
+}
+const onLeave = async (el, done) => {
+  const height = el.offsetHeight
+  el.style.setProperty('height', height + 'px')
+  await new Promise(resolve => setTimeout(resolve, 0))
+  el.style.setProperty('height', '0')
+  el.style.setProperty('transition', 'height .2s linear')
+  el.addEventListener(
+    'transitionend',
+    () => {
+      el.style.removeProperty('height')
+      el.style.removeProperty('transition')
+      done()
+    },
+    { once: true }
+  )
 }
 
-const isDraggingCat = computed(() => {
-  if (props.childIndex === null) {
-    if (catsG.draggableCatIndex.group === 'none' && catsG.draggableCatIndex.item == props.parentIndex) return true
-  } else {
-    if (catsG.draggableCatIndex.group == props.parentIndex && catsG.draggableCatIndex.item == props.childIndex)
-      return true
+// для выделения перетаскиваемой категории
+const isDraggingCat = computed(
+  () =>
+    catsG.draggingCatIndexes.length === props.indexes.length &&
+    catsG.draggingCatIndexes.every((item, index) => item === props.indexes[index])
+)
+// для выделения группы, куда можно переместить
+const inDraggingGroup = computed(
+  () =>
+    catsG.draggingCatIndexes.length === props.indexes.length &&
+    catsG.draggingCatIndexes.slice(0, -1).every((item, index) => item === props.indexes[index]) &&
+    catsG.draggingCatIndexes[catsG.draggingCatIndexes.length - 1] !== props.indexes[props.indexes.length - 1]
+)
+
+// создание алиаса
+watch(
+  () => cat.name,
+  name => {
+    if (!cat.alias?.length) cat.alias = createAlias(name)
   }
-  return false
-})
-const isDraggingGroup = computed(() => {
-  if (props.childIndex === null) {
-    if (catsG.draggableCatIndex.group === 'none') return true
-  } else {
-    if (catsG.draggableCatIndex.group == props.parentIndex) return true
-  }
-  return false
-})
+)
 </script>
 
 <template>
@@ -229,26 +259,26 @@ const isDraggingGroup = computed(() => {
         <button
           class="rounded-lg bg-blue-200 py-1 transition"
           @click="showMenu = !showMenu"
-          :class="{ 'scale-125 bg-amber-500': isDraggingGroup, 'opacity-20': isDraggingCat }"
+          :class="{ 'scale-125 shadow-inner shadow-amber-500': inDraggingGroup, 'opacity-20': isDraggingCat }"
         >
           <img
             :src="showMenu ? '/img/x.svg' : '/img/three-dots-vertical.svg'"
             class="w-7 transition-opacity"
-            :data-drag-group="indexes.length === 1 ? 'none' : indexes[0]"
-            :data-drag-item="indexes.length === 1 ? indexes[0] : indexes[1]"
+            :data-cat-indexes="JSON.stringify(props.indexes)"
+            :data-drag-group="inDraggingGroup ? '1' : undefined"
           />
         </button>
       </div>
     </div>
 
     <transition
-      name="transition-catchild"
-      @before-enter="setChildHeight"
-      @before-leave="setChildHeight"
+      :css="false"
+      @enter="onEnter"
+      @leave="onLeave"
     >
       <div
         class="ml-2 overflow-hidden"
-        v-if="showChildren"
+        v-show="showChildren"
       >
         <TransitionGroup name="transition-draggable-group">
           <div

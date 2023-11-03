@@ -12,9 +12,7 @@ export default text => {
     o: 'щ',
     p: 'з',
     '[': 'х',
-    '{': 'х',
     ']': 'ъ',
-    '}': 'ъ',
     a: 'ф',
     s: 'ы',
     d: 'в',
@@ -26,7 +24,6 @@ export default text => {
     l: 'д',
     ';': 'ж',
     "'": 'э',
-    '"': 'э',
     z: 'я',
     x: 'ч',
     c: 'с',
@@ -39,8 +36,16 @@ export default text => {
     '.': 'ю',
     '>': 'ю',
     '/': '.',
-    '?': ',',
+    '?': '.',
   }
+
+  let result = ''
+  for (let i = 0; i < text.length; i++) {
+    const symbol = text[i].toLowerCase()
+    result += replacer[symbol] ?? symbol
+  }
+
+  return result
 
   return text.replace(/[A-z/,.;\'\"\]\[\}\{<>\?]/g, function (x) {
     // return x == x.toLowerCase() ? replacer[x] : replacer[x.toLowerCase()].toUpperCase()
