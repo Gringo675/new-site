@@ -33,8 +33,8 @@ const createMess = () => {
 </script>
 
 <template>
-  <header class="w-full bg-cyan-200">
-    <div class="flex">
+  <div class="w-full bg-cyan-200">
+    <div class="flex -md:hidden">
       <CatsMenuWrapper />
       <ClientOnly>
         <TheUser />
@@ -70,7 +70,7 @@ const createMess = () => {
       </button>
       <!--      <button @click="multiply" class="button">Multuply</button>-->
     </div>
-    <div>
+    <div class="-md:hidden">
       <button class="button">
         <NuxtLink to="/catalog/shtangentsirkuli">ШТАНГЕНЦИРКУЛИ</NuxtLink>
       </button>
@@ -97,5 +97,5 @@ const createMess = () => {
       </button>
     </div>
     <TheSearch />
-  </header>
+  </div>
 </template>

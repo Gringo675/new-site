@@ -96,10 +96,8 @@ const inputsHandler = (inputValue, indexes) => {
 
 <template>
   <div>Найдено товаров: {{ searchData.products.length === 100 ? 'более' : '' }} {{ searchData.products.length }}</div>
-  <!--    content wrapper-->
-  <div class="flex mt-5">
-    <!--      first column-->
-    <div class="w-60 mr-4">
+  <HelperAsideGrid>
+    <template #aside>
       <h2>В категориях:</h2>
       <template v-for="(cat, i1) of cats">
         <label class="block ml-2 bg-blue-100">
@@ -132,10 +130,8 @@ const inputsHandler = (inputValue, indexes) => {
           </template>
         </template>
       </template>
-    </div>
-    <!--      second column-->
-    <div class="w-full">
-      <CatalogProductsWrapper :products="activeProducts" />
-    </div>
-  </div>
+    </template>
+    <CatalogProductsWrapper :products="activeProducts" />
+  </HelperAsideGrid>
+  <!--    content wrapper-->
 </template>

@@ -124,21 +124,15 @@ function addFilterToURL() {
         </NuxtLink>
       </div>
     </div>
-    <!--    content wrapper-->
-    <div class="flex mt-5">
-      <!--      first column-->
-      <div class="w-60 mr-4">
-        <!--      filter-->
+    <HelperAsideGrid>
+      <template #aside>
         <CatalogFilter
           :filter="filter"
           @filterChanged="handleFilter"
           @resetFilter="initializeFilter(true)"
         />
-      </div>
-      <!--      second column-->
-      <div class="w-full">
-        <CatalogProductsWrapper :products="activeProducts" />
-      </div>
-    </div>
+      </template>
+      <CatalogProductsWrapper :products="activeProducts" />
+    </HelperAsideGrid>
   </div>
 </template>

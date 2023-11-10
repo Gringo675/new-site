@@ -57,7 +57,7 @@ const showAllResults = async () => {
 </script>
 
 <template>
-  <div class="m-2 p-2 w-64 relative">
+  <div class="p-2 w-64 relative">
     <input
       class="pl-2 pr-6 py-1 w-full"
       type="text"

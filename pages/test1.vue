@@ -1,13 +1,12 @@
 <script setup>
 //
-console.log(`from test page1`)
-const test = await useTest()
-console.log(`test: ${JSON.stringify(test, null, 2)}`)
 </script>
 
 <template>
-  <h1>Test1</h1>
-  <div>
-    {{ test }}
-  </div>
+  <HelperAsideGrid>
+    <template #aside>
+      <div class="w-full h-[400px] bg-red-500"></div>
+    </template>
+    <div class="w-full h-[500px] bg-blue-500"></div>
+  </HelperAsideGrid>
 </template>

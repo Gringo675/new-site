@@ -7,7 +7,7 @@ const user = useUser().value
 </script>
 
 <template>
-  <footer class="w-full h-32 bg-fuchsia-400">
+  <div class="w-full bg-fuchsia-400">
     <div>user: {{ user }}</div>
     <div class="">
       <button
@@ -17,5 +17,5 @@ const user = useUser().value
         feedback
       </button>
     </div>
-  </footer>
+  </div>
 </template>
