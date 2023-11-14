@@ -5,7 +5,7 @@
     <header>
       <TheHeader />
     </header>
-    <main class="w-full flex-grow -md:overflow-auto">
+    <main class="w-full flex-grow -sm:overflow-auto">
       <slot />
     </main>
     <footer>
