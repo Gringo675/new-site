@@ -9,7 +9,7 @@ export default defineNuxtConfig({
       meta: [{ name: 'robots', content: 'noindex, nofollow' }],
     },
   },
-  modules: ['@nuxtjs/tailwindcss'],
+  modules: ['@nuxt/ui'],
   routeRules: {
     '/admin/**': { ssr: false },
     '/user/**': { ssr: false },
@@ -47,5 +47,8 @@ export default defineNuxtConfig({
       VK_CLIENT_ID: process.env.VK_CLIENT_ID,
       MAILRU_CLIENT_ID: process.env.MAILRU_CLIENT_ID,
     },
+  },
+  colorMode: {
+    preference: 'light',
   },
 })

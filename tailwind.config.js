@@ -2,17 +2,6 @@ module.exports = {
   content: [],
   theme: {
     extend: {
-      // screens: {
-      //   '-2xl': { max: '1535px' },
-      //   '-xl': { max: '1279px' },
-      //   '-lg': { max: '1023px' },
-      //   '-md': { max: '767px' },
-      //   '-sm': { max: '639px' },
-      //   '@md': { min: '640px', max: '767px' },
-      //   '@lg': { min: '768px', max: '1023px' },
-      //   '@xl': { min: '1024px', max: '1279px' },
-      //   '@2xl': { min: '1280px', max: '1535px' },
-      // },
       screens: {
         '-xl': { max: '1535px' },
         '-lg': { max: '1279px' },
@@ -27,6 +16,34 @@ module.exports = {
       container: {
         center: true,
         padding: '1rem',
+      },
+      colors: {
+        secondary: {
+          50: '#faf6fe',
+          100: '#f4eafd',
+          200: '#ead9fb',
+          300: '#dabcf6',
+          400: '#cca1f2',
+          500: '#ac66e6',
+          600: '#9646d7',
+          700: '#8134bc',
+          800: '#6d2f9a',
+          900: '#5a277c',
+          950: '#3c115a',
+        },
+        accent: {
+          50: '#faf5f9',
+          100: '#f7ecf5',
+          200: '#f0daec',
+          300: '#e4bddc',
+          400: '#d294c5',
+          500: '#be6aaa',
+          600: '#ad5594',
+          700: '#934379',
+          800: '#7a3a65',
+          900: '#673456',
+          950: '#3d1a31',
+        },
       },
     },
   },
