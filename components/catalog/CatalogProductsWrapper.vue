@@ -116,26 +116,47 @@ watch(pageSetup.value, () => changesHandler({ fromPageSetup: true }))
 
 <template>
   <!--        order and quantity-->
-  <div class="w-full flex justify-end">
-    <select v-model="pageSetup.sortBy">
-      <option disabled>Упорядочить:</option>
-      <option value="order">по типоразмеру</option>
-      <option value="nameAcs">по наименованию А->Я</option>
-      <option value="nameDes">по наименованию Я->А</option>
-      <option value="brand">по производителю</option>
-      <option value="priceAcs">сначала дешевые</option>
-      <option value="priceDes">сначала дорогие</option>
-    </select>
-    <select
+  <div class="w-full flex justify-end gap-x-2">
+    <USelect
+      placeholder="Упорядочить:"
+      v-model="pageSetup.sortBy"
+      :options="[
+        {
+          name: 'по типоразмеру',
+          value: 'order',
+        },
+        {
+          name: 'по наименованию А->Я',
+          value: 'nameAcs',
+        },
+        {
+          name: 'по наименованию Я->А',
+          value: 'nameDes',
+        },
+        {
+          name: 'по производителю',
+          value: 'brand',
+        },
+        {
+          name: 'сначала дешевые',
+          value: 'priceAcs',
+        },
+        {
+          name: 'сначала дорогие',
+          value: 'priceDes',
+        },
+      ]"
+      option-attribute="name"
+      color="primary"
+      trailingIcon="i-heroicons-arrows-up-down-20-solid"
+    />
+    <USelect
+      placeholder="На странице:"
       v-model="pageSetup.prodsOnPage"
-      class="ml-5"
-    >
-      <option disabled>На странице:</option>
-      <option>10</option>
-      <option>20</option>
-      <option>40</option>
-      <option>60</option>
-    </select>
+      :options="[10, 20, 40, 60]"
+      color="primary"
+      trailingIcon="i-heroicons-arrows-up-down-20-solid"
+    />
   </div>
   <!--  products-->
   <div

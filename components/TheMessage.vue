@@ -1,45 +1,65 @@
 <script setup>
 //
-const messageData = useMessageData()
+const message = useMessage()
 
-const isDialogMessage = typeof messageData.callback === 'function'
-
-const buttonHandler = response => {
-  if (isDialogMessage && response) messageData.callback()
-  closeMessage()
+const okHandler = () => {
+  message.callback()
+  message.active = false
 }
 </script>
 
 <template>
-  <div
-    class="modal-form w-96 max-w-[95%] max-h-[90vh] border border-amber-900 rounded-xl overflow-auto flex flex-col justify-start"
-    :class="{ 'border-red-500': messageData.type === 'error', 'border-green-500': messageData.type === 'success' }"
+  <UModal
+    v-model="message.active"
+    :prevent-close="message.preventClose"
   >
-    <div
-      class="flex flex-row justify-between items-center bg-orange-300 p-2.5"
-      :class="{ 'bg-red-400': messageData.type === 'error', 'bg-green-400': messageData.type === 'success' }"
+    <UCard
+      :ui="{
+        header: {
+          background:
+            message.type === 'error' ? 'bg-red-200' : message.type === 'success' ? 'bg-green-200' : 'bg-secondary-200',
+        },
+      }"
     >
-      <div class="max-w-full whitespace-nowrap overflow-hidden overflow-ellipsis size text-xl">
-        {{ messageData.title }}
-      </div>
-    </div>
-    <div class="p-5 overflow-auto bg-amber-100">
-      <div v-html="messageData.body"></div>
-    </div>
-    <div class="p-2.5 bg-orange-200 flex justify-end items-center">
-      <button
-        v-if="isDialogMessage"
-        @click="buttonHandler(false)"
-        class="button px-2 py-1"
+      <template #header>
+        <div class="flex items-center justify-between gap-x-2">
+          <h3 class="font-semibold">
+            {{ message.title }}
+          </h3>
+          <UButton
+            v-if="!message.callback"
+            color="gray"
+            variant="ghost"
+            icon="i-heroicons-x-mark-20-solid"
+            class="-my-1"
+            @click="message.active = false"
+          />
+        </div>
+      </template>
+      <div
+        class=""
+        v-html="message.description"
+      ></div>
+
+      <template
+        #footer
+        v-if="message.callback"
       >
-        Cancel
-      </button>
-      <button
-        @click="buttonHandler(true)"
-        class="button px-2 py-1"
-      >
-        OK
-      </button>
-    </div>
-  </div>
+        <div class="flex justify-end items-center gap-x-4">
+          <UButton
+            label="Отмена"
+            variant="outline"
+            color="secondary"
+            @click="message.active = false"
+          />
+          <UButton
+            label="Ok"
+            color="secondary"
+            class="px-8"
+            @click="okHandler"
+          />
+        </div>
+      </template>
+    </UCard>
+  </UModal>
 </template>

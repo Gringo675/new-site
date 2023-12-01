@@ -10,7 +10,7 @@ const isMailValid = computed(() => validateMail(form.mail))
 
 const sendCode = async () => {
   if (!isMailValid.value) {
-    showNotice('Введите корректный адрес!', 'error')
+    showNotice({ title: 'Неправильный адрес!', description: 'Введите корректный адрес.', type: 'error' })
     return
   }
 
@@ -62,10 +62,10 @@ const verifyCode = async () => {
     getUserTimer.stop()
     await getUser()
     closeLogin()
-    showNotice('Успех!', 'success')
+    showNotice({ title: 'Успех!', type: 'success' })
   } else {
     isCodeValid.value = null
-    showNotice('Неверный код!', 'error')
+    showNotice({ title: 'Неверный код!', type: 'error' })
   }
 }
 
@@ -98,7 +98,6 @@ const closeLogin = () => {
 const onTest = () => {
   cv('from test')
 
-  // showNotice('some notice', 'info')
   // console.log(`user: ${JSON.stringify(user, null, 2)}`)
 }
 </script>

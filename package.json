@@ -14,11 +14,12 @@
   "devDependencies": {
     "@nuxt/devtools": "latest",
     "@nuxt/ui": "^2.9.0",
-    "nuxt": "^3.7.4",
     "dotenv": "^10.0.0",
-    "node-ssh": "^13.0.1"
+    "node-ssh": "^13.0.1",
+    "nuxt": "^3.7.4"
   },
   "dependencies": {
+    "maska": "^2.1.10",
     "mysql2": "^2.3.3",
     "nodemailer": "^6.9.1"
   }

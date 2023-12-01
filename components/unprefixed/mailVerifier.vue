@@ -24,7 +24,7 @@ const sendCode = async () => {
     showCodeInput.value = true
   } else {
     const errorMessage = response.error ? response.message : 'Ошибка при обновлении почты!'
-    showNotice(errorMessage, 'error')
+    showNotice({ title: 'Ошибка!', description: errorMessage, type: 'error' })
   }
 }
 
@@ -48,11 +48,11 @@ const checkCode = async () => {
     })
     if (isChangesSaved) {
       user.mail = props.mail
-      showNotice('Почта успешно изменена!', 'success')
-    } else showNotice('Ошибка при изменении почты!', 'error')
+      showNotice({ title: 'Почта успешно изменена!', type: 'success' })
+    } else showNotice({ title: 'Ошибка при изменении почты!', type: 'error' })
   } else {
     inputData.codeValid = null
-    showNotice('Неверный код!', 'error')
+    showNotice({ title: 'Неверный код!', type: 'error' })
   }
 }
 </script>

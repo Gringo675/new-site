@@ -1,32 +1,20 @@
-let timer
-
-const notice = reactive({
-  isActive: false,
-})
-
-const noticeData = {
-  type: '', // info, error, success
-  text: '',
-}
-
-export const useNotice = () => {
-  return notice
-}
-
-export const useNoticeData = () => {
-  return noticeData
-}
-
-export const showNotice = async (text, type = 'info') => {
+export const showNotice = async (options = {}) => {
   if (process.server) return
-  noticeData.text = text
-  noticeData.type = type
-  if (notice.isActive) {
-    clearTimeout(timer)
-    notice.isActive = false
-    await nextTick()
-  }
 
-  notice.isActive = true
-  timer = setTimeout(() => (notice.isActive = false), 4000)
+  options.title = options.title ?? ''
+  options.description = options.description ?? ''
+  options.type = options.type ?? 'info' // info, error, success
+
+  const toast = useToast()
+  toast.add({
+    title: options.title,
+    description: options.description,
+    icon:
+      options.type === 'error'
+        ? 'i-heroicons-exclamation-circle'
+        : options.type === 'success'
+        ? 'i-heroicons-check-circle'
+        : 'i-heroicons-information-circle',
+    color: options.type === 'error' ? 'red' : options.type === 'success' ? 'emerald' : 'secondary',
+  })
 }

@@ -8,7 +8,7 @@
     font-family: Play, system-ui, sans-serif;
     font-size: 1rem;
   }
-  select {
+  /* select {
     @apply cursor-pointer border-2 border-gray-400 rounded outline-none;
   }
   input {
@@ -37,19 +37,19 @@
   }
   a {
     @apply text-sky-700 hover:text-sky-500;
-  }
+  } */
 }
 
 @layer components {
-  .button {
+  /* .button {
     @apply inline-block mx-5 my-1.5 px-3.5 py-2 min-w-[100px] text-base text-slate-800 cursor-pointer
         border border-gray-300 rounded bg-gradient-to-b from-cyan-400 to-indigo-400
         hover:from-indigo-400 hover:to-cyan-400
         disabled:cursor-default disabled:bg-gray-300 disabled:bg-none;
-  }
-  .disabled {
+  } */
+  /* .disabled {
     @apply cursor-not-allowed text-gray-400;
-  }
+  } */
   .filter-scrollbar::-webkit-scrollbar {
     width: 12px;
     background-color: #f5f5f5;
@@ -102,7 +102,7 @@
   transition: all 0.5s ease;
 }
 
-.transition-informer-enter-from,
+/* .transition-informer-enter-from,
 .transition-informer-leave-to {
   opacity: 0.2;
   transform: translateY(20px);
@@ -110,7 +110,7 @@
 .transition-informer-enter-active,
 .transition-informer-leave-active {
   transition: transform 0.4s linear, opacity 0.2s linear;
-}
+} */
 
 .transition-filter-values-enter-from,
 .transition-filter-values-leave-to {

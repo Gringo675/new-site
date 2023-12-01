@@ -10,98 +10,182 @@
 await getUser({ hidden: true })
 const user = useUser().value
 
-const newUser = reactive({
-  name: {
-    val: user.name,
-    changed: computed(() => newUser.name.val !== user.name),
-    valid: computed(() => !newUser.name.val || newUser.name.val.length > 2),
-  },
-  mail: {
-    val: user.mail,
-    changed: computed(() => newUser.mail.val !== user.mail),
-    valid: computed(() => validateMail(newUser.mail.val)),
-  },
-  org: {
-    val: user.org,
-    changed: computed(() => newUser.org.val !== user.org),
-    valid: computed(() => !newUser.org.val || newUser.org.val.length > 2),
-  },
-  inn: {
-    val: user.inn,
-    changed: computed(() => newUser.inn.val !== user.inn),
-    complete: false,
-    valid: computed(() => !newUser.inn.val || newUser.inn.complete),
-  },
-  address: {
-    val: user.address,
-    changed: computed(() => newUser.address.val !== user.address),
-    valid: computed(() => !newUser.address.val || newUser.address.val.length > 2),
-  },
-  phone: {
-    val: user.phone,
-    changed: computed(() => newUser.phone.val !== user.phone),
-    complete: false,
-    valid: computed(() => !newUser.phone.val || newUser.phone.complete),
-  },
+const state = reactive({
+  name: user.name,
+  org: user.org,
+  inn: user.inn,
+  address: user.address,
+  phone: user.phone,
 })
 
-const isUserDataChanged = computed(
-  () =>
-    newUser.name.changed ||
-    newUser.mail.changed ||
-    newUser.org.changed ||
-    newUser.inn.changed ||
-    newUser.address.changed ||
-    newUser.phone.changed
-)
-const isUserDataValid = computed(
-  () =>
-    ((user.auth && !newUser.mail.changed) || !user.auth) &&
-    newUser.name.valid &&
-    newUser.mail.valid &&
-    newUser.org.valid &&
-    newUser.inn.valid &&
-    newUser.address.valid &&
-    newUser.phone.valid
-)
+const validate = state => {
+  const errors = []
+  if (state.name.length < 3) errors.push({ path: 'name', message: 'Введите имя!' })
+  // if ([1, 2].includes(state.org.length))
+  //   errors.push({ path: 'org', message: 'Введите корректное наименование организации!' })
+  if (![0, 10, 12].includes(state.inn.length))
+    errors.push({ path: 'inn', message: 'Введите корректный ИНН организации!' })
+  if (![0, 13].includes(state.phone.length))
+    errors.push({ path: 'phone', message: 'Введите корректный номер телефона!' })
+
+  emit(
+    'setIsUserDataChanged',
+    state.name !== user.name ||
+      state.org !== user.org ||
+      state.inn !== user.inn ||
+      state.address !== user.address ||
+      state.phone !== user.phone
+  )
+  emit('setIsUserDataValid', errors.length === 0)
+  return errors
+}
+
+// const newUser = reactive({
+//   name: {
+//     val: user.name,
+//     changed: computed(() => newUser.name.val !== user.name),
+//     valid: computed(() => !newUser.name.val || newUser.name.val.length > 2),
+//   },
+//   mail: {
+//     val: user.mail,
+//     changed: computed(() => newUser.mail.val !== user.mail),
+//     valid: computed(() => validateMail(newUser.mail.val)),
+//   },
+//   org: {
+//     val: user.org,
+//     changed: computed(() => newUser.org.val !== user.org),
+//     valid: computed(() => !newUser.org.val || newUser.org.val.length > 2),
+//   },
+//   inn: {
+//     val: user.inn,
+//     changed: computed(() => newUser.inn.val !== user.inn),
+//     complete: false,
+//     valid: computed(() => !newUser.inn.val || newUser.inn.complete),
+//   },
+//   address: {
+//     val: user.address,
+//     changed: computed(() => newUser.address.val !== user.address),
+//     valid: computed(() => !newUser.address.val || newUser.address.val.length > 2),
+//   },
+//   phone: {
+//     val: user.phone,
+//     changed: computed(() => newUser.phone.val !== user.phone),
+//     complete: false,
+//     valid: computed(() => !newUser.phone.val || newUser.phone.complete),
+//   },
+// })
+
+// const isUserDataChanged = computed(
+//   () =>
+//     newUser.name.changed ||
+//     newUser.mail.changed ||
+//     newUser.org.changed ||
+//     newUser.inn.changed ||
+//     newUser.address.changed ||
+//     newUser.phone.changed
+// )
+// const isUserDataValid = computed(
+//   () =>
+//     ((user.auth && !newUser.mail.changed) || !user.auth) &&
+//     newUser.name.valid &&
+//     newUser.mail.valid &&
+//     newUser.org.valid &&
+//     newUser.inn.valid &&
+//     newUser.address.valid &&
+//     newUser.phone.valid
+// )
 
 const saveUserData = async () => {
   try {
-    if (!isUserDataValid) return
-    if (isUserDataChanged) {
-      // для авторизированных пользователей сохраняем изменения на сервере
-      if (user.auth) {
-        const dataKeys = ['name', 'mail', 'org', 'inn', 'address', 'phone'] // без почты, для нее отдельный компонент
-        const changedUserData = dataKeys
-          .filter(key => newUser[key].changed)
-          .map(key => {
-            return { field: key, value: newUser[key].val }
-          })
-        const isChangesSaved = await myFetch('/api/user/changeUser', {
-          method: 'post',
-          payload: changedUserData,
+    // для авторизированных пользователей сохраняем изменения на сервере
+    if (user.auth) {
+      const dataKeys = ['name', 'mail', 'org', 'inn', 'address', 'phone'] // без почты, для нее отдельный компонент
+      const changedUserData = dataKeys
+        .filter(key => newUser[key].changed)
+        .map(key => {
+          return { field: key, value: newUser[key].val }
         })
-        if (!isChangesSaved) throw new Error()
-      }
-      // перезаписываем все данные в user
-      for (const key in newUser) {
-        user[key] = newUser[key].val
-      }
+      const isChangesSaved = await myFetch('/api/user/changeUser', {
+        method: 'post',
+        payload: changedUserData,
+      })
+      if (!isChangesSaved) throw new Error()
+    }
+    // перезаписываем все данные в user
+    for (const key in newUser) {
+      user[key] = newUser[key].val
     }
     return true
   } catch (e) {
-    showNotice('Ошибка при сохранении данных пользователя!', 'error')
+    showNotice({ title: 'Ошибка при сохранении данных пользователя!', type: 'error' })
   }
 }
 
 const emit = defineEmits(['setIsUserDataChanged', 'setIsUserDataValid', 'setSaveUserData'])
-emit('setIsUserDataChanged', isUserDataChanged)
-emit('setIsUserDataValid', isUserDataValid)
+// emit('setIsUserDataChanged', isUserDataChanged)
+// emit('setIsUserDataValid', isUserDataValid)
 emit('setSaveUserData', saveUserData)
 </script>
 
 <template>
-  <div>
+  <UForm
+    :validate="validate"
+    :state="state"
+    class="space-y-4"
+  >
+    <UFormGroup
+      label="Имя"
+      name="name"
+    >
+      <UInput v-model="state.name" />
+    </UFormGroup>
+    <UFormGroup
+      label="Организация"
+      name="org"
+    >
+      <UInput v-model="state.org" />
+    </UFormGroup>
+    <UFormGroup
+      label="ИНН"
+      name="inn"
+    >
+      <UInput
+        v-maska
+        data-maska="############"
+        v-model="state.inn"
+      />
+    </UFormGroup>
+    <UFormGroup
+      label="Адрес"
+      name="address"
+    >
+      <UInput v-model="state.address" />
+    </UFormGroup>
+    <UFormGroup
+      label="Телефон"
+      name="phone"
+    >
+      <UInput
+        v-maska
+        data-maska="### ###-##-##"
+        v-model="state.phone"
+        type="tel"
+        placeholder="000 000-00-00"
+      />
+      <!-- <input
+        type="text"
+        v-mask.phone="newUser.phone.val"
+        @maskData="newUser.phone.val = $event.detail.value"
+        @maskComplete="newUser.phone.complete = $event.detail.value"
+        :class="{
+          'border-green-400': newUser.phone.changed && newUser.phone.valid,
+          'border-yellow-300': newUser.phone.changed && !newUser.phone.valid,
+        }"
+        placeholder="999 999-99-99"
+      /> -->
+    </UFormGroup>
+  </UForm>
+  <!-- <div>
     <div class="m-2">
       <span class="mr-2">Имя:</span>
       <input
@@ -180,5 +264,5 @@ emit('setSaveUserData', saveUserData)
         placeholder="999 999-99-99"
       />
     </div>
-  </div>
+  </div> -->
 </template>

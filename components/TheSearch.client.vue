@@ -29,7 +29,8 @@ const getSearch = async () => {
     searchState.data = response
     if (!searchState.showResults && !searchHelper.showAllActive) showSearchResults()
   } catch (e) {
-    showNotice('Ошибка при поисковом запросе!', 'error')
+    showNotice({ title: 'Ошибка при поисковом запросе!', type: 'error' })
+
     searchState.pending = false
     searchState.showResults = false
     searchState.data = null

@@ -13,18 +13,26 @@ const test = () => {
   window.history.replaceState({}, '', url)
 }
 
-const createDialog = () => {
-  showMessage('My very very large title', '<p>paragraph with <i>italic</i> word</p>', 'success', () => {
-    localFn(localVar)
-  })
-}
 const localVar = 111
 const localFn = localWar => {
   console.log(`localWar: ${localWar}`)
 }
 
 const createMess = () => {
-  showMessage('title2', 'body2')
+  showMessage({
+    title: 'Some very big title with long long words about everything',
+    description: 'some description',
+    type: 'success',
+    // preventClose: false,
+    callback: () => localFn(localVar),
+  })
+}
+
+const createFeedback = () => {
+  showFeedback({
+    title: 'My title',
+    description: 'some description',
+  })
 }
 
 // console.log(`from header`)
@@ -33,68 +41,66 @@ const createMess = () => {
 </script>
 
 <template>
-  <div class="w-full bg-cyan-200">
-    <div class="-sm:hidden flex flex-wrap">
+  <div class="w-full bg-secondary-200">
+    <div class="-sm:hidden flex items-center gap-x-2 flex-wrap">
       <CatsMenuWrapper />
       <ClientOnly>
         <TheUser />
         <TheCart />
       </ClientOnly>
 
-      <button class="button">
-        <NuxtLink to="/admin">Admin</NuxtLink>
-      </button>
-      <button
-        @click="createDialog"
-        class="button"
-      >
-        Create dialog
-      </button>
-      <button
+      <UButton
+        label="Admin"
+        to="/admin"
+        color="secondary"
+      />
+      <UButton
+        label="Create mess"
         @click="createMess"
-        class="button"
-      >
-        Create mess
-      </button>
-      <button
+        color="secondary"
+      />
+      <UButton
+        label="Show loader"
         @click="showLoader"
-        class="button"
-      >
-        Show loader
-      </button>
-      <button
-        @click="showNotice('some text', 'error')"
-        class="button"
-      >
-        Show notice
-      </button>
+        color="secondary"
+      />
+      <UButton
+        label="Show notice"
+        color="secondary"
+        @click="showNotice({ title: 'some title', description: 'some description', type: 'success' })"
+      />
+      <UButton
+        label="Show feedback"
+        color="secondary"
+        @click="createFeedback"
+      />
       <!--      <button @click="multiply" class="button">Multuply</button>-->
     </div>
-    <div class="-sm:hidden flex flex-wrap">
-      <button class="button">
-        <NuxtLink to="/catalog/shtangentsirkuli">ШТАНГЕНЦИРКУЛИ</NuxtLink>
-      </button>
-      <button class="button">
-        <NuxtLink to="/catalog/shtangentsirkuli-shts-i-s-glubinomerom">ШЦ с глубиномером</NuxtLink>
-      </button>
-      <button class="button">
-        <NuxtLink to="/user/orders">Orders</NuxtLink>
-      </button>
-      <button class="button">
-        <NuxtLink to="/test_fetch">test_fetch</NuxtLink>
-      </button>
-      <button class="button">
-        <NuxtLink to="/test1">/test1</NuxtLink>
-      </button>
-      <button class="button">
-        <NuxtLink to="/test2">/test2</NuxtLink>
-      </button>
-      <button
-        class="button"
-        @click="test"
-      >
-        test
-      </button>
+    <div class="-sm:hidden flex items-center gap-x-2 flex-wrap">
+      <UButton
+        label="ШТАНГЕНЦИРКУЛИ"
+        to="/catalog/shtangentsirkuli"
+      />
+      <UButton
+        label="ШЦ с глубиномером"
+        to="/catalog/shtangentsirkuli-shts-i-s-glubinomerom"
+      />
+      <UButton
+        label="Orders"
+        to="/user/orders"
+      />
+      <UButton
+        label="test_fetch"
+        to="/test_fetch"
+      />
+      <UButton
+        label="test1"
+        to="/test1"
+      />
+      <UButton
+        label="test2"
+        to="/test2"
+      />
     </div>
     <TheSearch />
   </div>

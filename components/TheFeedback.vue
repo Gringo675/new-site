@@ -1,6 +1,6 @@
 <script setup>
 //
-const feedbackData = useFeedbackData()
+const feedback = useFeedback()
 const user = useUser().value
 const message = ref('')
 // @ts-ignore
@@ -31,24 +31,72 @@ const sendMessage = async () => {
   })
 
   if (success) {
-    showNotice('Сообщение отправлено! Вам ответят в ближайшее время.', 'success')
-    closeFeedback()
+    showNotice({ title: 'Сообщение отправлено!', description: 'Вам ответят в ближайшее время.', type: 'success' })
+    feedback.isActive = false
   }
 }
 </script>
 
 <template>
   <!-- wrapper -->
-  <div
+  <UModal
+    v-model="feedback.isActive"
+    prevent-close
+  >
+    <UCard>
+      <template #header>
+        {{ feedback.title }}
+      </template>
+      <div class="">{{ feedback.description }}</div>
+      <form id="fb_form">
+        <textarea
+          name="message"
+          v-model="message"
+          class="m-2 p-2 border-2 border-blue-300"
+          placeholder="Сообщение"
+          :class="{
+            'border-green-400': isMessage,
+            'border-yellow-300': !isMessage,
+          }"
+        ></textarea>
+        <input
+          name="files"
+          type="file"
+          multiple
+          @change="checkFormFiles"
+        />
+      </form>
+      <TheUserProfile
+        @setIsUserDataChanged="value => (TheUserProfileData.isUserDataChanged = value)"
+        @setIsUserDataValid="value => (TheUserProfileData.isUserDataValid = value)"
+        @setSaveUserData="value => (TheUserProfileData.saveUserData = value)"
+      />
+      <template #footer>
+        <div class="flex justify-end items-center gap-x-4">
+          <UButton
+            label="Отмена"
+            variant="outline"
+            color="secondary"
+            @click="feedback.isActive = false"
+          />
+          <UButton
+            label="Ok"
+            color="secondary"
+            class="px-8"
+            @click=""
+            :disabled="!TheUserProfileData.isUserDataValid || !isMessage"
+          />
+        </div>
+      </template> </UCard
+  ></UModal>
+  <!-- <div
     class="modal-form w-[800px] max-w-[95%] max-h-[90vh] border border-slate-300 rounded-xl overflow-auto flex flex-col justify-start"
   >
-    <!-- title -->
     <div class="flex flex-row justify-between items-center bg-slate-300 p-2.5">
       <div class="max-w-full whitespace-nowrap overflow-hidden overflow-ellipsis size text-xl">
         {{ feedbackData.title }}
       </div>
     </div>
-    <!-- body -->
     <div class="p-5 overflow-auto bg-slate-200">
       <form id="fb_form">
         <textarea
@@ -74,7 +122,6 @@ const sendMessage = async () => {
         @setSaveUserData="value => (TheUserProfileData.saveUserData = value)"
       />
     </div>
-    <!-- footer -->
     <div class="p-2.5 bg-zinc-400 flex justify-end items-center">
       <button
         class="button px-2 py-1"
@@ -90,5 +137,5 @@ const sendMessage = async () => {
         Отправить
       </button>
     </div>
-  </div>
+  </div> -->
 </template>

@@ -51,9 +51,7 @@ function setFilterFromURL() {
 function handleFilter(filterFromURL = false) {
   // filterFromURL - когда обрабатываем фильтр, полученный из url query
   // создаем массив из всех активных групп фильтра
-  const activeFilter = filter.map(fGroup =>
-    fGroup.values.filter(value => value.active && !value.disabled).map(value => value.val)
-  )
+  const activeFilter = filter.map(fGroup => fGroup.values.filter(value => value.active).map(value => value.val))
   // отбираем по фильтру товары
   activeProducts.length = 0
   products.forEach(product => {
@@ -80,11 +78,13 @@ function handleFilter(filterFromURL = false) {
   // засовываем фильтр в url
   addFilterToURL()
   // показываем уведомление
-  showNotice(
-    activeProducts.length > 0
-      ? `Найдено товаров - ${activeProducts.length}`
-      : 'Не найдено подходящих товаров.<br>Попробуйте изменить условия.'
-  )
+  if (activeProducts.length > 0) showNotice({ title: `Подобрано товаров - ${activeProducts.length}`, type: 'success' })
+  else
+    showNotice({
+      title: 'Не найдено подходящих товаров.',
+      description: 'Попробуйте изменить условия отбора.',
+      type: 'error',
+    })
 }
 
 function addFilterToURL() {

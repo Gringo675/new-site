@@ -1,16 +1,17 @@
 <script setup>
 //
-const ui = /*ui*/ {
-  background: 'bg-white dark:bg-slate-900',
-}
+const TheUserProfileData = reactive({
+  isUserDataChanged: false,
+  isUserDataValid: false,
+  saveUserData: () => {},
+})
 </script>
 
 <template>
-  <UCard :ui="ui" />
-  <HelperAsideGrid>
-    <template #aside>
-      <div class="w-full h-[400px] bg-red-500"></div>
-    </template>
-    <div class="w-full h-[500px] bg-blue-500"></div>
-  </HelperAsideGrid>
+  <TheUserProfile
+    @setIsUserDataChanged="value => (TheUserProfileData.isUserDataChanged = value)"
+    @setIsUserDataValid="value => (TheUserProfileData.isUserDataValid = value)"
+    @setSaveUserData="value => (TheUserProfileData.saveUserData = value)"
+  />
+  <div>{{ TheUserProfileData }}</div>
 </template>

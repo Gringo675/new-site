@@ -11,7 +11,7 @@ const TheUserProfileData = reactive({
 const buttonHandler = async () => {
   const isUserSaved = await TheUserProfileData.saveUserData()
   // @ts-ignore
-  if (isUserSaved) showNotice('Данные успешно изменены!', 'success')
+  if (isUserSaved) showNotice({ title: 'Данные успешно изменены!', type: 'success' })
 }
 </script>
 

@@ -18,7 +18,6 @@ export const showLoader = () => {
 }
 
 export const hideLoader = () => {
-  if (process.server) return
   clearTimeout(timer)
   loader.isActive = false
 }

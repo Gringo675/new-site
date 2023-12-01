@@ -2,7 +2,7 @@
 // и количество файлов не более 10 шт.
 export default event => {
   if (event.target.files.length > 10) {
-    showNotice('Слишком много файлов! Максимальное количество - 10 штук.', 'error')
+    showNotice({ title: 'Слишком много файлов!', description: 'Максимальное количество - 10 штук.', type: 'error' })
     event.target.value = ''
     return
   }
@@ -11,7 +11,12 @@ export default event => {
     overallSize += file.size
   }
   if (overallSize > 10485760) {
-    showNotice('Слишком большой размер файла(-ов)! Максимальный объем - 10 Мб.', 'error')
+    showNotice({
+      title: 'Слишком большой размер файла(-ов)!',
+      description: 'Максимальный объем - 10 Мб.',
+      type: 'error',
+    })
+
     event.target.value = ''
   }
 }

@@ -18,12 +18,18 @@ const showChildren = ref(false)
 const validateDelete = () => {
   showMenu.value = false
   if (cat.children?.length) {
-    showMessage('Удаление отменено', '<p>В категории содержатся вложенные подкатегории.</p><p>Сначала удалите их.</p>')
+    showMessage({
+      type: 'error',
+      title: 'Удаление отменено',
+      description: '<p>В категории содержатся вложенные подкатегории.</p><p>Сначала удалите их.</p>',
+    })
     return
   }
   // Задать вопрос Точно удалить?
-  showMessage('Подтвердите удаление', `<p>Категория "${cat.name}" будет удалена.</p><p>Продолжить?</p>`, 'info', () => {
-    catsG.deleteCat(props.indexes)
+  showMessage({
+    title: 'Подтвердите удаление',
+    description: `<p>Категория "${cat.name}" будет удалена.</p><p>Продолжить?</p>`,
+    callback: () => catsG.deleteCat(props.indexes),
   })
 }
 
