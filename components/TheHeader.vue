@@ -2,15 +2,7 @@
 import { useNuxtApp } from '#app/nuxt.js'
 
 const test = () => {
-  const route = useRoute()
-  console.log(`route: ${JSON.stringify(route, null, 2)}`)
-  const router = useRouter()
-  // const nQuery = { ...route.query, aaa: 222 }
-  // console.log(`nQuery: ${JSON.stringify(nQuery, null, 2)}`)
-  // router.replace({ query: nQuery })
-  const url = new URL(window.location)
-  url.searchParams.set('f', '64-25-15')
-  window.history.replaceState({}, '', url)
+  localStorage.setItem('user-event', Math.random().toString())
 }
 
 const localVar = 111
@@ -30,14 +22,10 @@ const createMess = () => {
 
 const createFeedback = () => {
   showFeedback({
-    title: 'My title',
-    description: 'some description',
+    title: 'Обратная связь',
+    description: 'Воспользуйтесь данной формой, чтобы прислать Ваши вопросы, предложения, или отправить заявку.',
   })
 }
-
-// console.log(`from header`)
-// const testH = await useTest()
-// console.log(`testH: ${JSON.stringify(testH, null, 2)}`)
 </script>
 
 <template>
@@ -100,6 +88,10 @@ const createFeedback = () => {
       <UButton
         label="test2"
         to="/test2"
+      />
+      <UButton
+        label="TEST"
+        @click="test"
       />
     </div>
     <TheSearch />

@@ -1,25 +1,35 @@
 <script setup>
 // хелпер для загрузки всех компонентов, используемых только на клиенте
 
-// const feedback = useFeedback()
 const user = useUser().value
+const message = useMessage()
+const feedback = useFeedback()
 </script>
 
 <template>
   <ClientOnly>
-    <!-- <Transition name="transition-fade"> -->
-    <!-- <HelperModalWrapper v-if="feedback.isActive">
-        <LazyTheFeedback />
-      </HelperModalWrapper> -->
-    <!-- </Transition> -->
-    <Transition name="transition-fade">
-      <HelperModalWrapper v-if="user.showLogin">
-        <LazyTheLogin />
-      </HelperModalWrapper>
-    </Transition>
-    <LazyUNotifications />
-    <LazyTheMessage />
+    <UModal
+      v-model="user.showLogin"
+      prevent-close
+    >
+      <LazyTheLogin />
+    </UModal>
+    <UModal
+      v-model="message.active"
+      :prevent-close="message.preventClose"
+    >
+      <LazyTheMessage />
+    </UModal>
+    <UModal
+      v-model="feedback.isActive"
+      prevent-close
+      :ui="{
+        width: 'md:max-w-2xl lg:max-w-4xl',
+      }"
+    >
+      <LazyTheFeedback />
+    </UModal>
     <LazyTheLoader />
-    <LazyTheFeedback />
+    <LazyUNotifications />
   </ClientOnly>
 </template>

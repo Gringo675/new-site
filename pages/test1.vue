@@ -1,17 +1,12 @@
 <script setup>
 //
-const TheUserProfileData = reactive({
-  isUserDataChanged: false,
-  isUserDataValid: false,
-  saveUserData: () => {},
-})
 </script>
 
 <template>
-  <TheUserProfile
-    @setIsUserDataChanged="value => (TheUserProfileData.isUserDataChanged = value)"
-    @setIsUserDataValid="value => (TheUserProfileData.isUserDataValid = value)"
-    @setSaveUserData="value => (TheUserProfileData.saveUserData = value)"
-  />
-  <div>{{ TheUserProfileData }}</div>
+  <UContainer class="max-w-sm">
+    <p>
+      Lorem ipsum dolor sit, amet consectetur adipisicing elit. Itaque error, at libero nulla, ut impedit obcaecati
+      architecto reprehenderit magnam nam velit, eveniet eaque? Sint saepe nihil excepturi similique corrupti. Error?
+    </p>
+  </UContainer>
 </template>

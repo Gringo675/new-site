@@ -13,9 +13,8 @@ export default defineEventHandler(async event => {
 })
 
 const sendFb = async fbData => {
-  console.log(`fbData.user.name: ${JSON.stringify(fbData.user.name, null, 2)}`)
   const mailData = {
-    to: 'gringo675@mail.ru',
+    to: 'admin@chelinstrument.ru',
     subject: fbData.subject,
     attachments: fbData.files,
   }

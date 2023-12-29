@@ -10,13 +10,14 @@ import { vMaska } from 'maska'
  */
 
 export default defineNuxtPlugin(nuxtApp => {
-  nuxtApp.vueApp.directive('focus', {
-    mounted(el) {
-      el.focus()
-      // el.style.border = '2px solid red'
-    },
-  }),
-    nuxtApp.vueApp.directive('maska', vMaska),
+  nuxtApp.vueApp.directive('maska', vMaska),
+    nuxtApp.vueApp.directive('focus', {
+      // delete? Because UInput has autofocus property
+      mounted(el) {
+        el.focus()
+        // el.style.border = '2px solid red'
+      },
+    }),
     nuxtApp.vueApp.directive('mask', {
       // delete?
       mounted(el, binding) {

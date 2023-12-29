@@ -10,90 +10,70 @@
 await getUser({ hidden: true })
 const user = useUser().value
 
-const state = reactive({
-  name: user.name,
-  org: user.org,
-  inn: user.inn,
-  address: user.address,
-  phone: user.phone,
+const newUser = reactive({
+  name: {
+    val: user.name,
+    changed: computed(() => newUser.name.val !== user.name),
+    valid: computed(() => newUser.name.val.length > 0),
+  },
+  mail: {
+    val: user.mail,
+    changed: computed(() => newUser.mail.val !== user.mail),
+    valid: computed(() => validateMail(newUser.mail.val)),
+  },
+  org: {
+    val: user.org,
+    changed: computed(() => newUser.org.val !== user.org),
+    valid: computed(() => newUser.org.val.length < 500),
+  },
+  inn: {
+    val: user.inn,
+    changed: computed(() => newUser.inn.val !== user.inn),
+    valid: computed(() => [0, 10, 12].includes(newUser.inn.val.length)),
+  },
+  address: {
+    val: user.address,
+    changed: computed(() => newUser.address.val !== user.address),
+    valid: computed(() => newUser.address.val.length < 1000),
+  },
+  phone: {
+    val: user.phone,
+    changed: computed(() => newUser.phone.val !== user.phone),
+    valid: computed(() => [0, 13].includes(newUser.phone.val.length)),
+  },
 })
 
-const validate = state => {
-  const errors = []
-  if (state.name.length < 3) errors.push({ path: 'name', message: 'Введите имя!' })
-  // if ([1, 2].includes(state.org.length))
-  //   errors.push({ path: 'org', message: 'Введите корректное наименование организации!' })
-  if (![0, 10, 12].includes(state.inn.length))
-    errors.push({ path: 'inn', message: 'Введите корректный ИНН организации!' })
-  if (![0, 13].includes(state.phone.length))
-    errors.push({ path: 'phone', message: 'Введите корректный номер телефона!' })
+const isUserDataChanged = computed(
+  () =>
+    newUser.name.changed ||
+    newUser.mail.changed ||
+    newUser.org.changed ||
+    newUser.inn.changed ||
+    newUser.address.changed ||
+    newUser.phone.changed
+)
+const isUserDataValid = computed(
+  () =>
+    ((user.auth && !newUser.mail.changed) || !user.auth) &&
+    newUser.name.valid &&
+    newUser.mail.valid &&
+    newUser.org.valid &&
+    newUser.inn.valid &&
+    newUser.address.valid &&
+    newUser.phone.valid
+)
 
-  emit(
-    'setIsUserDataChanged',
-    state.name !== user.name ||
-      state.org !== user.org ||
-      state.inn !== user.inn ||
-      state.address !== user.address ||
-      state.phone !== user.phone
-  )
-  emit('setIsUserDataValid', errors.length === 0)
+const validate = newUser => {
+  const errors = []
+  if (!newUser.name.valid) errors.push({ path: 'name', message: 'Введите имя!' })
+  if (!newUser.mail.valid) errors.push({ path: 'mail', message: 'Введите корректный почтовый адрес!' })
+  if (!newUser.org.valid) errors.push({ path: 'org', message: 'Слишком длинное наименование!' })
+  if (!newUser.inn.valid) errors.push({ path: 'inn', message: 'Введите корректный ИНН организации!' })
+  if (!newUser.address.valid) errors.push({ path: 'address', message: 'Слишком длинный адрес!' })
+  if (!newUser.phone.valid) errors.push({ path: 'phone', message: 'Введите корректный номер телефона!' })
+
   return errors
 }
-
-// const newUser = reactive({
-//   name: {
-//     val: user.name,
-//     changed: computed(() => newUser.name.val !== user.name),
-//     valid: computed(() => !newUser.name.val || newUser.name.val.length > 2),
-//   },
-//   mail: {
-//     val: user.mail,
-//     changed: computed(() => newUser.mail.val !== user.mail),
-//     valid: computed(() => validateMail(newUser.mail.val)),
-//   },
-//   org: {
-//     val: user.org,
-//     changed: computed(() => newUser.org.val !== user.org),
-//     valid: computed(() => !newUser.org.val || newUser.org.val.length > 2),
-//   },
-//   inn: {
-//     val: user.inn,
-//     changed: computed(() => newUser.inn.val !== user.inn),
-//     complete: false,
-//     valid: computed(() => !newUser.inn.val || newUser.inn.complete),
-//   },
-//   address: {
-//     val: user.address,
-//     changed: computed(() => newUser.address.val !== user.address),
-//     valid: computed(() => !newUser.address.val || newUser.address.val.length > 2),
-//   },
-//   phone: {
-//     val: user.phone,
-//     changed: computed(() => newUser.phone.val !== user.phone),
-//     complete: false,
-//     valid: computed(() => !newUser.phone.val || newUser.phone.complete),
-//   },
-// })
-
-// const isUserDataChanged = computed(
-//   () =>
-//     newUser.name.changed ||
-//     newUser.mail.changed ||
-//     newUser.org.changed ||
-//     newUser.inn.changed ||
-//     newUser.address.changed ||
-//     newUser.phone.changed
-// )
-// const isUserDataValid = computed(
-//   () =>
-//     ((user.auth && !newUser.mail.changed) || !user.auth) &&
-//     newUser.name.valid &&
-//     newUser.mail.valid &&
-//     newUser.org.valid &&
-//     newUser.inn.valid &&
-//     newUser.address.valid &&
-//     newUser.phone.valid
-// )
 
 const saveUserData = async () => {
   try {
@@ -110,11 +90,14 @@ const saveUserData = async () => {
         payload: changedUserData,
       })
       if (!isChangesSaved) throw new Error()
+      localStorage.setItem('user-event', Date.now().toString()) // для обновления всех открытых вкладок
     }
+
     // перезаписываем все данные в user
     for (const key in newUser) {
       user[key] = newUser[key].val
     }
+
     return true
   } catch (e) {
     showNotice({ title: 'Ошибка при сохранении данных пользователя!', type: 'error' })
@@ -122,28 +105,50 @@ const saveUserData = async () => {
 }
 
 const emit = defineEmits(['setIsUserDataChanged', 'setIsUserDataValid', 'setSaveUserData'])
-// emit('setIsUserDataChanged', isUserDataChanged)
-// emit('setIsUserDataValid', isUserDataValid)
+emit('setIsUserDataChanged', isUserDataChanged)
+emit('setIsUserDataValid', isUserDataValid)
 emit('setSaveUserData', saveUserData)
+
+function onError(event) {
+  const element = document.getElementById(event.errors[0].id)
+  element?.focus()
+  element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+}
 </script>
 
 <template>
   <UForm
     :validate="validate"
-    :state="state"
+    :state="newUser"
+    id="up_form"
+    @error="onError"
     class="space-y-4"
   >
     <UFormGroup
       label="Имя"
       name="name"
+      required
+      autofocus
     >
-      <UInput v-model="state.name" />
+      <UInput v-model="newUser.name.val" />
+    </UFormGroup>
+    <UFormGroup
+      label="Почта"
+      name="mail"
+      required
+    >
+      <UInput v-model="newUser.mail.val" />
+      <MailVerifier
+        v-if="user.auth && newUser.mail.changed && newUser.mail.valid"
+        :mail="newUser.mail.val"
+        @cancel="newUser.mail.val = user.mail"
+      />
     </UFormGroup>
     <UFormGroup
       label="Организация"
       name="org"
     >
-      <UInput v-model="state.org" />
+      <UInput v-model="newUser.org.val" />
     </UFormGroup>
     <UFormGroup
       label="ИНН"
@@ -152,14 +157,14 @@ emit('setSaveUserData', saveUserData)
       <UInput
         v-maska
         data-maska="############"
-        v-model="state.inn"
+        v-model="newUser.inn.val"
       />
     </UFormGroup>
     <UFormGroup
       label="Адрес"
       name="address"
     >
-      <UInput v-model="state.address" />
+      <UInput v-model="newUser.address.val" />
     </UFormGroup>
     <UFormGroup
       label="Телефон"
@@ -168,101 +173,10 @@ emit('setSaveUserData', saveUserData)
       <UInput
         v-maska
         data-maska="### ###-##-##"
-        v-model="state.phone"
+        v-model="newUser.phone.val"
         type="tel"
         placeholder="000 000-00-00"
       />
-      <!-- <input
-        type="text"
-        v-mask.phone="newUser.phone.val"
-        @maskData="newUser.phone.val = $event.detail.value"
-        @maskComplete="newUser.phone.complete = $event.detail.value"
-        :class="{
-          'border-green-400': newUser.phone.changed && newUser.phone.valid,
-          'border-yellow-300': newUser.phone.changed && !newUser.phone.valid,
-        }"
-        placeholder="999 999-99-99"
-      /> -->
     </UFormGroup>
   </UForm>
-  <!-- <div>
-    <div class="m-2">
-      <span class="mr-2">Имя:</span>
-      <input
-        type="text"
-        v-model="newUser.name.val"
-        :class="{
-          'border-green-400': newUser.name.changed && newUser.name.valid,
-          'border-yellow-300': newUser.name.changed && !newUser.name.valid,
-        }"
-      />
-    </div>
-    <div class="m-2">
-      <span class="mr-2">Почта:&#10033;</span>
-      <input
-        type="text"
-        v-model="newUser.mail.val"
-        :class="{
-          'border-green-400': newUser.mail.changed && newUser.mail.valid,
-          'border-yellow-300': !newUser.mail.valid,
-        }"
-      />
-    </div>
-    <MailVerifier
-      v-if="user.auth && newUser.mail.changed && newUser.mail.valid"
-      :mail="newUser.mail.val"
-      @cancel="newUser.mail.val = user.mail"
-    />
-    <div class="m-2">
-      <span class="mr-2">Организация:</span>
-      <input
-        type="text"
-        v-model="newUser.org.val"
-        :class="{
-          'border-green-400': newUser.org.changed && newUser.org.valid,
-          'border-yellow-300': newUser.org.changed && !newUser.org.valid,
-        }"
-      />
-    </div>
-    <div class="m-2">
-      <span class="mr-2">ИНН организации:</span>
-      <input
-        type="text"
-        v-mask.inn="newUser.inn.val"
-        @maskData="newUser.inn.val = $event.detail.value"
-        @maskComplete="newUser.inn.complete = $event.detail.value"
-        :class="{
-          'border-green-400': newUser.inn.changed && newUser.inn.valid,
-          'border-yellow-300': newUser.inn.changed && !newUser.inn.valid,
-        }"
-        placeholder="9999999999"
-      />
-    </div>
-    <div class="m-2">
-      <span class="mr-2">Адрес:</span>
-      <input
-        type="text"
-        v-model="newUser.address.val"
-        :class="{
-          'border-green-400': newUser.address.changed && newUser.address.valid,
-          'border-yellow-300': newUser.address.changed && !newUser.address.valid,
-        }"
-      />
-    </div>
-    <div class="m-2">
-      <span class="mr-2">Телефон:</span>
-      <span class="pr-1">+7</span>
-      <input
-        type="text"
-        v-mask.phone="newUser.phone.val"
-        @maskData="newUser.phone.val = $event.detail.value"
-        @maskComplete="newUser.phone.complete = $event.detail.value"
-        :class="{
-          'border-green-400': newUser.phone.changed && newUser.phone.valid,
-          'border-yellow-300': newUser.phone.changed && !newUser.phone.valid,
-        }"
-        placeholder="999 999-99-99"
-      />
-    </div>
-  </div> -->
 </template>

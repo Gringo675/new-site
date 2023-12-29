@@ -16,6 +16,7 @@ export default async (options = {}) => {
       for (const key in response) {
         user[key] = response[key]
       }
+      localStorage.setItem('user-event', '1') // для обновления всех открытых вкладок
     }
   } catch (e) {
     console.error(`Can't get user!`)

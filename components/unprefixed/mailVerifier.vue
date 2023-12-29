@@ -5,11 +5,20 @@ const props = defineProps({
 })
 
 const user = useUser().value
-const showCodeInput = ref(false)
-const inputData = reactive({
-  code: '',
-  codeValid: false,
+const state = reactive({
+  code: {
+    val: '',
+    invalid: false,
+  },
+  showCodeInput: false,
 })
+const validate = state => {
+  const errors = []
+  if (state.code.invalid) errors.push({ path: 'code', message: 'Неверный код!' })
+
+  return errors
+}
+
 let serverHashHex = ''
 
 const sendCode = async () => {
@@ -21,22 +30,20 @@ const sendCode = async () => {
 
   if (typeof response === 'string' && response.length === 64) {
     serverHashHex = response
-    showCodeInput.value = true
+    state.showCodeInput = true
   } else {
     const errorMessage = response.error ? response.message : 'Ошибка при обновлении почты!'
     showNotice({ title: 'Ошибка!', description: errorMessage, type: 'error' })
   }
 }
 
-watch(
-  () => inputData.codeValid,
-  value => {
-    if (value) checkCode()
-  }
-)
+const onMaska = event => {
+  if (event.detail.completed) checkCode(event.detail.masked)
+  else state.code.invalid = false
+}
 
-const checkCode = async () => {
-  const utf8 = new TextEncoder().encode(inputData.code)
+const checkCode = async code => {
+  const utf8 = new TextEncoder().encode(code)
   const hashBuffer = await crypto.subtle.digest('SHA-256', utf8)
   const hashArray = Array.from(new Uint8Array(hashBuffer))
   const hashHex = hashArray.map(bytes => bytes.toString(16).padStart(2, '0')).join('')
@@ -50,64 +57,78 @@ const checkCode = async () => {
       user.mail = props.mail
       showNotice({ title: 'Почта успешно изменена!', type: 'success' })
     } else showNotice({ title: 'Ошибка при изменении почты!', type: 'error' })
-  } else {
-    inputData.codeValid = null
-    showNotice({ title: 'Неверный код!', type: 'error' })
-  }
+  } else state.code.invalid = true
 }
 </script>
 
 <template>
-  <div class="m-2 p-2 border border-yellow-300 rounded-md w-[350px]">
-    <div
-      v-if="!showCodeInput"
-      class="flex flex-col"
-    >
-      <div>Необходимо подтвердить новую почту.</div>
-      <div class="">
-        <button
-          class="button"
-          @click="$emit('cancel')"
+  <UAlert
+    class="m-2 max-w-sm"
+    title="Подтверждение почты"
+    color="secondary"
+    variant="outline"
+  >
+    <template #description>
+      <div class="text-gray-900">
+        <div
+          v-if="!state.showCodeInput"
+          class="flex flex-col"
         >
-          Отмена
-        </button>
-        <button
-          class="button"
-          @click="sendCode"
+          <div class="py-2">Необходимо подтвердить новую почту.</div>
+          <div class="flex gap-x-4 justify-end">
+            <UButton
+              label="Отмена"
+              variant="outline"
+              color="secondary"
+              @click="$emit('cancel')"
+            />
+            <UButton
+              label="Подтвердить"
+              variant="outline"
+              color="secondary"
+              @click="sendCode"
+            />
+          </div>
+        </div>
+        <div
+          v-else
+          class="flex flex-col"
         >
-          Подтвердить
-        </button>
+          <div class="py-2 mb-2">
+            На адрес {{ props.mail }} было отправлено письмо, содержащее код активации. Пожалуйста, введите его в данное
+            поле.
+          </div>
+
+          <div class="flex gap-x-4 justify-between items-start">
+            <UForm
+              :state="state"
+              :validate="validate"
+            >
+              <UFormGroup
+                name="code"
+                eager-validation
+              >
+                <UInput
+                  v-model="state.code.val"
+                  autofocus
+                  v-maska
+                  data-maska="#####"
+                  @maska="onMaska"
+                  placeholder="00000"
+                  input-class="tracking-widest"
+                  class="w-20"
+                />
+              </UFormGroup>
+            </UForm>
+            <UButton
+              label="Отмена"
+              variant="outline"
+              color="secondary"
+              @click="$emit('cancel')"
+            />
+          </div>
+        </div>
       </div>
-    </div>
-    <div
-      v-else
-      class="flex flex-col"
-    >
-      <div class="">
-        На новый адрес было отправлено письмо, содержащее проверочный код. Пожалуйста проверьте почтовый ящик и введите
-        код в данное поле.
-      </div>
-      <div>
-        <input
-          v-mask.code="inputData.code"
-          @maskData="inputData.code = $event.detail.value"
-          @maskComplete="inputData.codeValid = $event.detail.value"
-          type="text"
-          maxlength="5"
-          v-focus
-          class="mx-2 text-4xl w-28 border-2"
-          :class="{
-            'border-green-500': inputData.codeValid,
-            'border-red-500': inputData.codeValid === null,
-          }"
-        />
-        <button
-          class="button"
-          @click="$emit('cancel')"
-        >
-          Отмена
-        </button>
-      </div>
-    </div>
-  </div>
+    </template>
+  </UAlert>
 </template>

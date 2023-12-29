@@ -1,196 +1,192 @@
 <script setup>
+//
+console.log(`TheLogin loading/////////`)
 const user = useUser().value
+const form = ref()
 
-const form = reactive({
-  mail: 'gringo675g@gmail.com',
-  code: '',
+const state = reactive({
+  mail: {
+    val: '',
+    valid: computed(() => validateMail(state.mail.val)),
+  },
+  code: {
+    val: '',
+    invalid: false,
+  },
   verifyScreen: false,
 })
-const isMailValid = computed(() => validateMail(form.mail))
+
+const validate = state => {
+  const errors = []
+  if (!state.mail.valid) errors.push({ path: 'mail', message: 'Введите корректный почтовый адрес!' })
+  if (state.code.invalid) errors.push({ path: 'code', message: 'Неверный код!' })
+  return errors
+}
 
 const sendCode = async () => {
-  if (!isMailValid.value) {
+  if (!state.mail.valid) {
     showNotice({ title: 'Неправильный адрес!', description: 'Введите корректный адрес.', type: 'error' })
     return
   }
 
   const isCodeSend = await myFetch('/api/auth/login/createCode', {
     method: 'post',
-    payload: { mail: form.mail },
+    payload: { mail: state.mail.val },
   })
 
   if (isCodeSend) {
-    form.verifyScreen = true
-    getUserTimer.run()
+    state.verifyScreen = true
+    // getUserTimer.run()
   }
 }
 
-const getUserTimer = {
-  // если юзер зашел по ссылке в письме, на сайт установится cookie refreshToken
-  // данный таймер позволяет автоматически залогиниться и на странице ввода кода
-  timer: null,
-  run() {
-    this.timer = setInterval(async () => {
-      await getUser({ hidden: true })
-      if (user.auth) {
-        this.stop()
-        closeLogin()
-      }
-    }, 5000)
-  },
-  stop() {
-    clearInterval(this.timer)
-  },
+const onMaska = event => {
+  if (event.detail.completed) verifyCode(event.detail.masked)
+  else state.code.invalid = false
 }
 
-const isCodeValid = ref(false)
-watch(isCodeValid, async value => {
-  // запускаем верификацию
-  if (value) await verifyCode()
-})
-
-const verifyCode = async () => {
+const verifyCode = async code => {
   const verified = await myFetch('/api/auth/login/verifyCode', {
     method: 'post',
     payload: {
-      mail: form.mail,
-      code: form.code,
+      mail: state.mail.val,
+      code,
     },
   })
 
   if (verified) {
-    getUserTimer.stop()
+    // getUserTimer.stop()
     await getUser()
-    closeLogin()
-    showNotice({ title: 'Успех!', type: 'success' })
+    user.showLogin = false
+    showNotice({
+      title: 'Авторизация пройдена!',
+      description: user.name.length ? `${user.name}, с возвращением!` : '',
+      type: 'success',
+    })
   } else {
-    isCodeValid.value = null
-    showNotice({ title: 'Неверный код!', type: 'error' })
+    state.code.invalid = true
   }
 }
 
 const backOnMailScreen = () => {
-  form.verifyScreen = false
-  form.code = ''
-  getUserTimer.stop()
-}
-
-const runOAuth = provider => {
-  showLoader()
-  const url = getOAuthURL(provider)
-  const oauthWinParams = `status=no,location=no,toolbar=no,menubar=no,width=500,height=500,left=200,top=0`
-  const oauthWin = window.open(url, 'oauth', oauthWinParams)
-  const timer = setInterval(async () => {
-    if (oauthWin.closed) {
-      clearInterval(timer)
-      await getUser({ hidden: true })
-      hideLoader()
-      if (user.auth) closeLogin()
-    }
-  }, 1000)
-}
-
-const closeLogin = () => {
-  getUserTimer.stop()
-  user.showLogin = false
-}
-
-const onTest = () => {
-  cv('from test')
-
-  // console.log(`user: ${JSON.stringify(user, null, 2)}`)
+  state.verifyScreen = false
+  state.code.val = ''
+  state.code.invalid = false
+  form.value.setErrors([]) // очищаем ошибки
+  // getUserTimer.stop()
 }
 </script>
 
 <template>
-  <div
-    class="modal-form w-[800px] max-w-[95%] max-h-[90vh] bg-slate-200 p-2 border border-amber-900 rounded-xl overflow-auto flex flex-col justify-start"
+  <UCard
+    :ui="{
+      header: {
+        background: 'bg-secondary-200',
+      },
+    }"
   >
-    <div class="login">
-      <!--          header-->
-      <div class="flex bg-emerald-200">
-        <h1>Login</h1>
-        <button
-          @click="onTest"
-          class="m-2 px-2 bg-cyan-500 rounded"
-        >
-          Test
-        </button>
-        <button
-          @click="closeLogin"
-          class="m-2 px-2 bg-cyan-500 rounded"
-        >
-          Close
-        </button>
+    <template #header>
+      <div class="flex items-center justify-between gap-x-2">
+        <h3 class="font-semibold">Вход/регистрация</h3>
+        <UButton
+          color="gray"
+          variant="ghost"
+          icon="i-heroicons-x-mark-20-solid"
+          class="-my-1"
+          @click="user.showLogin = false"
+        />
       </div>
-      <template v-if="user.auth">
-        <div>Вы вошли на сайт под именем {{ user.name }}.</div>
+    </template>
+    <UForm
+      ref="form"
+      :validate="validate"
+      :state="state"
+      class="space-y-4 mb-6"
+    >
+      <template v-if="!state.verifyScreen">
+        <UFormGroup
+          name="mail"
+          help="Указанный адрес не будет использоваться для рассылок или передаваться третьим лицам."
+        >
+          <template #label>
+            <div class="flex space-x-2">
+              <span>Ваша почта</span>
+              <UPopover
+                mode="hover"
+                :popper="{ placement: 'top' }"
+              >
+                <UIcon
+                  name="i-heroicons-question-mark-circle"
+                  class="bg-emerald-400 mx-1"
+                />
+                <template #panel>
+                  <div class="p-4 max-w-sm">
+                    Введите почтовый адрес, привязанный к вашему аккаунту. Если у вас еще нет действующего аккаунта,
+                    введите почтовый адрес, на который вы хотите его зарегистрировать. На указанный ящик придет письмо с
+                    кодом авторизации, который нужно будет указать на следующем шаге.
+                  </div>
+                </template>
+              </UPopover>
+            </div>
+          </template>
+          <UInput
+            v-model="state.mail.val"
+            autofocus
+            placeholder="example@mail.ru"
+          />
+        </UFormGroup>
+        <UButton
+          label="Получить код авторизации"
+          variant="outline"
+          color="secondary"
+          :disabled="!state.mail.valid"
+          @click="sendCode"
+        />
       </template>
       <template v-else>
-        <!-- mailScreen -->
-        <template v-if="!form.verifyScreen">
-          <div>
-            <span>Введите почту:</span>
-            <input
-              v-model="form.mail"
-              type="text"
-              v-focus
-              class="mx-2 border-2 some-very-big-class"
-              :class="{ ' border-green-500': isMailValid }"
+        <div>
+          На почту <u>{{ state.mail.val }}</u> был отправлен код авторизации. Введите его в данное поле.
+        </div>
+        <div class="flex gap-x-4 justify-between items-start">
+          <UFormGroup
+            name="code"
+            eager-validation
+          >
+            <UInput
+              v-model="state.code.val"
+              autofocus
+              v-maska
+              data-maska="#####"
+              @maska="onMaska"
+              placeholder="00000"
+              input-class="tracking-widest"
+              class="w-20"
             />
-            <button
-              @click="sendCode"
-              :disabled="!isMailValid"
-              class="m-2 p-2 bg-cyan-500 rounded"
-            >
-              Получить код
-            </button>
-          </div>
-          <div>
-            <span>Или</span>
-            <button
-              @click="runOAuth('google')"
-              class="m-2 p-2 bg-cyan-500 rounded"
-            >
-              Войти через google
-            </button>
-            <button
-              @click="runOAuth('vk')"
-              class="m-2 p-2 bg-cyan-500 rounded"
-            >
-              Войти через VK
-            </button>
-            <button
-              @click="runOAuth('mailru')"
-              class="m-2 p-2 bg-cyan-500 rounded"
-            >
-              Войти через mail.ru
-            </button>
-          </div>
-        </template>
-        <!-- verifyScreen -->
-        <template v-else>
-          <div>На почту {{ form.mail }} было отправлено письмо, содержащее код для входа на сайт...</div>
-          <div>
-            <button
-              @click="backOnMailScreen"
-              class="m-2 p-2 bg-cyan-500 rounded"
-            >
-              Назад
-            </button>
-            <input
-              v-mask.code="form.code"
-              @maskData="form.code = $event.detail.value"
-              @maskComplete="isCodeValid = $event.detail.value"
-              type="text"
-              maxlength="5"
-              v-focus
-              class="mx-2 text-4xl w-28 border-2"
-              :class="{ 'border-green-500': isCodeValid, 'border-red-500': isCodeValid === null }"
-            />
-          </div>
-        </template>
+          </UFormGroup>
+          <UButton
+            label="Назад"
+            variant="outline"
+            color="secondary"
+            @click="backOnMailScreen"
+          />
+        </div>
       </template>
+    </UForm>
+    <div class="space-y-4">
+      <UDivider
+        label="ИЛИ"
+        color="gray"
+      />
+      <UButton
+        label="Login with GitHub"
+        icon="i-simple-icons-github"
+        block
+      />
+      <UButton
+        label="Login with GitHub"
+        icon="i-simple-icons-github"
+        block
+      />
     </div>
-  </div>
+  </UCard>
 </template>

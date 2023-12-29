@@ -16,29 +16,39 @@ const buttonHandler = async () => {
 </script>
 
 <template>
-  <div v-if="user.auth">
+  <div
+    v-if="user.auth"
+    class="p-4 max-w-md mx-auto flex flex-col"
+  >
     <TheUserProfile
       @setIsUserDataChanged="value => (TheUserProfileData.isUserDataChanged = value)"
       @setIsUserDataValid="value => (TheUserProfileData.isUserDataValid = value)"
       @setSaveUserData="value => (TheUserProfileData.saveUserData = value)"
     />
-    <div>
-      <button
-        @click="buttonHandler"
-        :disabled="!TheUserProfileData.isUserDataChanged || !TheUserProfileData.isUserDataValid"
-        class="button"
-      >
-        Сохранить изменения
-      </button>
-    </div>
+    <UButton
+      label="Сохранить изменения"
+      variant="outline"
+      color="secondary"
+      :disabled="!TheUserProfileData.isUserDataChanged || !TheUserProfileData.isUserDataValid"
+      @click="buttonHandler"
+      class="self-center m-4"
+    />
   </div>
-  <div v-else>
-    <span>Вы не вошли в аккаунт.</span>
-    <button
-      class="button"
-      @click="user.showLogin = true"
-    >
-      Войти/зарегистрироваться
-    </button>
+  <div
+    v-else
+    class="p-4"
+  >
+    <UAlert
+      icon="i-heroicons-exclamation-triangle"
+      color="accent"
+      variant="outline"
+      title="Вы не вошли в аккаунт!"
+      description="Данная страница доступна только для зарегистрированных пользователей."
+      :actions="[
+        { variant: 'solid', color: 'primary', label: 'Войти/зарегистрироваться', click: () => (user.showLogin = true) },
+        { variant: 'outline', color: 'primary', label: 'На главную', click: () => navigateTo('/') },
+      ]"
+      class="max-w-lg mx-auto"
+    />
   </div>
 </template>

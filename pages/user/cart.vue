@@ -18,6 +18,27 @@ const TheUserProfileData = reactive({
   saveUserData: () => {},
 })
 
+const formState = reactive({
+  message: '',
+  files: null,
+})
+
+const formValidate = state => {
+  const errors = []
+  if (state.message.length > 10) errors.push({ path: 'message', message: 'Слишком длинное сообщение!' })
+
+  const fileInput = document.getElementById('cart_file_input')
+  checkFormFiles(fileInput.files, errors)
+
+  return errors
+}
+
+function onFormError(event) {
+  const element = document.getElementById(event.errors[0].id)
+  element?.focus()
+  element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+}
+
 const orderHandler = reactive({
   step: 1,
   fastOrder: false,
@@ -46,6 +67,8 @@ const fastOrderHandler = () => {
 }
 
 const sendOrder = async () => {
+  document.getElementById('up_form').requestSubmit() // чтобы гарантировано запустить валидацию
+  if (!TheUserProfileData.isUserDataValid) return
   if (TheUserProfileData.isUserDataChanged) {
     const isUserSaved = await TheUserProfileData.saveUserData()
     // @ts-ignore
@@ -70,7 +93,7 @@ const sendOrder = async () => {
 
 <template>
   <template v-if="orderHandler.step !== 4">
-    <h1>Cart</h1>
+    <h1>Корзина</h1>
     <div v-if="!cart.length">Корзина пуста!</div>
     <div v-else>
       <!-- products wrapper -->
@@ -93,65 +116,94 @@ const sendOrder = async () => {
         </div>
       </div>
       <!-- attach comment and file -->
-      <div>
-        <h2>Комментарии к заказу</h2>
-        <form id="cart_form">
-          <textarea
-            name="comment"
-            class="m-2 p-2 border-2 border-blue-300"
-            placeholder="Комментарий"
-          ></textarea>
-          <input
-            name="files"
+      <UForm
+        :state="formState"
+        :validate="formValidate"
+        id="cart_form"
+        @error="onFormError"
+        @submit="createOrderStep2"
+        class="max-w-sm mx-auto"
+      >
+        <UFormGroup
+          name="message"
+          label="Комментарии к заказу"
+        >
+          <UTextarea
+            v-model="formState.message"
+            placeholder="Можно указать здесь дополнительные требования к товару, например, наличие поверки."
+            resize
+            :rows="7"
+            class="my-4"
+          />
+        </UFormGroup>
+        <UFormGroup
+          name="files"
+          description="Можно прикрепить файл, например, реквизиты организации."
+        >
+          <UInput
+            v-model="formState.files"
             type="file"
             multiple
-            @change="checkFormFiles"
+            id="cart_file_input"
           />
-        </form>
-      </div>
-      <div v-if="orderHandler.step === 1">
-        <button
-          class="button"
-          @click="createOrderStep2"
-        >
-          Оформить заказ
-        </button>
-      </div>
-      <div v-else-if="orderHandler.step === 2">
-        <div>Вы не авторизированы на сайте...</div>
-        <button
-          class="button"
-          @click="loginHandler"
-        >
-          Войти/Зарегистрироваться
-        </button>
-        <button
-          class="button"
-          @click="fastOrderHandler"
-        >
-          Быстрый заказ без регистрации
-        </button>
-      </div>
-      <div v-else-if="orderHandler.step === 3">
+        </UFormGroup>
+      </UForm>
+
+      <UContainer
+        v-if="orderHandler.step === 1"
+        class="max-w-sm flex justify-center my-4"
+      >
+        <UButton
+          label="Оформить заказ"
+          type="submit"
+          form="cart_form"
+          size="lg"
+        />
+      </UContainer>
+
+      <UAlert
+        v-else-if="orderHandler.step === 2"
+        icon="i-heroicons-exclamation-triangle"
+        color="secondary"
+        variant="outline"
+        title="Вы не вошли в аккаунт!"
+        description="Выберете действие для продолжения оформления заказа."
+        :actions="[
+          {
+            variant: 'solid',
+            color: 'primary',
+            label: 'Войти/зарегистрироваться',
+            click: loginHandler,
+          },
+          { variant: 'outline', color: 'primary', label: 'Быстрый заказ без регистрации', click: fastOrderHandler },
+        ]"
+        class="max-w-lg mx-auto"
+      />
+      <UContainer
+        v-else-if="orderHandler.step === 3"
+        class="max-w-sm flex flex-col items-center space-y-4 my-4"
+      >
         <TheUserProfile
+          class="w-full"
           @setIsUserDataChanged="value => (TheUserProfileData.isUserDataChanged = value)"
           @setIsUserDataValid="value => (TheUserProfileData.isUserDataValid = value)"
           @setSaveUserData="value => (TheUserProfileData.saveUserData = value)"
         />
-        <div>
-          <button
-            @click="sendOrder"
-            :disabled="!TheUserProfileData.isUserDataValid"
-            class="button"
-          >
-            Создать заказ
-          </button>
-        </div>
-      </div>
+        <UButton
+          label="Создать заказ"
+          @click="sendOrder"
+          size="xl"
+        />
+      </UContainer>
     </div>
   </template>
-  <template v-else>
-    <div>Заказ {{ orderHandler.orderNumber > 1 ? `№${orderHandler.orderNumber}` : '' }} успешно создан!</div>
-    <div>На почту {{ user.mail }} отправлено письмо, содержащее информацию по заказу.</div>
-  </template>
+  <UAlert
+    v-else
+    icon="i-heroicons-check-circle"
+    color="primary"
+    variant="outline"
+    :title="`Заказ ${orderHandler.orderNumber > 1 ? `№${orderHandler.orderNumber}` : ''} успешно создан!`"
+    :description="`На почту ${user.mail} отправлено письмо, содержащее информацию по заказу.`"
+    class="max-w-lg mx-auto"
+  />
 </template>

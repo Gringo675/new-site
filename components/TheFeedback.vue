@@ -2,9 +2,6 @@
 //
 const feedback = useFeedback()
 const user = useUser().value
-const message = ref('')
-// @ts-ignore
-const isMessage = computed(() => message.value.length > 15)
 
 const TheUserProfileData = reactive({
   isUserDataChanged: false,
@@ -12,16 +9,31 @@ const TheUserProfileData = reactive({
   saveUserData: () => {},
 })
 
-const sendMessage = async () => {
+const state = reactive({
+  message: '',
+  files: null,
+})
+
+const validate = state => {
+  const errors = []
+  if (state.message.length > 10000) errors.push({ path: 'message', message: 'Слишком длинное сообщение!' })
+  if (!state.message.length) errors.push({ path: 'message', message: 'Напишите сообщение!' })
+
+  const fileInput = document.getElementById('file_input')
+  checkFormFiles(fileInput.files, errors)
+
+  return errors
+}
+
+const onSubmit = async () => {
+  document.getElementById('up_form').requestSubmit() // чтобы гарантировано запустить валидацию
+  if (!TheUserProfileData.isUserDataValid) return
   if (TheUserProfileData.isUserDataChanged) {
     const isUserSaved = await TheUserProfileData.saveUserData()
-    // @ts-ignore
     if (!isUserSaved) return
   }
 
-  // @ts-ignore
-  const fbForm = document.getElementById('fb_form') // message and files
-  // @ts-ignore
+  const fbForm = document.getElementById('fb_form')
   const formData = new FormData(fbForm)
   formData.append('user', JSON.stringify(user))
 
@@ -35,107 +47,75 @@ const sendMessage = async () => {
     feedback.isActive = false
   }
 }
+
+function onError(event) {
+  const element = document.getElementById(event.errors[0].id)
+  element?.focus()
+  element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+}
 </script>
 
 <template>
-  <!-- wrapper -->
-  <UModal
-    v-model="feedback.isActive"
-    prevent-close
-  >
-    <UCard>
-      <template #header>
-        {{ feedback.title }}
-      </template>
-      <div class="">{{ feedback.description }}</div>
-      <form id="fb_form">
-        <textarea
-          name="message"
-          v-model="message"
-          class="m-2 p-2 border-2 border-blue-300"
-          placeholder="Сообщение"
-          :class="{
-            'border-green-400': isMessage,
-            'border-yellow-300': !isMessage,
-          }"
-        ></textarea>
-        <input
-          name="files"
-          type="file"
-          multiple
-          @change="checkFormFiles"
+  <UCard>
+    <template #header>
+      {{ feedback.title }}
+    </template>
+    <!-- columns -->
+    <div class="grid grid-cols-2 gap-x-6">
+      <!-- first col -->
+      <div class="col-span-2 md:col-span-1">
+        <div class="">{{ feedback.description }}</div>
+        <UForm
+          :state="state"
+          :validate="validate"
+          id="fb_form"
+          @submit="onSubmit"
+          @error="onError"
+        >
+          <UFormGroup name="message">
+            <UTextarea
+              v-model="state.message"
+              placeholder="Ваше сообщение..."
+              resize
+              :rows="9"
+              class="my-4"
+            />
+          </UFormGroup>
+          <UFormGroup name="files">
+            <UInput
+              v-model="state.files"
+              type="file"
+              multiple
+              id="file_input"
+            />
+          </UFormGroup>
+        </UForm>
+      </div>
+      <!-- second col -->
+      <div class="col-span-2 md:col-span-1">
+        <TheUserProfile
+          @setIsUserDataChanged="value => (TheUserProfileData.isUserDataChanged = value)"
+          @setIsUserDataValid="value => (TheUserProfileData.isUserDataValid = value)"
+          @setSaveUserData="value => (TheUserProfileData.saveUserData = value)"
         />
-      </form>
-      <TheUserProfile
-        @setIsUserDataChanged="value => (TheUserProfileData.isUserDataChanged = value)"
-        @setIsUserDataValid="value => (TheUserProfileData.isUserDataValid = value)"
-        @setSaveUserData="value => (TheUserProfileData.saveUserData = value)"
-      />
-      <template #footer>
-        <div class="flex justify-end items-center gap-x-4">
-          <UButton
-            label="Отмена"
-            variant="outline"
-            color="secondary"
-            @click="feedback.isActive = false"
-          />
-          <UButton
-            label="Ok"
-            color="secondary"
-            class="px-8"
-            @click=""
-            :disabled="!TheUserProfileData.isUserDataValid || !isMessage"
-          />
-        </div>
-      </template> </UCard
-  ></UModal>
-  <!-- <div
-    class="modal-form w-[800px] max-w-[95%] max-h-[90vh] border border-slate-300 rounded-xl overflow-auto flex flex-col justify-start"
-  >
-    <div class="flex flex-row justify-between items-center bg-slate-300 p-2.5">
-      <div class="max-w-full whitespace-nowrap overflow-hidden overflow-ellipsis size text-xl">
-        {{ feedbackData.title }}
       </div>
     </div>
-    <div class="p-5 overflow-auto bg-slate-200">
-      <form id="fb_form">
-        <textarea
-          name="message"
-          v-model="message"
-          class="m-2 p-2 border-2 border-blue-300"
-          placeholder="Сообщение"
-          :class="{
-            'border-green-400': isMessage,
-            'border-yellow-300': !isMessage,
-          }"
-        ></textarea>
-        <input
-          name="files"
-          type="file"
-          multiple
-          @change="checkFormFiles"
+    <template #footer>
+      <div class="flex justify-end items-center gap-x-4">
+        <UButton
+          label="Отмена"
+          variant="outline"
+          color="secondary"
+          @click="feedback.isActive = false"
         />
-      </form>
-      <TheUserProfile
-        @setIsUserDataChanged="value => (TheUserProfileData.isUserDataChanged = value)"
-        @setIsUserDataValid="value => (TheUserProfileData.isUserDataValid = value)"
-        @setSaveUserData="value => (TheUserProfileData.saveUserData = value)"
-      />
-    </div>
-    <div class="p-2.5 bg-zinc-400 flex justify-end items-center">
-      <button
-        class="button px-2 py-1"
-        @click="closeFeedback"
-      >
-        Закрыть
-      </button>
-      <button
-        @click="sendMessage"
-        class="button"
-        :disabled="!TheUserProfileData.isUserDataValid || !isMessage"
-      >
-        Отправить
-      </button>
-    </div>
-  </div> -->
+        <UButton
+          type="submit"
+          form="fb_form"
+          label="Ok"
+          color="secondary"
+          class="px-8"
+        />
+      </div>
+    </template>
+  </UCard>
 </template>

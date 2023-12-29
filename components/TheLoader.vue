@@ -7,7 +7,7 @@ const loader = useLoader()
   <Transition name="transition-loader">
     <div
       v-show="loader.isActive"
-      class="fixed left-0 right-0 top-0 bottom-0 z-50 bg-gray-300/60 flex flex-col items-center justify-center cursor-progress"
+      class="fixed left-0 right-0 top-0 bottom-0 z-[60] bg-gray-300/60 flex flex-col items-center justify-center cursor-progress"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
