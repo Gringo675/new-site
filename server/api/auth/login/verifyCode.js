@@ -20,5 +20,8 @@ export default defineEventHandler(async event => {
 
   createToken(user, event)
 
+  // с вероятностью 10% запускаем очистку базы от пустых записей
+  if (Math.random() < 0.1) clearUsersBase()
+
   return true
 })

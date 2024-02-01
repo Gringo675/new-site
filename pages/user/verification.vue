@@ -20,7 +20,7 @@ try {
   console.error(e)
 }
 
-await getUser()
+await getUser({ hidden: true })
 </script>
 
 <template>

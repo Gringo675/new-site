@@ -19,14 +19,14 @@ const paginator = computed(() => {
     // нужно обрезать
     if (activePage < 5) {
       // обрезаем справа
-      paginator.splice(5, paginator.length - 6, { val: '…', isDecor: true })
+      paginator.splice(5, paginator.length - 6, { isDecor: true })
     } else if (activePage > paginator.length - 4) {
       // образаем слева
-      paginator.splice(1, paginator.length - 6, { val: '…', isDecor: true })
+      paginator.splice(1, paginator.length - 6, { isDecor: true })
     } else {
       // обрезаем с двух сторон
-      paginator.splice(1, activePage - 3, { val: '…', isDecor: true })
-      paginator.splice(5, paginator.length - 6, { val: '…', isDecor: true })
+      paginator.splice(1, activePage - 3, { isDecor: true })
+      paginator.splice(5, paginator.length - 6, { isDecor: true })
     }
   }
   return paginator
@@ -80,35 +80,40 @@ const hideShowMoreButton = computed(() => paginator.value[paginator.value.length
     >
       Показать еще
     </div>
-    <div class="flex justify-center items-end">
-      <div
+    <div class="flex justify-center items-end space-x-2">
+      <UTooltip
         v-if="paginator.length > 1 && !paginator[0].isActive"
-        class="m-1 px-1 cursor-pointer rounded hover:shadow hover:bg-sky-200"
-        @click="handlePaginator('prev')"
+        text="Предыдущая"
       >
-        ⇦
-      </div>
-      <div
-        v-for="link in paginator"
-        class="h-6 text-center"
-        :class="{
-          'm-1 w-7 rounded ': !link.isDecor,
-          'bg-sky-100 cursor-pointer hover:shadow hover:bg-sky-200': link.isActive === false,
-          'bg-sky-300 cursor-default': link.isActive,
-          'cursor-default text-sm': link.isDecor,
-        }"
-        disabled="link.isActive"
-        @click="handlePaginator(link.val)"
-      >
-        {{ link.val }}
-      </div>
-      <div
+        <UButton
+          icon="i-heroicons-arrow-small-left-20-solid"
+          color="secondary"
+          :ui="{ rounded: 'rounded-full' }"
+          @click="handlePaginator('prev')"
+        />
+      </UTooltip>
+      <template v-for="link in paginator">
+        <div v-if="link.isDecor">…</div>
+        <UButton
+          v-else
+          :label="link.val.toString()"
+          :variant="link.isActive ? 'solid' : 'outline'"
+          class="min-w-10 justify-center"
+          color="secondary"
+          @click="handlePaginator(link.val)"
+        />
+      </template>
+      <UTooltip
         v-if="paginator.length > 1 && !paginator[paginator.length - 1].isActive"
-        class="m-1 px-1 cursor-pointer rounded hover:shadow hover:bg-sky-200"
-        @click="handlePaginator('next')"
+        text="Следующая"
       >
-        ⇨
-      </div>
+        <UButton
+          icon="i-heroicons-arrow-small-right-20-solid"
+          color="secondary"
+          :ui="{ rounded: 'rounded-full' }"
+          @click="handlePaginator('next')"
+        />
+      </UTooltip>
     </div>
   </div>
 </template>

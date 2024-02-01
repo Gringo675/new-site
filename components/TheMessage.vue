@@ -6,6 +6,11 @@ const okHandler = () => {
   message.callback()
   message.active = false
 }
+
+const test = () => {
+  throw new Error('manual error')
+  // const aaa = bbb - 2
+}
 </script>
 
 <template>
@@ -46,7 +51,7 @@ const okHandler = () => {
           label="test"
           variant="outline"
           color="secondary"
-          @click="showLoader()"
+          @click="test"
         />
         <UButton
           label="Отмена"

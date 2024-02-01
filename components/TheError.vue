@@ -2,10 +2,17 @@
 //
 const router = useRouter()
 const user = useUser().value
-user.showLogin = false
-hideLoader()
+const message = useMessage()
+const feedback = useFeedback()
 
-onUnmounted(() => (user.showLogin = false))
+hideLoader()
+user.showLogin = false
+message.active = false
+feedback.isActive = false
+
+onUnmounted(() => {
+  user.showLogin = false
+})
 
 const props = defineProps({
   error: Object,
@@ -15,6 +22,8 @@ const props = defineProps({
 const isGlobal = props.isGlobal
 const error = isGlobal ? ref(props.error) : props.error
 error.value.code = Number(error.value.statusCode) // при некоторых ошибках не дает перезаписать statusCode, поэтому code
+
+console.log(`from TheError isGlobal: ${JSON.stringify(isGlobal, null, 2)}`)
 
 // полноэкранная ошибка для закрытого сайта
 if (error.value.code === 423 && !isGlobal) showError(error.value)
@@ -57,24 +66,8 @@ const toMainPage = () => {
 }
 
 const test = () => {
-  showLoader()
-  // const routerPath = (useRoute()).fullPath
-  // console.log(`routerPath: ${JSON.stringify(routerPath, null, 2)}`)
-  //
-  // let locationPath = window.location.pathname
-  //
-  // let baseURL = useRuntimeConfig().app.baseURL
-  // if (baseURL !== '/') { // вырезаем baseURL
-  //   if (baseURL[baseURL.length-1] === '/') baseURL = baseURL.substring(0, baseURL.length-1) // убираем слеш в конце
-  //   try {
-  //     const regexp = new RegExp(`${baseURL}(.+)`)
-  //     locationPath = locationPath.match(regexp)[1]
-  //   } catch (e) {
-  //     locationPath = '/'
-  //   }
-  // }
-  // console.log(`locationPath: ${JSON.stringify(locationPath, null, 2)}`)
-  // navigateTo(locationPath)
+  // showLoader()
+  throw new Error('error from error')
 }
 </script>
 

@@ -16,7 +16,7 @@
     "@nuxt/ui": "^2.11.1",
     "dotenv": "^10.0.0",
     "node-ssh": "^13.0.1",
-    "nuxt": "^3.7.4"
+    "nuxt": "^3.9.1"
   },
   "dependencies": {
     "maska": "^2.1.10",

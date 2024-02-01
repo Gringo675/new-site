@@ -1,6 +1,5 @@
 <script setup>
 //
-console.log(`TheLogin loading/////////`)
 const user = useUser().value
 const form = ref()
 
@@ -18,7 +17,8 @@ const state = reactive({
 
 const validate = state => {
   const errors = []
-  if (!state.mail.valid) errors.push({ path: 'mail', message: 'Введите корректный почтовый адрес!' })
+  if (state.mail.val.length && !state.mail.valid)
+    errors.push({ path: 'mail', message: 'Введите корректный почтовый адрес!' })
   if (state.code.invalid) errors.push({ path: 'code', message: 'Неверный код!' })
   return errors
 }
@@ -74,6 +74,21 @@ const backOnMailScreen = () => {
   state.code.invalid = false
   form.value.setErrors([]) // очищаем ошибки
   // getUserTimer.stop()
+}
+
+const runOAuth = provider => {
+  showLoader()
+  const url = getOAuthURL(provider)
+  const oauthWinParams = `status=no,location=no,toolbar=no,menubar=no,width=500,height=500,left=200,top=0`
+  const oauthWin = window.open(url, 'oauth', oauthWinParams)
+  const timer = setInterval(async () => {
+    if (oauthWin.closed) {
+      clearInterval(timer)
+      await getUser({ hidden: true })
+      hideLoader()
+      if (user.auth) user.showLogin = false
+    }
+  }, 1000)
 }
 </script>
 
@@ -178,9 +193,22 @@ const backOnMailScreen = () => {
         color="gray"
       />
       <UButton
-        label="Login with GitHub"
+        label="Войти через google"
         icon="i-simple-icons-github"
         block
+        @click="runOAuth('google')"
+      />
+      <UButton
+        label="Войти через vk"
+        icon="i-simple-icons-github"
+        block
+        @click="runOAuth('vk')"
+      />
+      <UButton
+        label="Войти через mail.ru"
+        icon="i-simple-icons-github"
+        block
+        @click="runOAuth('mailru')"
       />
       <UButton
         label="Login with GitHub"

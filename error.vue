@@ -13,10 +13,4 @@ const props = defineProps({
     :isGlobal="true"
   />
   <HelperClientComponents />
-  <!-- <ClientOnly>
-    <LazyTheMessage />
-    <LazyTheLoader />
-    <LazyTheNotice />
-    <LazyTheLogin />
-  </ClientOnly> -->
 </template>

@@ -1,28 +1,24 @@
 <script setup>
-
 await myFetch('/api/user/isAdmin') // если не админ, выкинет ошибку
-
 </script>
 
 <template>
-  <div class="index">
-<div>
-  <button class="button">
-    <NuxtLink to="/admin/categories">Менеджер категорий</NuxtLink>
-  </button>
-    <button class="button">
-    <NuxtLink to="/admin/products">Менеджер товаров</NuxtLink>
-  </button>
-  <button class="button">
-    <NuxtLink to="/admin/options">Options</NuxtLink>
-  </button>
-  <button class="button">
-    <NuxtLink to="/admin/console">Console</NuxtLink>
-  </button>
-</div>
+  <div class="flex space-x-4">
+    <UButton
+      label="Менеджер категорий"
+      to="/admin/categories"
+    />
+    <UButton
+      label="Менеджер товаров"
+      to="/admin/products"
+    />
+    <UButton
+      label="Options"
+      to="/admin/options"
+    />
+    <UButton
+      label="Console"
+      to="/admin/console"
+    />
   </div>
 </template>
-
-<style>
-
-</style>

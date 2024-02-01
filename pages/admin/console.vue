@@ -1,5 +1,4 @@
 <script setup>
-
 const isListen = ref(false)
 const messages = reactive([])
 
@@ -8,7 +7,7 @@ const startListen = async () => {
   console.log(`listen...`)
   while (isListen.value) {
     try {
-      const data = await $fetch('/api/console', {method: 'post'})
+      const data = await $fetch('/api/console', { method: 'post' })
       if (isListen.value) {
         console.log(`data: ${JSON.stringify(data, null, 2)}`)
         if (data.length) {
@@ -43,7 +42,7 @@ const sendTestData = async () => {
   // console.log(`send...`)
   const data = await $fetch('/api/console', {
     method: 'POST',
-    body: 'Test'
+    body: { text: 'Test' },
   })
   // console.log(`data: ${JSON.stringify(data, null, 2)}`)
 }
@@ -56,34 +55,38 @@ const test = async () => {
   } catch (e) {
     console.log(`e: ${JSON.stringify(e, null, 2)}`)
   }
-
 }
-
 </script>
 
 <template>
-  <div class="console">
-    <div class="flex items-center">
-      <h1>Console</h1>
-      <button class="button" @click="toggleListen">{{ isListen ? 'Stop' : 'Start' }}</button>
-      <button class="button" @click="clearMessages">Clear</button>
-      <button class="button" @click="sendTestData">Test</button>
-    </div>
-    <div class="m-2 p-2 border border-green-300 rounded-2xl">
-      <div class="my-1 p-1 hover:bg-gray-100 rounded-xl" v-for="mess in messages">
-        <div class="text-blue-400">
-          {{ mess.time }}
-        </div>
-        <div>
-            <pre>{{ mess.text }}</pre>
-        </div>
-
-
+  <h1>Console</h1>
+  <div class="flex space-x-4">
+    <UButton
+      :label="isListen ? 'Stop' : 'Start'"
+      @click="toggleListen"
+    />
+    <UButton
+      label="Clear"
+      @click="clearMessages"
+    />
+    <UButton
+      label="Test"
+      @click="sendTestData"
+    />
+  </div>
+  <div class="m-2 p-2 border border-green-300 rounded-2xl">
+    <div
+      class="my-1 p-1 hover:bg-gray-100 rounded-xl"
+      v-for="mess in messages"
+    >
+      <div class="text-blue-400">
+        {{ mess.time }}
+      </div>
+      <div>
+        <pre>{{ mess.text }}</pre>
       </div>
     </div>
   </div>
 </template>
 
-<style>
-
-</style>
+<style></style>

@@ -5,11 +5,11 @@ const user = useUser().value
 onMounted(async () => {
   window.addEventListener('storage', event => {
     if (event.storageArea !== localStorage || event.key !== 'user-event') return
-    console.log(`user-event`)
-    console.log(`event.newValue: ${JSON.stringify(event.newValue, null, 2)}`)
     if (event.newValue === '0') logoutUser()
-    else if (event.newValue === '1') getUser()
-    else getUser({ force: true })
+    else if (event.newValue === '1') {
+      user.showLogin = false
+      getUser()
+    } else getUser({ force: true })
   })
 
   setTimeout(() => {

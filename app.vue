@@ -34,7 +34,7 @@ const someErrorLogger = e => {
           <TheError :error="error" />
         </template>
       </NuxtErrorBoundary>
+      <HelperClientComponents />
     </NuxtLayout>
-    <HelperClientComponents />
   </div>
 </template>
