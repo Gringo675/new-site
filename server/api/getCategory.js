@@ -1,5 +1,4 @@
 export default defineEventHandler(async event => {
-  throw createError({ statusCode: 482, statusMessage: `Some error` })
   // const start = performance.now()
 
   const { alias } = getQuery(event)

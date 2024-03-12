@@ -1,16 +1,125 @@
 <script setup>
-console.log(`from globalError`)
-
 const props = defineProps({
   error: Object,
 })
-// console.log(`props.error: ${JSON.stringify(props.error, null, 2)}`)
+
+const user = useUser().value
+const message = useMessage()
+const feedback = useFeedback()
+
+hideLoader()
+user.showLogin = false
+message.active = false
+feedback.isActive = false
+
+onUnmounted(() => {
+  user.showLogin = false
+})
+
+const showLogin = () => {
+  user.showLogin = true
+  const unwatch = watch(
+    () => user.showLogin,
+    () => {
+      nextTick(() => unwatch()) // watch only once
+      if (user.auth) refreshPage()
+    }
+  )
+}
+
+const refreshPage = () => {
+  clearError({ redirect: props.error.data.path })
+}
+
+const toMainPage = () => {
+  clearError({ redirect: '/' })
+}
+
+const test = async () => {
+  await clearError()
+  await navigateTo('/test2')
+  // showLoader()
+  // throw new Error('error from error')
+  // const bbb = aaa * 2
+}
 </script>
 
 <template>
-  <TheError
-    :error="error"
-    :isGlobal="true"
-  />
-  <HelperClientComponents />
+  <div>
+    <NuxtLayout>
+      <div>
+        <div class="bg-red-400">
+          <h1>Error component</h1>
+          <button
+            class="m-2 p-2 bg-cyan-500"
+            @click="test"
+          >
+            Test
+          </button>
+          <div v-if="error.statusCode === 401">
+            <h2>Для доступа к ресурсу необходима авторизация!</h2>
+            <button
+              class="m-2 p-2 bg-cyan-500"
+              @click="showLogin"
+            >
+              Войти
+            </button>
+            <button
+              class="m-2 p-2 bg-cyan-500"
+              @click="toMainPage"
+            >
+              На главную
+            </button>
+          </div>
+          <div v-else-if="error.statusCode === 403">
+            <h2>Отказано в доступе!</h2>
+            <button
+              class="m-2 p-2 bg-cyan-500"
+              @click="toMainPage"
+            >
+              На главную
+            </button>
+          </div>
+          <div v-else-if="error.statusCode === 404">
+            <h2>Error 404</h2>
+            <button
+              class="m-2 p-2 bg-cyan-500"
+              @click="toMainPage"
+            >
+              На главную
+            </button>
+          </div>
+          <div v-else-if="error.statusCode === 423">
+            <h2>На сервере ведутся технические работы. Доступ временно закрыт.</h2>
+            <button
+              class="m-2 p-2 bg-cyan-500"
+              @click="showLogin"
+            >
+              Вход для администраторов (hidden)
+            </button>
+          </div>
+          <div v-else>
+            <h2 class="font-bold">ERROR PAGE</h2>
+            <h2>Code - {{ error.statusCode }}</h2>
+            <h2>Message - {{ error.statusMessage }}</h2>
+            <div>
+              Возможно, это временные неполадки с сетью. Попробуйте начать с главной или обновить текущую страницу. Если
+              ошибка не исчезнет, пожалуйста, сообщите нам.
+            </div>
+            <UButton
+              label="На главную"
+              @click="toMainPage"
+              class="m-2"
+            />
+            <UButton
+              label="Обновить страницу"
+              @click="refreshPage"
+              class="m-2"
+            />
+          </div>
+        </div>
+      </div>
+      <HelperClientComponents />
+    </NuxtLayout>
+  </div>
 </template>

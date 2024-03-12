@@ -2,7 +2,8 @@
 import { useNuxtApp } from '#app/nuxt.js'
 
 const test = () => {
-  localStorage.setItem('user-event', Math.random().toString())
+  // localStorage.setItem('user-event', Math.random().toString())
+  const bbb = aaa * 2
 }
 
 const localVar = 111
@@ -26,6 +27,11 @@ const createFeedback = () => {
     description: 'Воспользуйтесь данной формой, чтобы прислать Ваши вопросы, предложения, или отправить заявку.',
   })
 }
+// const url = useRequestURL()
+// console.log(`url: ${JSON.stringify(url, null, 2)}`)
+// console.log(`pathname: ${JSON.stringify(url.pathname, null, 2)}`)
+// const route = useRoute()
+// console.log(`route: ${JSON.stringify(route.fullPath, null, 2)}`)
 </script>
 
 <template>

@@ -1,4 +1,6 @@
 <script setup>
+await myFetch('/api/user/isAdmin') // если не админ, выкинет ошибку
+
 const isListen = ref(false)
 const messages = reactive([])
 

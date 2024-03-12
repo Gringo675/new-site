@@ -1,40 +1,72 @@
 <script setup>
 onErrorCaptured(e => {
-  // для ловли ошибок вне NuxtErrorBoundary
-  console.log(`onErrorCaptured message: ${JSON.stringify(e.message, null, 2)}`)
-  console.log(`onErrorCaptured stack: ${JSON.stringify(e.stack, null, 2)}`)
-  showError(e)
+  handleError(e)
   return false
 })
-// onMounted(() => {
-//   // Для ловли ошибок в промисах (ассинхронных функциях, вызываемых без await),
-//   // которые не отлавливаются стандартными способами
-//   window.addEventListener('unhandledrejection', event => {
-//     event.preventDefault()
-//     console.warn(`UNHANDLED PROMISE REJECTION: ${event.reason}`)
-//     showError({ statusCode: 465, statusMessage: `UNHANDLED PROMISE REJECTION: ${event.reason}` })
-//     // console.log('Unhandled rejection (promise: ', event.promise, ', reason: ', event.reason, ').')
-//   })
-// })
-
-const someErrorLogger = e => {
-  // логгер должен быть в TheError, наверно
-  console.log(`NuxtErrorBoundary caught error`)
-  console.log(`e: ${JSON.stringify(e.message, null, 2)}`)
-  console.log(`stack: ${JSON.stringify(e.stack, null, 2)}`)
+onMounted(() => {
+  // Для ловли ошибок в промисах (ассинхронных функциях, вызываемых без await),
+  // которые не отлавливаются стандартными способами
+  window.addEventListener('unhandledrejection', event => {
+    event.preventDefault()
+    // console.warn(`UNHANDLED PROMISE REJECTION: ${event.reason}`)
+    const error = createError({ statusCode: 465, statusMessage: `UNHANDLED PROMISE REJECTION: ${event.reason}` })
+    handleError(error)
+  })
+})
+const handleError = e => {
+  if (e.name === 'FetchError') {
+    // в FetchError нельзя ничего менять, поэтому заменяем её на "обычную" ошибку
+    e = createError({
+      statusCode: e.statusCode,
+      statusMessage: e.statusMessage,
+      stack: e.stack,
+    })
+  }
+  e.statusCode = e.statusCode ?? 500
+  e.statusMessage = e.statusMessage || e.message
+  e.data = e.data ?? {}
+  if (!e.data.path) {
+    e.data.path = useRouter().currentRoute.value.fullPath // useRoute returns incorrect res.
+    e.data.onServer = process.server
+    setErrorToLog(e)
+  }
+  // console.log(`e: ${JSON.stringify(e, null, 2)}`)
+  showError(e)
+}
+const setErrorToLog = async e => {
+  // записываем ошибку в лог
+  const error = {
+    code: e.statusCode,
+    message: e.statusMessage,
+    stack: e.stack,
+    path: e.data.path,
+    onServer: e.data.onServer,
+  }
+  try {
+    await $fetch('/api/log/setError', {
+      method: 'POST',
+      body: error,
+    })
+  } catch (e) {
+    console.error(`Can't write error to the log: ${e.message}`)
+  }
 }
 </script>
 
 <template>
   <div>
     <NuxtLayout>
-      <NuxtErrorBoundary @error="someErrorLogger">
-        <NuxtPage />
-        <template #error="{ error }">
-          <TheError :error="error" />
-        </template>
-      </NuxtErrorBoundary>
+      <NuxtPage />
       <HelperClientComponents />
     </NuxtLayout>
+    <!-- <NuxtLayout>
+    <NuxtErrorBoundary @error="someErrorLogger">
+      <NuxtPage />
+      <template #error="{ error }">
+        <TheError :error="error" />
+      </template>
+    </NuxtErrorBoundary>
+    <HelperClientComponents />
+    </NuxtLayout> -->
   </div>
 </template>

@@ -14,6 +14,7 @@ export default defineNuxtConfig({
     '/admin/**': { ssr: false },
     '/user/**': { ssr: false },
     '/search/**': { ssr: false },
+    '/test2': { ssr: false },
   },
   imports: {
     dirs: [

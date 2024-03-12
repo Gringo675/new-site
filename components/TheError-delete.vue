@@ -67,8 +67,27 @@ const toMainPage = () => {
 
 const test = () => {
   // showLoader()
-  throw new Error('error from error')
+  // throw new Error('error from error')
+  const bbb = aaa * 2
 }
+
+const setToLog = async (error, isGlobal) => {
+  // записываем ошибку в лог
+
+  // const url = useRequestURL()
+  // console.log(`url: ${JSON.stringify(url, null, 2)}`)
+  // console.log(`pathname: ${JSON.stringify(url.pathname, null, 2)}`)
+  const route = useRoute()
+  console.log(`route: ${JSON.stringify(route.fullPath, null, 2)}`)
+  console.log(`redirectedFrom: ${JSON.stringify(route.redirectedFrom, null, 2)}`)
+  // try {
+  //   await $fetch('/api/test')
+  // } catch (e) {
+  //   console.error(`Can't write error to the log: ${e.message}`)
+  // }
+}
+// todo: add callOnce
+setToLog()
 </script>
 
 <template>
