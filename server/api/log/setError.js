@@ -11,7 +11,9 @@ export default defineEventHandler(async event => {
 
   const cTime = new Date().toISOString()
 
-  const query = `INSERT INTO i_log SET created = '${cTime}', error = 1, text = '${JSON.stringify(error)}'`
+  const query = `INSERT INTO i_log SET created = '${cTime}', error = 1, text = '${prepareString(
+    JSON.stringify(error)
+  )}'`
   await dbReq(query)
 
   // console.log(`post: ${JSON.stringify(post, null, 2)}`)

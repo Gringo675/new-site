@@ -1,5 +1,5 @@
 <script setup>
-//
+// renderless component helping tracking active image
 const props = defineProps({
   page: Number,
   active: Boolean,
@@ -8,11 +8,8 @@ const props = defineProps({
 
 watchEffect(() => {
   if (props.active) {
-    props.helper.activePage = props.page
+    props.helper.activeImg = props.page - 1
   }
 })
 </script>
-
-<template>
-  <div>from TheTest: {{ active }}</div>
-</template>
+<template></template>

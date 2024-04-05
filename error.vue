@@ -2,7 +2,7 @@
 const props = defineProps({
   error: Object,
 })
-
+console.error(props.error)
 const user = useUser().value
 const message = useMessage()
 const feedback = useFeedback()

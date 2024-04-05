@@ -28,7 +28,7 @@ const handleError = e => {
   if (!e.data.path) {
     e.data.path = useRouter().currentRoute.value.fullPath // useRoute returns incorrect res.
     e.data.onServer = process.server
-    setErrorToLog(e)
+    // setErrorToLog(e)
   }
   // console.log(`e: ${JSON.stringify(e, null, 2)}`)
   showError(e)
