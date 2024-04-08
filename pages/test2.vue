@@ -1,24 +1,14 @@
 <script setup>
+//
 definePageMeta({
   layout: 'empty',
 })
-
-const images = [
-  'SHC1STIZ.jpg',
-  'shc-i-stiz_1.jpg',
-  'shc-i-stiz_2.jpg',
-  'shc-i-stiz_3.jpg',
-  'SHC1STIZ.jpg',
-  'shc-i-stiz_1.jpg',
-  'shc-i-stiz_2.jpg',
-  'shc-i-stiz_3.jpg',
-]
-const files = ['0.jpg', '1.jpg', '2.jpg', '3.jpg']
 </script>
 
 <template>
-  <ImageViewerModal
-    :images="images"
-    :active-img-index="0"
-  />
+  <div class="ccontainer h-[500px] flex flex-col m-5 bg-green-300">
+    <div class="w-full h-[200px] bg-red-300 relative">1</div>
+    <div class="w-full h-[40px] bg-orange-300 absolute top-1/2">2</div>
+    <div class="w-full h-[100px] bg-blue-300">3</div>
+  </div>
 </template>
