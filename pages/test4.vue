@@ -1,4 +1,12 @@
 <script setup>
+/**
+ * todo:
+ * z-index on zoomed image (upper arrows)
+ * transition from causer
+ * arrows style
+ * test mobile
+ * animate first, last
+ */
 definePageMeta({
   layout: 'empty',
 })
@@ -8,7 +16,8 @@ const isOpen = ref(false)
 onMounted(() => {
   setTimeout(() => {
     isOpen.value = true
-  }, 1000)
+  }, 100)
+  setTimeout(onCarouselMounted, 1000)
 })
 
 const files = [
@@ -24,45 +33,113 @@ const files = [
 const imagesDirectory = 'https://chelinstrument.ru/components/com_jshopping/files/img_products/'
 
 // обрабатываем клики и перемещение
-let notClose = false
-let imgDrag = false
-const onCarouselMouseUp = () => {
-  if (!notClose) isOpen.value = false
-  // if (!notClose) console.log(`carousel closed`)
+const carousel = ref(null)
+let imageContainer = null
+const onCarouselMounted = () => {
+  console.log(`from onCarouselMounted`)
+  imageContainer = carousel.value.$el.firstElementChild
+  // imageContainer.style = 'border: 3px solid red'
+  imageContainer.addEventListener('mousedown', event => {
+    if (event.target.tagName === 'IMG') onImageMouseDown(event)
+    imageContainer.addEventListener('mousemove', onContainerMouseMove, { once: true })
+    window.addEventListener('mouseup', () => {
+      imageContainer.removeEventListener('mousemove', onContainerMouseMove), { once: true }
+    })
+  })
 }
-const imgZoom = { active: false, initialX: 0, initialY: 0, translateX: 0, translateY: 0, scale: 2 }
+const onContainerMouseMove = () => {
+  console.log(`from onContainerMouseMove`)
+  window.addEventListener('click', event => event.stopPropagation(), { capture: true, once: true }) // prevent closing
+}
+const onCarouselClick = () => {
+  // isOpen.value = false
+  console.log(`carousel closed`)
+}
+const imgZoom = {
+  target: null,
+  centerX: 0,
+  centerY: 0,
+  maxTranslateX: 0,
+  maxTranslateY: 0,
+  offsetX: 0,
+  offsetY: 0,
+  scale: 2,
+}
+
+const onImageMouseDown = event => {
+  console.log(`from onImageMouseDown`)
+  event.target.addEventListener('mouseup', onImageMouseUp, { once: true })
+  event.target.addEventListener('mousemove', cancelOnImageMouseUp, { once: true })
+}
+const cancelOnImageMouseUp = event => {
+  console.log(`from cancelOnImageMouseUp`)
+  event.target.removeEventListener('mouseup', onImageMouseUp)
+}
 const onImageMouseUp = event => {
-  notClose = true
-  if (!imgDrag) {
-    imgZoom.active = !imgZoom.active
-    const imgBlock = event.target
-    if (imgZoom.active) {
-      // todo: выход за границы(event.target)?, начальный транслейт, границы контейнера,оптимизация
-      imgZoom.initialX = event.pageX
-      imgZoom.initialY = event.pageY
-
-      // temporary
-      imgZoom.translateX = 200
-      imgZoom.translateY = 400
-
-      const imgContainer = imgBlock.parentElement.parentElement
-      imgContainer.style.border = '1px solid red'
-      window.addEventListener('mousemove', onZoomMouseMove)
-      imgBlock.addEventListener('transitionend', () => (imgBlock.style.transition = 'none'), { once: true })
-      imgBlock.style = `transform: translate(${imgZoom.translateX}px, ${imgZoom.translateY}px) scale(${imgZoom.scale})`
-    } else {
-      window.removeEventListener('mousemove', onZoomMouseMove)
-      imgBlock.style = ''
-    }
-  }
+  console.log(`from onImageMouseUp`)
+  event.target.removeEventListener('mousemove', cancelOnImageMouseUp)
+  activateZoom(event)
 }
-const onZoomMouseMove = event => {
+const activateZoom = event => {
+  console.log(`from activateZoom`)
+  imgZoom.target = event.target
+
+  const imgCoords = imgZoom.target.getBoundingClientRect()
+  imgZoom.centerX = imgCoords.left + imgCoords.width / 2
+  imgZoom.centerY = imgCoords.top + imgCoords.height / 2
+  imgZoom.maxTranslateX = Math.max((imgCoords.width * (imgZoom.scale - 1)) / 2 - imgCoords.left, 0)
+  imgZoom.maxTranslateY = Math.max((imgCoords.height * (imgZoom.scale - 1)) / 2 - imgCoords.top, 0)
+  imgZoom.offsetX = 0
+  imgZoom.offsetY = 0
+
+  imgZoom.target.addEventListener('mousemove', calculateZoom)
+  // imgZoom.target.addEventListener('touchmove', calculateZoom)
+
+  window.addEventListener('mousedown', deactivateZoom, { capture: true, once: true })
+  imgZoom.target.addEventListener('transitionend', () => (imgZoom.target.style.transition = 'none'), { once: true })
+  imgZoom.target.style.cursor = 'zoom-out'
+  calculateZoom(event)
+}
+
+const calculateZoom = event => {
+  console.log(`from calculateZoom`)
   event.preventDefault()
-  imgZoom.translateX = -1 * (event.pageX - imgZoom.initialX)
-  imgZoom.translateY = -1 * (event.pageY - imgZoom.initialY)
-  event.target.style.transform = `translate(${imgZoom.translateX}px, ${imgZoom.translateY}px) scale(${imgZoom.scale})`
-  console.log(`imgZoom.translateX: ${JSON.stringify(imgZoom.translateX, null, 2)}`)
-  console.log(`imgZoom.translateY: ${JSON.stringify(imgZoom.translateY, null, 2)}`)
+  // const translateX = Math.min(
+  //   Math.max(imgZoom.scale * (imgZoom.centerX - event.clientX), -imgZoom.maxTranslateX),
+  //   imgZoom.maxTranslateX
+  // )
+  // const translateY = Math.min(
+  //   Math.max(imgZoom.scale * (imgZoom.centerY - event.clientY), -imgZoom.maxTranslateY),
+  //   imgZoom.maxTranslateY
+  // )
+
+  // let translateX = imgZoom.centerX - event.clientX
+  let translateX = imgZoom.centerX - event.clientX - imgZoom.offsetX
+  if (translateX < -imgZoom.maxTranslateX) {
+    imgZoom.offsetX = imgZoom.centerX + imgZoom.maxTranslateX - event.clientX
+    translateX = -imgZoom.maxTranslateX
+  } else if (translateX > imgZoom.maxTranslateX) {
+    imgZoom.offsetX = imgZoom.centerX - imgZoom.maxTranslateX - event.clientX
+    translateX = imgZoom.maxTranslateX
+  }
+
+  let translateY = imgZoom.centerY - event.clientY - imgZoom.offsetY
+  if (translateY < -imgZoom.maxTranslateY) {
+    imgZoom.offsetY = imgZoom.centerY + imgZoom.maxTranslateY - event.clientY
+    translateY = -imgZoom.maxTranslateY
+  } else if (translateY > imgZoom.maxTranslateY) {
+    imgZoom.offsetY = imgZoom.centerY - imgZoom.maxTranslateY - event.clientY
+    translateY = imgZoom.maxTranslateY
+  }
+
+  imgZoom.target.style.transform = `translate(${translateX}px, ${translateY}px) scale(${imgZoom.scale})`
+}
+
+const deactivateZoom = event => {
+  console.log(`from deactivateZoom`)
+  event.stopPropagation()
+  imgZoom.target.removeEventListener('mousemove', calculateZoom)
+  imgZoom.target.style = ''
 }
 </script>
 
@@ -88,15 +165,13 @@ const onZoomMouseMove = event => {
       }"
     >
       <UCarousel
-        @mouseup="onCarouselMouseUp"
-        @mousedown="notClose = false"
-        @mousemove="notClose = true"
-        ref="mViewer"
+        ref="carousel"
+        @click="onCarouselClick"
         :items="files"
         :ui="{
           wrapper: 'c_wrapper w-screen h-screen flex flex-col',
-          container: 'c_container relative items-center flex-1 p-2 bg-yellow-200',
-          item: 'c_item basis-full justify-center max-h-full',
+          container: 'c_container relative items-center flex-1 bg-yellow-200',
+          item: 'c_item basis-full justify-center h-full items-center p-2',
           indicators: {
             wrapper: 'i_wrapper relative max-h-[20vh] bottom-0 p-2 nrw:hidden bg-green-200',
           },
@@ -109,24 +184,21 @@ const onZoomMouseMove = event => {
       >
         <template #default="{ item }">
           <img
-            @mouseup="onImageMouseUp"
-            @mousedown="imgDrag = false"
-            @mousemove="imgDrag = true"
+            @click.stop
             :src="`${imagesDirectory}full_${item}`"
-            class="border border-blue-700 w-min min-w-10 object-contain shrink overflow-auto transition-transform duration-500 cursor-zoom-in"
+            class="border border-blue-700 object-contain max-h-full max-w-full shrink overflow-auto transition-transform duration-500 cursor-zoom-in"
             draggable="false"
           />
         </template>
 
         <template #indicator="{ onClick, page, active }">
           <img
-            @click="onClick(page)"
-            @mouseup="notClose = true"
+            @click.stop="onClick(page)"
             :src="`${imagesDirectory}thumb_${files[page - 1]}`"
             class="max-w-[100px] max-h-full min-w-5 shrink object-contain"
             :class="{
-              'cursor-pointer border border-red-700': !active,
-              'cursor-default border-4 border-green-700': active,
+              'cursor-pointer border-2 border-red-700': !active,
+              'cursor-default border-2 border-green-700': active,
             }"
             draggable="false"
           />
@@ -136,8 +208,7 @@ const onZoomMouseMove = event => {
           <button
             class="pointer-events-auto"
             :disabled="disabled"
-            @mouseup="notClose = true"
-            @click="onClick"
+            @click.stop="onClick"
           >
             Prev
           </button>
@@ -147,8 +218,7 @@ const onZoomMouseMove = event => {
           <button
             class="pointer-events-auto"
             :disabled="disabled"
-            @mouseup="notClose = true"
-            @click="onClick"
+            @click.stop="onClick"
           >
             Next
           </button>
