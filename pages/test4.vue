@@ -93,14 +93,47 @@ const activateZoom = event => {
   imgZoom.offsetY = 0
 
   imgZoom.target.addEventListener('mousemove', calculateZoom)
-  // imgZoom.target.addEventListener('touchmove', calculateZoom)
+  imgZoom.target.addEventListener('touchstart', onTouchStart)
+  imgZoom.target.addEventListener('touchmove', onTouchMove)
 
   window.addEventListener('mousedown', deactivateZoom, { capture: true, once: true })
   imgZoom.target.addEventListener('transitionend', () => (imgZoom.target.style.transition = 'none'), { once: true })
   imgZoom.target.style.cursor = 'zoom-out'
   calculateZoom(event)
 }
+const onTouchStart = event => {
+  console.log(`from onTouchStart`)
+  imgZoom.target.removeEventListener('mousemove', calculateZoom)
 
+  imgZoom.centerX = event.touches[0].clientX
+  imgZoom.centerY = event.touches[0].clientY
+  const transform = imgZoom.target.style.transform
+  const match = transform.match(/translate\((-?\d*\.?\d+)px, (-?\d*\.?\d+)px\)/) ?? []
+  imgZoom.offsetX = Number(match[1]) ?? 0
+  imgZoom.offsetY = Number(match[2]) ?? 0
+  console.log(`imgZoom.offsetX: ${JSON.stringify(imgZoom.offsetX, null, 2)}`)
+  console.log(`imgZoom.offsetY: ${JSON.stringify(imgZoom.offsetY, null, 2)}`)
+}
+const onTouchMove = event => {
+  console.log(`from onTouchMove`)
+  event.preventDefault()
+
+  const translateX = Math.min(
+    Math.max(event.touches[0].clientX - imgZoom.centerX + imgZoom.offsetX, -imgZoom.maxTranslateX),
+    imgZoom.maxTranslateX
+  )
+  const translateY = Math.min(
+    Math.max(event.touches[0].clientY - imgZoom.centerY + imgZoom.offsetY, -imgZoom.maxTranslateY),
+    imgZoom.maxTranslateY
+  )
+  console.log(`translateX: ${JSON.stringify(translateX, null, 2)}`)
+  console.log(`translateY: ${JSON.stringify(translateY, null, 2)}`)
+  // const translateY = Math.min(
+  //   Math.max(imgZoom.scale * (imgZoom.centerY - event.clientY), -imgZoom.maxTranslateY),
+  //   imgZoom.maxTranslateY
+  // )
+  imgZoom.target.style.transform = `translate(${translateX}px, ${translateY}px) scale(${imgZoom.scale})`
+}
 const calculateZoom = event => {
   console.log(`from calculateZoom`)
   event.preventDefault()
@@ -139,6 +172,8 @@ const deactivateZoom = event => {
   console.log(`from deactivateZoom`)
   event.stopPropagation()
   imgZoom.target.removeEventListener('mousemove', calculateZoom)
+  imgZoom.target.removeEventListener('touchstart', onTouchStart)
+  imgZoom.target.removeEventListener('touchmove', onTouchMove)
   imgZoom.target.style = ''
 }
 </script>
