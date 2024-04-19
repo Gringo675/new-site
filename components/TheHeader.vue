@@ -105,6 +105,10 @@ const createFeedback = () => {
         to="/test4"
       />
       <UButton
+        label="test5"
+        to="/test5"
+      />
+      <UButton
         label="TEST"
         @click="test"
       />

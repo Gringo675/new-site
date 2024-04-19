@@ -1,12 +1,13 @@
 <script setup>
 /**
  * todo:
- * z-index on zoomed image (upper arrows)
+ * z-index on zoomed image (upper than arrows)
  * transition from causer
  * arrows style
- * test mobile
- * animate first, last
+ * animate first, last - mobile
+ * composables
  */
+
 definePageMeta({
   layout: 'empty',
 })
@@ -32,13 +33,14 @@ const files = [
 ]
 const imagesDirectory = 'https://chelinstrument.ru/components/com_jshopping/files/img_products/'
 
-// обрабатываем клики и перемещение
+// обрабатываем клики и перемещения
 const carousel = ref(null)
 let imageContainer = null
 const onCarouselMounted = () => {
   console.log(`from onCarouselMounted`)
   imageContainer = carousel.value.$el.firstElementChild
   // imageContainer.style = 'border: 3px solid red'
+  useViewerEdgeImg(imageContainer, carousel, files.length)
   imageContainer.addEventListener('mousedown', event => {
     if (event.target.tagName === 'IMG') onImageMouseDown(event)
     imageContainer.addEventListener('mousemove', onContainerMouseMove, { once: true })
@@ -46,6 +48,18 @@ const onCarouselMounted = () => {
       imageContainer.removeEventListener('mousemove', onContainerMouseMove), { once: true }
     })
   })
+  imageContainer.addEventListener('mouseup', () => {
+    carousel.value.select(carousel.value.page)
+  })
+
+  // watch(
+  //   () => carousel.value.page,
+  //   (newPage, oldPage) => {
+  //     console.log(`newPage: ${JSON.stringify(newPage, null, 2)}`)
+  //     console.log(`oldPage: ${JSON.stringify(oldPage, null, 2)}`)
+  //     carousel.value.select(newPage)
+  //   }
+  // )
 }
 const onContainerMouseMove = () => {
   console.log(`from onContainerMouseMove`)
@@ -95,7 +109,7 @@ const activateZoom = event => {
   imgZoom.target.addEventListener('mousemove', calculateZoom)
   imgZoom.target.addEventListener('touchstart', onTouchStart)
   imgZoom.target.addEventListener('touchmove', onTouchMove)
-
+  imageContainer.addEventListener('touchmove', onContainerTouchMove)
   window.addEventListener('mousedown', deactivateZoom, { capture: true, once: true })
   imgZoom.target.addEventListener('transitionend', () => (imgZoom.target.style.transition = 'none'), { once: true })
   imgZoom.target.style.cursor = 'zoom-out'
@@ -168,12 +182,16 @@ const calculateZoom = event => {
   imgZoom.target.style.transform = `translate(${translateX}px, ${translateY}px) scale(${imgZoom.scale})`
 }
 
+const onContainerTouchMove = event => {
+  event.preventDefault()
+}
 const deactivateZoom = event => {
   console.log(`from deactivateZoom`)
   event.stopPropagation()
   imgZoom.target.removeEventListener('mousemove', calculateZoom)
   imgZoom.target.removeEventListener('touchstart', onTouchStart)
   imgZoom.target.removeEventListener('touchmove', onTouchMove)
+  imageContainer.removeEventListener('touchmove', onContainerTouchMove)
   imgZoom.target.style = ''
 }
 </script>
@@ -205,8 +223,8 @@ const deactivateZoom = event => {
         :items="files"
         :ui="{
           wrapper: 'c_wrapper w-screen h-screen flex flex-col',
-          container: 'c_container relative items-center flex-1 bg-yellow-200',
-          item: 'c_item basis-full justify-center h-full items-center p-2',
+          container: 'c_container relative items-center flex-1 bg-yellow-200 snap-none',
+          item: 'c_item snap-always basis-full justify-center h-full items-center p-2',
           indicators: {
             wrapper: 'i_wrapper relative max-h-[20vh] bottom-0 p-2 nrw:hidden bg-green-200',
           },

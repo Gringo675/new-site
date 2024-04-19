@@ -18,12 +18,14 @@ let second = null
 // })
 
 onMounted(() => {
-  parent.value.addEventListener('mousedown', onParentMouseDown, { capture: false })
+  parent.value.addEventListener('mousedown', onParentMouseDown)
+  parent.value.addEventListener('mousemove', onParentMouseMove)
   parent.value.addEventListener('mouseup', onParentMouseUp)
   parent.value.addEventListener('click', onParentClick)
-  child.value.addEventListener('mousedown', onChildMouseDown)
-  child.value.addEventListener('mouseup', onChildMouseUp)
-  child.value.addEventListener('click', onChildClick)
+  parent.value.addEventListener('touchstart', onParentTouchStart)
+  parent.value.addEventListener('touchmove', onParentTouchMove)
+  parent.value.addEventListener('touchend', onParentTouchEnd)
+  useViewerEdgeImg(child)
 })
 
 const onParentMouseDown = event => {
@@ -31,22 +33,25 @@ const onParentMouseDown = event => {
   // event.stopPropagation()
   // event.preventDefault()
 }
+const onParentMouseMove = event => {
+  console.log(`onParentMouseMove`)
+}
 const onParentMouseUp = event => {
   console.log(`onParentMouseUp`)
-  event.preventDefault()
+  // event.preventDefault()
   // event.stopPropagation()
 }
 const onParentClick = event => {
   console.log(`onParentClick`)
 }
-const onChildMouseDown = event => {
-  console.log(`onChildMouseDown`)
+const onParentTouchStart = event => {
+  console.log(`onParentTouchStart`)
 }
-const onChildMouseUp = event => {
-  console.log(`onChildMouseUp`)
+const onParentTouchMove = event => {
+  console.log(`onParentTouchMove`)
 }
-const onChildClick = event => {
-  console.log(`onChildClick`)
+const onParentTouchEnd = event => {
+  console.log(`onParentTouchEnd`)
 }
 </script>
 
