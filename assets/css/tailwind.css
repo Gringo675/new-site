@@ -8,6 +8,18 @@
     font-family: Play, system-ui, sans-serif;
     font-size: 1rem;
   }
+  /*переносим полосу прокрутки с html на body, в этом случае модальные окна смогут ее перекрывать */
+  html,
+  body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+  body {
+    overflow: auto;
+  }
+
   /* select {
     @apply cursor-pointer border-2 border-gray-400 rounded outline-none;
   }
@@ -149,4 +161,19 @@
   transition-property: transform, opacity, height;
   transition-timing-function: linear;
   transition-duration: 400ms;
+}
+
+.viewer-enter-from,
+.viewer-leave-to {
+  opacity: 0;
+  transform: translate(var(--viewer-transition-x), var(--viewer-transition-y)) scale(0.2);
+}
+.viewer-enter-to,
+.viewer-leave-from {
+  opacity: 1;
+  transform: translate(0, 0) scale(1);
+}
+.viewer-enter-active,
+.viewer-leave-active {
+  transition: all 0.5s linear;
 }

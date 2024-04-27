@@ -1,6 +1,10 @@
 <script setup>
 //
-const files = [
+// definePageMeta({
+//   layout: 'empty',
+// })
+
+const images = [
   'shc-i-stiz_1.jpg',
   'SHC1STIZ.jpg',
   'shc-i-stiz_2.jpg',
@@ -10,63 +14,126 @@ const files = [
   'shc-i-stiz_2.jpg',
   'shc-i-stiz_3.jpg',
 ]
-const imagesDirectory = 'https://chelinstrument.ru/components/com_jshopping/files/img_products/'
 
-const tContainer = ref(null)
-const x = ref(0)
-function onMouseDown(e) {
-  tContainer.value.style.scrollSnapType = 'none'
-  x.value = e.pageX
-  window.addEventListener('mousemove', onMouseMove)
-  window.addEventListener('mouseup', onMouseUp)
-}
-function onMouseUp() {
-  tContainer.value.scroll({ top: 0, left: 1248, behavior: 'smooth' })
-  tContainer.value.addEventListener(
-    'scrollend',
-    () => {
-      console.log('scrollended')
-      tContainer.value.style.removeProperty('scroll-snap-type')
-    },
-    { once: true }
-  )
-  // tContainer.value.style.removeProperty('scroll-snap-type')
-  window.removeEventListener('mousemove', onMouseMove)
-  window.removeEventListener('mouseup', onMouseUp)
-}
-function onMouseMove(e) {
-  e.preventDefault()
-  const delta = e.pageX - x.value
-  x.value = e.pageX
-  tContainer.value.scrollBy(-delta, 0)
-}
-onMounted(() => {
-  tContainer.value.addEventListener('mousedown', onMouseDown)
-})
+const images2 = ['0.jpg', '1.jpg', '2.jpg', '3.jpg']
 
-const onTest = () => {
-  tContainer.value.style.scrollSnapType = 'x mandatory'
-  setTimeout(() => {
-    tContainer.value.style.removeProperty('scroll-snap-type')
-  }, 2000)
+// setTimeout(() => {
+//   test1()
+// }, 100)
+const test1 = () => {
+  showImageViewer(images, 3, 600, 600)
+}
+const test2 = () => {
+  // get 2 elements of array
+  showImageViewer(images.slice(0, 2), 1)
+}
+const test3 = () => {
+  // get first element
+  showImageViewer(images[0])
 }
 </script>
 
 <template>
-  <div
-    ref="tContainer"
-    class="t_container snap-x snap-mandatory border border-stone-400 flex m-2 w-[1250px] bg-stone-200 overflow-auto"
-  >
-    <div
-      v-for="file in files"
-      class="snap-center snap-always w-full shrink-0 border border-blue-200 flex justify-center items-center"
-    >
-      <img
-        :src="imagesDirectory + file"
-        class="border border-orange-300"
-        draggable="false"
-      />
-    </div>
+  <div class="buttons m-4">
+    <UButton
+      label="show all"
+      @click="test1"
+    />
+    <UButton
+      label="show two"
+      @click="test2"
+    />
+    <UButton
+      label="show first"
+      @click="test3"
+    />
   </div>
-  <UButton @click="onTest">test</UButton>
+  <div class="max-w-[400px] border border-stone-400 m-4 p-4">
+    <image-viewer-inline :images="images" />
+  </div>
+  <div class="max-w-[400px] border border-stone-400 m-4 p-4">
+    <image-viewer-inline :images="images[0]" />
+  </div>
+  <div>
+    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Officiis fugit culpa labore. Qui exercitationem, soluta
+    incidunt commodi vel minima temporibus alias quas ipsum odit ad voluptatem laudantium nisi! Fuga, cupiditate. Lorem
+    ipsum dolor sit, amet consectetur adipisicing elit. A quisquam itaque obcaecati, provident cumque quaerat at cum
+    excepturi optio numquam suscipit architecto reprehenderit similique unde repellendus quis odio! Voluptate, sunt.
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore nisi natus explicabo eaque esse, blanditiis non
+    labore dicta assumenda laudantium accusantium saepe nihil recusandae provident rerum, quibusdam culpa inventore hic?
+    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Officiis fugit culpa labore. Qui exercitationem, soluta
+    incidunt commodi vel minima temporibus alias quas ipsum odit ad voluptatem laudantium nisi! Fuga, cupiditate. Lorem
+    ipsum dolor sit, amet consectetur adipisicing elit. A quisquam itaque obcaecati, provident cumque quaerat at cum
+    excepturi optio numquam suscipit architecto reprehenderit similique unde repellendus quis odio! Voluptate, sunt.
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore nisi natus explicabo eaque esse, blanditiis non
+    labore dicta assumenda laudantium accusantium saepe nihil recusandae provident rerum, quibusdam culpa inventore hic?
+    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Officiis fugit culpa labore. Qui exercitationem, soluta
+    incidunt commodi vel minima temporibus alias quas ipsum odit ad voluptatem laudantium nisi! Fuga, cupiditate. Lorem
+    ipsum dolor sit, amet consectetur adipisicing elit. A quisquam itaque obcaecati, provident cumque quaerat at cum
+    excepturi optio numquam suscipit architecto reprehenderit similique unde repellendus quis odio! Voluptate, sunt.
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore nisi natus explicabo eaque esse, blanditiis non
+    labore dicta assumenda laudantium accusantium saepe nihil recusandae provident rerum, quibusdam culpa inventore hic?
+    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Officiis fugit culpa labore. Qui exercitationem, soluta
+    incidunt commodi vel minima temporibus alias quas ipsum odit ad voluptatem laudantium nisi! Fuga, cupiditate. Lorem
+    ipsum dolor sit, amet consectetur adipisicing elit. A quisquam itaque obcaecati, provident cumque quaerat at cum
+    excepturi optio numquam suscipit architecto reprehenderit similique unde repellendus quis odio! Voluptate, sunt.
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore nisi natus explicabo eaque esse, blanditiis non
+    labore dicta assumenda laudantium accusantium saepe nihil recusandae provident rerum, quibusdam culpa inventore hic?
+    labore dicta assumenda laudantium accusantium saepe nihil recusandae provident rerum, quibusdam culpa inventore hic?
+  </div>
+  <div class="float-right max-w-[400px] border border-stone-400 m-4 p-4">
+    <image-viewer-inline :images="images" />
+  </div>
+  <div>
+    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Officiis fugit culpa labore. Qui exercitationem, soluta
+    incidunt commodi vel minima temporibus alias quas ipsum odit ad voluptatem laudantium nisi! Fuga, cupiditate. Lorem
+    ipsum dolor sit, amet consectetur adipisicing elit. A quisquam itaque obcaecati, provident cumque quaerat at cum
+    excepturi optio numquam suscipit architecto reprehenderit similique unde repellendus quis odio! Voluptate, sunt.
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore nisi natus explicabo eaque esse, blanditiis non
+    labore dicta assumenda laudantium accusantium saepe nihil recusandae provident rerum, quibusdam culpa inventore hic?
+    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Officiis fugit culpa labore. Qui exercitationem, soluta
+    incidunt commodi vel minima temporibus alias quas ipsum odit ad voluptatem laudantium nisi! Fuga, cupiditate. Lorem
+    ipsum dolor sit, amet consectetur adipisicing elit. A quisquam itaque obcaecati, provident cumque quaerat at cum
+    excepturi optio numquam suscipit architecto reprehenderit similique unde repellendus quis odio! Voluptate, sunt.
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore nisi natus explicabo eaque esse, blanditiis non
+    labore dicta assumenda laudantium accusantium saepe nihil recusandae provident rerum, quibusdam culpa inventore hic?
+    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Officiis fugit culpa labore. Qui exercitationem, soluta
+    incidunt commodi vel minima temporibus alias quas ipsum odit ad voluptatem laudantium nisi! Fuga, cupiditate. Lorem
+    ipsum dolor sit, amet consectetur adipisicing elit. A quisquam itaque obcaecati, provident cumque quaerat at cum
+    excepturi optio numquam suscipit architecto reprehenderit similique unde repellendus quis odio! Voluptate, sunt.
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore nisi natus explicabo eaque esse, blanditiis non
+    labore dicta assumenda laudantium accusantium saepe nihil recusandae provident rerum, quibusdam culpa inventore hic?
+    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Officiis fugit culpa labore. Qui exercitationem, soluta
+    incidunt commodi vel minima temporibus alias quas ipsum odit ad voluptatem laudantium nisi! Fuga, cupiditate. Lorem
+    ipsum dolor sit, amet consectetur adipisicing elit. A quisquam itaque obcaecati, provident cumque quaerat at cum
+    excepturi optio numquam suscipit architecto reprehenderit similique unde repellendus quis odio! Voluptate, sunt.
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore nisi natus explicabo eaque esse, blanditiis non
+    labore dicta assumenda laudantium accusantium saepe nihil recusandae provident rerum, quibusdam culpa inventore hic?
+    labore dicta assumenda laudantium accusantium saepe nihil recusandae provident rerum, quibusdam culpa inventore hic?
+    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Officiis fugit culpa labore. Qui exercitationem, soluta
+    incidunt commodi vel minima temporibus alias quas ipsum odit ad voluptatem laudantium nisi! Fuga, cupiditate. Lorem
+    ipsum dolor sit, amet consectetur adipisicing elit. A quisquam itaque obcaecati, provident cumque quaerat at cum
+    excepturi optio numquam suscipit architecto reprehenderit similique unde repellendus quis odio! Voluptate, sunt.
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore nisi natus explicabo eaque esse, blanditiis non
+    labore dicta assumenda laudantium accusantium saepe nihil recusandae provident rerum, quibusdam culpa inventore hic?
+    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Officiis fugit culpa labore. Qui exercitationem, soluta
+    incidunt commodi vel minima temporibus alias quas ipsum odit ad voluptatem laudantium nisi! Fuga, cupiditate. Lorem
+    ipsum dolor sit, amet consectetur adipisicing elit. A quisquam itaque obcaecati, provident cumque quaerat at cum
+    excepturi optio numquam suscipit architecto reprehenderit similique unde repellendus quis odio! Voluptate, sunt.
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore nisi natus explicabo eaque esse, blanditiis non
+    labore dicta assumenda laudantium accusantium saepe nihil recusandae provident rerum, quibusdam culpa inventore hic?
+    labore dicta assumenda laudantium accusantium saepe nihil recusandae provident rerum, quibusdam culpa inventore hic?
+    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Officiis fugit culpa labore. Qui exercitationem, soluta
+    incidunt commodi vel minima temporibus alias quas ipsum odit ad voluptatem laudantium nisi! Fuga, cupiditate. Lorem
+    ipsum dolor sit, amet consectetur adipisicing elit. A quisquam itaque obcaecati, provident cumque quaerat at cum
+    excepturi optio numquam suscipit architecto reprehenderit similique unde repellendus quis odio! Voluptate, sunt.
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore nisi natus explicabo eaque esse, blanditiis non
+    labore dicta assumenda laudantium accusantium saepe nihil recusandae provident rerum, quibusdam culpa inventore hic?
+    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Officiis fugit culpa labore. Qui exercitationem, soluta
+    incidunt commodi vel minima temporibus alias quas ipsum odit ad voluptatem laudantium nisi! Fuga, cupiditate. Lorem
+    ipsum dolor sit, amet consectetur adipisicing elit. A quisquam itaque obcaecati, provident cumque quaerat at cum
+    excepturi optio numquam suscipit architecto reprehenderit similique unde repellendus quis odio! Voluptate, sunt.
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore nisi natus explicabo eaque esse, blanditiis non
+    labore dicta assumenda laudantium accusantium saepe nihil recusandae provident rerum, quibusdam culpa inventore hic?
+  </div>
 </template>

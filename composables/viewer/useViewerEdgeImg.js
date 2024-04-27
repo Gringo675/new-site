@@ -1,15 +1,18 @@
-export const useViewerEdgeImg = (imageContainer, carouselBlock, filesLength) => {
+export const useViewerEdgeImg = (imageContainer, carousel) => {
   const edgeImg = {
     target: null,
     multiplier: 0, // 1 - first, -1 - last
     startX: 0,
   }
+
   const checkEdgeBlock = event => {
     // проверяем, является ли текущее изображение крайне левым или правым
-    if (filesLength < 2) return
-    const currentImgIndex = carouselBlock.value.page - 1
-    if (currentImgIndex === 0 || currentImgIndex === filesLength - 1) {
-      edgeImg.target = imageContainer.children[currentImgIndex].children[0]
+    const imgsQuantity = carousel.value.pages
+    if (imgsQuantity < 2) return
+    const currentImgIndex = carousel.value.page - 1
+    if (currentImgIndex === 0 || currentImgIndex === imgsQuantity - 1) {
+      edgeImg.target = imageContainer.children[currentImgIndex].firstElementChild
+      if (edgeImg.target.tagName !== 'IMG') return
       if (edgeImg.target.dataset.zoomed) return
       edgeImg.startX = event.type === 'touchstart' ? event.touches[0].clientX : event.clientX
       edgeImg.width = edgeImg.target.offsetWidth
@@ -35,7 +38,6 @@ export const useViewerEdgeImg = (imageContainer, carouselBlock, filesLength) => 
     window.removeEventListener('mouseup', cleanEdgeImg, { capture: true })
     window.removeEventListener('touchmove', handleEdgeImg)
     window.removeEventListener('touchend', cleanEdgeImg, { capture: true })
-    // edgeImg.target.style = ''
     edgeImg.target.style.removeProperty('transform')
     edgeImg.target.style.removeProperty('transition-duration')
     edgeImg.target = null
@@ -46,7 +48,6 @@ export const useViewerEdgeImg = (imageContainer, carouselBlock, filesLength) => 
   })
 
   imageContainer.addEventListener('touchstart', event => {
-    // todo: remove mousedown
     checkEdgeBlock(event)
   })
 }

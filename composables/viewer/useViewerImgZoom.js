@@ -40,6 +40,7 @@ export const useViewerImgZoom = imageContainer => {
     imgZoom.target.addEventListener('transitionend', cancelTransition, {
       once: true,
     })
+    window.addEventListener('resize', deactivateZoom, { once: true })
     imgZoom.target.style.cursor = 'zoom-out'
     imgZoom.target.dataset.zoomed = true
     calculateZoom(event)

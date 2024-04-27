@@ -3,7 +3,6 @@
  * todo:
  * z-index on zoomed image (upper than arrows)
  * transition from causer
- * concat with modal.vue
  * arrows style
  */
 

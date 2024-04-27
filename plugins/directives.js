@@ -12,7 +12,7 @@ import { vMaska } from 'maska'
 export default defineNuxtPlugin(nuxtApp => {
   nuxtApp.vueApp.directive('maska', vMaska),
     nuxtApp.vueApp.directive('focus', {
-      // delete? Because UInput has autofocus property
+      // delete? Because UInput has autofocus property. No, used it in imageViewerFull
       mounted(el) {
         el.focus()
         // el.style.border = '2px solid red'
