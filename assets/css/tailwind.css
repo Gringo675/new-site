@@ -166,7 +166,7 @@
 .viewer-enter-from,
 .viewer-leave-to {
   opacity: 0;
-  transform: translate(var(--viewer-transition-x), var(--viewer-transition-y)) scale(0.2);
+  transform: translate(var(--viewer-transition-x), var(--viewer-transition-y)) scale(var(--viewer-scale));
 }
 .viewer-enter-to,
 .viewer-leave-from {

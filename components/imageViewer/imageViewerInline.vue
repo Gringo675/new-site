@@ -1,12 +1,13 @@
 <script setup>
 //
+const config = useRuntimeConfig()
 const props = defineProps({
-  images: Array || String,
+  images: [Array, String],
 })
 
-const images = computed(() => (Array.isArray(props.images) ? props.images : [props.images]))
+const images = Array.isArray(props.images) ? props.images : [props.images]
 
-const imagesDirectory = 'https://chelinstrument.ru/components/com_jshopping/files/img_products/'
+const imagesDirectory = config.public.IMAGES_DIRECTORY
 
 const carousel = ref(null)
 
@@ -15,9 +16,9 @@ const activateZoom = () => {
   showImageViewer(
     images,
     carousel.value.page - 1,
-    carouselRect.x + carouselRect.width / 2 - window.innerWidth / 2,
-    carouselRect.y + carouselRect.height / 2 - window.innerHeight / 2,
-    carouselRect.width / window.innerWidth
+    Math.round(carouselRect.x + carouselRect.width / 2 - window.innerWidth / 2),
+    Math.round(carouselRect.y + carouselRect.height / 2 - window.innerHeight / 2),
+    Math.round((carouselRect.width * 100) / window.innerWidth) / 100
   )
 }
 </script>

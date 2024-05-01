@@ -47,6 +47,7 @@ export default defineNuxtConfig({
       GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
       VK_CLIENT_ID: process.env.VK_CLIENT_ID,
       MAILRU_CLIENT_ID: process.env.MAILRU_CLIENT_ID,
+      IMAGES_DIRECTORY: process.env.IMAGES_DIRECTORY,
     },
   },
   colorMode: {

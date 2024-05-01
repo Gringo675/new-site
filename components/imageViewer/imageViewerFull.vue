@@ -2,16 +2,14 @@
 //
 /**
  * todo:
- * check perfect pixel
  * z-index on zoomed image (upper than arrows)
  * arrows style
- * images not array (single) (here and in inline)
- * composition
  * close button (always top)
  * create lite component
+ * add shadow?
+ * iPad?
  */
 const viewer = useImageViewer()
-
 const closeViewer = () => {
   viewer.isActive = false
 }
@@ -20,6 +18,7 @@ const onTransitionBeforeEnter = el => {
   // set css variables
   el.style.setProperty('--viewer-transition-x', `${viewer.transitionX}px`)
   el.style.setProperty('--viewer-transition-y', `${viewer.transitionY}px`)
+  el.style.setProperty('--viewer-scale', `${viewer.scale}`)
 }
 </script>
 
