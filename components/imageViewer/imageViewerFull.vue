@@ -2,16 +2,17 @@
 //
 /**
  * todo:
+ * preventClosingAndAnimateScroll
  * z-index on zoomed image (upper than arrows)
  * arrows style
  * close button (always top)
  * create lite component
- * add shadow?
  * iPad?
  */
 const viewer = useImageViewer()
 const closeViewer = () => {
-  viewer.isActive = false
+  console.log(`close viewer...`)
+  // viewer.isActive = false
 }
 
 const onTransitionBeforeEnter = el => {
@@ -29,7 +30,7 @@ const onTransitionBeforeEnter = el => {
   >
     <div
       v-if="viewer.isActive"
-      class="fixed left-0 top-0 right-0 bottom-0 bg-gray-800/80 z-30 overflow-hidden"
+      class="fixed left-0 top-0 right-0 bottom-0 bg-gray-900/90 z-30 overflow-hidden"
       @click="closeViewer"
       v-focus
       tabindex="-1"

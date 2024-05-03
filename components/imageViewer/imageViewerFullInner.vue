@@ -80,23 +80,23 @@ onMounted(() => {
 
     <template #prev="{ onClick, disabled }">
       <button
-        class="pointer-events-auto text-blue-400"
-        :class="{ 'text-gray-400': disabled }"
+        type="button"
         :disabled="disabled"
         @click.stop="onClick"
+        class="rounded-full p-2 m-3 text-slate-600 bg-slate-100 opacity-60 inline-flex items-center pointer-events-auto flex-shrink-0 hover:opacity-90 focus:outline-none focus-visible:outline-0 disabled:opacity-20 disabled:bg-slate-400"
       >
-        Prev
+        <span class="i-heroicons-chevron-left flex-shrink-0 h-10 w-10"></span>
       </button>
     </template>
 
     <template #next="{ onClick, disabled }">
       <button
-        class="pointer-events-auto text-blue-400"
-        :class="{ 'text-gray-400': disabled }"
+        type="button"
         :disabled="disabled"
         @click.stop="onClick"
+        class="rounded-full p-2 m-3 text-slate-600 bg-slate-100 opacity-60 inline-flex items-center pointer-events-auto flex-shrink-0 hover:opacity-90 focus:outline-none focus-visible:outline-0 disabled:opacity-20 disabled:bg-slate-400"
       >
-        Next
+        <span class="i-heroicons-chevron-right flex-shrink-0 h-10 w-10"></span>
       </button>
     </template>
   </UCarousel>
