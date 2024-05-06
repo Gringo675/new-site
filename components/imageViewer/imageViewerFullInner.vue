@@ -30,7 +30,6 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="ttest absolute top-0 left-0 z-50 m-2 text-5xl text-cyan-400"></div>
   <UCarousel
     ref="carousel"
     :items="images"
@@ -85,7 +84,10 @@ onMounted(() => {
         @click.stop="onClick"
         class="rounded-full p-2 m-3 text-slate-600 bg-slate-100 opacity-60 inline-flex items-center pointer-events-auto flex-shrink-0 hover:opacity-90 focus:outline-none focus-visible:outline-0 disabled:opacity-20 disabled:bg-slate-400"
       >
-        <span class="i-heroicons-chevron-left flex-shrink-0 h-10 w-10"></span>
+        <UIcon
+          name="i-heroicons-chevron-left"
+          class="h-10 w-10"
+        />
       </button>
     </template>
 
@@ -96,7 +98,10 @@ onMounted(() => {
         @click.stop="onClick"
         class="rounded-full p-2 m-3 text-slate-600 bg-slate-100 opacity-60 inline-flex items-center pointer-events-auto flex-shrink-0 hover:opacity-90 focus:outline-none focus-visible:outline-0 disabled:opacity-20 disabled:bg-slate-400"
       >
-        <span class="i-heroicons-chevron-right flex-shrink-0 h-10 w-10"></span>
+        <UIcon
+          name="i-heroicons-chevron-right"
+          class="h-10 w-10"
+        />
       </button>
     </template>
   </UCarousel>

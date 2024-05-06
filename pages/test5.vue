@@ -49,7 +49,10 @@ const test3 = () => {
     />
   </div>
   <div class="max-w-[400px] border border-stone-400 m-4 p-4">
-    <image-viewer-inline :images="images" />
+    <image-viewer-inline
+      :images="images"
+      lite
+    />
   </div>
   <div class="max-w-[400px] border border-stone-400 m-4 p-4">
     <image-viewer-inline :images="images[0]" />

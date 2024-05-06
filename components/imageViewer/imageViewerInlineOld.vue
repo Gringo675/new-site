@@ -3,10 +3,6 @@
 const config = useRuntimeConfig()
 const props = defineProps({
   images: [Array, String],
-  lite: {
-    type: Boolean,
-    default: false,
-  },
 })
 
 const images = Array.isArray(props.images) ? props.images : [props.images]
@@ -15,30 +11,7 @@ const imagesDirectory = config.public.IMAGES_DIRECTORY
 
 const carousel = ref(null)
 
-onMounted(() => {
-  carousel.value.$el.addEventListener('mousedown', event => {
-    if (event.target.tagName === 'IMG') {
-      window.addEventListener(
-        'mousemove',
-        () => {
-          console.log(`from mousemove`)
-          window.addEventListener(
-            'click',
-            event => {
-              console.log(`from click`)
-              event.stopPropagation()
-            },
-            { capture: true, once: true }
-          )
-        },
-        { once: true }
-      )
-    }
-  })
-})
-const showFullViewer = () => {
-  console.log(`image click`)
-  return
+const activateZoom = () => {
   const carouselRect = carousel.value.$el.getBoundingClientRect()
   showImageViewer(
     images,
@@ -58,33 +31,23 @@ const showFullViewer = () => {
       wrapper: 'p-2',
       item: 'basis-full justify-center p-2',
       indicators: {
-        wrapper: lite ? 'p-1' : 'relative bottom-0 mt-4 overflow-auto items-stretch bg-green-200',
+        wrapper: 'relative bottom-0 mt-4 overflow-auto items-stretch bg-green-200',
       },
     }"
     :indicators="images.length > 1"
-    :arrows="!lite && images.length > 1"
+    :arrows="images.length > 1"
   >
     <template #default="{ item }">
       <img
         :src="imagesDirectory + item"
         class="border border-blue-700 w-min min-w-10 object-contain shrink cursor-zoom-in"
         draggable="false"
-        @click="showFullViewer"
+        @click="activateZoom"
       />
     </template>
 
     <template #indicator="{ onClick, page, active }">
-      <button
-        v-if="lite"
-        class="rounded-full h-4 w-4 bg-blue-500"
-        :class="{
-          'border-2 border-blue-200 bg-opacity-90': !active,
-          'cursor-default ': active,
-        }"
-        @click="onClick(page)"
-      ></button>
       <img
-        v-else
         :src="`${imagesDirectory}thumb_${images[page - 1]}`"
         class="max-w-[100px] min-w-5 shrink object-contain"
         :class="{ 'cursor-pointer border border-red-700': !active, 'cursor-default border border-green-700': active }"

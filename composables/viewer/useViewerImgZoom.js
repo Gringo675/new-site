@@ -41,7 +41,9 @@ export const useViewerImgZoom = imageContainer => {
       once: true,
     })
     window.addEventListener('resize', deactivateZoom, { once: true })
+
     imgZoom.target.style.cursor = 'zoom-out'
+    imgZoom.target.style.zIndex = '10'
     imgZoom.target.dataset.zoomed = true
     calculateZoom(event)
   }
@@ -112,6 +114,7 @@ export const useViewerImgZoom = imageContainer => {
     imgZoom.target.style.removeProperty('transform')
     imgZoom.target.style.removeProperty('transition')
     imgZoom.target.style.removeProperty('cursor')
+    imgZoom.target.style.removeProperty('z-index')
     delete imgZoom.target.dataset.zoomed
   }
 }

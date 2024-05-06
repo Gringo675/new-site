@@ -1,5 +1,5 @@
 export const useViewerPreventClosingAndAnimateScroll = (imageContainer, carousel) => {
-  imageContainer.addEventListener('mousedown', event => {
+  imageContainer.addEventListener('mousedown', () => {
     imageContainer.addEventListener('mousemove', preventClosingAndAnimateScroll, { once: true })
     window.addEventListener(
       'mouseup',
@@ -11,7 +11,7 @@ export const useViewerPreventClosingAndAnimateScroll = (imageContainer, carousel
   })
 
   // smooth scroll for touch
-  imageContainer.addEventListener('touchstart', event => {
+  imageContainer.addEventListener('touchstart', () => {
     imageContainer.style.scrollSnapType = 'x mandatory'
   })
 

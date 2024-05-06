@@ -2,17 +2,15 @@
 //
 /**
  * todo:
- * preventClosingAndAnimateScroll
- * z-index on zoomed image (upper than arrows)
+ * hover buttons on touch?
  * arrows style
- * close button (always top)
  * create lite component
- * iPad?
+ * @media
  */
 const viewer = useImageViewer()
 const closeViewer = () => {
-  console.log(`close viewer...`)
-  // viewer.isActive = false
+  // console.log(`close viewer...`)
+  viewer.isActive = false
 }
 
 const onTransitionBeforeEnter = el => {
@@ -35,6 +33,16 @@ const onTransitionBeforeEnter = el => {
       v-focus
       tabindex="-1"
     >
+      <button
+        @click="closeViewer"
+        class="absolute top-0 right-0 z-50 m-4 inline-flex text-slate-500 opacity-60 hover:opacity-100 focus:outline-none focus-visible:outline-0"
+      >
+        <UIcon
+          name="i-heroicons-x-circle"
+          class="h-14 w-14"
+        />
+      </button>
+
       <image-viewer-full-inner />
     </div>
   </transition>
