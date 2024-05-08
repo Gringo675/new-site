@@ -41,7 +41,7 @@ onMounted(() => {
         wrapper: 'i_wrapper relative max-h-[20vh] bottom-0 p-2 nrw:hidden bg-green-200',
       },
       arrows: {
-        wrapper: 'absolute top-1/2 -translate-y-1/2 w-full pointer-events-none ',
+        wrapper: '',
       },
     }"
     :indicators="images.length > 1"
@@ -82,7 +82,7 @@ onMounted(() => {
         type="button"
         :disabled="disabled"
         @click.stop="onClick"
-        class="rounded-full p-2 m-3 text-slate-600 bg-slate-100 opacity-60 inline-flex items-center pointer-events-auto flex-shrink-0 hover:opacity-90 focus:outline-none focus-visible:outline-0 disabled:opacity-20 disabled:bg-slate-400"
+        class="absolute top-1/2 -translate-y-1/2 rounded-full p-2 left-3 text-slate-600 bg-slate-100 opacity-60 inline-flex items-center flex-shrink-0 hover:opacity-90 focus:outline-none focus-visible:outline-0 disabled:opacity-20 disabled:bg-slate-400"
       >
         <UIcon
           name="i-heroicons-chevron-left"
@@ -96,7 +96,7 @@ onMounted(() => {
         type="button"
         :disabled="disabled"
         @click.stop="onClick"
-        class="rounded-full p-2 m-3 text-slate-600 bg-slate-100 opacity-60 inline-flex items-center pointer-events-auto flex-shrink-0 hover:opacity-90 focus:outline-none focus-visible:outline-0 disabled:opacity-20 disabled:bg-slate-400"
+        class="absolute top-1/2 -translate-y-1/2 rounded-full p-2 right-3 text-slate-600 bg-slate-100 opacity-60 inline-flex items-center flex-shrink-0 hover:opacity-90 focus:outline-none focus-visible:outline-0 disabled:opacity-20 disabled:bg-slate-400"
       >
         <UIcon
           name="i-heroicons-chevron-right"

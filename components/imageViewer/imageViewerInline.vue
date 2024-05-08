@@ -18,27 +18,24 @@ const carousel = ref(null)
 onMounted(() => {
   carousel.value.$el.addEventListener('mousedown', event => {
     if (event.target.tagName === 'IMG') {
-      window.addEventListener(
-        'mousemove',
-        () => {
-          console.log(`from mousemove`)
-          window.addEventListener(
-            'click',
-            event => {
-              console.log(`from click`)
-              event.stopPropagation()
-            },
-            { capture: true, once: true }
-          )
-        },
-        { once: true }
-      )
+      window.addEventListener('mousemove', preventImgClick, { once: true })
+      window.addEventListener('mouseup', () => {
+        window.removeEventListener('mousemove', preventImgClick)
+      })
     }
   })
 })
+const preventImgClick = () => {
+  window.addEventListener(
+    'click',
+    event => {
+      console.log(`from click`)
+      event.stopPropagation()
+    },
+    { capture: true, once: true }
+  )
+}
 const showFullViewer = () => {
-  console.log(`image click`)
-  return
   const carouselRect = carousel.value.$el.getBoundingClientRect()
   showImageViewer(
     images,
@@ -58,7 +55,12 @@ const showFullViewer = () => {
       wrapper: 'p-2',
       item: 'basis-full justify-center p-2',
       indicators: {
-        wrapper: lite ? 'p-1' : 'relative bottom-0 mt-4 overflow-auto items-stretch bg-green-200',
+        wrapper: lite
+          ? 'absolute bottom-4 w-min m-auto p-2'
+          : 'relative bottom-0 mt-4 overflow-auto items-stretch bg-green-200',
+      },
+      arrows: {
+        wrapper: '',
       },
     }"
     :indicators="images.length > 1"
@@ -76,10 +78,9 @@ const showFullViewer = () => {
     <template #indicator="{ onClick, page, active }">
       <button
         v-if="lite"
-        class="rounded-full h-4 w-4 bg-blue-500"
+        class="rounded-full h-4 w-4 border-2 border-slate-500 bg-opacity-70"
         :class="{
-          'border-2 border-blue-200 bg-opacity-90': !active,
-          'cursor-default ': active,
+          'bg-slate-500 cursor-default': active,
         }"
         @click="onClick(page)"
       ></button>
@@ -91,6 +92,34 @@ const showFullViewer = () => {
         draggable="false"
         @click="onClick(page)"
       />
+    </template>
+
+    <template #prev="{ onClick, disabled }">
+      <button
+        type="button"
+        :disabled="disabled"
+        @click.stop="onClick"
+        class="absolute top-1/2 -translate-y-1/2 rounded-full p-2 left-3 text-slate-600 bg-slate-100 opacity-60 inline-flex items-center flex-shrink-0 hover:opacity-90 focus:outline-none focus-visible:outline-0 disabled:opacity-10"
+      >
+        <UIcon
+          name="i-heroicons-chevron-left"
+          class="h-10 w-10"
+        />
+      </button>
+    </template>
+
+    <template #next="{ onClick, disabled }">
+      <button
+        type="button"
+        :disabled="disabled"
+        @click.stop="onClick"
+        class="absolute top-1/2 -translate-y-1/2 rounded-full p-2 right-3 text-slate-600 bg-slate-100 opacity-60 inline-flex items-center flex-shrink-0 hover:opacity-90 focus:outline-none focus-visible:outline-0 disabled:opacity-10"
+      >
+        <UIcon
+          name="i-heroicons-chevron-right"
+          class="h-10 w-10"
+        />
+      </button>
     </template>
   </UCarousel>
 </template>

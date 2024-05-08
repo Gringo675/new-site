@@ -55,7 +55,10 @@ const test3 = () => {
     />
   </div>
   <div class="max-w-[400px] border border-stone-400 m-4 p-4">
-    <image-viewer-inline :images="images[0]" />
+    <image-viewer-inline
+      :images="[images[0], images[1]]"
+      lite
+    />
   </div>
   <div>
     Lorem ipsum dolor sit amet consectetur, adipisicing elit. Officiis fugit culpa labore. Qui exercitationem, soluta

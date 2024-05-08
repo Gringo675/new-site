@@ -3,9 +3,9 @@
 /**
  * todo:
  * hover buttons on touch?
- * arrows style
- * create lite component
- * @media
+ * image shadow, indicators block style
+ * responsive
+ * automatic lite from width?
  */
 const viewer = useImageViewer()
 const closeViewer = () => {
