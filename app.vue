@@ -26,6 +26,7 @@ const handleError = e => {
   e.statusMessage = e.statusMessage || e.message
   e.data = e.data ?? {}
   if (!e.data.path) {
+    // todo: try to replace with import.meta.url
     e.data.path = useRouter().currentRoute.value.fullPath // useRoute returns incorrect res.
     e.data.onServer = process.server
     // setErrorToLog(e)

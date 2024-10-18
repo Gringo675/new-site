@@ -1,5 +1,3 @@
-import breadCrumbsItemVue from './breadCrumbsItem.vue'; import directives from '~/plugins/directives'; import directives
-from '~/plugins/directives'; import directives from '~/plugins/directives';
 <script setup>
 //
 const props = defineProps({
@@ -12,15 +10,17 @@ const props = defineProps({
     default: false,
   },
 })
-const cats = JSON.parse(JSON.stringify(await useCats())) // unReactive
 
+const { data: cats } = await useCats()
 const catsPath = []
-const createPath = cats => {
+createPath(cats.value)
+function createPath(cats) {
   for (const cat of cats) {
     if (cat.id === props.catId) {
       // нашли нашу категорию
       catsPath.push({
         name: cat.name,
+        alias: cat.alias,
         siblings: cats
           .filter(cat => cat.id !== props.catId)
           .map(cat => {
@@ -59,7 +59,6 @@ const createPath = cats => {
   }
   return false
 }
-createPath(cats)
 catsPath.reverse()
 </script>
 

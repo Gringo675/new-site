@@ -1,8 +1,9 @@
 <script setup>
 // компонент получает продукты и управляет их отображением, пагинацией и сортировкой
 
-const props = defineProps({
+const { products, activeProductsIndx } = defineProps({
   products: Array,
+  activeProductsIndx: Array,
 })
 
 const pageSetup = usePageSetup()
@@ -10,31 +11,32 @@ const pageSetup = usePageSetup()
 const pagination = reactive({
   activePage: 1,
   showPages: 1, // кнопка Показать еще позволяет показать несколько страниц
-  totalPages: computed(() => Math.ceil(props.products.length / pageSetup.value.prodsOnPage)),
+  totalPages: computed(() => Math.ceil(activeProductsIndx.length / pageSetup.value.prodsOnPage)),
 })
 
 const sortProducts = () => {
   switch (pageSetup.value.sortBy) {
     case 'order':
-      props.products.sort((a, b) => a.order - b.order)
+      activeProductsIndx.sort((aIndx, bIndx) => products[aIndx].order - products[bIndx].order)
       break
     case 'nameAcs':
-      props.products.sort((a, b) => a.name.localeCompare(b.name))
+      activeProductsIndx.sort((aIndx, bIndx) => products[aIndx].name.localeCompare(products[bIndx].name))
       break
     case 'nameDes':
-      props.products.sort((a, b) => b.name.localeCompare(a.name))
+      activeProductsIndx.sort((aIndx, bIndx) => products[bIndx].name.localeCompare(products[aIndx].name))
       break
     case 'priceAcs':
-      props.products.sort((a, b) => a.price - b.price)
+      activeProductsIndx.sort((aIndx, bIndx) => products[aIndx].price - products[bIndx].price)
+
       break
     case 'priceDes':
-      props.products.sort((a, b) => b.price - a.price)
+      activeProductsIndx.sort((aIndx, bIndx) => products[bIndx].price - products[aIndx].price)
       break
     case 'brand':
-      props.products.sort((a, b) => {
+      activeProductsIndx.sort((aIndx, bIndx) => {
         // достаем бренд как последнее слово в наименовании
-        const aBrand = a.name.split(' ').pop()
-        const bBrand = b.name.split(' ').pop()
+        const aBrand = products[aIndx].name.split(' ').pop()
+        const bBrand = products[bIndx].name.split(' ').pop()
         return aBrand.localeCompare(bBrand)
       })
       break
@@ -42,13 +44,13 @@ const sortProducts = () => {
   productsSortedBy = pageSetup.value.sortBy
 }
 
-const visibleProducts = ref([])
+const visibleProductsIndx = ref([])
 let productsSortedBy = 'order' // продукты поступают с 'дефолтной' сортировкой
 const setVisibleProducts = () => {
   if (productsSortedBy !== pageSetup.value.sortBy) sortProducts()
   const startProd = (pagination.activePage - 1) * pageSetup.value.prodsOnPage
   const endProd = startProd + pageSetup.value.prodsOnPage * pagination.showPages
-  visibleProducts.value = props.products?.slice(startProd, endProd)
+  visibleProductsIndx.value = activeProductsIndx.slice(startProd, endProd)
 }
 setVisibleProducts()
 
@@ -110,8 +112,12 @@ const changesHandler = (options = {}) => {
 // вешаем вотчеры на данные
 // за переходом на другую страницу и нажатием на "Показать еще" следит компонент HelperPagination
 // из категорий продукты поступают реактивными, из поиска нет (у computed пропадает реактивность)
-watch(isReactive(props.products) ? props.products : () => props.products, () => changesHandler({ fromProducts: true }))
-watch(pageSetup.value, () => changesHandler({ fromPageSetup: true }))
+// watch(isReactive(props.products) ? props.products : () => props.products, () => changesHandler({ fromProducts: true }))
+watch(
+  () => activeProductsIndx,
+  () => changesHandler({ fromProducts: true })
+)
+watch(pageSetup, () => changesHandler({ fromPageSetup: true }), { deep: true })
 </script>
 
 <template>
@@ -138,11 +144,11 @@ watch(pageSetup.value, () => changesHandler({ fromPageSetup: true }))
           value: 'brand',
         },
         {
-          name: 'сначала дешевые',
+          name: 'сначала дешевле',
           value: 'priceAcs',
         },
         {
-          name: 'сначала дорогие',
+          name: 'сначала дороже',
           value: 'priceDes',
         },
       ]"
@@ -169,10 +175,10 @@ watch(pageSetup.value, () => changesHandler({ fromPageSetup: true }))
       ref="productsWrapper"
     >
       <div ref="productsWrapperHelper">
-        <template v-if="visibleProducts.length">
+        <template v-if="visibleProductsIndx.length">
           <CatalogProductCard
-            v-for="product in visibleProducts"
-            :prod="product"
+            v-for="indx in visibleProductsIndx"
+            :prod="products[indx]"
           />
         </template>
         <div v-else>Подходящих товаров не найдено!</div>

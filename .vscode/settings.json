@@ -9,5 +9,6 @@
     ["ui:\\s*{([^)]*)\\s*}", "[\"'`]([^\"'`]*).*?[\"'`]"],
     ["/\\*ui\\*/\\s*{([^;]*)}", ":\\s*[\"'`]([^\"'`]*).*?[\"'`]"]
   ],
-  "tailwindCSS.classAttributes": ["class", "className", "ngClass", "ui"]
+  "tailwindCSS.classAttributes": ["class", "className", "ngClass", "ui"],
+  "cSpell.words": ["dedupe"]
 }

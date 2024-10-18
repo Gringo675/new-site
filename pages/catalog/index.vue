@@ -1,6 +1,6 @@
 <script setup>
 // todo: no sub-sub cats
-const cats = JSON.parse(JSON.stringify(await useCats())) // unReactive
+const { data: cats } = await useCats()
 </script>
 
 <template>

@@ -5,10 +5,13 @@ const props = defineProps({
 })
 
 // убираем ненужную реактивность
-const catData = JSON.parse(JSON.stringify(props.data.catData))
-const products = JSON.parse(JSON.stringify(props.data.products))
+// const catData = JSON.parse(JSON.stringify(props.data.catData))
+// const products = JSON.parse(JSON.stringify(props.data.products))
+const catData = props.data.catData
+const products = props.data.products
+const filter = reactive(props.data.filter)
 const activeProducts = shallowReactive([])
-const filter = props.data.filter
+const activeProductsIndx = ref([])
 
 useSeoMeta({
   title: catData.name + ' - цены, фото, характеристики',
@@ -33,7 +36,7 @@ function initializeFilter(fromReset = false) {
   })
   activeProducts.length = 0
   products.forEach(product => activeProducts.push(product))
-
+  activeProductsIndx.value = [...Array(products.length).keys()] // все продукты
   if (fromReset) addFilterToURL()
 }
 
@@ -60,6 +63,13 @@ function handleFilter(filterFromURL = false) {
     )
     if (isProductMatch) activeProducts.push(product)
   })
+  activeProductsIndx.value = []
+  products.forEach((product, i) => {
+    const isProductMatch = activeFilter.every(fGroup =>
+      fGroup.length ? fGroup.some(activeVal => product.props.includes(activeVal)) : true
+    )
+    if (isProductMatch) activeProductsIndx.value.push(i)
+  })
   // Вычисляем неактивные пункты в фильтре.
   // Проверяем каждое отдельное значение(в том числе и активные), добавляя его к актуальному фильтру.
   // Если для получившейся комбинации нет подходящих товаров, деактивируем.
@@ -78,7 +88,8 @@ function handleFilter(filterFromURL = false) {
   // засовываем фильтр в url
   addFilterToURL()
   // показываем уведомление
-  if (activeProducts.length > 0) showNotice({ title: `Подобрано товаров - ${activeProducts.length}`, type: 'success' })
+  if (activeProductsIndx.value.length > 0)
+    showNotice({ title: `Подобрано товаров - ${activeProductsIndx.value.length}`, type: 'success' })
   else
     showNotice({
       title: 'Не найдено подходящих товаров.',
@@ -132,7 +143,10 @@ function addFilterToURL() {
           @resetFilter="initializeFilter(true)"
         />
       </template>
-      <CatalogProductsWrapper :products="activeProducts" />
+      <CatalogProductsWrapper
+        :products
+        :activeProductsIndx
+      />
     </HelperAsideGrid>
   </div>
 </template>

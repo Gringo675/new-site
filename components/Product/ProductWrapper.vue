@@ -1,21 +1,24 @@
 <script setup>
-const props = defineProps({
+const { data: productData } = defineProps({
   data: Object,
 })
 
-const productData = JSON.parse(JSON.stringify(props.data))
-
 // формируем вложенные категории, в которых присутствует товар
-const subCats = JSON.parse(
-  JSON.stringify(
-    (await useCats())
-      .find(cat => cat.id === productData.category_id)
-      .children.filter(subCat => productData.subCatsId.includes(subCat.id))
-  )
-)
-subCats.forEach(subCat => {
-  subCat.children = subCat.children?.filter(subSubCat => productData.subCatsId.includes(subSubCat.id))
-})
+const { data: cats } = await useCats()
+const subCats = cats.value
+  .find(cat => cat.id === productData.category_id)
+  .children.filter(subCat => productData.subCatsId.includes(subCat.id))
+  .map(subCat => {
+    return {
+      alias: subCat.alias,
+      name: subCat.name,
+      children: subCat.children
+        ?.filter(subSubCat => productData.subCatsId.includes(subSubCat.id))
+        .map(subSubCat => {
+          return { alias: subSubCat.alias, name: subSubCat.name }
+        }),
+    }
+  })
 </script>
 
 <template>
@@ -81,8 +84,8 @@ subCats.forEach(subCat => {
       </div>
     </div>
     <!--images-->
-    <div v-for="image in productData.images">
-      <img :src="'https://chelinstrument.ru/components/com_jshopping/files/img_products/' + image" />
+    <div class="max-w-[400px] border border-stone-400 m-4 p-4">
+      <image-viewer-inline :images="productData.images" />
     </div>
     <!--    related-->
     <div class="">
@@ -96,5 +99,3 @@ subCats.forEach(subCat => {
     </div>
   </div>
 </template>
-
-<style></style>

@@ -1,10 +1,10 @@
 <script setup>
 //
-const props = defineProps({
+const { searchData } = defineProps({
   searchData: Object,
 })
-
-for (const cat of props.searchData.cats) {
+const products = searchData.products
+for (const cat of searchData.cats) {
   cat.active = true
   for (const subCat of cat.children) {
     subCat.active = true
@@ -15,42 +15,50 @@ for (const cat of props.searchData.cats) {
     }
   }
 }
-const cats = reactive(props.searchData.cats)
-
-const activeProducts = computed(() => {
-  // идеального алгоритма нет, нужно либо убирать неактивные, либо вычислять активные
+const cats = reactive(searchData.cats)
+const activeProductsIndx = ref([])
+watchEffect(() => {
+  // calc active products indexes
+  activeProductsIndx.value = []
+  // идеального алгоритма нет, нужно либо убирать товар, если он входит хотя бы в одну неактивную категорию, либо оставлять товар, если он входит хотя бы в одну активную категорию
   // убираем неактивные
-  // const inactiveCats = {}
-  // for (const cat of cats) {
-  //   inactiveCats[cat.id] = []
-  //   for (const subCat of cat.children) {
-  //     if (!subCat.active) inactiveCats[cat.id].push(subCat.props)
-  //     if (subCat.children) {
-  //       for (const subSubCat of subCat.children) {
-  //         if (!subSubCat.active) inactiveCats[cat.id].push(subSubCat.props)
-  //       }
-  //     }
-  //   }
-  // }
-  // return props.searchData.products.filter(
-  //   product => !inactiveCats[product.catId].some(activeProps => activeProps.every(prop => product.props.includes(prop)))
-  // )
-  // вычисляем активные
-  const activeCats = {}
+  const inactiveCats = {}
   for (const cat of cats) {
-    activeCats[cat.id] = []
+    inactiveCats[cat.id] = []
     for (const subCat of cat.children) {
-      if (subCat.active) activeCats[cat.id].push(subCat.props)
+      if (!subCat.active) inactiveCats[cat.id].push(subCat.props)
       if (subCat.children) {
         for (const subSubCat of subCat.children) {
-          if (subSubCat.active) activeCats[cat.id].push(subSubCat.props)
+          if (!subSubCat.active) inactiveCats[cat.id].push(subSubCat.props)
         }
       }
     }
   }
-  return props.searchData.products.filter(product =>
-    activeCats[product.catId].some(activeProps => activeProps.every(prop => product.props.includes(prop)))
-  )
+  products.forEach((product, i) => {
+    const isProductInactive = inactiveCats[product.catId].some(activeProps =>
+      activeProps.every(prop => product.props.includes(prop))
+    )
+    if (!isProductInactive) activeProductsIndx.value.push(i)
+  })
+  // вычисляем активные
+  // const activeCats = {}
+  // for (const cat of cats) {
+  //   activeCats[cat.id] = []
+  //   for (const subCat of cat.children) {
+  //     if (subCat.active) activeCats[cat.id].push(subCat.props)
+  //     if (subCat.children) {
+  //       for (const subSubCat of subCat.children) {
+  //         if (subSubCat.active) activeCats[cat.id].push(subSubCat.props)
+  //       }
+  //     }
+  //   }
+  // }
+  // products.forEach((product, i) => {
+  //   const isProductActive = activeCats[product.catId].some(activeProps =>
+  //     activeProps.every(prop => product.props.includes(prop))
+  //   )
+  //   if (isProductActive) activeProductsIndx.value.push(i)
+  // })
 })
 
 const inputsHandler = (inputValue, indexes) => {
@@ -131,7 +139,9 @@ const inputsHandler = (inputValue, indexes) => {
         </template>
       </template>
     </template>
-    <CatalogProductsWrapper :products="activeProducts" />
+    <CatalogProductsWrapper
+      :products
+      :activeProductsIndx
+    />
   </HelperAsideGrid>
-  <!--    content wrapper-->
 </template>

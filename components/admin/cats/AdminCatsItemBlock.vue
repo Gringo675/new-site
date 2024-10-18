@@ -268,7 +268,7 @@ watch(
           :class="{ 'scale-125 shadow-inner shadow-amber-500': inDraggingGroup, 'opacity-20': isDraggingCat }"
         >
           <img
-            :src="showMenu ? '/img/x.svg' : '/img/three-dots-vertical.svg'"
+            :src="showMenu ? getDynamicAsset('/img/x.svg') : getDynamicAsset('/img/three-dots-vertical.svg')"
             class="w-7 transition-opacity"
             :data-cat-indexes="JSON.stringify(props.indexes)"
             :data-drag-group="inDraggingGroup ? '1' : undefined"

@@ -15,7 +15,7 @@ const props = defineProps({
     </NuxtLink>
     <img
       v-if="prod.label"
-      :src="'/img/labels/' + prod.label.image"
+      :src="getDynamicAsset('/img/labels/' + prod.label.image)"
       class="w-12"
     />
     <ClientOnly>

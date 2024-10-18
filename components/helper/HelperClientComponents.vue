@@ -29,8 +29,8 @@ const feedback = useFeedback()
     >
       <LazyTheFeedback />
     </UModal>
-    <LazyTheLoader />
-    <LazyUNotifications />
-    <LazyImageViewerFull />
+    <TheLoader />
+    <UNotifications />
+    <ImageViewerFull />
   </ClientOnly>
 </template>

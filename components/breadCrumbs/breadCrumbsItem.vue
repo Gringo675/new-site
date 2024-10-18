@@ -1,4 +1,3 @@
-import directives from '~/plugins/directives';
 <script setup>
 //
 const props = defineProps({

@@ -20,8 +20,8 @@ export default defineEventHandler(async event => {
   // const match = baseURL.match(/\/?(.+)[\/$]/)
   // cv({origin, baseURL})
 
-  await timer(1)
-  // if (Math.random() < .3) throw createError({statusCode: 481, statusMessage: `Random error on ${cTime}`})
+  await timer(4)
+  // if (Math.random() < 0.3) throw createError({ statusCode: 481, statusMessage: `Random error on ${cTime}` })
   // throw createError({ statusCode: 482, statusMessage: `Some error on ${cTime}` })
   // const body = await readBody(event)
   // console.log(`body: ${JSON.stringify(body, null, 2)}`)
@@ -35,11 +35,11 @@ export default defineEventHandler(async event => {
 
   // setCookie(event, 'someCook', `someValue`)
 
-  return `Current Time -  ${cTime}`
-  // return {
-  //     'Current time': cTime,
-  //     aaa: [111, 222, 333]
-  // }
+  // return `Current Time -  ${cTime}`
+  return {
+    'Current time': cTime,
+    aaa: [111, 222, 333],
+  }
 })
 
 async function timer(sec) {

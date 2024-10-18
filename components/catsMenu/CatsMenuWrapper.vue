@@ -1,6 +1,6 @@
 <script setup>
 //
-const cats = JSON.parse(JSON.stringify(await useCats())) // unReactive
+const { data: cats } = await useCats()
 
 const showMenu = ref(false)
 </script>

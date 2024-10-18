@@ -6,52 +6,41 @@ const props = defineProps({
   },
 })
 
-const headers = useRequestHeaders(['cookie']) // для запросов типа сервер - сервер, чтобы куки с клиента дошли до API
+// убрал передачу cookies, поскольку данный компонент используется только в каталоге для получения категорий и товаров, для чего не требуется авторизация
+// const headers = useRequestHeaders(['cookie']) // для запросов типа сервер - сервер, чтобы куки с клиента дошли до API
 
-const _pending = ref(false)
-const _error = ref(false)
-const { pending, data, error } = await useLazyAsyncData(props.url, () => {
-  const cachedData = useNuxtData(props.url).data?.value
-  if (cachedData) return cachedData
-  return $fetch(props.url, { headers })
+const { status, data, error } = await useLazyAsyncData(
+  props.url,
+  () => {
+    return $fetch(
+      props.url
+      //, { headers }
+    )
+  },
+  {
+    getCachedData: key => useNuxtData(key).data?.value,
+    deep: false,
+    dedupe: 'defer',
+  }
+)
+
+// если на странице случилась ошибка, и мы заходим на нее повторно, то значение status = error будет изначально.
+// поэтому используем watch with immediate = false (default), чтобы пропустить первое значение, а на сервере сразу проверяем на ошибку
+if (import.meta.server && status.value === 'error') throw createError(error.value)
+
+watch(status, statusValue => {
+  if (statusValue === 'error') throw createError(error.value)
 })
-
-watch(
-  pending,
-  pendingValue => {
-    if (pendingValue && data.value)
-      _pending.value = false // заход в useAsyncData для обновления данных (которого не будет)
-    else if (!pendingValue && error.value)
-      _pending.value = true // при заходе на страницу с ошибкой первое значение pending = false
-    else _pending.value = pendingValue
-  },
-  { immediate: true }
-)
-
-watch(
-  error,
-  errorValue => {
-    if (errorValue) {
-      if (process.client && !pending.value) return // повторный заход на страницу, где была ошибка
-      _error.value = true
-      throw createError(errorValue)
-    }
-  },
-  { immediate: true }
-)
 </script>
 
 <template>
-  <div
-    v-if="!_error"
-    class="w-full p-2"
-  >
+  <div class="w-full p-2">
     <Transition
       name="page"
       mode="out-in"
     >
       <div
-        v-if="_pending"
+        v-if="status !== 'success'"
         class="py-3 flex flex-col items-center justify-center cursor-progress"
       >
         <div
