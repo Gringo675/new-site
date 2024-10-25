@@ -31,7 +31,7 @@ export default defineEventHandler(async event => {
                  standart_ids, reestr_ids, pasport_ids
                  FROM i_products WHERE category_id = '${productsCatId}' 
                  ${catActiveProps.reduce((acc, prop) => {
-                   acc += `AND ${prop[0]} = ${prop[1]} `
+                   acc += `AND ${prop[0]} = ${prop[1]} ` // [name, value]
                    return acc
                  }, '')}
                  AND published = 1`

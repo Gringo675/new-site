@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "maska": "^2.1.10",
-    "mysql2": "^2.3.3",
+    "mysql2": "^3.11.3",
     "nodemailer": "^6.9.1"
   }
 }

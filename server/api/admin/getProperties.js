@@ -1,6 +1,4 @@
 export default defineEventHandler(async event => {
-  await checkToken(event, { adminOnly: true })
-
   // const query = `SELECT * FROM i_properties WHERE group_id=0 ORDER by group_id, ordering`
   const query = `SELECT * FROM i_properties ORDER by group_id, ordering`
   const rawProps = await dbReq(query)

@@ -1,10 +1,8 @@
-/**
- * Отвечает за открытие/закрытие сайта.
- * При пустом запросе отдает текущее состояние сайте.
- */
-
 export default defineEventHandler(async event => {
-  await checkToken(event, { adminOnly: true })
+  /**
+   * Отвечает за открытие/закрытие сайта.
+   * При пустом запросе отдает текущее состояние сайте.
+   */
 
   const setStatus = (await readBody(event)).setStatus
 

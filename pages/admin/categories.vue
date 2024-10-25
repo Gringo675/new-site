@@ -10,45 +10,47 @@ await catsG.getCats()
 </script>
 
 <template>
-  <div class="p-2">
-    <h1>Редактирование категорий</h1>
-    <div class="my-2 flex items-center">
-      <AdminCatsFilter />
-      <!--      save button-->
-      <button
-        :disabled="!Object.keys(catsG.changedCats).length"
-        @click="catsG.saveChanges()"
-        class="ml-2 shrink-0 p-1 border border-blue-300 rounded-lg"
-        title="Сохранить"
-      >
-        <img
-          class="w-12"
-          src="/img/send.svg"
-        />
-      </button>
-    </div>
-    <div
-      class="catItems"
-      @dragstart="dd.handleDragStart"
-      @dragend="dd.handleDragEnd"
-      @dragenter="dd.handleDragEnter"
-      @dragover="dd.handleDragOver"
-    >
-      <TransitionGroup name="transition-draggable-group">
-        <div
-          v-for="(cat, index) in catsG.cats"
-          :key="cat.id"
+  <HelperAdminOnly>
+    <div class="p-2">
+      <h1>Редактирование категорий</h1>
+      <div class="my-2 flex items-center">
+        <AdminCatsFilter />
+        <!--      save button-->
+        <button
+          :disabled="!Object.keys(catsG.changedCats).length"
+          @click="catsG.saveChanges()"
+          class="ml-2 shrink-0 p-1 border border-blue-300 rounded-lg"
+          title="Сохранить"
         >
-          <AdminCatsItemBlock :indexes="[index]" />
-        </div>
-      </TransitionGroup>
-    </div>
+          <img
+            class="w-12"
+            src="/img/send.svg"
+          />
+        </button>
+      </div>
+      <div
+        class="catItems"
+        @dragstart="dd.handleDragStart"
+        @dragend="dd.handleDragEnd"
+        @dragenter="dd.handleDragEnter"
+        @dragover="dd.handleDragOver"
+      >
+        <TransitionGroup name="transition-draggable-group">
+          <div
+            v-for="(cat, index) in catsG.cats"
+            :key="cat.id"
+          >
+            <AdminCatsItemBlock :indexes="[index]" />
+          </div>
+        </TransitionGroup>
+      </div>
 
-    <transition name="transition-fade">
-      <AdminCatsTextEditor v-if="textEditor.isActive" />
-    </transition>
-    <transition name="transition-fade">
-      <AdminCatsPropsEditor v-if="propsEditor.isActive" />
-    </transition>
-  </div>
+      <transition name="transition-fade">
+        <AdminCatsTextEditor v-if="textEditor.isActive" />
+      </transition>
+      <transition name="transition-fade">
+        <AdminCatsPropsEditor v-if="propsEditor.isActive" />
+      </transition>
+    </div>
+  </HelperAdminOnly>
 </template>

@@ -1,5 +1,6 @@
 export default defineEventHandler(async event => {
-  // await new Promise(resolve => setTimeout(resolve, 300000))
-  if (Math.random() < 0.4) throw createError({ statusCode: 499, statusMessage: `Some error from api` })
-  return 111
+  const text = "s'om''e text`"
+
+  await dbReq(`INSERT INTO i_log SET text = '${prepareString(text)}'`)
+  return 'OK'
 })

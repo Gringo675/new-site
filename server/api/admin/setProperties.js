@@ -1,12 +1,10 @@
-/**
- * API для сохранения измененных свойств. Получает POST массив из объектов. Каждый объект содержит один из ключей:
- * isNew - новое свойство (Insert)
- * isDel - удаленное свойство (Delete)
- * isChanged - измененное свойство (Update)
- */
-
 export default defineEventHandler(async event => {
-  await checkToken(event, { adminOnly: true })
+  /**
+   * API для сохранения измененных свойств. Получает POST массив из объектов. Каждый объект содержит один из ключей:
+   * isNew - новое свойство (Insert)
+   * isDel - удаленное свойство (Delete)
+   * isChanged - измененное свойство (Update)
+   */
 
   const props = await readBody(event)
 

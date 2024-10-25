@@ -1,11 +1,13 @@
 <script setup>
 //
+const url = 'https://chelinstrument.ru/docs/stnd/gost%20166-89%20%5Bchelinstrument.ru%5D.pdf#toolbar=0'
 </script>
 
 <template>
-  <div>test1</div>
-  <img
-    :src="getDynamicAsset('/img/labels/111.jpg')"
-    alt=""
+  <embed
+    :src="url"
+    type="application/pdf"
+    width="100%"
+    height="500px"
   />
 </template>

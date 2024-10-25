@@ -15,15 +15,15 @@ const changeStatus = async () => {
 </script>
 
 <template>
-  <div class="optons">
-    <div>Сайт закрыт: {{ !!Number(siteStatus) }}</div>
-    <button
-      class="button"
-      @click="changeStatus"
-    >
-      {{ Number(siteStatus) ? 'Открыть сайт' : 'Закрыть сайт' }}
-    </button>
-  </div>
+  <HelperAdminOnly>
+    <div class="optons">
+      <div>Сайт закрыт: {{ !!Number(siteStatus) }}</div>
+      <button
+        class="button"
+        @click="changeStatus"
+      >
+        {{ Number(siteStatus) ? 'Открыть сайт' : 'Закрыть сайт' }}
+      </button>
+    </div>
+  </HelperAdminOnly>
 </template>
-
-<style></style>

@@ -2,14 +2,8 @@ export default defineEventHandler(async event => {
   // console.log(`from server middleware ifSiteClosed`)
   // console.log(`url: ${JSON.stringify(event.node.req.url, null, 2)}`)
   if (process.env.IS_SITE_CLOSED !== '1') return
-  if (
-    event.node.req.url.startsWith('/api/auth') ||
-    event.node.req.url === '/api/user/getUser' ||
-    event.node.req.url === '/api/console' ||
-    event.node.req.url === '/favicon.ico' ||
-    event.node.req.url.startsWith('/__nuxt_error')
-  )
-    return
+  const { path } = event
+  if (/^(\/api\/auth|\/api\/user\/getUser|\/api\/console|\/favicon\.ico|\/__nuxt_error)/.test(path)) return
 
   try {
     // проверяем, поступил ли запрос от админа

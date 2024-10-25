@@ -9,6 +9,7 @@ export default () => {
       inn: '',
       address: '',
       phone: '',
+      admin: false,
     }
   })
 }

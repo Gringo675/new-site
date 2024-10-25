@@ -1,5 +1,5 @@
 <script setup>
-await myFetch('/api/user/isAdmin') // если не админ, выкинет ошибку
+await myFetch('/api/admin/isAdmin') // если не админ, выкинет ошибку
 
 const isListen = ref(false)
 const messages = reactive([])
@@ -61,6 +61,7 @@ const test = async () => {
 </script>
 
 <template>
+  <HelperAdminOnly>
   <h1>Console</h1>
   <div class="flex space-x-4">
     <UButton
@@ -89,6 +90,6 @@ const test = async () => {
       </div>
     </div>
   </div>
+  </HelperAdminOnly>
 </template>
 
-<style></style>
