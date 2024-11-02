@@ -28,7 +28,7 @@ export default defineEventHandler(async event => {
   }
   query = `SELECT id, name, alias, price, special_price, images, label_id,
                  p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature, p8_pack,
-                 standart_ids, reestr_ids, pasport_ids
+                 standart_ids, reestr_ids
                  FROM i_products WHERE category_id = '${productsCatId}' 
                  ${catActiveProps.reduce((acc, prop) => {
                    acc += `AND ${prop[0]} = ${prop[1]} ` // [name, value]
@@ -100,7 +100,6 @@ export default defineEventHandler(async event => {
 
   const stnds = new Set()
   const rstrs = new Set()
-  const pasps = new Set()
 
   const labels = {} // для кеширования
   const getLabel = async label_id => {
@@ -122,9 +121,7 @@ export default defineEventHandler(async event => {
     // обрабатываем документацию
     if (product.standart_ids.length) product.standart_ids.split(' ').forEach(stnd => stnds.add(stnd))
     if (product.reestr_ids.length) product.reestr_ids.split(' ').forEach(rstr => rstrs.add(rstr))
-    if (product.pasport_ids.length) product.pasport_ids.split(' ').forEach(pasp => pasps.add(pasp))
     // удаляем ненужное
-    delete product.pasport_ids
     delete product.reestr_ids
     delete product.standart_ids
     delete product.special_price
@@ -141,11 +138,6 @@ export default defineEventHandler(async event => {
     query = `SELECT number, name, type_si, brand, date, file_ot, file_mp, file_svid FROM i_docs_rstr
                  WHERE id IN (${Array.from(rstrs).join(', ')})`
     catData.docs.rstr = await dbReq(query)
-  }
-  if (pasps.size) {
-    query = `SELECT name, file FROM i_docs_pasp
-                 WHERE id IN (${Array.from(pasps).join(', ')})`
-    catData.docs.pasp = await dbReq(query)
   }
 
   // удаляем ненужное

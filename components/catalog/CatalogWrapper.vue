@@ -135,6 +135,7 @@ function addFilterToURL() {
         </NuxtLink>
       </div>
     </div>
+
     <HelperAsideGrid>
       <template #aside>
         <CatalogFilter
@@ -148,5 +149,6 @@ function addFilterToURL() {
         :activeProductsIndx
       />
     </HelperAsideGrid>
+    <HelperDocsBlock :docs="catData.docs" />
   </div>
 </template>

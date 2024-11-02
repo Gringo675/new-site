@@ -1,12 +1,6 @@
 <script setup>
 //
-/**
- * todo:
- * hover buttons on touch?
- * image shadow, indicators block style
- * responsive
- * automatic lite from width?
- */
+
 const viewer = useImageViewer()
 const closeViewer = () => {
   // console.log(`close viewer...`)

@@ -7,6 +7,12 @@ import textEditor from '~/composables/admin/cats/textEditor'
 
 await propsG.getItems()
 await catsG.getCats()
+
+// window.onbeforeunload = function (e) {
+//   e.returnValue = 'Есть несохранённые изменения! Уверены, что хотите покинуть страницу?'
+//   return e.returnValue
+// }
+window.onbeforeunload = () => false
 </script>
 
 <template>

@@ -24,12 +24,28 @@ onMounted(() => {
       })
     }
   })
+  // animate scroll (убрал "стандартную" дерганную анимацию через container: 'snap-none')
+  const imageContainer = carousel.value.$el.firstElementChild
+  imageContainer.addEventListener('mousedown', () => {
+    window.addEventListener(
+      'mouseup',
+      () => {
+        carousel.value.select(carousel.value.page)
+      },
+      { once: true }
+    )
+  })
+  // smooth scroll for touch
+  imageContainer.addEventListener('touchstart', () => {
+    imageContainer.style.scrollSnapType = 'x mandatory'
+  })
+  // растягивание крайних изображений при перетаскивании
+  useViewerEdgeImg(imageContainer, carousel)
 })
 const preventImgClick = () => {
   window.addEventListener(
     'click',
     event => {
-      console.log(`from click`)
       event.stopPropagation()
     },
     { capture: true, once: true }
@@ -53,6 +69,7 @@ const showFullViewer = () => {
     :items="images"
     :ui="{
       wrapper: 'p-2',
+      container: 'snap-none',
       item: 'basis-full justify-center p-2',
       indicators: {
         wrapper: lite

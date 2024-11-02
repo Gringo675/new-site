@@ -23,7 +23,7 @@
       />
       <UButton
         label="Импорт данных"
-        to="/admin/oldDbImport"
+        to="/admin/dbImport"
       />
     </div>
   </HelperAdminOnly>

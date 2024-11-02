@@ -87,6 +87,8 @@ const subCats = cats.value
     <div class="max-w-[400px] border border-stone-400 m-4 p-4">
       <image-viewer-inline :images="productData.images" />
     </div>
+    <HelperDocsBlock :docs="productData.docs" />
+
     <!--    related-->
     <div class="">
       <h2>Похожие товары</h2>

@@ -175,5 +175,5 @@
 }
 .viewer-enter-active,
 .viewer-leave-active {
-  transition: all 0.5s linear;
+  transition: all 0.2s linear;
 }
