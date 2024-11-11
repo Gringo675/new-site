@@ -1,11 +1,9 @@
-import sortCategories from '../utils/sortCategories'
-
 export default defineEventHandler(async event => {
   // функция по алиасу отдает информацию о товаре
   // const start = Date.now()
 
-  const { alias } = getQuery(event)
-  if (!alias.length) throw createError({ statusCode: 500, statusMessage: 'Parsing alias error!' })
+  const alias = getRouterParam(event, 'p_alias')
+  if (!alias.length) throw createError({ statusCode: 500, statusMessage: 'Incorrect URI!' })
   // console.log(`API alias: ${alias}`);
 
   let query = `SELECT * FROM i_products WHERE alias = '${alias}' AND published = 1`
@@ -97,17 +95,17 @@ export default defineEventHandler(async event => {
   productData.docs = {}
   if (productData.standart_ids.length) {
     query = `SELECT number, name, file FROM i_docs_stnd
-                 WHERE id IN (${productData.standart_ids.replace(' ', ', ')})`
+                 WHERE id IN (${productData.standart_ids.replace(';', ', ')})`
     productData.docs.stnd = await dbReq(query)
   }
   if (productData.reestr_ids.length) {
     query = `SELECT number, name, type_si, brand, date, file_ot, file_mp, file_svid FROM i_docs_rstr
-                 WHERE id IN (${productData.reestr_ids.replace(' ', ', ')})`
+                 WHERE id IN (${productData.reestr_ids.replace(';', ', ')})`
     productData.docs.rstr = await dbReq(query)
   }
   if (productData.pasport_ids.length) {
     query = `SELECT name, file FROM i_docs_pasp
-                 WHERE id IN (${productData.pasport_ids.replace(' ', ', ')})`
+                 WHERE id IN (${productData.pasport_ids.replace(';', ', ')})`
     productData.docs.pasp = await dbReq(query)
   }
 

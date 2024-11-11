@@ -20,8 +20,10 @@
     "nuxt": "^3.13.2"
   },
   "dependencies": {
+    "jsdom": "22.1.0",
     "maska": "^2.1.10",
     "mysql2": "^3.11.3",
-    "nodemailer": "^6.9.1"
+    "nodemailer": "^6.9.1",
+    "prettier": "^3.3.3"
   }
 }

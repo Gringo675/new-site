@@ -1,18 +1,24 @@
 <script setup>
-const images = [
-  'SHC1STIZ.jpg',
-  'shc-i-stiz_1.jpg',
-  'shc-i-stiz_2.jpg',
-  'shc-i-stiz_3.jpg',
-  'SHC1STIZ.jpg',
-  'shc-i-stiz_1.jpg',
-  'shc-i-stiz_2.jpg',
-  'shc-i-stiz_3.jpg',
-]
+//
+const onClick = async () => {
+  const result = await showMessage({
+    title: 'Test2',
+    description: 'Test2',
+    type: 'info',
+    // isDialog: true,
+    preventClose: true,
+  })
+
+  console.log(`result: ${JSON.stringify(result, null, 2)}`)
+}
 </script>
 
 <template>
-  <div class="viewer-box w-[1200px] max-w-full bg-blue-200">
-    <ImageViewerInline :images="images" />
+  <h2>Test2</h2>
+  <div>
+    <UButton
+      label="Test"
+      @click="onClick"
+    />
   </div>
 </template>

@@ -1,8 +1,8 @@
 export default defineEventHandler(async event => {
   // const start = performance.now()
 
-  const { alias } = getQuery(event)
-  if (!alias.length) throw createError({ statusCode: 500, statusMessage: 'Parsing alias error!' })
+  const alias = getRouterParam(event, 'c_alias')
+  if (!alias.length) throw createError({ statusCode: 500, statusMessage: 'Incorrect URI!' })
 
   // получаем категорию
   let query = `SELECT * FROM i_categories WHERE alias = '${alias}'  AND published = 1 LIMIT 1`
@@ -15,7 +15,7 @@ export default defineEventHandler(async event => {
       if (/^p\d_/.test(key) && catData[key] > 0) catActiveProps.push([key, catData[key]]) // [name, value]
     }
   }
-
+  catActiveProps[0][1] = '95,135'
   // получаем товары
   // т.к. товары принадлежат главным категориям, необходимо найти id этого первого родителя
   let productsCatId
@@ -31,7 +31,7 @@ export default defineEventHandler(async event => {
                  standart_ids, reestr_ids
                  FROM i_products WHERE category_id = '${productsCatId}' 
                  ${catActiveProps.reduce((acc, prop) => {
-                   acc += `AND ${prop[0]} = ${prop[1]} ` // [name, value]
+                   acc += `AND ${prop[0]} IN (${prop[1]}) ` // [name, value]
                    return acc
                  }, '')}
                  AND published = 1`
@@ -61,12 +61,14 @@ export default defineEventHandler(async event => {
   query = `SELECT id, name, ordering
                 FROM i_properties 
                 WHERE id IN (${Array.from(allProps).join(',')})`
+  console.log(`products.length: ${JSON.stringify(products.length, null, 2)}`)
+  console.log(`query: ${JSON.stringify(query, null, 2)}`)
   const propsArr = await dbReq(query)
   const props = {} // для удобства создаем объект из всех пропсов
   propsArr.forEach(prop => {
     props[prop.id] = { name: prop.name, order: prop.ordering }
   })
-
+  console.log(`here`)
   // создаем фильтр: отбираем группы в которых больше 1 пропсов, сортируем группы
   const filter = Object.values(filterGroups)
     .filter(fGroup => fGroup.valuesIds?.size > 1)
@@ -119,8 +121,8 @@ export default defineEventHandler(async event => {
     // обрабатываем лейбл
     if (product.label_id > 0) product.label = await getLabel(product.label_id)
     // обрабатываем документацию
-    if (product.standart_ids.length) product.standart_ids.split(' ').forEach(stnd => stnds.add(stnd))
-    if (product.reestr_ids.length) product.reestr_ids.split(' ').forEach(rstr => rstrs.add(rstr))
+    if (product.standart_ids.length) product.standart_ids.split(';').forEach(stnd => stnds.add(stnd))
+    if (product.reestr_ids.length) product.reestr_ids.split(';').forEach(rstr => rstrs.add(rstr))
     // удаляем ненужное
     delete product.reestr_ids
     delete product.standart_ids
@@ -146,6 +148,5 @@ export default defineEventHandler(async event => {
 
   // const catPerformance = Math.round(performance.now() - start)
   // cv({ catPerformance })
-
   return { catData, products, filter }
 })

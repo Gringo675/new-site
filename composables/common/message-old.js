@@ -1,37 +1,24 @@
 // const message = reactive({
-//   isActive: false,
-// })
-
-// const messageData = {
+//   active: false,
 //   title: '',
-//   body: '',
-//   type: '', // info, error, success
+//   description: '',
+//   type: 'info', // info, error, success
 //   callback: null,
-// }
+//   preventClose: false, // if close the message on click outside
+// })
 
 // export const useMessage = () => {
 //   return message
 // }
 
-// export const useMessageData = () => {
-//   return messageData
-// }
-
-// export const showMessage = (title, body, type = 'info', callback = null) => {
+// export const showMessage = (options = {}) => {
 //   if (process.server) return
-//   if (message.isActive) return
-//   messageData.title = title
-//   messageData.body = body
-//   messageData.type = type
-//   messageData.callback = callback
-//   message.isActive = true
-// }
+//   if (message.active) return
 
-// export const closeMessage = () => {
-//   if (process.server) return
-//   messageData.title = ''
-//   messageData.body = ''
-//   messageData.type = ''
-//   messageData.callback = null
-//   message.isActive = false
+//   message.title = options.title ?? ''
+//   message.description = options.description ?? ''
+//   message.type = options.type ?? 'info' // info, error, success
+//   message.callback = options.callback ?? null
+//   message.preventClose = (typeof options.callback === 'function' || options.preventClose) ?? false
+//   message.active = true
 // }

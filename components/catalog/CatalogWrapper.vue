@@ -18,7 +18,7 @@ useSeoMeta({
 })
 useServerSeoMeta({
   description: `Купить ${catData.name}${
-    catData.docs?.stnd.length ? ' ' + catData.docs.stnd.map(stnd => stnd.number).join(', ') : ''
+    catData.docs?.stnd?.length ? ' ' + catData.docs.stnd.map(stnd => stnd.number).join(', ') : ''
   } по ценам производителя с доставкой по России. Весь измерительный инструмент с поверкой и калибровкой в нашем онлайн-каталоге.`,
 })
 

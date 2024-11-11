@@ -1,3 +1,6 @@
+import { JSDOM } from 'jsdom'
+import prettier from 'prettier'
+
 export default defineEventHandler(async event => {
   // "мягкая" перезапись таблицы i_categories. Не обнуляются значения пропсов (ставятся вручную) и не затираются вручную добавленные категории.
 
@@ -16,16 +19,24 @@ export default defineEventHandler(async event => {
         // '`meta_keyword_ru-RU` AS meta_keywords, ' +
         'category_publish AS published ' +
         'FROM instr_jshopping_categories'
-      // ' WHERE category_id = 1100'
+      // ' WHERE category_id = 1101'
       // убрал meta_ столбцы т.к. их нет в новой таблице
     )
 
     // допиливаем
-    cats.forEach(cat => {
+    for (const cat of cats) {
       cat.id = createNewCategoryID(cat.old_id)
       cat.parent_id = createNewCategoryID(cat.parent_id)
       cat.ordering = cat.id < 100 ? cat.id - 10 : cat.id % 100
-    })
+      // пробуем распарсить description
+      const dom = JSDOM.fragment(cat.description)
+      cat.description = dom.querySelector('#description1')?.innerHTML ?? cat.description
+      cat.characteristics = dom.querySelector('#description2')?.innerHTML ?? ''
+      // делаем красива
+      cat.description = await prettier.format(cat.description, { parser: 'html' })
+      cat.characteristics = await prettier.format(cat.characteristics, { parser: 'html' })
+      cat.short_description = await prettier.format(cat.short_description, { parser: 'html' })
+    }
 
     // собираем запрос
     const fieldsArr = Object.keys(cats[0]) // вытаскиваем названия полей из первого элемента

@@ -1,20 +1,37 @@
 <script setup>
 //
+// const router = useRouter()
 
 const changed = ref(false)
 
+const beforeUnloadHandler = event => {
+  if (!changed.value) return
+  event.preventDefault()
+  event.returnValue = true
+}
+
 onMounted(() => {
-  const beforeUnloadHandler = event => {
-    if (!changed.value) return
-
-    // Recommended
-    event.preventDefault()
-
-    // Included for legacy support, e.g. Chrome/Edge < 119
-    event.returnValue = true
-  }
-
   window.addEventListener('beforeunload', beforeUnloadHandler)
+})
+
+onBeforeRouteLeave(async to => {
+  if (!changed.value) return
+
+  console.log(`onBeforeRouteLeave`)
+
+  const proceed = await showMessage({
+    title: 'Подтвердите переход со страницы',
+    description: 'Есть несохраненные изменения. Если продолжить, они будут утеряны.',
+    type: 'error',
+    isDialog: true,
+  })
+
+  if (!proceed) return false
+})
+
+const TheTestStore = reactive({
+  show: false,
+  resolve: null,
 })
 </script>
 
@@ -27,4 +44,8 @@ onMounted(() => {
     dolor sit amet consectetur, adipisicing elit. Nulla quibusdam rerum, corrupti voluptatum illo aliquam nam dolore
     quaerat voluptatem vero repellat adipisci error est, consequuntur quam recusandae doloribus perferendis qui?lorem
   </div>
+  <TheTest
+    v-if="TheTestStore.show"
+    :store="TheTestStore"
+  />
 </template>

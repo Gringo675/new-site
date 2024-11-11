@@ -4,6 +4,7 @@ export default reactive({
   draggingCatIndexes: [],
   async getCats() {
     this.cats = await myFetch('/api/admin/getCategories')
+    this.changedCats = {}
   },
   getCat(indexes) {
     switch (indexes.length) {

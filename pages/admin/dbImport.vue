@@ -2,8 +2,15 @@
 // импорт данных из старой БД в новую
 
 const importHandler = async dataType => {
-  const res = await myFetch(`/api/admin/oldDbImport/${dataType}`)
-  console.log(`res: ${JSON.stringify(res, null, 2)}`)
+  const proceed = await showMessage({
+    title: `Import ${dataType}?`,
+    description: 'Are you sure you want to proceed? This operation rewrite current data in database.',
+    type: 'info',
+    isDialog: true,
+  })
+  if (!proceed) return
+
+  const res = await myFetch(`/api/admin/dbImport/${dataType}`)
   if (res.status === 'ok') showNotice({ title: `${dataType} imported!`, type: 'success' })
   else if (res.status === 'error') {
     console.error(`${dataType} import error: ${JSON.stringify(res.message, null, 2)}`)

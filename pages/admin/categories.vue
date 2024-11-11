@@ -8,11 +8,26 @@ import textEditor from '~/composables/admin/cats/textEditor'
 await propsG.getItems()
 await catsG.getCats()
 
-// window.onbeforeunload = function (e) {
-//   e.returnValue = 'Есть несохранённые изменения! Уверены, что хотите покинуть страницу?'
-//   return e.returnValue
-// }
-window.onbeforeunload = () => false
+// Проверка на несохраненные изменения
+onMounted(() => {
+  // перезагрузка, закрытие
+  window.addEventListener('beforeunload', event => {
+    if (!Object.keys(catsG.changedCats).length) return
+    event.preventDefault()
+    event.returnValue = true
+  })
+})
+onBeforeRouteLeave(async to => {
+  // переход по ссылкам, кнопки Назад/Вперед
+  if (!Object.keys(catsG.changedCats).length) return
+  const proceed = await showMessage({
+    title: 'Подтвердите уход со страницы',
+    description: 'Есть несохраненные изменения. Если продолжить, они будут утеряны.',
+    type: 'error',
+    isDialog: true,
+  })
+  if (!proceed) return false
+})
 </script>
 
 <template>
@@ -25,7 +40,7 @@ window.onbeforeunload = () => false
         <button
           :disabled="!Object.keys(catsG.changedCats).length"
           @click="catsG.saveChanges()"
-          class="ml-2 shrink-0 p-1 border border-blue-300 rounded-lg"
+          class="ml-2 shrink-0 p-1 border border-blue-300 rounded-lg disabled:opacity-50"
           title="Сохранить"
         >
           <img

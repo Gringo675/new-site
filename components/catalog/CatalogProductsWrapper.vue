@@ -78,12 +78,8 @@ const changesHandler = (options = {}) => {
       productsWrapper.value.style.transform = `translateX(${options.paginationToRight ? '-' : ''}50px)`
       // перемотка вверх
       const wrapperTop = productsWrapper.value.getBoundingClientRect().top
-      if (wrapperTop < 0)
-        window.scrollBy({
-          top: wrapperTop - 20,
-          left: 0,
-          behavior: 'smooth',
-        })
+      console.log(`wrapperTop: ${wrapperTop}`)
+      if (wrapperTop < 0) productsWrapper.value.scrollIntoView({ behavior: 'smooth', block: 'start' }) //scrollBy не работает
     } else {
       // fromProducts || from pageSetup
       pagination.activePage = 1
