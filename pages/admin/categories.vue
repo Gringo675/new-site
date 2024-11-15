@@ -65,6 +65,10 @@ onBeforeRouteLeave(async to => {
           </div>
         </TransitionGroup>
       </div>
+      <!-- <div class="debug absolute bottom-0 left-0 w-full h-1/6 bg-slate-500 text-slate-100 overflow-auto">
+        <h2>changedCats</h2>
+        <pre>{{ catsG.changedCats }}</pre>
+      </div> -->
 
       <transition name="transition-fade">
         <AdminCatsTextEditor v-if="textEditor.isActive" />

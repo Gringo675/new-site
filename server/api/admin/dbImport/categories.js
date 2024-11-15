@@ -18,8 +18,8 @@ export default defineEventHandler(async event => {
         // '`meta_description_ru-RU` AS meta_description, ' +
         // '`meta_keyword_ru-RU` AS meta_keywords, ' +
         'category_publish AS published ' +
-        'FROM instr_jshopping_categories'
-      // ' WHERE category_id = 1101'
+        'FROM instr_jshopping_categories' +
+        ' WHERE category_id = 1101'
       // убрал meta_ столбцы т.к. их нет в новой таблице
     )
 
@@ -50,7 +50,7 @@ export default defineEventHandler(async event => {
     )}) VALUES ${catsValues} ON DUPLICATE KEY UPDATE ${fieldsArr
       .map(field => `${field} = VALUES(${field})`)
       .join(', ')}`
-    // return query
+    // console.log(`query: ${JSON.stringify(query, null, 2)}`)
     await dbReq(query)
 
     return { status: 'ok' }

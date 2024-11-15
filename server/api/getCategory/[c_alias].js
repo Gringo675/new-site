@@ -12,10 +12,10 @@ export default defineEventHandler(async event => {
   const catActiveProps = [] // для основных категорий будет пустой массив, для подкатегорий добавляем ниже
   if (catData.parent_id !== 0) {
     for (const key in catData) {
-      if (/^p\d_/.test(key) && catData[key] > 0) catActiveProps.push([key, catData[key]]) // [name, value]
+      if (/^p\d_/.test(key) && catData[key].length) catActiveProps.push([key, catData[key]]) // [name, value]
     }
   }
-  catActiveProps[0][1] = '95,135'
+
   // получаем товары
   // т.к. товары принадлежат главным категориям, необходимо найти id этого первого родителя
   let productsCatId
@@ -61,8 +61,6 @@ export default defineEventHandler(async event => {
   query = `SELECT id, name, ordering
                 FROM i_properties 
                 WHERE id IN (${Array.from(allProps).join(',')})`
-  console.log(`products.length: ${JSON.stringify(products.length, null, 2)}`)
-  console.log(`query: ${JSON.stringify(query, null, 2)}`)
   const propsArr = await dbReq(query)
   const props = {} // для удобства создаем объект из всех пропсов
   propsArr.forEach(prop => {

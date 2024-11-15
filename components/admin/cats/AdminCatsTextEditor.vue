@@ -1,10 +1,11 @@
 <script setup>
 import catsG from '~/composables/admin/cats/catsG'
 import textEditor from '~/composables/admin/cats/textEditor'
+import catFields from '~/composables/admin/cats/catFields'
 
 const cat = catsG.getCat(textEditor.indexes)
 const content = ref(cat[textEditor.field])
-const title = `${textEditor.fieldRU} - ${cat.name}`
+const title = `${catFields.find(field => field.name === textEditor.field).nameRU} - ${cat.name}`
 
 const saveChanges = () => {
   if (content.value !== cat[textEditor.field]) {
@@ -23,30 +24,44 @@ const saveChanges = () => {
       >
         <div class="flex flex-row justify-between items-center bg-orange-300 p-2.5">
           <div class="max-w-full whitespace-nowrap overflow-hidden overflow-ellipsis size text-xl">{{ title }}</div>
-          <div
-            class="bg-[url('/img/x-circle.svg')] bg-center bg-no-repeat bg-contain w-7 h-7 ml-2 flex-shrink-0 cursor-pointer hover:scale-90 transition-transform"
-            @click="textEditor.hide()"
-          ></div>
+
+          <button
+            @click="textEditor.hide"
+            class="inline-flex opacity-70 hover:opacity-100 focus:outline-none focus-visible:outline-0"
+          >
+            <UIcon
+              name="i-heroicons-x-circle"
+              class="h-8 w-8"
+            />
+          </button>
         </div>
         <div class="p-5 overflow-auto bg-amber-100">
-          <textarea
+          <UTextarea
+            v-model="content"
+            class=""
+            color="secondary"
+            placeholder="Пусто..."
+            textareaClass="w-full h-96 max-h-[calc(100vh-200px)] bg-gray-50"
+            :autofocus="true"
+          />
+          <!-- <textarea
             v-model="content"
             class="w-full h-96 max-h-[calc(100vh-200px)]"
-          ></textarea>
+          ></textarea> -->
         </div>
-        <div class="p-2.5 bg-orange-200 flex justify-end items-center">
-          <button
+        <div class="p-2.5 bg-orange-200 flex justify-end gap-4">
+          <UButton
+            label="Отмена"
+            variant="outline"
+            color="secondary"
             @click="textEditor.hide()"
-            class="button px-2 py-1"
-          >
-            Cancel
-          </button>
-          <button
-            class="button px-2 py-1"
+          />
+          <UButton
+            label="Ok"
+            color="secondary"
+            class="px-8 mr-4"
             @click="saveChanges"
-          >
-            OK
-          </button>
+          />
         </div>
       </div>
     </HelperModalWrapper>

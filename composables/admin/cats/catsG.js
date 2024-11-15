@@ -29,8 +29,9 @@ export default reactive({
     })
     if (success) {
       this.changedCats = {}
-      this.cats.length = 0
-      this.getCats()
+      // this.cats.length = 0
+      // this.getCats()
+      showNotice({ title: `Изменения сохранены!`, type: 'success' })
     }
   },
   addCat(indexes, options = {}) {

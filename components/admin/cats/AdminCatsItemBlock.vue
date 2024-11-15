@@ -15,7 +15,7 @@ const showMenu = ref(false)
 const showParams = ref(false)
 const showChildren = ref(false)
 
-const validateDelete = () => {
+const validateDelete = async () => {
   showMenu.value = false
   if (cat.children?.length) {
     showMessage({
@@ -25,12 +25,13 @@ const validateDelete = () => {
     })
     return
   }
-  // Задать вопрос Точно удалить?
-  showMessage({
+
+  const proceed = await showMessage({
     title: 'Подтвердите удаление',
     description: `<p>Категория "${cat.name}" будет удалена.</p><p>Продолжить?</p>`,
-    callback: () => catsG.deleteCat(props.indexes),
+    isDialog: true,
   })
+  if (proceed) catsG.deleteCat(props.indexes)
 }
 
 const addCat = () => {
@@ -99,7 +100,10 @@ const inDraggingGroup = computed(
 watch(
   () => cat.name,
   name => {
-    if (!cat.alias?.length) cat.alias = createAlias(name)
+    if (!cat.alias?.length) {
+      cat.alias = createAlias(name)
+      catsG.handleChanges(cat.id, 'alias', cat.alias)
+    }
   }
 )
 </script>
@@ -140,7 +144,7 @@ watch(
       </button>
       <!--      params wrapper-->
       <div
-        class="flex items-center flex-wrap mr-9 overflow-hidden transition-all duration-500"
+        class="flex items-center flex-wrap gap-2 mr-9 overflow-hidden transition-all duration-500"
         :class="showParams ? 'max-h-44' : 'max-h-12'"
       >
         <template
@@ -148,23 +152,29 @@ watch(
           :key="i"
         >
           <template v-if="field.isActive">
-            <div
+            <UButton
               v-if="field.type === 'text'"
+              :title="field.nameRU"
+              :variant="cat[field.name].length ? 'solid' : 'outline'"
+              :label="field.name === 'name' ? cat.name : field.nameRU"
+              @click="textEditor.show(indexes, field.name)"
+            />
+            <div
+              v-else-if="indexes.length > 1 && field.type === 'multiselect'"
               class="m-2 flex"
             >
-              <input
-                type="text"
-                v-model.lazy="cat[field.name]"
-                class="w-56"
-                :placeholder="field.nameRU"
+              <UButton
                 :title="field.nameRU"
-                @change="catsG.handleChanges(cat.id, field.name, $event.target.value)"
-              />
-              <img
-                v-if="field.hasEditButton"
-                class="inline cursor-pointer select-none shrink-0 w-5 ml-1"
-                src="/img/pencil-square.svg"
-                @click="textEditor.show(indexes, field.name, field.nameRU)"
+                :variant="cat[field.name].length ? 'solid' : 'outline'"
+                :label="
+                  cat[field.name].length
+                    ? cat[field.name]
+                        .split(',')
+                        .map(i => propsG.items[field.name].find(item => item.id == i)?.name)
+                        .join(', ')
+                    : field.nameRU
+                "
+                @click="propsEditor.show(indexes, field.name)"
               />
             </div>
             <div
@@ -186,7 +196,7 @@ watch(
                 <option
                   v-for="proper in propsG.items[field.name]"
                   :value="proper.id"
-                  :selected="proper.id === cat[field.name]"
+                  :selected="proper.id == cat[field.name]"
                 >
                   {{ proper.name }}
                 </option>

@@ -1,14 +1,22 @@
 <script setup>
 import propsEditor from '~/composables/admin/cats/propsEditor'
+import catsG from '~/composables/admin/cats/catsG'
 import propsG from '~/composables/admin/cats/propsG'
+import catFields from '~/composables/admin/cats/catFields'
 
+const cat = catsG.getCat(propsEditor.indexes)
 const pGroup = ref(JSON.parse(JSON.stringify(propsG.items[propsEditor.groupName]))) // локальная копия
+const { groupID, nameRU: groupNameRU } = catFields.find(field => field.name === propsEditor.groupName)
+
+const catSelectedIds = cat[propsEditor.groupName].split(',').map(Number)
+for (const item of pGroup.value) item.selected = catSelectedIds.includes(item.id)
+const editorSelected = computed(() => pGroup.value.filter(item => item.selected))
 
 const draggableElementIndex = ref(null)
 const handleDragStart = ev => {
   if (ev.target.dataset?.draggable === undefined) return
   draggableElementIndex.value = Number(ev.target.parentElement.dataset.index)
-  ev.dataTransfer.setDragImage(ev.target.parentElement, 18, 20)
+  ev.dataTransfer.setDragImage(ev.target.parentElement, 260, 20)
 }
 const handleDragEnd = () => {
   draggableElementIndex.value = null
@@ -42,17 +50,18 @@ const changeArrayDebounced = {
   },
 }
 
-const deleteItem = i => {
-  showMessage({
+const deleteItem = async i => {
+  const proceed = await showMessage({
     title: 'Подтвердите удаление',
     description: `<p>Параметр "${pGroup.value[i].name}" будет удален.</p><p>Продолжить?</p>`,
-    callback: () => pGroup.value.splice(i, 1),
+    isDialog: true,
   })
+  if (proceed) pGroup.value.splice(i, 1)
 }
 
 const addItem = i => {
   const newItem = {
-    group_id: propsEditor.groupID,
+    group_id: groupID,
     name: '',
   }
   pGroup.value.splice(i + 1, 0, newItem)
@@ -68,6 +77,11 @@ const handleOK = async () => {
     })
     return
   }
+  const selectedString = editorSelected.value.map(item => item.id).join(',')
+  if (selectedString !== cat[propsEditor.groupName]) {
+    cat[propsEditor.groupName] = selectedString
+    catsG.handleChanges(cat.id, propsEditor.groupName, selectedString)
+  }
   const success = await propsG.handleChanges(propsEditor.groupName, pGroup.value)
   if (success) propsEditor.hide()
 }
@@ -80,12 +94,20 @@ const handleOK = async () => {
     >
       <div class="flex flex-row justify-between items-center bg-orange-300 p-2.5">
         <div class="max-w-full whitespace-nowrap overflow-hidden overflow-ellipsis size text-xl">
-          {{ propsEditor.groupNameRU }}
+          {{ groupNameRU }}
         </div>
-        <div
-          class="bg-[url('/img/x-circle.svg')] bg-center bg-no-repeat bg-contain w-7 h-7 ml-2 flex-shrink-0 cursor-pointer hover:scale-90 transition-transform"
+        <button
           @click="propsEditor.hide"
-        ></div>
+          class="inline-flex opacity-70 hover:opacity-100 focus:outline-none focus-visible:outline-0"
+        >
+          <UIcon
+            name="i-heroicons-x-circle"
+            class="h-8 w-8"
+          />
+        </button>
+      </div>
+      <div class="p-2.5 bg-lime-200">
+        Выбраны: {{ editorSelected.length ? editorSelected.map(item => item.name).join(', ') : 'нет' }}
       </div>
       <div
         class="p-5 overflow-auto bg-amber-100 flex flex-col items-center"
@@ -100,13 +122,10 @@ const handleOK = async () => {
             :key="i"
             :data-index="i"
             :class="{ 'opacity-20': draggableElementIndex === i }"
-            class="bg-orange-200 border border-orange-700 rounded-lg p-2 m-2 transition-opacity duration-300"
+            class="flex items-center bg-orange-200 border border-orange-700 rounded-lg p-2 m-2 transition-opacity duration-300"
           >
-            <img
-              class="inline cursor-move select-none"
-              src="/img/arrows-move.svg"
-              data-draggable
-            />
+            <UCheckbox v-model="item.selected" />
+
             <input
               type="text"
               v-model="item.name"
@@ -114,33 +133,36 @@ const handleOK = async () => {
             />
             <img
               @click="deleteItem(i)"
-              class="inline cursor-pointer select-none mx-1.5"
-              src="/img/dash-square.svg"
+              class="inline cursor-pointer select-none ml-2"
+              src="/img/trash.svg"
             />
             <img
               @click="addItem(i)"
-              class="inline cursor-pointer select-none"
-              src="/img/plus-square.svg"
+              class="inline cursor-pointer select-none mx-2"
+              src="/img/file-plus.svg"
+            />
+            <img
+              class="inline cursor-move select-none"
+              src="/img/arrows-move.svg"
+              data-draggable
             />
           </div>
         </TransitionGroup>
       </div>
-      <div class="p-2.5 bg-orange-200 flex justify-end items-center">
-        <button
-          @click="propsEditor.hide"
-          class="button px-2 py-1"
-        >
-          Cancel
-        </button>
-        <button
-          class="button px-2 py-1"
+      <div class="p-2.5 bg-orange-200 flex justify-end gap-4">
+        <UButton
+          label="Отмена"
+          variant="outline"
+          color="secondary"
+          @click="propsEditor.hide()"
+        />
+        <UButton
+          label="Ok"
+          color="secondary"
+          class="px-8 mr-4"
           @click="handleOK"
-        >
-          OK
-        </button>
+        />
       </div>
     </div>
   </HelperModalWrapper>
 </template>
-
-<style></style>

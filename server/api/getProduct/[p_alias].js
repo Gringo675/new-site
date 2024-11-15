@@ -28,7 +28,8 @@ export default defineEventHandler(async event => {
   query = `SELECT id FROM i_categories 
             WHERE (parent_id = ${productData.category_id} OR 
             parent_id IN (SELECT id FROM i_categories WHERE parent_id = ${productData.category_id})) 
-            ${props.map(prop => `AND (${prop} = 0 OR ${prop} = ${productData[prop]}) `).join('')}`
+            ${props.map(prop => `AND (${prop} = '' OR FIND_IN_SET('${productData[prop]}', ${prop})) `).join('')}
+            AND published = 1`
   productData.subCatsId = (await dbReq(query)).map(item => item.id)
 
   // отбираем related prods (из той же категории и максимально совпадающие по параметрам)
