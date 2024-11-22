@@ -1,3 +1,5 @@
+import prettier from 'prettier'
+
 export default defineEventHandler(async event => {
   // полностью переписывает таблицу i_products из старой базы
 
@@ -76,7 +78,7 @@ export default defineEventHandler(async event => {
         .filter(image => image.product_id === prod.old_id)
         .sort((a, b) => a.ordering - b.ordering)
         .map(image => image.name)
-        .join(' ')
+        .join(',')
 
       // даты в строчный вид
       prod.date_modified = setDateObjToString(prod.date_modified)
@@ -88,6 +90,15 @@ export default defineEventHandler(async event => {
 
       // формируем новый ID
       prod.id = productNewIdHelper.create(prod.category_id)
+
+      // делаем красива
+      prod.description = await prettier.format(prod.description, { parser: 'html' })
+      prod.characteristics = await prettier.format(prod.characteristics, { parser: 'html' })
+
+      // в документации меняем старый разделитель ; на новый ,
+      prod.standart_ids = prod.standart_ids.replace(/;/g, ',')
+      prod.reestr_ids = prod.reestr_ids.replace(/;/g, ',')
+      prod.pasport_ids = prod.pasport_ids.replace(/;/g, ',')
     }
 
     // собираем запрос

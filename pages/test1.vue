@@ -1,51 +1,66 @@
 <script setup>
 //
-// const router = useRouter()
+const items = reactive([
+  { name: 'чехол', id: 11, filtered: true },
+  { name: 'корпус', id: 22, filtered: true },
+  { name: 'кронштейн', id: 33, filtered: true },
+  { name: 'кодсветка', id: 44, filtered: true },
+])
 
-const changed = ref(false)
-
-const beforeUnloadHandler = event => {
-  if (!changed.value) return
-  event.preventDefault()
-  event.returnValue = true
-}
-
-onMounted(() => {
-  window.addEventListener('beforeunload', beforeUnloadHandler)
+const filter = ref('')
+watch(filter, () => {
+  for (const item of items) {
+    item.filtered = item.name.toLowerCase().includes(filter.value.toLowerCase())
+  }
 })
-
-onBeforeRouteLeave(async to => {
-  if (!changed.value) return
-
-  console.log(`onBeforeRouteLeave`)
-
-  const proceed = await showMessage({
-    title: 'Подтвердите переход со страницы',
-    description: 'Есть несохраненные изменения. Если продолжить, они будут утеряны.',
-    type: 'error',
-    isDialog: true,
-  })
-
-  if (!proceed) return false
-})
-
-const TheTestStore = reactive({
-  show: false,
-  resolve: null,
-})
+// const filteredItems = computed(() => items.filter(item => item.name.toLowerCase().includes(filter.value.toLowerCase())))
 </script>
 
 <template>
-  <UButton @click="changed = !changed">change</UButton>
-  <div>changed: {{ changed }}</div>
+  <h2>Test1</h2>
   <div>
-    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Temporibus, officia repellendus non, doloremque numquam
-    cupiditate ab dicta quo ut, debitis recusandae in distinctio quidem quae! Velit quo hic aperiam debitis?Lorem ipsum
-    dolor sit amet consectetur, adipisicing elit. Nulla quibusdam rerum, corrupti voluptatum illo aliquam nam dolore
-    quaerat voluptatem vero repellat adipisci error est, consequuntur quam recusandae doloribus perferendis qui?lorem
+    <UInput v-model="filter" />
   </div>
-  <TheTest
-    v-if="TheTestStore.show"
-    :store="TheTestStore"
-  />
+  <div class="m-3 relative">
+    <TransitionGroup name="list">
+      <template
+        v-for="item in items"
+        :key="item.id"
+      >
+        <div
+          v-if="item.filtered"
+          class="p-2 m-2 rounded bg-sky-200 w-32 text-center"
+        >
+          {{ item.name }}
+        </div>
+      </template>
+    </TransitionGroup>
+  </div>
 </template>
+
+<style scoped>
+.list-move,
+.list-enter-active,
+.list-leave-active {
+  transition: all 10s ease;
+}
+/* .list-enter-active,
+.list-leave-active {
+  transition: transform 2s ease;
+}
+.list-move {
+  transition: transform 10s ease;
+} */
+
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: scaleY(0.1);
+}
+
+/* ensure leaving items are taken out of layout flow so that moving
+   animations can be calculated correctly. */
+.list-leave-active {
+  position: absolute;
+}
+</style>

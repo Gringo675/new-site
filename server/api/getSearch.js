@@ -56,7 +56,7 @@ export default defineEventHandler(async event => {
       catsWithProductProps[product.category_id] = [product.props]
     else catsWithProductProps[product.category_id].push(product.props)
 
-    product.image = product.images.match(/\S+/)[0] // берем только первое изображение
+    product.image = product.images.match(/^[^,]+/)[0] // берем только первое изображение
     product.price = product.special_price > 0 ? product.special_price : product.price // проверяем наличие спец.цены
   }
   // получаем категории

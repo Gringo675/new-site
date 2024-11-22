@@ -12,7 +12,7 @@ export default reactive({
     const changedItems = []
     // new
     newItems
-      .filter(item => item.id === undefined)
+      .filter(item => item.id < 0)
       .forEach(item => {
         item.isNew = true
         changedItems.push(item)
@@ -36,7 +36,8 @@ export default reactive({
         method: 'post',
         payload: changedItems,
       })
-      if (success) await this.getItems() // обновляем с новыми данными
+      if (success)
+        await this.getItems() // обновляем с новыми данными
       else return false
     }
     return true

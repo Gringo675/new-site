@@ -11,35 +11,23 @@ export default defineEventHandler(async event => {
   if (productData === undefined) throw createError({ statusCode: 404, statusMessage: 'Page Not Found!' })
   // console.log(`productData: ${JSON.stringify(productData)}`);
 
-  // хелпер для запросов
-  const props = [
-    'p0_brand',
-    'p1_type',
-    'p2_counting_system',
-    'p3_range',
-    'p4_size',
-    'p5_accuracy',
-    'p6_class',
-    'p7_feature',
-    'p8_pack',
-  ]
-
+  const propsGroups = usePropsGroups()
   // отбираем под- и под-под-категории, к которым относится данный продукт
   query = `SELECT id FROM i_categories 
             WHERE (parent_id = ${productData.category_id} OR 
             parent_id IN (SELECT id FROM i_categories WHERE parent_id = ${productData.category_id})) 
-            ${props.map(prop => `AND (${prop} = '' OR FIND_IN_SET('${productData[prop]}', ${prop})) `).join('')}
+            ${propsGroups.map(prop => `AND (${prop} = '' OR FIND_IN_SET('${productData[prop]}', ${prop})) `).join('')}
             AND published = 1`
   productData.subCatsId = (await dbReq(query)).map(item => item.id)
 
   // отбираем related prods (из той же категории и максимально совпадающие по параметрам)
-  query = `SELECT id, name, alias, price, images, ${props.join()} 
+  query = `SELECT id, name, alias, price, images, ${propsGroups.join()} 
                  FROM i_products 
                  WHERE category_id = ${productData.category_id} AND id != ${productData.id} AND published = 1`
   const related = await dbReq(query)
   related.forEach(rel => {
     rel.points = 0
-    props.forEach(prop => {
+    propsGroups.forEach(prop => {
       if (rel[prop] === productData[prop]) ++rel.points
     })
   })
@@ -58,7 +46,7 @@ export default defineEventHandler(async event => {
 
   // формируем характеристики
   productData.props = []
-  props.forEach(prop => {
+  propsGroups.forEach(prop => {
     if (productData[prop] > 0)
       productData.props.push({
         name: prop,
@@ -96,21 +84,21 @@ export default defineEventHandler(async event => {
   productData.docs = {}
   if (productData.standart_ids.length) {
     query = `SELECT number, name, file FROM i_docs_stnd
-                 WHERE id IN (${productData.standart_ids.replace(';', ', ')})`
+                 WHERE id IN (${productData.standart_ids})`
     productData.docs.stnd = await dbReq(query)
   }
   if (productData.reestr_ids.length) {
     query = `SELECT number, name, type_si, brand, date, file_ot, file_mp, file_svid FROM i_docs_rstr
-                 WHERE id IN (${productData.reestr_ids.replace(';', ', ')})`
+                 WHERE id IN (${productData.reestr_ids})`
     productData.docs.rstr = await dbReq(query)
   }
   if (productData.pasport_ids.length) {
     query = `SELECT name, file FROM i_docs_pasp
-                 WHERE id IN (${productData.pasport_ids.replace(';', ', ')})`
+                 WHERE id IN (${productData.pasport_ids})`
     productData.docs.pasp = await dbReq(query)
   }
 
-  productData.images = productData.images.split(' ') // изображения из строки в массив
+  productData.images = productData.images.split(',') // изображения из строки в массив
 
   // проверяем, есть ли на продукт спец. цена
   if (productData.special_price > 0) {
@@ -146,7 +134,7 @@ export default defineEventHandler(async event => {
     'pasport_ids',
   ]
   toDelete.forEach(name => delete productData[name])
-  props.forEach(name => delete productData[name])
+  propsGroups.forEach(name => delete productData[name])
 
   // console.log(`deltaF: ${Date.now() - start}`)
 

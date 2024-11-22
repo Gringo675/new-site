@@ -155,8 +155,8 @@ watch(
             <UButton
               v-if="field.type === 'text'"
               :title="field.nameRU"
-              :variant="cat[field.name].length ? 'solid' : 'outline'"
-              :label="field.name === 'name' ? cat.name : field.nameRU"
+              :variant="cat[field.name]?.length ? 'solid' : 'outline'"
+              :label="field.name === 'name' && cat[field.name]?.length ? cat.name : field.nameRU"
               @click="textEditor.show(indexes, field.name)"
             />
             <div
@@ -165,9 +165,9 @@ watch(
             >
               <UButton
                 :title="field.nameRU"
-                :variant="cat[field.name].length ? 'solid' : 'outline'"
+                :variant="cat[field.name]?.length ? 'solid' : 'outline'"
                 :label="
-                  cat[field.name].length
+                  cat[field.name]?.length
                     ? cat[field.name]
                         .split(',')
                         .map(i => propsG.items[field.name].find(item => item.id == i)?.name)

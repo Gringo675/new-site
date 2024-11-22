@@ -39,50 +39,51 @@ export default defineEventHandler(async event => {
 
   // на основе полученных товаров создаем фильтр
   const filterGroups = useCatProps(productsCatId)
-  const catActivePropsIds = catActiveProps.map(item => item[1]) // только значения
-  let allProps = new Set() // набор из всех уникальных id, для запроса в базу
+  const allProps = [] // набор из всех уникальных id, для запроса в базу
 
   for (let propKey in filterGroups) {
-    if (filterGroups[propKey].disabled) continue
-    filterGroups[propKey].valuesIds = new Set()
+    filterGroups[propKey].ids = {} // будем считать, в скольких продуктах присутствует активный пропс, чтобы исключить значения, присутствующие во всех продуктах
 
     products.forEach(product => {
-      if (product[propKey] > 0 && !catActivePropsIds.includes(product[propKey])) {
-        filterGroups[propKey].valuesIds.add(product[propKey])
-        allProps.add(product[propKey])
+      if (!filterGroups[propKey].disabled && product[propKey] > 0) {
+        filterGroups[propKey].ids[product[propKey]] = (filterGroups[propKey].ids[product[propKey]] || 0) + 1
         if (product.props === undefined) product.props = [] // собираем все пропсы в 1 массив, чтобы легче работать с фильтром
         product.props.push(product[propKey])
       }
       delete product[propKey] // удаляем, больше не понадобится
     })
+    for (const id in filterGroups[propKey].ids) {
+      if (filterGroups[propKey].ids[id] === products.length) delete filterGroups[propKey].ids[id]
+      else allProps.push(id)
+    }
   }
 
   // получаем пропсы
   query = `SELECT id, name, ordering
                 FROM i_properties 
-                WHERE id IN (${Array.from(allProps).join(',')})`
+                WHERE id IN (${allProps.join(',')})`
   const propsArr = await dbReq(query)
   const props = {} // для удобства создаем объект из всех пропсов
   propsArr.forEach(prop => {
     props[prop.id] = { name: prop.name, order: prop.ordering }
   })
-  console.log(`here`)
-  // создаем фильтр: отбираем группы в которых больше 1 пропсов, сортируем группы
+
+  // создаем фильтр: отбираем группы в которых есть пропсы, сортируем группы
   const filter = Object.values(filterGroups)
-    .filter(fGroup => fGroup.valuesIds?.size > 1)
+    .filter(fGroup => !fGroup.disabled && Object.keys(fGroup.ids).length > 0)
     .sort((a, b) => a.ordering - b.ordering)
   filter.forEach(fGroup => {
     fGroup.values = []
-    fGroup.valuesIds.forEach(id => {
+    for (const id in fGroup.ids) {
       fGroup.values.push({
-        val: id,
+        val: Number(id),
         name: props[id].name,
       })
-    })
+    }
     fGroup.values.sort((a, b) => props[a.val].order - props[b.val].order)
     // удаляем ненужное
     delete fGroup.ordering
-    delete fGroup.valuesIds
+    delete fGroup.ids
   })
 
   // упорядочиваем товары по фильтру
@@ -111,6 +112,7 @@ export default defineEventHandler(async event => {
 
   for (const [i, product] of products.entries()) {
     product.order = i
+    product.image = product.images.match(/^[^,]+/)[0] // берем только первое изображение
     // проверяем, есть ли на продукт спец. цена
     if (product.special_price > 0) {
       product.priceRegular = product.price
@@ -119,9 +121,10 @@ export default defineEventHandler(async event => {
     // обрабатываем лейбл
     if (product.label_id > 0) product.label = await getLabel(product.label_id)
     // обрабатываем документацию
-    if (product.standart_ids.length) product.standart_ids.split(';').forEach(stnd => stnds.add(stnd))
-    if (product.reestr_ids.length) product.reestr_ids.split(';').forEach(rstr => rstrs.add(rstr))
+    if (product.standart_ids.length) product.standart_ids.split(',').forEach(stnd => stnds.add(stnd))
+    if (product.reestr_ids.length) product.reestr_ids.split(',').forEach(rstr => rstrs.add(rstr))
     // удаляем ненужное
+    delete product.images
     delete product.reestr_ids
     delete product.standart_ids
     delete product.special_price
@@ -131,12 +134,12 @@ export default defineEventHandler(async event => {
   catData.docs = {}
   if (stnds.size) {
     query = `SELECT number, name, file FROM i_docs_stnd
-                 WHERE id IN (${Array.from(stnds).join(', ')})`
+                 WHERE id IN (${Array.from(stnds).join(',')})`
     catData.docs.stnd = await dbReq(query)
   }
   if (rstrs.size) {
     query = `SELECT number, name, type_si, brand, date, file_ot, file_mp, file_svid FROM i_docs_rstr
-                 WHERE id IN (${Array.from(rstrs).join(', ')})`
+                 WHERE id IN (${Array.from(rstrs).join(',')})`
     catData.docs.rstr = await dbReq(query)
   }
 

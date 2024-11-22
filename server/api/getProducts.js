@@ -13,7 +13,7 @@ export default defineEventHandler(async event => {
 
   products.forEach(product => {
     // берем только первое изображение
-    product.image = product.images.match(/\S+/)[0]
+    product.image = product.images.match(/^[^,]+/)[0]
     delete product.images
     // проверяем наличие спец.цены
     if (product.special_price > 0) {

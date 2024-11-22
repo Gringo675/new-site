@@ -110,9 +110,23 @@
   opacity: 0;
 }
 
-.transition-draggable-group-move {
+/* .transition-draggable-group-move {
   transition: all 0.5s ease;
+} */
+
+.transition-props-editor-move,
+.transition-props-editor-enter-active,
+.transition-props-editor-leave-active {
+  transition: all 300ms ease;
 }
+.transition-props-editor-enter-from,
+.transition-props-editor-leave-to {
+  opacity: 0;
+  transform: scaleY(0.1);
+}
+/* .transition-props-editor-leave-active {
+  position: absolute;
+} */
 
 /* .transition-informer-enter-from,
 .transition-informer-leave-to {

@@ -9,14 +9,41 @@ const pGroup = ref(JSON.parse(JSON.stringify(propsG.items[propsEditor.groupName]
 const { groupID, nameRU: groupNameRU } = catFields.find(field => field.name === propsEditor.groupName)
 
 const catSelectedIds = cat[propsEditor.groupName].split(',').map(Number)
-for (const item of pGroup.value) item.selected = catSelectedIds.includes(item.id)
+for (const item of pGroup.value) {
+  item.selected = catSelectedIds.includes(item.id)
+  item.filtered = true
+}
+
+const filter = ref('')
+watch(filter, () => {
+  for (const item of pGroup.value) {
+    item.filtered = item.name.toLowerCase().includes(filter.value.toLowerCase())
+  }
+})
+
+// закрепляем высоту формы, чтобы не было скачков при фильтрации
+const propsWrapper = ref(null)
+onMounted(() => {
+  console.log(`propsWrapper.value.scrollHeight: ${propsWrapper.value.scrollHeight}`)
+  propsWrapper.value.style.height = `${propsWrapper.value.scrollHeight}px`
+})
+// вешаем горячую клавишу
+defineShortcuts({
+  escape: {
+    usingInput: 'filterInput',
+    handler: () => (filter.value = ''),
+  },
+})
+
+const haveHiddenItems = computed(() => pGroup.value.some(item => item.filtered === false))
+
 const editorSelected = computed(() => pGroup.value.filter(item => item.selected))
 
 const draggableElementIndex = ref(null)
 const handleDragStart = ev => {
   if (ev.target.dataset?.draggable === undefined) return
   draggableElementIndex.value = Number(ev.target.parentElement.dataset.index)
-  ev.dataTransfer.setDragImage(ev.target.parentElement, 260, 20)
+  ev.dataTransfer.setDragImage(ev.target.parentElement, 290, 20)
 }
 const handleDragEnd = () => {
   draggableElementIndex.value = null
@@ -53,7 +80,7 @@ const changeArrayDebounced = {
 const deleteItem = async i => {
   const proceed = await showMessage({
     title: 'Подтвердите удаление',
-    description: `<p>Параметр "${pGroup.value[i].name}" будет удален.</p><p>Продолжить?</p>`,
+    description: `<p>Параметр "${pGroup.value[i].name}" будет помечен на удаление. Окончательное удаление произойдет после принятия изменений в форме.</p><p>Продолжить?</p>`,
     isDialog: true,
   })
   if (proceed) pGroup.value.splice(i, 1)
@@ -63,6 +90,9 @@ const addItem = i => {
   const newItem = {
     group_id: groupID,
     name: '',
+    filtered: true,
+    selected: false,
+    id: Math.floor(Math.random() * -10000), // random 4-digit negative number
   }
   pGroup.value.splice(i + 1, 0, newItem)
 }
@@ -77,13 +107,21 @@ const handleOK = async () => {
     })
     return
   }
-  const selectedString = editorSelected.value.map(item => item.id).join(',')
+
+  const changesSaved = await propsG.handleChanges(propsEditor.groupName, pGroup.value)
+  if (!changesSaved) {
+    showNotice({ title: 'Ошибка при сохранении изменений!', type: 'error' })
+    return
+  }
+  // для добавленных значений (с id < 0) нужно найти реальный id (актуальные значения уже есть в propsG.items)
+  const selectedString = editorSelected.value
+    .map(item => (item.id > 0 ? item.id : propsG.items[propsEditor.groupName].find(i => i.name === item.name).id))
+    .join(',')
   if (selectedString !== cat[propsEditor.groupName]) {
     cat[propsEditor.groupName] = selectedString
     catsG.handleChanges(cat.id, propsEditor.groupName, selectedString)
   }
-  const success = await propsG.handleChanges(propsEditor.groupName, pGroup.value)
-  if (success) propsEditor.hide()
+  propsEditor.hide()
 }
 </script>
 
@@ -96,6 +134,7 @@ const handleOK = async () => {
         <div class="max-w-full whitespace-nowrap overflow-hidden overflow-ellipsis size text-xl">
           {{ groupNameRU }}
         </div>
+
         <button
           @click="propsEditor.hide"
           class="inline-flex opacity-70 hover:opacity-100 focus:outline-none focus-visible:outline-0"
@@ -106,47 +145,77 @@ const handleOK = async () => {
           />
         </button>
       </div>
-      <div class="p-2.5 bg-lime-200">
-        Выбраны: {{ editorSelected.length ? editorSelected.map(item => item.name).join(', ') : 'нет' }}
+      <div class="bg-lime-200">
+        <div class="m-2 relative">
+          <UInput
+            v-model="filter"
+            name="filterInput"
+            autofocus
+            icon="i-heroicons-magnifying-glass-20-solid"
+            color="white"
+            :trailing="false"
+            placeholder="Фильтр..."
+            class="m-2"
+          />
+          <UButton
+            v-show="filter.length > 0"
+            :padded="false"
+            color="gray"
+            variant="link"
+            icon="i-heroicons-x-circle"
+            @click="filter = ''"
+            class="absolute top-1.5 right-4"
+          />
+        </div>
+
+        <div class="m-2">
+          Выбраны: {{ editorSelected.length ? editorSelected.map(item => item.name).join(', ') : 'нет' }}
+        </div>
       </div>
       <div
-        class="p-5 overflow-auto bg-amber-100 flex flex-col items-center"
+        ref="propsWrapper"
+        class="p-5 overflow-auto bg-amber-100"
         @dragstart="handleDragStart"
         @dragend="handleDragEnd"
         @dragenter="handleDragEnter"
         @dragover="handleDragOver"
       >
-        <TransitionGroup name="transition-draggable-group">
-          <div
+        <TransitionGroup name="transition-props-editor">
+          <template
             v-for="(item, i) in pGroup"
-            :key="i"
-            :data-index="i"
-            :class="{ 'opacity-20': draggableElementIndex === i }"
-            class="flex items-center bg-orange-200 border border-orange-700 rounded-lg p-2 m-2 transition-opacity duration-300"
+            :key="item.id"
           >
-            <UCheckbox v-model="item.selected" />
-
-            <input
-              type="text"
-              v-model="item.name"
-              class="ml-2 px-1 rounded bg-orange-100 outline-none w-40"
-            />
-            <img
-              @click="deleteItem(i)"
-              class="inline cursor-pointer select-none ml-2"
-              src="/img/trash.svg"
-            />
-            <img
-              @click="addItem(i)"
-              class="inline cursor-pointer select-none mx-2"
-              src="/img/file-plus.svg"
-            />
-            <img
-              class="inline cursor-move select-none"
-              src="/img/arrows-move.svg"
-              data-draggable
-            />
-          </div>
+            <div
+              v-if="item.filtered"
+              :data-index="i"
+              :class="{ 'opacity-20': draggableElementIndex === i }"
+              class="float-left flex items-center bg-orange-200 border border-orange-700 rounded-lg p-2 m-2 transition-opacity duration-300"
+            >
+              <UCheckbox v-model="item.selected" />
+              <input
+                type="text"
+                v-model.lazy="item.name"
+                class="ml-2 px-1 rounded bg-orange-100 outline-none w-48"
+              />
+              <img
+                @click="deleteItem(i)"
+                class="inline cursor-pointer select-none ml-2"
+                src="/img/trash.svg"
+              />
+              <img
+                @click="addItem(i)"
+                class="inline cursor-pointer select-none mx-2"
+                :class="{ 'opacity-40 pointer-events-none': haveHiddenItems }"
+                src="/img/file-plus.svg"
+              />
+              <img
+                class="inline cursor-move select-none"
+                :class="{ 'opacity-40 pointer-events-none': haveHiddenItems }"
+                src="/img/arrows-move.svg"
+                data-draggable
+              />
+            </div>
+          </template>
         </TransitionGroup>
       </div>
       <div class="p-2.5 bg-orange-200 flex justify-end gap-4">
