@@ -3,13 +3,14 @@ export default defineEventHandler(async event => {
    * API для сохранения измененных категорий. Получает POST объект вида:
    * {
    *     catID: { // объект с измененными полями. Может содержать спец. ключи:
-   *         isNew -  метка новой категории,
-   *         isDel - метка удаленной категории
+   *         isNew -  метка добавления новой категории,
+   *         isDel - метка удаления категории
    *     }, ...
    * }
    */
 
   const cats = await readBody(event)
+  const addedCats = [] //возвращаем id добавленных категорий для изменения на клиенте
 
   for (const catID in cats) {
     const cat = cats[catID]
@@ -29,7 +30,8 @@ export default defineEventHandler(async event => {
       }
       query = `INSERT INTO i_categories SET ${params.join(', ')}`
       // console.log(`query: ${query}`);
-      await dbReq(query)
+      const response = await dbReq(query)
+      addedCats.push({ tempId: catID, realId: response.insertId })
     } else {
       // обновляем
       const params = []
@@ -42,5 +44,5 @@ export default defineEventHandler(async event => {
     }
   }
 
-  return true
+  return { status: 'ok', addedCats }
 })

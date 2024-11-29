@@ -33,14 +33,16 @@ onBeforeRouteLeave(async to => {
 <template>
   <HelperAdminOnly>
     <div class="p-2">
-      <h1>Редактирование категорий</h1>
-      <div class="my-2 flex items-center">
+      <h1 class="">Редактирование категорий</h1>
+      <div
+        class="sticky -top-2 z-10 border border-cyan-600 bg-cyan-100 rounded-xl my-2 flex items-center justify-between"
+      >
         <AdminCatsFilter />
         <!--      save button-->
         <button
           :disabled="!Object.keys(catsG.changedCats).length"
           @click="catsG.saveChanges()"
-          class="ml-2 shrink-0 p-1 border border-blue-300 rounded-lg disabled:opacity-50"
+          class="ml-2 shrink-0 p-1 disabled:opacity-50"
           title="Сохранить"
         >
           <img

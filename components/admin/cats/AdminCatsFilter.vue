@@ -9,7 +9,7 @@ const masterButton = reactive({
 </script>
 
 <template>
-  <div class="flex items-center p-2 border border-cyan-600 bg-cyan-100 rounded-xl">
+  <div class="flex items-center p-2">
     <div class="flex items-center mr-2 shrink-0">
       <img
         class="w-10"
@@ -24,7 +24,7 @@ const masterButton = reactive({
         class="w-5 h-5"
       />
     </div>
-    <div class="flex flex-wrap rounded-xl bg-cyan-50 p-1">
+    <div class="flex flex-wrap rounded-xl bg-cyan-50 p-1 text-sm">
       <div
         v-for="(field, i) in catFields"
         :key="i"

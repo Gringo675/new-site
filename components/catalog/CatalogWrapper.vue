@@ -8,8 +8,8 @@ const props = defineProps({
 // const catData = JSON.parse(JSON.stringify(props.data.catData))
 // const products = JSON.parse(JSON.stringify(props.data.products))
 const catData = props.data.catData
-const products = props.data.products
-const filter = reactive(props.data.filter)
+const products = props.data.products ?? []
+const filter = reactive(props.data.filter ?? [])
 const activeProducts = shallowReactive([])
 const activeProductsIndx = ref([])
 
@@ -139,6 +139,7 @@ function addFilterToURL() {
     <HelperAsideGrid>
       <template #aside>
         <CatalogFilter
+          v-if="filter.length"
           :filter="filter"
           @filterChanged="handleFilter"
           @resetFilter="initializeFilter(true)"
@@ -149,6 +150,9 @@ function addFilterToURL() {
         :activeProductsIndx
       />
     </HelperAsideGrid>
-    <HelperDocsBlock :docs="catData.docs" />
+    <HelperDocsBlock
+      v-if="catData.docs"
+      :docs="catData.docs"
+    />
   </div>
 </template>

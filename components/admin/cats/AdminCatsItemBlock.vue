@@ -12,7 +12,7 @@ const props = defineProps({
 const cat = catsG.getCat(props.indexes)
 
 const showMenu = ref(false)
-const showParams = ref(false)
+// const showParams = ref(false)
 const showChildren = ref(false)
 
 const validateDelete = async () => {
@@ -28,7 +28,7 @@ const validateDelete = async () => {
 
   const proceed = await showMessage({
     title: 'Подтвердите удаление',
-    description: `<p>Категория "${cat.name}" будет удалена.</p><p>Продолжить?</p>`,
+    description: `<p>Категория "${cat.name ?? 'Без имени'}" будет удалена.</p><p>Продолжить?</p>`,
     isDialog: true,
   })
   if (proceed) catsG.deleteCat(props.indexes)
@@ -95,17 +95,6 @@ const inDraggingGroup = computed(
     catsG.draggingCatIndexes.slice(0, -1).every((item, index) => item === props.indexes[index]) &&
     catsG.draggingCatIndexes[catsG.draggingCatIndexes.length - 1] !== props.indexes[props.indexes.length - 1]
 )
-
-// создание алиаса
-watch(
-  () => cat.name,
-  name => {
-    if (!cat.alias?.length) {
-      cat.alias = createAlias(name)
-      catsG.handleChanges(cat.id, 'alias', cat.alias)
-    }
-  }
-)
 </script>
 
 <template>
@@ -113,40 +102,27 @@ watch(
   <div class="">
     <!--    cat wrapper-->
     <div
-      class="cat-wrapper my-2 border border-gray-500 rounded-xl flex items-start relative"
+      class="my-2 p-1 border border-gray-500 rounded-xl flex items-start relative"
       :class="{
         'bg-sky-200': indexes.length === 1,
         'bg-teal-200': indexes.length === 2,
         'bg-orange-200': indexes.length === 3,
       }"
     >
-      <button
-        v-if="cat.children?.length"
-        @click="showChildren = !showChildren"
-        class="shrink-0 flex items-center border border-gray-200 rounded-lg bg-yellow-100 m-1 p-1"
-      >
-        <img
-          src="/img/chevron-down.svg"
-          class="transition-transform duration-500"
-          :class="{ 'rotate-over': showChildren }"
-        />
-        <span class=""> +{{ cat.children?.length }} </span>
-      </button>
-      <button
-        class="border border-gray-200 rounded-full bg-yellow-100 m-1 p-2 shrink-0"
-        @click="showParams = !showParams"
-      >
-        <img
-          src="/img/chevron-down.svg"
-          class="transition-transform duration-500"
-          :class="{ 'rotate-over': showParams }"
-        />
-      </button>
       <!--      params wrapper-->
-      <div
-        class="flex items-center flex-wrap gap-2 mr-9 overflow-hidden transition-all duration-500"
-        :class="showParams ? 'max-h-44' : 'max-h-12'"
-      >
+      <div class="flex items-center flex-wrap gap-x-2 gap-y-1 my-1 mr-9">
+        <button
+          v-if="cat.children?.length"
+          @click="showChildren = !showChildren"
+          class="shrink-0 flex items-center border border-gray-200 rounded-lg bg-yellow-100 p-1"
+        >
+          <img
+            src="/img/chevron-down.svg"
+            class="transition-transform duration-500"
+            :class="{ 'rotate-over': showChildren }"
+          />
+          <span class=""> +{{ cat.children?.length }} </span>
+        </button>
         <template
           v-for="(field, i) in catFields"
           :key="i"
@@ -159,54 +135,20 @@ watch(
               :label="field.name === 'name' && cat[field.name]?.length ? cat.name : field.nameRU"
               @click="textEditor.show(indexes, field.name)"
             />
-            <div
+            <UButton
               v-else-if="indexes.length > 1 && field.type === 'multiselect'"
-              class="m-2 flex"
-            >
-              <UButton
-                :title="field.nameRU"
-                :variant="cat[field.name]?.length ? 'solid' : 'outline'"
-                :label="
-                  cat[field.name]?.length
-                    ? cat[field.name]
-                        .split(',')
-                        .map(i => propsG.items[field.name].find(item => item.id == i)?.name)
-                        .join(', ')
-                    : field.nameRU
-                "
-                @click="propsEditor.show(indexes, field.name)"
-              />
-            </div>
-            <div
-              v-else-if="indexes.length > 1 && field.type === 'select'"
-              class="m-2 flex"
-            >
-              <select
-                @change="catsG.handleChanges(cat.id, field.name, $event.target.value)"
-                class="w-36"
-                :title="field.nameRU"
-              >
-                <option
-                  disabled
-                  :selected="!cat[field.name] > 0"
-                >
-                  {{ field.nameRU }}:
-                </option>
-                <option value="0">Нет</option>
-                <option
-                  v-for="proper in propsG.items[field.name]"
-                  :value="proper.id"
-                  :selected="proper.id == cat[field.name]"
-                >
-                  {{ proper.name }}
-                </option>
-              </select>
-              <img
-                class="inline cursor-pointer select-none shrink-0 w-5 ml-1"
-                src="/img/pencil-square.svg"
-                @click="propsEditor.show(field.name, field.nameRU, field.groupID)"
-              />
-            </div>
+              :title="field.nameRU"
+              :variant="cat[field.name]?.length ? 'solid' : 'outline'"
+              :label="
+                cat[field.name]?.length
+                  ? cat[field.name]
+                      .split(',')
+                      .map(i => propsG.items[field.name].find(item => item.id == i)?.name)
+                      .join(', ')
+                  : field.nameRU
+              "
+              @click="propsEditor.show(indexes, field.name)"
+            />
             <div
               v-else-if="field.type === 'checkbox'"
               class="m-2 flex"
@@ -234,7 +176,7 @@ watch(
             @click="addCat"
           >
             <img
-              src="/img/plus-circle.svg"
+              :src="getDynamicAsset('/img/plus-circle.svg')"
               class="w-7"
               title="Добавить категорию"
             />
@@ -244,7 +186,7 @@ watch(
             @click="copyCat"
           >
             <img
-              src="/img/hdd-stack.svg"
+              :src="getDynamicAsset('/img/hdd-stack.svg')"
               class="w-7"
               title="Скопировать категорию"
             />
@@ -255,7 +197,7 @@ watch(
             @click="addSubCat"
           >
             <img
-              src="/img/node-plus.svg"
+              :src="getDynamicAsset('/img/node-plus.svg')"
               class="w-7 rotate-90"
               title="Добавить подкатегорию"
             />
@@ -266,7 +208,7 @@ watch(
             @click="validateDelete"
           >
             <img
-              src="/img/trash.svg"
+              :src="getDynamicAsset('/img/trash.svg')"
               class="w-7"
               title="Удалить категорию"
             />
@@ -275,7 +217,7 @@ watch(
         <button
           class="rounded-lg bg-blue-200 py-1 transition"
           @click="showMenu = !showMenu"
-          :class="{ 'scale-125 shadow-inner shadow-amber-500': inDraggingGroup, 'opacity-20': isDraggingCat }"
+          :class="{ 'scale-125 border border-blue-300': inDraggingGroup, 'opacity-20': isDraggingCat }"
         >
           <img
             :src="showMenu ? getDynamicAsset('/img/x.svg') : getDynamicAsset('/img/three-dots-vertical.svg')"

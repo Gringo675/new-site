@@ -36,6 +36,7 @@ export default defineEventHandler(async event => {
                  }, '')}
                  AND published = 1`
   const products = await dbReq(query)
+  if (!products.length) return { catData }
 
   // на основе полученных товаров создаем фильтр
   const filterGroups = useCatProps(productsCatId)
@@ -57,6 +58,7 @@ export default defineEventHandler(async event => {
       else allProps.push(id)
     }
   }
+  if (!allProps.length) return { catData, products } // нет фильтра
 
   // получаем пропсы
   query = `SELECT id, name, ordering
@@ -131,16 +133,16 @@ export default defineEventHandler(async event => {
     delete product.label_id
   }
 
-  catData.docs = {}
+  // catData.docs = {}
   if (stnds.size) {
     query = `SELECT number, name, file FROM i_docs_stnd
                  WHERE id IN (${Array.from(stnds).join(',')})`
-    catData.docs.stnd = await dbReq(query)
+    ;(catData.docs = catData.docs || {}).stnd = await dbReq(query)
   }
   if (rstrs.size) {
     query = `SELECT number, name, type_si, brand, date, file_ot, file_mp, file_svid FROM i_docs_rstr
                  WHERE id IN (${Array.from(rstrs).join(',')})`
-    catData.docs.rstr = await dbReq(query)
+    ;(catData.docs = catData.docs || {}).rstr = await dbReq(query)
   }
 
   // удаляем ненужное

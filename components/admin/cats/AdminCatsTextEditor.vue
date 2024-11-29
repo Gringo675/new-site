@@ -11,8 +11,64 @@ const saveChanges = () => {
   if (content.value !== cat[textEditor.field]) {
     cat[textEditor.field] = content.value
     catsG.handleChanges(cat.id, textEditor.field, content.value)
+    if (textEditor.field === 'name') createAlias(content.value)
   }
   textEditor.hide()
+}
+
+const createAlias = async name => {
+  if (cat.alias?.length) {
+    const proceed = await showMessage({
+      title: 'Обновить алиас категории?',
+      description: `<p>Будет создан новый алиас из наименования "${name}".</p><p>Продолжаем?</p>`,
+      isDialog: true,
+    })
+    if (!proceed) return
+  }
+  const replacer = {
+    а: 'a',
+    б: 'b',
+    в: 'v',
+    г: 'g',
+    д: 'd',
+    е: 'e',
+    ё: 'jo',
+    ж: 'zh',
+    з: 'z',
+    и: 'i',
+    й: 'j',
+    к: 'k',
+    л: 'l',
+    м: 'm',
+    н: 'n',
+    о: 'o',
+    п: 'p',
+    р: 'r',
+    с: 's',
+    т: 't',
+    у: 'u',
+    ф: 'f',
+    х: 'kh',
+    ц: 'ts',
+    ч: 'ch',
+    ш: 'sh',
+    щ: 'shch',
+    ъ: '',
+    ы: 'y',
+    ь: '',
+    э: 'e',
+    ю: 'yu',
+    я: 'ya',
+    ' ': '-',
+    '\\': '',
+    '/': '',
+  }
+  cat.alias = ''
+  for (let i = 0; i < name.length; i++) {
+    const symbol = name[i].toLowerCase()
+    cat.alias += replacer[symbol] ?? symbol
+  }
+  catsG.handleChanges(cat.id, 'alias', cat.alias)
 }
 </script>
 
@@ -37,7 +93,7 @@ const saveChanges = () => {
         </div>
         <div class="p-5 overflow-auto bg-amber-100">
           <UTextarea
-            v-model="content"
+            v-model.lazy="content"
             class=""
             color="secondary"
             placeholder="Пусто..."

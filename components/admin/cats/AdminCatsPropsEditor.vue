@@ -8,7 +8,7 @@ const cat = catsG.getCat(propsEditor.indexes)
 const pGroup = ref(JSON.parse(JSON.stringify(propsG.items[propsEditor.groupName]))) // локальная копия
 const { groupID, nameRU: groupNameRU } = catFields.find(field => field.name === propsEditor.groupName)
 
-const catSelectedIds = cat[propsEditor.groupName].split(',').map(Number)
+const catSelectedIds = cat[propsEditor.groupName]?.split(',').map(Number) ?? []
 for (const item of pGroup.value) {
   item.selected = catSelectedIds.includes(item.id)
   item.filtered = true
@@ -24,7 +24,6 @@ watch(filter, () => {
 // закрепляем высоту формы, чтобы не было скачков при фильтрации
 const propsWrapper = ref(null)
 onMounted(() => {
-  console.log(`propsWrapper.value.scrollHeight: ${propsWrapper.value.scrollHeight}`)
   propsWrapper.value.style.height = `${propsWrapper.value.scrollHeight}px`
 })
 // вешаем горячую клавишу

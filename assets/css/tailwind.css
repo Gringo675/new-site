@@ -110,9 +110,9 @@
   opacity: 0;
 }
 
-/* .transition-draggable-group-move {
+.transition-draggable-group-move {
   transition: all 0.5s ease;
-} */
+}
 
 .transition-props-editor-move,
 .transition-props-editor-enter-active,

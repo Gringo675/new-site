@@ -22,15 +22,46 @@ export default reactive({
   },
   async saveChanges() {
     if (!Object.keys(this.changedCats).length) return
+    // валидация
+    for (const catID in this.changedCats) {
+      const cat = this.changedCats[catID]
+      if (cat.isNew && (!cat.name || cat.name === '')) {
+        showMessage({
+          title: `Название добавляемой категории не может быть пустым!`,
+          description: 'Операция прервана.',
+          type: 'error',
+        })
+        return
+      }
+    }
 
-    const success = await myFetch('/api/admin/setCategories', {
+    const response = await myFetch('/api/admin/setCategories', {
       method: 'post',
       payload: this.changedCats,
     })
-    if (success) {
+    if (response.status === 'ok') {
+      // для добавленных категорий возвращается объект {tempId, realId}
+      const findAddedCat = (arr, tempId) => {
+        for (const cat of arr) {
+          if (cat.id == tempId) return cat
+          if (cat.children) {
+            const addedCat = findAddedCat(cat.children, tempId)
+            if (addedCat) return addedCat
+          }
+        }
+      }
+      const checkParentId = (arr, tempId, realId) => {
+        for (const cat of arr) {
+          if (cat.parentId == tempId) cat.parentId = realId
+          if (cat.children) checkParentId(cat.children, tempId, realId)
+        }
+      }
+      for (const aCat of response.addedCats) {
+        const addedCat = findAddedCat(this.cats, aCat.tempId)
+        addedCat.id = Number(aCat.realId)
+        if (addedCat.children) checkParentId(addedCat.children, aCat.tempId, aCat.realId)
+      }
       this.changedCats = {}
-      // this.cats.length = 0
-      // this.getCats()
       showNotice({ title: `Изменения сохранены!`, type: 'success' })
     }
   },
@@ -41,7 +72,8 @@ export default reactive({
      * Копирование - options.copy - таргет-категория копируется рядом.
      * Добавление подкатегории - options.subcat - добавляет пустую подкатегорию для таргет-категории (в конец)
      */
-
+    console.log(`indexes: ${JSON.stringify(indexes, null, 2)}`)
+    console.log(`options: ${JSON.stringify(options, null, 2)}`)
     options.copy = options.copy ?? false
     options.subcat = options.subcat ?? false
 
@@ -63,14 +95,18 @@ export default reactive({
     }
 
     const newCat = options.copy ? JSON.parse(JSON.stringify(tCat)) : {}
-    delete newCat.children // при копировании дети не копируются
+    if (options.copy) {
+      newCat.alias = '' // не дублируем alias и детей
+      delete newCat.children
+    }
     newCat.id = Date.now() // temp id
+    console.log(`parent_id: ${parentId}`)
     newCat.parent_id = parentId
     newCat.published = 1
     if (options.subcat) {
       // наследуем пропсы от родительской категории
       for (const key in tCat) {
-        if (/^p\d_/.test(key) && tCat[key] > 0) newCat[key] = tCat[key]
+        if (/^p\d_/.test(key)) newCat[key] = tCat[key]
       }
       // вставляем в конец
       tArray.push(newCat)
