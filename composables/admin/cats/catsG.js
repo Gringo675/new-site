@@ -72,8 +72,6 @@ export default reactive({
      * Копирование - options.copy - таргет-категория копируется рядом.
      * Добавление подкатегории - options.subcat - добавляет пустую подкатегорию для таргет-категории (в конец)
      */
-    console.log(`indexes: ${JSON.stringify(indexes, null, 2)}`)
-    console.log(`options: ${JSON.stringify(options, null, 2)}`)
     options.copy = options.copy ?? false
     options.subcat = options.subcat ?? false
 
@@ -100,9 +98,15 @@ export default reactive({
       delete newCat.children
     }
     newCat.id = Date.now() // temp id
-    console.log(`parent_id: ${parentId}`)
     newCat.parent_id = parentId
     newCat.published = 1
+    // при добавлении подподкатегории вставляем пропсы родителя
+    if (indexes.length === 3 && !options.subcat && !options.copy) {
+      const parentCat = this.getCat(indexes.slice(0, -1))
+      for (const key in parentCat) {
+        if (/^p\d_/.test(key)) newCat[key] = parentCat[key]
+      }
+    }
     if (options.subcat) {
       // наследуем пропсы от родительской категории
       for (const key in tCat) {

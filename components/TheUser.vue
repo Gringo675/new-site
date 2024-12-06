@@ -17,19 +17,14 @@ onMounted(async () => {
   }, 1000)
 })
 
-const showMenu = ref(false)
-
-const handleShowMenuClick = event => {
-  if (showMenu.value) return
-  showMenu.value = true
-  document.body.addEventListener('click', hideMenu, { once: true })
-  event.stopPropagation()
+const menuState = reactive({
+  show: false,
+})
+const handleShowMenuClick = () => {
+  if (menuState.show) return
+  menuState.show = true
+  setTimeout(() => window.addEventListener('click', () => (menuState.show = false), { once: true }), 10)
 }
-
-const hideMenu = () => {
-  showMenu.value = false
-}
-
 const handleLogin = () => {
   user.showLogin = true
 }
@@ -60,8 +55,8 @@ const handleLogout = async () => {
       </div>
       <Transition name="transition-fade">
         <div
-          v-show="showMenu"
-          class="absolute p-2 bg-red-500 flex flex-col items-end z-10"
+          v-show="menuState.show"
+          class="absolute mt-2 p-2 bg-red-500 flex flex-col items-end z-10"
         >
           <NuxtLink to="/user/profile">Профиль</NuxtLink>
           <NuxtLink to="/user/orders">Заказы</NuxtLink>

@@ -86,6 +86,16 @@
 
 /*эти классы всегда будут в итоговом css-файле*/
 
+h1 {
+  @apply text-3xl font-semibold;
+}
+h2 {
+  @apply text-2xl font-semibold;
+}
+h3 {
+  @apply text-xl font-semibold;
+}
+
 .transition-fade-enter-active,
 .transition-fade-leave-active {
   transition: opacity 0.2s linear;
@@ -101,6 +111,18 @@
 .transition-fade-enter-from .modal-form,
 .transition-fade-leave-to .modal-form {
   transform: translateY(-20px);
+}
+
+.transition-dive-enter-from,
+.transition-dive-leave-to {
+  opacity: 0;
+  transform: translateY(20px);
+}
+.transition-dive-enter-active,
+.transition-dive-leave-active {
+  transition:
+    opacity 0.2s linear,
+    transform 0.2s linear;
 }
 
 .transition-loader-enter-active {

@@ -13,11 +13,17 @@ export default defineEventHandler(async event => {
 
   const propsGroups = usePropsGroups()
   // отбираем под- и под-под-категории, к которым относится данный продукт
-  query = `SELECT id FROM i_categories 
-            WHERE (parent_id = ${productData.category_id} OR 
-            parent_id IN (SELECT id FROM i_categories WHERE parent_id = ${productData.category_id})) 
+  query = `SELECT id FROM i_categories
+            WHERE (parent_id = ${productData.category_id} OR
+            parent_id IN (SELECT id FROM i_categories WHERE parent_id = ${productData.category_id}))
             ${propsGroups.map(prop => `AND (${prop} = '' OR FIND_IN_SET('${productData[prop]}', ${prop})) `).join('')}
             AND published = 1`
+  // убрал под-под-категории
+  // query = `SELECT id FROM i_categories
+  //           WHERE parent_id = ${productData.category_id}
+  //           ${propsGroups.map(prop => `AND (${prop} = '' OR FIND_IN_SET('${productData[prop]}', ${prop})) `).join('')}
+  //           AND published = 1`
+
   productData.subCatsId = (await dbReq(query)).map(item => item.id)
 
   // отбираем related prods (из той же категории и максимально совпадающие по параметрам)

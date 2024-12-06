@@ -1,15 +1,19 @@
 <script setup>
-//
+/**
+ * Из категории передается id конечной категории (находим родителей)
+ * Из продукта передается id основной категории и массив с подкатегориями (находятся на бэкэнде)
+ */
 const props = defineProps({
   catId: {
     type: Number,
     required: true,
   },
-  forProduct: {
-    type: Boolean,
-    default: false,
+  productCats: {
+    type: Array,
   },
 })
+
+const forProduct = props.productCats !== undefined
 
 const { data: cats } = await useCats()
 const catsPath = []
@@ -21,37 +25,39 @@ function createPath(cats) {
       catsPath.push({
         name: cat.name,
         alias: cat.alias,
-        siblings: cats
-          .filter(cat => cat.id !== props.catId)
-          .map(cat => {
-            return {
-              alias: cat.alias,
-              name: cat.name,
-            }
-          }),
-        children: cat.children?.map(cat => {
-          return {
-            alias: cat.alias,
-            name: cat.name,
-          }
-        }),
-      })
-      return true
-    }
-    if (cat.children) {
-      const isParent = createPath(cat.children)
-      if (isParent) {
-        catsPath.push({
-          name: cat.name,
-          alias: cat.alias,
-          siblings: cats
-            .filter(sCat => sCat.id !== cat.id)
-            .map(cat => {
+        siblings: forProduct
+          ? undefined
+          : cats.map(sCat => {
+              return {
+                alias: sCat.alias,
+                name: sCat.name,
+                current: sCat.id === cat.id,
+              }
+            }),
+        children: forProduct
+          ? undefined
+          : cat.children?.map(cat => {
               return {
                 alias: cat.alias,
                 name: cat.name,
               }
             }),
+      })
+      return true
+    }
+    if (!forProduct && cat.children) {
+      const isParent = createPath(cat.children)
+      if (isParent) {
+        catsPath.push({
+          name: cat.name,
+          alias: cat.alias,
+          siblings: cats.map(sCat => {
+            return {
+              alias: sCat.alias,
+              name: sCat.name,
+              current: sCat.id === cat.id,
+            }
+          }),
         })
         return true
       }
@@ -64,20 +70,38 @@ catsPath.reverse()
 
 <template>
   <!-- crumbs wrapper -->
-  <div class="flex">
-    <div>
-      <NuxtLink to="/catalog">Каталог</NuxtLink>
-      <span class="ml-2">></span>
-    </div>
+  <div class="flex items-center gap-x-2">
+    <NuxtLink
+      to="/catalog"
+      title="В каталог"
+    >
+      <UIcon
+        name="i-heroicons-home-solid"
+        class="w-7 h-7 block"
+      />
+    </NuxtLink>
     <breadCrumbsItem
       v-for="(crumb, index) in catsPath"
       :crumb="crumb"
       :noLink="index === catsPath.length - 1 && !forProduct"
     />
+    <!-- product subCats -->
+    <template v-if="forProduct">
+      <UIcon
+        name="i-heroicons-slash"
+        class="w-6 h-6"
+      />
+      <BreadCrumbsProductSubCat
+        v-for="(subCat, i) in productCats"
+        :subCat="subCat"
+        :addSeparator="i !== productCats.length - 1"
+      />
+    </template>
   </div>
-  <!-- children wrapper -->
+
+  <!-- category children wrapper -->
   <div
-    v-if="!forProduct && catsPath[catsPath.length - 1].children"
+    v-if="catsPath[catsPath.length - 1].children"
     class="flex flex-wrap"
   >
     <NuxtLink

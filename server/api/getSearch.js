@@ -75,15 +75,16 @@ export default defineEventHandler(async event => {
       }
       productsProps.push(`${chunks.join(' AND ')}`)
     }
-    const chunk = `((id = ${key} OR parent_id = ${key} OR parent_id IN (SELECT id FROM i_categories WHERE parent_id = ${key})) AND ${`(${productsProps.join(
-      ' OR '
-    )})`})`
+    // const chunk = `((id = ${key} OR parent_id = ${key} OR parent_id IN (SELECT id FROM i_categories WHERE parent_id = ${key})) AND ${`(${productsProps.join(
+    //   ' OR '
+    // )})`})`
+    // убрал под-под-категории
+    const chunk = `((id = ${key} OR parent_id = ${key}) AND ${`(${productsProps.join(' OR ')})`})`
     qWhere.push(chunk)
   }
   let query = `SELECT name, id, parent_id, p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature, ordering FROM i_categories WHERE ${qWhere.join(
     ' OR '
   )}`
-  console.log(`query: ${JSON.stringify(query, null, 2)}`)
   const rawCats = await dbReq(query)
   const cats = sortCategories(rawCats)
 

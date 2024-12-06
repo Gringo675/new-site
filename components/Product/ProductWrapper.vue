@@ -23,30 +23,13 @@ const subCats = cats.value
 
 <template>
   <div class="">
-    <!--    breadcrumbs-->
     <BreadCrumbsWrapper
-      forProduct
       :catId="productData.category_id"
+      :productCats="subCats"
     />
-    <!--    subCats-->
-    <h3>В категориях:</h3>
-    <div class="my-1">
-      <div
-        v-for="subCat in subCats"
-        class="px-2"
-      >
-        <NuxtLink :to="'/catalog/' + subCat.alias">{{ subCat.name }}</NuxtLink>
-        <div
-          v-for="subSubCat in subCat.children"
-          class="px-2"
-        >
-          <NuxtLink :to="'/catalog/' + subSubCat.alias">{{ subSubCat.name }}</NuxtLink>
-        </div>
-      </div>
-    </div>
     <!--    name + label  -->
     <div class="flex items-end">
-      <h1>{{ productData.name }}</h1>
+      <h1 class="my-4">{{ productData.name }}</h1>
       <img
         v-if="productData.label"
         :src="'/img/labels/' + productData.label.image"
