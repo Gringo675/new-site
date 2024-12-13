@@ -18,8 +18,8 @@ export default defineEventHandler(async event => {
         // '`meta_description_ru-RU` AS meta_description, ' +
         // '`meta_keyword_ru-RU` AS meta_keywords, ' +
         'category_publish AS published ' +
-        'FROM instr_jshopping_categories'
-      // ' WHERE category_id = 1101'
+        'FROM instr_jshopping_categories' +
+        ' WHERE category_id > 2349' // от призм
       // убрал meta_ столбцы т.к. их нет в новой таблице
     )
 
@@ -108,8 +108,15 @@ function createNewCategoryID(oldID) {
       catID = catID + 4 // головки
       subCatID = subCatID - 30
       break
+    case oldID >= 1400 && oldID <= 2302:
+      catID = catID + 4 // от нутромеров до плит
+      break
+    case oldID >= 2350 && oldID <= 2352:
+      catID = catID + 5 // призмы
+      subCatID = subCatID - 50
+      break
     default:
-      catID = catID + 4 // для остальных
+      catID = catID + 5 // для остальных
   }
 
   return subCatID > 0 ? catID * 100 + subCatID : catID

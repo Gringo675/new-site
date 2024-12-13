@@ -18,7 +18,7 @@ const handleShowMenuClick = () => {
 <template>
   <div
     ref="menu-ref"
-    class="relative z-20"
+    class="z-20"
   >
     <UButton
       label="Каталог"
@@ -32,7 +32,7 @@ const handleShowMenuClick = () => {
       >
         <CatsMenuItem
           v-for="cat in cats"
-          :cat="cat"
+          :cat
         />
       </div>
     </Transition>

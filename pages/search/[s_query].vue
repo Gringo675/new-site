@@ -12,6 +12,6 @@ const searchData = searchQuery.length > 2 ? await myFetch(`/api/getSearch?q=${se
   <div v-else-if="!searchData">Ничего не найдено! Попробуйте изменить запрос.</div>
   <!-- results -->
   <div v-else>
-    <CatalogSearchWrapper :searchData="searchData" />
+    <CatalogSearchWrapper :searchData />
   </div>
 </template>

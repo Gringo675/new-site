@@ -12,7 +12,11 @@ const props = defineProps({
 const cat = catsG.getCat(props.indexes)
 
 const showMenu = ref(false)
-// const showParams = ref(false)
+const handleShowMenuClick = () => {
+  if (showMenu.value) return
+  showMenu.value = true
+  setTimeout(() => window.addEventListener('click', () => (showMenu.value = false), { once: true }), 10)
+}
 const showChildren = ref(false)
 
 const validateDelete = async () => {
@@ -164,12 +168,13 @@ const inDraggingGroup = computed(
             </div>
           </template>
         </template>
+        <div>id: {{ cat.id }}</div>
       </div>
       <!--      menu-->
       <div class="menu-block absolute right-0 m-1 flex border border-blue-300 rounded-lg bg-blue-100">
         <div
           class="flex items-center overflow-hidden transition-all duration-500"
-          :class="showMenu ? 'max-w-[170px]' : 'max-w-0 opacity-0'"
+          :class="showMenu ? 'max-w-[210px]' : 'max-w-0 opacity-0'"
         >
           <button
             class="shrink-0 mx-2"
@@ -213,10 +218,21 @@ const inDraggingGroup = computed(
               title="Удалить категорию"
             />
           </button>
+          <NuxtLink
+            :to="'/catalog/' + cat.alias"
+            target="_blank"
+            class="shrink-0 mr-2"
+          >
+            <UIcon
+              name="i-heroicons-arrow-right-on-rectangle-solid"
+              class="w-7 h-7 block"
+              title="Перейти в категорию"
+            />
+          </NuxtLink>
         </div>
         <button
           class="rounded-lg bg-blue-200 py-1 transition"
-          @click="showMenu = !showMenu"
+          @click="handleShowMenuClick"
           :class="{ 'scale-125 border border-blue-300': inDraggingGroup, 'opacity-20': isDraggingCat }"
         >
           <img

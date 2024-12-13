@@ -48,12 +48,6 @@ const test = () => {
     >
       <div class="flex justify-end items-center gap-x-4">
         <UButton
-          label="test"
-          variant="outline"
-          color="secondary"
-          @click="test"
-        />
-        <UButton
           label="Отмена"
           variant="outline"
           color="secondary"

@@ -13,7 +13,7 @@ export default defineEventHandler(async event => {
 
   const getProducts = (qExpression, fastSearch) => {
     try {
-      const query = `SELECT id, name, alias, category_id, price, special_price, images, p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature FROM i_products WHERE name LIKE '%${qExpression}%' LIMIT ${
+      const query = `SELECT id, name, alias, category_id, price, special_price, images, p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature, p8_pack FROM i_products WHERE name LIKE '%${qExpression}%' LIMIT ${
         fastSearch ? '10' : '100'
       }`
       return dbReq(query)
@@ -79,51 +79,42 @@ export default defineEventHandler(async event => {
     // )})`})`
     // убрал под-под-категории
     const chunk = `((id = ${key} OR parent_id = ${key}) AND ${`(${productsProps.join(' OR ')})`})`
-    // const chunk = `((parent_id = ${key}) AND ${`(${productsProps.join(' OR ')})`})`
-
     qWhere.push(chunk)
   }
-  // let query = `SELECT name, id, parent_id, p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature, ordering FROM i_categories WHERE ${qWhere.join(
-  //   ' OR '
-  // )}`
-  let query = `SELECT name, alias, id, parent_id, ordering FROM i_categories WHERE ${qWhere.join(' OR ')}`
+  let query = `SELECT name, id, parent_id, p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature, ordering FROM i_categories WHERE ${qWhere.join(
+    ' OR '
+  )}`
   const rawCats = await dbReq(query)
-  let cats = sortCategories(rawCats)
+  const cats = sortCategories(rawCats)
 
   // обрабатываем полученные категории
-  // const collectPropsAndClear = cat => {
-  //   cat.props = []
-  //   for (const propsGroup of propsGroupOrder) {
-  //     if (cat[propsGroup.name] > 0) cat.props.push(cat[propsGroup.name])
-  //     delete cat[propsGroup.name]
-  //   }
-  //   delete cat.parent_id
-  //   delete cat.ordering
-  // }
-  // for (const cat of cats) {
-  //   delete cat.id
-  //   delete cat.parent_id
-  //   delete cat.ordering
-  //   for (const subCat of cat.children) {
-  //     delete subCat.id
-  //     delete subCat.parent_id
-  //     delete subCat.ordering
-  //   }
-  // collectPropsAndClear(cat)
-  // if (cat.children) {
-  //   for (const subCat of cat.children) {
-  //     collectPropsAndClear(subCat)
-  //     if (subCat.children) {
-  //       for (const subSubCat of subCat.children) {
-  //         collectPropsAndClear(subSubCat)
-  //       }
-  //     }
-  //   }
-  // }
-  // }
+  const catsOrder = {} // вспомогательный объект типа catID: orderingValue для сортировки товаров
+  const collectPropsAndClear = cat => {
+    cat.props = []
+    for (const propsGroup of propsGroupOrder) {
+      if (cat[propsGroup.name] > 0) cat.props.push(cat[propsGroup.name])
+      delete cat[propsGroup.name]
+    }
+    delete cat.parent_id
+    delete cat.ordering
+  }
+  for (const cat of cats) {
+    catsOrder[cat.id] = cat.ordering
+    collectPropsAndClear(cat)
+    if (cat.children) {
+      for (const subCat of cat.children) {
+        collectPropsAndClear(subCat)
+        if (subCat.children) {
+          for (const subSubCat of subCat.children) {
+            collectPropsAndClear(subSubCat)
+          }
+        }
+      }
+    }
+  }
 
   // получаем пропсы
-  query = `SELECT id, group_id, ordering FROM i_properties WHERE id IN (${Array.from(propsSet).join(', ')})`
+  query = `SELECT id, group_id, name, ordering FROM i_properties WHERE id IN (${Array.from(propsSet).join(', ')})`
   const props = await dbReq(query)
   const propsOrder = props
     .sort((a, b) => {
@@ -137,8 +128,7 @@ export default defineEventHandler(async event => {
   products = products
     .sort((a, b) => {
       // сначала сортируем по порядку категорий
-      if (a.category_id !== b.category_id)
-        return cats.findIndex(cat => cat.id === a.category_id) - cats.findIndex(cat => cat.id === b.category_id)
+      if (a.category_id !== b.category_id) return catsOrder[a.category_id] - catsOrder[b.category_id]
       // затем по пропсам
       for (const prop of propsOrder) {
         const isA = a.props.includes(prop)
@@ -156,23 +146,11 @@ export default defineEventHandler(async event => {
         alias: product.alias,
         image: product.image,
         price: product.price,
-        // props: product.props.filter(prop => prop > 0), // оставляем только активные значения
+        props: product.props.filter(prop => prop > 0), // оставляем только активные значения
         order: index,
       }
     })
 
-  cats = cats.map(cat => {
-    return {
-      name: cat.name,
-      alias: cat.alias,
-      children: cat.children?.map(cat => {
-        return {
-          name: cat.name,
-          alias: cat.alias,
-        }
-      }),
-    }
-  })
   return {
     products,
     cats,

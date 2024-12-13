@@ -137,7 +137,11 @@ function getNewCategoryId(oldCategoryId) {
       return Math.trunc(oldCategoryId / 100) + 3 // мк и индикаторы
     case oldCategoryId > 1330 && oldCategoryId < 1400:
       return 17 // головки
+    case oldCategoryId > 1400 && oldCategoryId < 2350:
+      return Math.trunc(oldCategoryId / 100) + 4 // от нутромеров до плит
+    case oldCategoryId > 2350 && oldCategoryId < 2400:
+      return 28 // призмы
     default:
-      return Math.trunc(oldCategoryId / 100) + 4 // для остальных отбрасываем 2 последние цифры и прибавляем 4
+      return Math.trunc(oldCategoryId / 100) + 5 // для остальных отбрасываем 2 последние цифры и прибавляем 5
   }
 }
