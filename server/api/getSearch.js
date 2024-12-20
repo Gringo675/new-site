@@ -28,7 +28,7 @@ export default defineEventHandler(async event => {
     // если нет результатов, пробуем изменить раскладку и повторить поиск
     const newQ = changeToRusLayout(qExpression)
     if (newQ !== qExpression) products = await getProducts(newQ, fastSearch)
-    if (!products.length) return null
+    if (!products.length) return { products: [] }
   }
 
   const propsSet = new Set() // собираем все пропсы
