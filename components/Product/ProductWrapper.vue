@@ -3,6 +3,9 @@ const { data: productData } = defineProps({
   data: Object,
 })
 
+useSeoMeta({
+  title: productData.name + ' - цена, фото, характеристики',
+})
 // формируем вложенные категории, в которых присутствует товар
 const { data: cats } = await useCats()
 const subCats = cats.value

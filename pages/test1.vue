@@ -3,11 +3,21 @@
 </script>
 
 <template>
-  <div class="w-20 h-60 bg-emerald-200 flex flex-col">
-    <div class="w-10 h-20 bg-fuchsia-300">1</div>
-    <div class="w-10 bg-blue-300 overflow-auto">
-      <div class="w-5 h-20 bg-orange-300">2</div>
-      <div class="w-5 h-40 bg-red-300">2</div>
-    </div>
+  <h1>Test 1</h1>
+  <div class="w-[300px] h-[300px] m-5 bg-zinc-300 overflow-auto scrollbar test">
+    Lorem ipsum, dolor sit amet consectetur adipisicing elit. Veritatis recusandae illum excepturi provident culpa
+    dolore, ducimus ipsa expedita, obcaecati voluptatibus, a maxime soluta amet distinctio. A, blanditiis. Voluptatem,
+    excepturi modi? Lorem ipsum, dolor sit amet consectetur adipisicing elit. Veritatis recusandae illum excepturi
+    provident culpa dolore, ducimus ipsa expedita, obcaecati voluptatibus, a maxime soluta amet distinctio. A,
+    blanditiis. Voluptatem, excepturi modi? Lorem ipsum, dolor sit amet consectetur adipisicing elit. Veritatis
+    recusandae illum excepturi provident culpa dolore, ducimus ipsa expedita, obcaecati voluptatibus, a maxime soluta
+    amet distinctio. A, blanditiis. Voluptatem, excepturi modi? Lorem ipsum, dolor sit amet consectetur adipisicing
+    elit. Veritatis recusandae illum excepturi provident culpa dolore, ducimus ipsa expedita, obcaecati voluptatibus, a
+    maxime soluta amet distinctio. A, blanditiis. Voluptatem, excepturi modi? Lorem ipsum, dolor sit amet consectetur
+    adipisicing elit. Veritatis recusandae illum excepturi provident culpa dolore, ducimus ipsa expedita, obcaecati
+    voluptatibus, a maxime soluta amet distinctio. A, blanditiis. Voluptatem, excepturi modi? Lorem ipsum, dolor sit
+    amet consectetur adipisicing elit. Veritatis recusandae illum excepturi provident culpa dolore, ducimus ipsa
+    expedita, obcaecati voluptatibus, a maxime soluta amet distinctio. A, blanditiis. Voluptatem, excepturi modi?
   </div>
+  <div class="h-[2000px]"></div>
 </template>

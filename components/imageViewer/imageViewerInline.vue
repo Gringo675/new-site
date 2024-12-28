@@ -82,6 +82,7 @@ const showFullViewer = () => {
     }"
     :indicators="images.length > 1"
     :arrows="!lite && images.length > 1"
+    class="select-none"
   >
     <template #default="{ item }">
       <img

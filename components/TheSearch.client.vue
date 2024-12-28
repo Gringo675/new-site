@@ -1,4 +1,10 @@
 <script setup>
+const props = defineProps({
+  forMenu: {
+    type: Boolean,
+    default: false,
+  },
+})
 const searchState = reactive({
   query: '',
   pending: false,
@@ -6,9 +12,17 @@ const searchState = reactive({
   showResults: false,
 })
 
+onMounted(() => {
+  if (props.forMenu) {
+    // @ts-ignore
+    searchHelper.overlayEl = document.querySelector('.menu-wrapper')
+  }
+})
+
 const searchHelper = {
   queryLimit: 100,
   debounceTime: 1000,
+  overlayEl: window, // куда вешать обработчик для закрытия
   controller: new AbortController(),
   handleQueryChange() {
     if (searchState.query.length > this.queryLimit) {
@@ -50,7 +64,7 @@ const searchHelper = {
   },
   activateSearchResults() {
     searchState.showResults = true
-    window.addEventListener('click', this.hideSearchResults, { once: true })
+    this.overlayEl.addEventListener('click', this.hideSearchResults, { once: true })
   },
   hideSearchResults() {
     searchState.showResults = false
@@ -83,7 +97,7 @@ const onInputClick = e => {
       :loading="searchState.pending"
       :ui="{ icon: { trailing: { pointer: '' } } }"
       size="md"
-      class="w-[450px]"
+      class="w-[450px] z-[21]"
       inputClass="bg-slate-100"
       @keyup.enter="goTo(`/search/${searchState.query}`)"
       @click="onInputClick"
@@ -100,7 +114,7 @@ const onInputClick = e => {
       </template>
     </UInput>
     <!-- search results -->
-    <Transition name="transition-dive">
+    <Transition name="transition-above">
       <div
         v-if="searchState.showResults"
         @click.stop
@@ -138,20 +152,27 @@ const onInputClick = e => {
               @click="goTo(`/product/${product.alias}`)"
             />
           </div>
-          <div class="bg-slate-300 p-2 flex justify-end">
+          <div class="bg-slate-300 p-2 flex justify-between">
             <UButton
               variant="ghost"
               color="indigo"
               label="Все результаты"
               @click="goTo(`/search/${searchState.query}`)"
             />
+            <UButton
+              color="gray"
+              variant="link"
+              icon="i-heroicons-arrow-long-up-16-solid"
+              :padded="false"
+              @click="searchHelper.hideSearchResults"
+            />
           </div>
         </div>
         <div
           v-else
-          class="bg-slate-50"
+          class="bg-slate-50 p-2"
         >
-          По фразе '{{ searchState.query }}' ничего не найдено! Попробуйте изменить запрос.
+          Нет результатов! Попробуйте изменить запрос.
         </div>
       </div>
     </Transition>

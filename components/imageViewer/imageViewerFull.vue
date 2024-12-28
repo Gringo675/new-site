@@ -22,7 +22,7 @@ const onTransitionBeforeEnter = el => {
   >
     <div
       v-if="viewer.isActive"
-      class="fixed left-0 top-0 right-0 bottom-0 bg-gray-900/90 z-30 overflow-hidden"
+      class="fixed left-0 top-0 right-0 bottom-0 bg-gray-900/90 z-30 overflow-hidden select-none"
       @click="closeViewer"
       v-focus
       tabindex="-1"

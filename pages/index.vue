@@ -1,5 +1,8 @@
 <script setup>
 //
+useSeoMeta({
+  title: 'Главная',
+})
 </script>
 
 <template>

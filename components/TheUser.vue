@@ -35,7 +35,40 @@ const handleLogout = async () => {
 </script>
 
 <template>
-  <div class="m-2 bg-gray-300 border-2 border-slate-300 rounded-md cursor-pointer relative">
+  <div class="relative">
+    <UButton
+      v-if="!user.auth"
+      icon="i-heroicons-user"
+      size="md"
+      :ui="{ rounded: 'rounded-full' }"
+      @click="handleLogin"
+      label="Войти"
+    />
+
+    <UButton
+      v-else
+      icon="i-heroicons-user"
+      size="md"
+      :ui="{ rounded: 'rounded-full' }"
+      @click="handleShowMenuClick"
+      :label="user.name"
+    />
+    <Transition name="transition-below">
+      <div
+        v-if="menuState.show"
+        class="absolute right-0 w-28 mt-2 p-4 border border-green-600 rounded-md z-20 shadow-xl bg-slate-200 flex flex-col gap-y-2 items-end hover:*:underline"
+      >
+        <NuxtLink to="/user/profile">Профиль</NuxtLink>
+        <NuxtLink to="/user/orders">Заказы</NuxtLink>
+        <NuxtLink
+          to="#"
+          @click="handleLogout"
+          >Выход</NuxtLink
+        >
+      </div>
+    </Transition>
+  </div>
+  <!-- <div class="m-2 bg-gray-300 border-2 border-slate-300 rounded-md cursor-pointer relative">
     <div
       v-if="!user.auth"
       @click="handleLogin"
@@ -53,7 +86,7 @@ const handleLogout = async () => {
       >
         {{ user.name }}
       </div>
-      <Transition name="transition-fade">
+      <Transition name="transition-below">
         <div
           v-show="menuState.show"
           class="absolute mt-2 p-2 bg-red-500 flex flex-col items-end z-10"
@@ -64,5 +97,5 @@ const handleLogout = async () => {
         </div>
       </Transition>
     </div>
-  </div>
+  </div> -->
 </template>

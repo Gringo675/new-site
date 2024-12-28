@@ -1,4 +1,9 @@
 <script setup>
+//
+useSeoMeta({
+  title: 'Мои заказы',
+})
+
 const user = useUser().value
 </script>
 

@@ -1,5 +1,9 @@
 <script setup>
 // страница авторизации по ссылке в письме
+useSeoMeta({
+  title: 'Активация аккаунта',
+})
+
 const user = useUser().value
 
 try {

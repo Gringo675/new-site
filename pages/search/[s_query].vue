@@ -1,5 +1,8 @@
 <script setup>
 //
+useSeoMeta({
+  title: 'Результаты поиска',
+})
 const searchQuery = useRoute().params.s_query
 const searchData = searchQuery.length > 2 ? await myFetch(`/api/getSearch?q=${searchQuery}`) : null
 </script>

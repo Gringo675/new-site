@@ -1,5 +1,9 @@
 <script setup>
 //
+useSeoMeta({
+  title: 'Профиль пользователя',
+})
+
 const user = useUser().value
 
 const TheUserProfileData = reactive({

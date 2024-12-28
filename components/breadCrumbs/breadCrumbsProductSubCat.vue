@@ -37,7 +37,7 @@ const handleShowChildrenClick = () => {
           class="w-6 h-6 block"
         />
       </UButton>
-      <Transition name="transition-dive">
+      <Transition name="transition-below">
         <div
           v-if="menuState.show"
           class="absolute right-0 w-max flex flex-col gap-2 bg-slate-200 rounded-lg mt-2 p-2 z-20"

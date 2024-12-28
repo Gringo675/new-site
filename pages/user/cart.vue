@@ -1,6 +1,10 @@
 vue
 <script setup>
 //
+useSeoMeta({
+  title: 'Корзина',
+})
+
 const cart = useCart()
 const user = useUser().value
 
@@ -28,6 +32,7 @@ const formValidate = state => {
   if (state.message.length > 10) errors.push({ path: 'message', message: 'Слишком длинное сообщение!' })
 
   const fileInput = document.getElementById('cart_file_input')
+  // @ts-ignore
   checkFormFiles(fileInput.files, errors)
 
   return errors
@@ -67,6 +72,7 @@ const fastOrderHandler = () => {
 }
 
 const sendOrder = async () => {
+  // @ts-ignore
   document.getElementById('up_form').requestSubmit() // чтобы гарантировано запустить валидацию
   if (!TheUserProfileData.isUserDataValid) return
   if (TheUserProfileData.isUserDataChanged) {
@@ -89,6 +95,12 @@ const sendOrder = async () => {
     clearCart()
   }
 }
+const tableColumns = [
+  { key: 'id', label: 'Код' },
+  { key: 'name', label: 'Наименование', sortable: true },
+  { key: 'quantity', label: 'Количество' },
+  { key: 'price', label: 'Цена, р. без НДС' },
+]
 </script>
 
 <template>
@@ -97,6 +109,14 @@ const sendOrder = async () => {
     <div v-if="!cart.length">Корзина пуста!</div>
     <div v-else>
       <!-- products wrapper -->
+      <UTable
+        :rows="cart"
+        :columns="tableColumns"
+      >
+        <template #name-data="{ row }">
+          <NuxtLink :to="`/product/${row.alias}`">{{ row.name }}</NuxtLink>
+        </template>
+      </UTable>
       <div class="flex flex-col border-2 border-emerald-400 rounded m-2 p-2">
         <!-- product -->
         <div

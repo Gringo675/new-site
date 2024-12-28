@@ -1,5 +1,9 @@
 <script setup>
 // todo: no sub-sub cats
+
+useSeoMeta({
+  title: 'Каталог инструмента',
+})
 const { data: cats } = await useCats()
 </script>
 
