@@ -1,4 +1,3 @@
-vue
 <script setup>
 //
 useSeoMeta({
@@ -95,12 +94,28 @@ const sendOrder = async () => {
     clearCart()
   }
 }
+
+// table block
+
 const tableColumns = [
   { key: 'id', label: 'Код' },
-  { key: 'name', label: 'Наименование', sortable: true },
+  { key: 'name', label: 'Наименование' },
   { key: 'quantity', label: 'Количество' },
   { key: 'price', label: 'Цена, р. без НДС' },
 ]
+
+const selectedRows = ref([])
+const deleteSelected = async () => {
+  const proceed = await confirmCartDelete()
+  if (!proceed) return
+  selectedRows.value.forEach(row => {
+    const index = cart.findIndex(product => product.id === row.id)
+    changeCartQuantity(index, 0)
+  })
+  selectedRows.value = []
+}
+
+// end of table block
 </script>
 
 <template>
@@ -110,6 +125,7 @@ const tableColumns = [
     <div v-else>
       <!-- products wrapper -->
       <UTable
+        v-model="selectedRows"
         :rows="cart"
         :columns="tableColumns"
       >
@@ -117,24 +133,17 @@ const tableColumns = [
           <NuxtLink :to="`/product/${row.alias}`">{{ row.name }}</NuxtLink>
         </template>
       </UTable>
-      <div class="flex flex-col border-2 border-emerald-400 rounded m-2 p-2">
-        <!-- product -->
-        <div
-          v-for="(cartProduct, cartIndex) in cart"
-          class="flex border border-teal-300"
-        >
-          <div class="px-2">{{ cartProduct.id }}</div>
-          <div class="px-2">{{ cartProduct.name }}</div>
-          <div class="px-2">{{ cartProduct.quantity }} шт.</div>
-          <div class="px-2">{{ cartProduct.price }} р.</div>
-          <button
-            class="m-2 px-2 rounded-md bg-teal-400"
-            @click="changeCartQuantity(cartIndex, 0)"
-          >
-            Delete
-          </button>
-        </div>
-      </div>
+      <UButton
+        :disabled="selectedRows.length === 0"
+        label="Удалить выбранные"
+        @click="deleteSelected"
+        class="m-2"
+      />
+      <UButton
+        label="Очистить корзину"
+        @click="clearCart"
+      />
+
       <!-- attach comment and file -->
       <UForm
         :state="formState"

@@ -2,10 +2,10 @@
 
 <template>
   <div class="">
-    <div class="p-2 bg-primary-200">
+    <div class="p-2 bg-primary-100">
       <h1>Header</h1>
     </div>
-    <div class="flex items-center p-2 bg-secondary-200">
+    <div class="flex items-center p-2 bg-secondary-300">
       <ClientOnly>
         <CatsMenu />
         <TheSearch />

@@ -1,7 +1,7 @@
 export default defineAppConfig({
   ui: {
-    primary: 'elf-green',
-    gray: 'cool',
+    primary: 'my-primary',
+    gray: 'slate',
     modal: { wrapper: 'z-30' },
   },
 })

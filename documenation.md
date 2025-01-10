@@ -1,10 +1,38 @@
+# Chore:
+
+цвет ссылок
+не давать подвалу отрываться от низа
+изменить неактивную кнопку (убрать Стоянка запрещена, сделать более прозрачной)
+
 # ToDo:
 
-выбрать цвета
+Cart:
+
+- кнопки -/+ и удалить на товаре
+- если количество = 1, не уменьшать
+- подтверждение удаления
+- выделять активную строку
+- check clearCart, changeCartQuantity
 
 # RoadMap:
 
 корзина: поп-ап и основная страница
+
+# AI's:
+
+## Design:
+
+https://www.recraft.ai/
+figma
+https://mycolor.space/
+https://gradients.app/en/color-wheel#
+https://colorscheme.ru/#3M61Uw0w0w0w0
+
+## Texts, SEO:
+
+https://www.grammarly.com/
+https://rytr.me/
+Chat GPT
 
 # ТЕЗИСЫ
 
