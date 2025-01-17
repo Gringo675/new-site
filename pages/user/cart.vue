@@ -101,7 +101,7 @@ const tableColumns = [
   { key: 'id', label: 'Код' },
   { key: 'name', label: 'Наименование' },
   { key: 'quantity', label: 'Количество' },
-  { key: 'price', label: 'Цена, р. без НДС' },
+  { key: 'price', label: 'Цена*' },
 ]
 
 const selectedRows = ref([])
@@ -115,6 +115,13 @@ const deleteSelected = async () => {
   selectedRows.value = []
 }
 
+const changeQuantity = async (row, quantity) => {
+  if (quantity === 0) {
+    const proceed = await confirmCartDelete()
+    if (!proceed) return
+  }
+  changeCartQuantity(cart.indexOf(row), quantity)
+}
 // end of table block
 </script>
 
@@ -123,26 +130,84 @@ const deleteSelected = async () => {
     <h1>Корзина</h1>
     <div v-if="!cart.length">Корзина пуста!</div>
     <div v-else>
-      <!-- products wrapper -->
-      <UTable
-        v-model="selectedRows"
-        :rows="cart"
-        :columns="tableColumns"
-      >
-        <template #name-data="{ row }">
-          <NuxtLink :to="`/product/${row.alias}`">{{ row.name }}</NuxtLink>
-        </template>
-      </UTable>
-      <UButton
-        :disabled="selectedRows.length === 0"
-        label="Удалить выбранные"
-        @click="deleteSelected"
-        class="m-2"
-      />
-      <UButton
-        label="Очистить корзину"
-        @click="clearCart"
-      />
+      <div class="max-w-[800px] mx-auto my-4">
+        <UTable
+          v-model="selectedRows"
+          :rows="cart"
+          :columns="tableColumns"
+          :ui="{
+            wrapper: ' border border-gray-400 rounded-md',
+            base: 'base',
+            thead: 'bg-gray-100',
+            th: {
+              base: 'text-center border-x ',
+            },
+            tr: {
+              base: 'hover:bg-gray-200',
+              selected: 'font-bold',
+            },
+            td: {
+              base: 'text-center border-x ',
+            },
+          }"
+        >
+          <template #name-data="{ row }">
+            <div class="text-left">
+              <NuxtLink
+                :to="`/product/${row.alias}`"
+                class="hover:text-blue-600 hover:underline underline-offset-4"
+                >{{ row.name }}
+              </NuxtLink>
+            </div>
+          </template>
+          <template #quantity-data="{ row }">
+            <div class="flex justify-center items-center gap-2">
+              <UButton
+                :icon="row.quantity === 1 ? 'i-heroicons-trash' : 'i-heroicons-minus-small-solid'"
+                @click="changeQuantity(row, row.quantity - 1)"
+                variant="outline"
+                color="secondary"
+              />
+              <UInput
+                v-model="row.quantity"
+                type="number"
+                min="1"
+                @change="changeQuantity(row, row.quantity)"
+                inputClass="w-12 text-center"
+              />
+              <UButton
+                icon="i-heroicons-plus-small-solid"
+                @click="changeQuantity(row, row.quantity + 1)"
+                variant="outline"
+                color="secondary"
+              />
+            </div>
+          </template>
+          <template #price-data="{ row }"> {{ row.price.toLocaleString() + ' ₽' }}</template>
+        </UTable>
+        <div class="flex items-center">
+          <UButton
+            :disabled="selectedRows.length === 0"
+            label="Удалить выбранные"
+            variant="outline"
+            color="secondary"
+            @click="deleteSelected"
+            class="m-2"
+          />
+          <UButton
+            label="Очистить корзину"
+            variant="outline"
+            color="secondary"
+            @click="clearCart"
+          />
+          <div class="ml-auto mr-2">
+            Итого: {{ cart.reduce((total, item) => total + item.quantity * item.price, 0).toLocaleString() + ' ₽' }}
+          </div>
+        </div>
+        <div class="flex justify-end">
+          <div class="border-t border-gray-400 my-2 px-2">* Цены указаны в рублях РФ без учета НДС 20%.</div>
+        </div>
+      </div>
 
       <!-- attach comment and file -->
       <UForm

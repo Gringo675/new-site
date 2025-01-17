@@ -1,12 +1,16 @@
-@import url('https://fonts.googleapis.com/css2?family=Play:wght@400;700&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Play:wght@400;700&display=swap'); */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   html {
-    font-family: Play, system-ui, sans-serif;
+    /* font-family: Play, system-ui, sans-serif; */
+    font-family: 'Play';
     font-size: 1rem;
+  }
+  .font-accent {
+    font-family: 'Oswald';
   }
   /*переносим полосу прокрутки с html на body, в этом случае модальные окна смогут ее перекрывать */
   html,
@@ -18,6 +22,32 @@
   }
   body {
     overflow: auto;
+  }
+
+  h1 {
+    @apply text-3xl font-semibold;
+  }
+  h2 {
+    @apply text-2xl font-semibold;
+  }
+  h3 {
+    @apply text-xl font-semibold;
+  }
+
+  /* a {
+    @apply text-sky-700 hover:text-sky-500 visited:text-red-700 active:text-green-500 focus:text-yellow-500;
+  } */
+  /* a {
+    @apply text-blue-600 hover:text-blue-400 active:text-blue-800 focus:text-blue-800;
+  } */
+  /* hide arrows more/less in numbered input */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type='number'] {
+    -moz-appearance: textfield;
   }
 
   /* select {
@@ -141,16 +171,6 @@
 }
 
 /*эти классы всегда будут в итоговом css-файле*/
-
-h1 {
-  @apply text-3xl font-semibold;
-}
-h2 {
-  @apply text-2xl font-semibold;
-}
-h3 {
-  @apply text-xl font-semibold;
-}
 
 .transition-fade-enter-active,
 .transition-fade-leave-active {

@@ -28,6 +28,7 @@ export default async (url, options = {}) => {
   let result = null
   while (true) {
     try {
+      // @ts-ignore
       result = await $fetch(url, fetchOptions)
       break
     } catch (e) {

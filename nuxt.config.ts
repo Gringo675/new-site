@@ -10,7 +10,7 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ['@nuxt/ui'],
+  modules: ['@nuxt/ui', '@nuxt/fonts'],
 
   routeRules: {
     '/admin/**': { ssr: false },
@@ -34,7 +34,7 @@ export default defineNuxtConfig({
 
   imports: {
     dirs: [
-      'composables/*', // scan modules nested one level deep
+      'composables/**', // scan all modules
     ],
   },
 

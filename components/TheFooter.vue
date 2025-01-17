@@ -1,6 +1,4 @@
 <script setup>
-import { useNuxtApp } from '#app/nuxt.js'
-
 const test = () => {
   // localStorage.setItem('user-event', Math.random().toString())
   const bbb = aaa * 2

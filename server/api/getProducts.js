@@ -1,5 +1,4 @@
 export default defineEventHandler(async event => {
-  await new Promise(resolve => setTimeout(resolve, 3000))
   // получаем массив id и отдаем данные по товарам
 
   const productIds = await readBody(event)

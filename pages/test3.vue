@@ -82,9 +82,3 @@ onMounted(() => {
 
 const images = ['http://via.placeholder.com/900x300', 'http://via.placeholder.com/900x300']
 </script>
-
-<style>
-body {
-  @apply antialiased font-sans text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-900;
-}
-</style>
