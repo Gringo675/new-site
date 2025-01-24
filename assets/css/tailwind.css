@@ -21,7 +21,31 @@
     overflow: hidden;
   }
   body {
+    background: #ffffff;
     overflow: auto;
+    /* &:before {
+      content: '';
+      position: absolute;
+      top: -50%; 
+      left: -50%; 
+      width: 200%; 
+      height: 200%; 
+      background-image: url('/img/bg.png');
+      background-size: 150px;
+      background-repeat: repeat;
+      opacity: 0.05; 
+      transform: rotate(-45deg);
+      transform-origin: center;
+    } */
+  }
+
+  header {
+    --header-hidden-block: 140px;
+    top: calc(-1 * var(--header-hidden-block));
+    & .header-hidden {
+      height: var(--header-hidden-block);
+      overflow: hidden;
+    }
   }
 
   h1 {

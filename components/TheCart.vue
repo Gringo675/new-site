@@ -13,10 +13,12 @@ const cartItems = computed(() => cart.reduce((acc, item) => acc + item.quantity,
 </script>
 
 <template>
-  <button
-    @click="navigateTo('/user/cart')"
-    class="m-2 p-2 bg-orange-400 rounded-3xl"
+  <UButton
+    icon="i-heroicons-shopping-cart"
+    size="md"
+    :ui="{ rounded: 'rounded-full' }"
+    to="/user/cart"
   >
     Товаров: {{ cartItems }}
-  </button>
+  </UButton>
 </template>

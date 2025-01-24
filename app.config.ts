@@ -1,6 +1,6 @@
 export default defineAppConfig({
   ui: {
-    primary: 'my-primary',
+    primary: 'violet',
     gray: 'slate',
     modal: { wrapper: 'z-30' },
     button: {
