@@ -17,8 +17,9 @@ const cartItems = computed(() => cart.reduce((acc, item) => acc + item.quantity,
     icon="i-heroicons-shopping-cart"
     size="md"
     :ui="{ rounded: 'rounded-full' }"
+    class=""
     to="/user/cart"
   >
-    Товаров: {{ cartItems }}
+    {{ cartItems }}
   </UButton>
 </template>

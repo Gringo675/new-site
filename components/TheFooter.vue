@@ -34,7 +34,7 @@ const createFeedback = () => {
 
 <template>
   <div class="w-full bg-secondary-200">
-    <div class="-sm:hidden flex items-center gap-x-2 flex-wrap">
+    <div class="-md:hidden flex items-center gap-x-2 flex-wrap">
       <UButton
         label="Admin"
         to="/admin"
@@ -62,7 +62,7 @@ const createFeedback = () => {
       />
       <!--      <button @click="multiply" class="button">Multuply</button>-->
     </div>
-    <div class="-sm:hidden flex items-center gap-x-2 flex-wrap">
+    <div class="-md:hidden flex items-center gap-x-2 flex-wrap">
       <UButton
         label="ШТАНГЕНЦИРКУЛИ"
         to="/catalog/shtangentsirkuli"

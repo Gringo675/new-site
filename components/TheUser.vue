@@ -35,12 +35,16 @@ const handleLogout = async () => {
 </script>
 
 <template>
-  <div class="relative">
+  <div class="relative max-w-40">
     <UButton
       v-if="!user.auth"
       icon="i-heroicons-user"
       size="md"
-      :ui="{ rounded: 'rounded-full' }"
+      truncate
+      :ui="{
+        rounded: 'rounded-full',
+        // truncate: '111 text-left break-keep line-clamp-2',
+      }"
       @click="handleLogin"
       label="Войти"
     />

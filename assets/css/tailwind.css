@@ -6,11 +6,11 @@
 @layer base {
   html {
     /* font-family: Play, system-ui, sans-serif; */
-    font-family: 'Play';
+    font-family: 'Sofia Sans';
     font-size: 1rem;
   }
   .font-accent {
-    font-family: 'Oswald';
+    font-family: 'Russo One';
   }
   /*переносим полосу прокрутки с html на body, в этом случае модальные окна смогут ее перекрывать */
   html,
@@ -40,15 +40,19 @@
   }
 
   header {
-    --header-hidden-block: 140px;
+    --header-hidden-block: 120px;
     top: calc(-1 * var(--header-hidden-block));
     & .header-hidden {
       height: var(--header-hidden-block);
       overflow: hidden;
     }
   }
-
-  h1 {
+  @media (max-width: 767px) {
+    header {
+      --header-hidden-block: 80px;
+    }
+  }
+  /* h1 {
     @apply text-3xl font-semibold;
   }
   h2 {
@@ -56,7 +60,7 @@
   }
   h3 {
     @apply text-xl font-semibold;
-  }
+  } */
 
   /* a {
     @apply text-sky-700 hover:text-sky-500 visited:text-red-700 active:text-green-500 focus:text-yellow-500;

@@ -25,12 +25,22 @@ const goTo = async url => {
 
 <template>
   <UButton
-    icon="i-heroicons-queue-list"
     size="md"
     :ui="{ rounded: 'rounded-full' }"
     @click="showMenu"
-    label="Каталог"
-  />
+  >
+    <template #leading>
+      <UIcon
+        name="i-heroicons-queue-list"
+        class="w-5 h-5 -md:hidden"
+      />
+      <UIcon
+        name="i-heroicons-magnifying-glass"
+        class="w-5 h-5 md:hidden"
+      />
+    </template>
+    <span class="-md:hidden">Каталог</span>
+  </UButton>
   <USlideover
     v-model="menuState.show"
     side="left"

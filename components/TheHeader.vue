@@ -1,5 +1,13 @@
 <script setup>
 //
+import { CatsMenuSlider } from '#components'
+
+const slideover = useSlideover()
+const openCatsMenuSlider = () => {
+  slideover.open(CatsMenuSlider, {
+    onClose: slideover.close,
+  })
+}
 
 const company = useCompany()
 const menuState = [
@@ -23,59 +31,65 @@ const menuState = [
     to: '/contacts',
     icon: 'i-heroicons-globe-alt',
   },
+  {
+    label: 'Материалы',
+    to: '/contacts',
+    icon: 'i-heroicons-book-open',
+  },
 ]
 </script>
 
 <template>
   <div class="header-hidden bg-yellow-200">
-    <div class="max-w-screen-xl mx-auto grid grid-cols-[120px_1fr_auto_1fr_120px] gap-1">
-      <div class="col-span-1 row-span-2 flex justify-center items-center">
+    <div
+      class="max-w-screen-xl h-full mx-auto grid grid-cols-[120px_1fr_auto_1fr_120px] grid-rows-[auto_1fr] gap-1 -md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] -md:grid-rows-[100%] -xs:grid-cols-[auto_auto]"
+    >
+      <div class="col-span-1 row-span-2 flex justify-center items-center -md:row-span-1">
         <img
           src="/img/logo3.png"
           alt="logo"
-          class="w-full"
+          class="w-full -md:max-w-20"
         />
       </div>
-      <div class="col-span-3 flex">
+      <div class="col-span-3 flex -md:hidden">
         <UHorizontalNavigation
           :links="menuState"
           :ui="{
-            before: 'before:rounded-none hover:before:bg-violet-300 before:inset-x-0 before:inset-y-2',
+            base: 'py-2 -lg:text-xs -lg:px-2 -lg:gap-0.5',
+            before: 'before:rounded-sm hover:before:bg-violet-300 before:inset-x-0 before:inset-y-1 ',
           }"
           class="w-auto mx-auto font-accent bg-violet-200 rounded-b-lg"
         />
       </div>
-      <div class="col-span-1 flex justify-end gap-2 items-center mr-2">
+      <div class="col-span-1 flex justify-end gap-2 items-center mr-2 -md:hidden">
         <img
           src="/img/rst.svg"
           alt=""
-          class="w-10 -sm:w-7"
+          class="w-9"
         />
         <img
           src="/img/arshin.svg"
           alt=""
-          class="w-10 -sm:w-5"
+          class="w-9"
         />
       </div>
-      <div class="col-span-1 flex -sm:col-span-4">
+      <div class="col-span-1 flex -md:justify-center">
         <div
-          class="flex flex-col justify-center items-center text-3xl font-semibold font-accent -md:text-xl -sm:flex-row -sm:gap-x-2 -sm:ml-4"
+          class="flex flex-col justify-center items-center text-3xl text-gray-800 font-accent text-center -xl:text-2xl -lg:text-base -md:text-2xl -md:mx-2 -xs:text-xl"
         >
           <div>Торговый Дом</div>
           <div>Челябинский Инструмент</div>
         </div>
       </div>
-      <div class="col-span-1 flex justify-center items-center -sm:hidden">
+      <div class="col-span-1 flex justify-center items-center -xs:hidden">
         <img
           src="/img/vernie2.png"
           alt="vernie"
-          class="w-24 opacity-70 -md:w-16"
+          class="max-w-24 min-w-0 opacity-70 -lg:max-w-20"
         />
       </div>
-      <div class="col-span-2 -sm:hidden">
-        <div
-          class="font-accent font-light text-lg tracking-wider flex flex-col items-end mr-2 -md:text-base -md:tracking-wide"
-        >
+      <div class="col-span-2 flex -md:hidden">
+        <div class="w-full flex flex-col justify-center items-end mr-2 -xl:items-center -lg:text-sm">
           <div class="flex items-center">
             <UIcon
               name="i-heroicons-home-modern"
@@ -104,21 +118,58 @@ const menuState = [
   </div>
 
   <div class="bg-stone-900 border-b-2 border-yellow-200">
-    <div class="max-w-7xl mx-auto flex justify-between items-center p-2">
-      <ClientOnly>
-        <CatsMenu />
+    <div class="max-w-screen-xl mx-auto grid grid-cols-[1fr_auto_1fr] gap-1 px-2 py-3">
+      <div class="col-span-1 flex items-center gap-3 -md:hidden">
         <UButton
-          icon="i-heroicons-shopping-bag"
+          icon="i-heroicons-queue-list"
           size="md"
           :ui="{ rounded: 'rounded-full' }"
-          @click=""
-          label="Быстрый заказ"
+          @click="openCatsMenuSlider"
+          label="Каталог"
         />
-        <TheSearch />
+        <div class="flex-grow flex justify-center">
+          <UButton
+            icon="i-heroicons-pencil-square"
+            size="md"
+            :ui="{ rounded: 'rounded-full' }"
+            class=""
+            @click=""
+          >
+            <span class="-lg:hidden">Быстрый заказ</span>
+          </UButton>
+        </div>
+      </div>
+      <div class="col-span-1 -md:hidden">
+        <TheSearch class="w-[450px] -lg:w-[350px]" />
+      </div>
+      <div class="col-span-1 flex justify-end items-center gap-3 -md:col-span-3 -md:justify-between">
+        <UButton
+          icon="i-heroicons-magnifying-glass"
+          size="md"
+          :ui="{ rounded: 'rounded-full' }"
+          class="md:hidden"
+          @click="openCatsMenuSlider"
+        />
+        <UButton
+          icon="i-heroicons-pencil-square"
+          size="md"
+          :ui="{ rounded: 'rounded-full' }"
+          class="md:hidden"
+          @click=""
+        />
+        <div class="md:flex-grow flex justify-center">
+          <TheCart />
+        </div>
 
-        <TheCart />
-        <TheUser class="" />
-      </ClientOnly>
+        <TheUser />
+        <UButton
+          icon="i-heroicons-ellipsis-vertical-16-solid"
+          size="md"
+          :ui="{ rounded: 'rounded-full' }"
+          class="md:hidden"
+          @click=""
+        />
+      </div>
     </div>
   </div>
 </template>

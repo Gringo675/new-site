@@ -1,7 +1,6 @@
 <script setup>
 //
 const props = defineProps({
-  count: Number,
   onClose: Function,
 })
 
@@ -23,24 +22,27 @@ const onMouseEnter = index => {
     side="left"
     :ui="{
       wrapper: 'z-30',
-      width: 'max-w-3xl',
+      width: 'max-w-screen-md',
     }"
   >
     <!-- wrapper (do not delete class! used in TheSearch)-->
     <div class="menu-wrapper flex flex-col h-screen">
       <!-- header -->
-      <div class="flex items-center gap-x-2 m-2 bg-gray-50">
-        <h2>Каталог</h2>
-        <TheSearch forMenu />
+      <div class="flex justify-between items-center gap-x-2 m-2 bg-gray-50">
         <button
-          class="ml-auto mr-2 opacity-80 hover:opacity-100 focus:outline-none focus-visible:outline-0"
+          class="opacity-80 hover:opacity-100 focus:outline-none focus-visible:outline-0"
           @click="onClose()"
         >
           <UIcon
-            name="i-heroicons-arrow-long-left-16-solid"
+            name="i-heroicons-x-circle"
             class="h-8 w-8 block"
           />
         </button>
+        <TheSearch
+          forMenu
+          class="w-[450px]"
+        />
+        <div class="font-accent text-2xl">ТД ЧИ</div>
       </div>
       <!-- columns -->
       <div class="flex overflow-hidden border-t border-gray-300">

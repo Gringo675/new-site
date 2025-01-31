@@ -32,5 +32,6 @@ const feedback = useFeedback()
     <TheLoader />
     <UNotifications />
     <ImageViewerFull />
+    <USlideovers />
   </ClientOnly>
 </template>

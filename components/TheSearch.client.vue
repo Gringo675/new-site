@@ -87,7 +87,7 @@ const onInputClick = e => {
 </script>
 
 <template>
-  <div class="relative m-2">
+  <div class="relative">
     <UInput
       v-model="searchState.query"
       color="primary"
@@ -97,7 +97,7 @@ const onInputClick = e => {
       :loading="searchState.pending"
       :ui="{ icon: { trailing: { pointer: '' } } }"
       size="md"
-      class="w-[450px] z-[21]"
+      class="z-[21]"
       inputClass="bg-slate-100"
       @keyup.enter="goTo(`/search/${searchState.query}`)"
       @click="onInputClick"
@@ -118,7 +118,7 @@ const onInputClick = e => {
       <div
         v-if="searchState.showResults"
         @click.stop
-        class="absolute w-[450px] mt-1 overflow-auto border border-green-600 rounded-md z-20 shadow-xl"
+        class="absolute w-full mt-1 overflow-auto border border-green-600 rounded-md z-20 shadow-xl"
       >
         <div
           v-if="searchState.result.products.length > 0"
