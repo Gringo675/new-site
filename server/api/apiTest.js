@@ -1,3 +1,5 @@
+// import useTtest from '../utils/auth/useTtest'
+
 export default defineEventHandler(async event => {
   const cTime = new Date().toLocaleTimeString()
   console.log(`from apiTest: ${cTime}`)
@@ -20,9 +22,9 @@ export default defineEventHandler(async event => {
   // const match = baseURL.match(/\/?(.+)[\/$]/)
   // cv({origin, baseURL})
 
-  await timer(4)
+  // await timer(4)
   // if (Math.random() < 0.3) throw createError({ statusCode: 481, statusMessage: `Random error on ${cTime}` })
-  throw createError({ statusCode: 482, statusMessage: `Some error on ${cTime}` })
+  // throw createError({ statusCode: 482, statusMessage: `Some error on ${cTime}` })
   // const body = await readBody(event)
   // console.log(`body: ${JSON.stringify(body, null, 2)}`)
   // const token = getRequestHeader(event, 'sessionToken')

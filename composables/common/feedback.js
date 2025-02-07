@@ -13,7 +13,9 @@ export const showFeedback = (options = {}) => {
   if (feedback.isActive) return
 
   feedback.title = options.title ?? 'Обратная связь'
-  feedback.description = options.description ?? ''
+  feedback.description =
+    options.description ??
+    'Воспользуйтесь данной формой, чтобы прислать Ваши вопросы, предложения, или отправить заявку.'
   feedback.isActive = true
 }
 

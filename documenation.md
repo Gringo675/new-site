@@ -1,18 +1,10 @@
 # Chore:
 
-- появление скролбара = сдвиг?
-- add <USlideovers /> to TheError
-
 # ToDo:
 
 Шапка:
 
-- clientOnly?
-- перемещение TheUser:
-  - clientOnly + screenWidth composable + teleport
-  - 2 components + css
-  - прятать в меню
-  - не прятать
+-
 
 # RoadMap:
 

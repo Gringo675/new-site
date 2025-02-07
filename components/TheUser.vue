@@ -1,5 +1,7 @@
 <script setup>
 //
+// await new Promise(r => setTimeout(r, 3000))
+
 const user = useUser().value
 
 onMounted(async () => {
@@ -65,7 +67,7 @@ const handleLogout = async () => {
         <NuxtLink to="/user/profile">Профиль</NuxtLink>
         <NuxtLink to="/user/orders">Заказы</NuxtLink>
         <NuxtLink
-          to="#"
+          to="/"
           @click="handleLogout"
           >Выход</NuxtLink
         >

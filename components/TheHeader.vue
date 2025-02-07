@@ -1,12 +1,13 @@
 <script setup>
 //
-import { CatsMenuSlider } from '#components'
+import { CatsMenuSlider, MobileMenuSlider } from '#components'
 
 const slideover = useSlideover()
 const openCatsMenuSlider = () => {
-  slideover.open(CatsMenuSlider, {
-    onClose: slideover.close,
-  })
+  slideover.open(CatsMenuSlider)
+}
+const openMobileMenuSlider = () => {
+  slideover.open(MobileMenuSlider)
 }
 
 const company = useCompany()
@@ -45,11 +46,18 @@ const menuState = [
       class="max-w-screen-xl h-full mx-auto grid grid-cols-[120px_1fr_auto_1fr_120px] grid-rows-[auto_1fr] gap-1 -md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] -md:grid-rows-[100%] -xs:grid-cols-[auto_auto]"
     >
       <div class="col-span-1 row-span-2 flex justify-center items-center -md:row-span-1">
-        <img
+        <NuxtLink to="/">
+          <img
+            src="/img/logo3.png"
+            alt="logo"
+            class="w-full -md:max-w-20"
+          />
+        </NuxtLink>
+        <!-- <img
           src="/img/logo3.png"
           alt="logo"
           class="w-full -md:max-w-20"
-        />
+        /> -->
       </div>
       <div class="col-span-3 flex -md:hidden">
         <UHorizontalNavigation
@@ -117,7 +125,7 @@ const menuState = [
     </div>
   </div>
 
-  <div class="bg-stone-900 border-b-2 border-yellow-200">
+  <div class="bg-stone-900 border-y-2 border-yellow-300">
     <div class="max-w-screen-xl mx-auto grid grid-cols-[1fr_auto_1fr] gap-1 px-2 py-3">
       <div class="col-span-1 flex items-center gap-3 -md:hidden">
         <UButton
@@ -133,14 +141,14 @@ const menuState = [
             size="md"
             :ui="{ rounded: 'rounded-full' }"
             class=""
-            @click=""
+            @click="showFeedback"
           >
             <span class="-lg:hidden">Быстрый заказ</span>
           </UButton>
         </div>
       </div>
       <div class="col-span-1 -md:hidden">
-        <TheSearch class="w-[450px] -lg:w-[350px]" />
+        <TheSearch class="-lg:max-w-[350px]" />
       </div>
       <div class="col-span-1 flex justify-end items-center gap-3 -md:col-span-3 -md:justify-between">
         <UButton
@@ -155,19 +163,41 @@ const menuState = [
           size="md"
           :ui="{ rounded: 'rounded-full' }"
           class="md:hidden"
-          @click=""
+          @click="showFeedback"
         />
         <div class="md:flex-grow flex justify-center">
-          <TheCart />
+          <ClientOnly>
+            <TheCart />
+            <template #fallback>
+              <UButton
+                icon="i-heroicons-shopping-cart"
+                size="md"
+                :ui="{ rounded: 'rounded-full' }"
+                label="0"
+              />
+            </template>
+          </ClientOnly>
         </div>
-
-        <TheUser />
+        <ClientOnly>
+          <TheUser />
+          <template #fallback>
+            <UButton
+              icon="i-heroicons-user"
+              size="md"
+              truncate
+              :ui="{
+                rounded: 'rounded-full',
+              }"
+              label="Войти"
+            />
+          </template>
+        </ClientOnly>
         <UButton
           icon="i-heroicons-ellipsis-vertical-16-solid"
           size="md"
           :ui="{ rounded: 'rounded-full' }"
           class="md:hidden"
-          @click=""
+          @click="openMobileMenuSlider"
         />
       </div>
     </div>
