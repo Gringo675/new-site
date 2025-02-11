@@ -20,13 +20,33 @@
     padding: 0;
     overflow: hidden;
   }
+  html {
+    background-image: linear-gradient(
+      to right,
+      #fda4af,
+      #ffaca3,
+      #ffb797,
+      #ffc48e,
+      #ffd28a,
+      #ffd989,
+      #ffe089,
+      #fde88a,
+      #fdea8a,
+      #feec8a,
+      #feee8a,
+      #fef08a
+    );
+  }
   body {
-    background: #ffffff;
     overflow-x: auto;
     overflow-y: scroll;
     scrollbar-color: rgb(139 92 246) rgb(238 231 181);
     scrollbar-width: thin;
-    &:before {
+    background-image: url('/img/bg/sketch.svg');
+    background-size: 250px auto;
+    background-position: center top;
+    background-repeat: repeat;
+    /* &:before {
       content: '';
       position: absolute;
       width: 100%;
@@ -34,11 +54,11 @@
       background-image: url('/img/bg-test.svg');
       background-size: 150px 50px;
       background-repeat: repeat;
-      /* background-position:
+       background-position:
         0 0,
-        75px 75px; */
+        75px 75px; 
       opacity: 0.05;
-    }
+    } */
   }
 
   header {
@@ -47,6 +67,21 @@
     & .header-hidden {
       height: var(--header-hidden-block);
       overflow: hidden;
+      background-image: linear-gradient(
+        to right,
+        #fda4af,
+        #ffaca3,
+        #ffb797,
+        #ffc48e,
+        #ffd28a,
+        #ffd989,
+        #ffe089,
+        #fde88a,
+        #fdea8a,
+        #feec8a,
+        #feee8a,
+        #fef08a
+      );
     }
   }
   @media (max-width: 767px) {
