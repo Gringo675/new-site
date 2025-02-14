@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500.029" height="500.029" viewBox="0 0 907 907">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fff;
+        stroke: #000103;
+        stroke-width: 0.33px;
+      }
+
+      .cls-2, .cls-3, .cls-4 {
+        fill: none;
+        fill-rule: evenodd;
+      }
+
+      .cls-2 {
+        stroke: #d24a43;
+      }
+
+      .cls-2, .cls-3 {
+        stroke-width: 2px;
+      }
+
+      .cls-3, .cls-4 {
+        stroke: red;
+      }
+
+      .cls-4 {
+        stroke-width: 4px;
+      }
+    </style>
+  </defs>
+  <!-- <circle id="Эллипс_1" data-name="Эллипс 1" class="cls-1" cx="451.5" cy="451.5" r="453.5"/> -->
+  <path id="Фигура_1" data-name="Фигура 1" class="" fill="none" stroke-width="8px" stroke="#6366f1" style="stroke-linecap:round;stroke-linejoin:round;" d="M453,0S319.65,50.432,212,128C103.156,206.428,20,312,20,312S34.854,468.049,76,595c40.853,126.046,108,223,108,223s134.922,27,269,27c132.411,0,264-27,264-27s69.865-96.851,111-223c41.364-126.849,54-283,54-283S801.546,206.216,694,128C587.048,50.217,453,0,453,0Z"/>
+  <path id="Фигура_2" data-name="Фигура 2" class="cls-3" d="M452,1h2V844h-2V1"/>
+  <path id="Фигура_3" data-name="Фигура 3" class="cls-4" d="M183,152s12.484,102.688,34,150c21.269,46.769,54.653,80.835,100,103,48.629,23.769,136,23,136,23"/>
+  <path id="Фигура_4" data-name="Фигура 4" class="cls-4" d="M476,842s80.826-39.736,115-77c31.907-34.792,57.37-65.6,92-170,28.379-85.56,39-150,39-150l1,359"/>
+</svg>

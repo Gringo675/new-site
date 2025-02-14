@@ -41,16 +41,18 @@ const menuState = [
 </script>
 
 <template>
-  <div class="header-hidden bg-yellow-200">
+  <div class="header-hidden">
     <div
       class="max-w-screen-xl h-full mx-auto grid grid-cols-[120px_1fr_auto_1fr_120px] grid-rows-[auto_1fr] gap-1 -md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] -md:grid-rows-[100%] -xs:grid-cols-[auto_auto]"
     >
       <div class="col-span-1 row-span-2 flex justify-center items-center -md:row-span-1">
         <NuxtLink to="/">
           <img
-            src="/img/logo3.png"
+            src="/img/svg-test/v20.svg"
             alt="logo"
-            class="w-full -md:max-w-20"
+            class="p-1 w-full -md:max-w-20"
+            width="100%"
+            height="auto"
           />
         </NuxtLink>
         <!-- <img
@@ -125,7 +127,7 @@ const menuState = [
     </div>
   </div>
 
-  <div class="bg-stone-900 border-y-2 border-yellow-300">
+  <div class="bg-stone-900">
     <div class="max-w-screen-xl mx-auto grid grid-cols-[1fr_auto_1fr] gap-1 px-2 py-3">
       <div class="col-span-1 flex items-center gap-3 -md:hidden">
         <UButton

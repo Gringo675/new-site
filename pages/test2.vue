@@ -6,7 +6,56 @@ definePageMeta({
 </script>
 
 <template>
-  <div class="test w-[80vw] h-[1000px] bg-blue-600 m-2"></div>
+  <div class="m-2 flex flex-wrap gap-2">
+    <img
+      src="/img/svg-test/v7.svg"
+      class="w-[120px] h-auto"
+    />
+    <img
+      src="/img/svg-test/v10.svg"
+      class="w-[120px] h-auto"
+    />
+    <img
+      src="/img/svg-test/v11.svg"
+      class="w-[120px] h-auto"
+    />
+    <img
+      src="/img/svg-test/v12.svg"
+      class="w-[120px] h-auto"
+    />
+    <img
+      src="/img/svg-test/v13.svg"
+      class="w-[120px] h-auto"
+    />
+    <img
+      src="/img/svg-test/v14.svg"
+      class="w-[120px] h-auto"
+    />
+    <img
+      src="/img/svg-test/v15.svg"
+      class="w-[120px] h-auto"
+    />
+    <img
+      src="/img/svg-test/v16.svg"
+      class="w-[120px] h-auto"
+    />
+    <img
+      src="/img/svg-test/v17.svg"
+      class="w-[120px] h-auto"
+    />
+    <img
+      src="/img/svg-test/v18.svg"
+      class="w-[120px] h-auto"
+    />
+    <img
+      src="/img/svg-test/v19.svg"
+      class="w-[120px] h-auto"
+    />
+    <img
+      src="/img/svg-test/v20.svg"
+      class="w-[120px] h-auto"
+    />
+  </div>
 </template>
 
 <style>

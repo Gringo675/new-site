@@ -8,8 +8,6 @@
 
 # RoadMap:
 
-полностью сделать шапку
-
 # AI's:
 
 ## Design:
@@ -19,6 +17,7 @@ figma
 https://mycolor.space/
 https://gradients.app/en/color-wheel#
 https://colorscheme.ru/#3M61Uw0w0w0w0
+https://bgrounds.ru/generator-gradient
 
 ## Texts, SEO:
 
