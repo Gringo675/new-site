@@ -7,9 +7,9 @@ export const addProductToCart = product => {
   const image = product.image ?? (Array.isArray(product.images) ? product.images[0] : product.images.match(/\S+/)[0])
   const quantity = 1
   cart.push({ id, name, alias, price, image, quantity })
-  setCartToLocalStore()
 }
 
+// using in TheCart.vue
 export const updateCartFromLocalStore = () => updateCartFromLocalStoreHelper.handle()
 
 const updateCartFromLocalStoreHelper = {
@@ -39,7 +39,6 @@ const updateCartFromLocalStoreHelper = {
       cart.length = 0
       return
     }
-
     // обновляем количество и убираем отсутствующие товары
     const newCart = []
     for (const cartItem of cart) {
@@ -65,6 +64,7 @@ const updateCartFromLocalStoreHelper = {
   },
 }
 
+// using in TheCart.vue
 export const setCartToLocalStore = () => {
   const cartMapped = cart.map(product => {
     return { id: product.id, quantity: product.quantity }
@@ -72,26 +72,29 @@ export const setCartToLocalStore = () => {
   localStorage.setItem('CART', JSON.stringify(cartMapped))
 }
 
-export const clearCart = async () => {
-  const proceed = await confirmCartDelete()
-  if (!proceed) return
-  cart.length = 0
-  localStorage.setItem('CART', '[]')
-}
+// export const clearCart = async () => {
+//   const proceed = await confirmCartDelete()
+//   if (!proceed) return
+//   cart.length = 0
+//   localStorage.setItem('CART', '[]')
+// }
 
-export const changeCartQuantity = (index, quantity) => {
-  if (quantity < 1) cart.splice(index, 1)
-  else {
-    cart[index].quantity = quantity
-  }
-  setCartToLocalStore()
-}
+// export const changeCartQuantity = (index, quantity) => {
+//   console.log(`from changeCartQuantity`)
+//   if (quantity < 1) cart.splice(index, 1)
+//   else {
+//     cart[index].quantity = quantity
+//   }
+//   console.log(`before cart[index].quantity: ${JSON.stringify(cart[index].quantity, null, 2)}`)
+//   setCartToLocalStore()
+//   console.log(`after cart[index].quantity: ${JSON.stringify(cart[index].quantity, null, 2)}`)
+// }
 
-export const confirmCartDelete = () => {
-  // return promise
-  return showMessage({
-    title: 'Подтвердите удаление',
-    description: `Товар(-ы) будут удалены из корзины без возможности восстановления. Продолжить?`,
-    isDialog: true,
-  })
-}
+// export const confirmCartDelete = () => {
+//   // return promise
+//   return showMessage({
+//     title: 'Подтвердите удаление',
+//     description: `Товар(-ы) будут удалены из корзины без возможности восстановления. Продолжить?`,
+//     isDialog: true,
+//   })
+// }

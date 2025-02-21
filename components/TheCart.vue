@@ -3,13 +3,19 @@
 const cart = useCart()
 
 await updateCartFromLocalStore()
-
 window.addEventListener('storage', event => {
   if (event.storageArea !== localStorage || event.key !== 'CART') return
   updateCartFromLocalStore()
 })
 
-const cartItems = computed(() => cart.reduce((acc, item) => acc + item.quantity, 0))
+watch(cart, () => {
+  console.log(`from TheCart watcher`)
+  const zeroIndex = cart.findIndex(item => Number(item.quantity) === 0)
+  if (zeroIndex === -1) setCartToLocalStore()
+  else cart.splice(zeroIndex, 1) // запустит watcher еще раз
+})
+
+const cartQuantity = computed(() => cart.reduce((acc, item) => acc + item.quantity, 0))
 </script>
 
 <template>
@@ -20,6 +26,6 @@ const cartItems = computed(() => cart.reduce((acc, item) => acc + item.quantity,
     class=""
     to="/user/cart"
   >
-    {{ cartItems }}
+    {{ cartQuantity }}
   </UButton>
 </template>

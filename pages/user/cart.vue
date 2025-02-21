@@ -91,7 +91,7 @@ const sendOrder = async () => {
   })
   if (orderHandler.orderNumber > 0) {
     orderHandler.step = 4
-    clearCart()
+    cart.length = 0 // clear cart
   }
 }
 
@@ -104,24 +104,34 @@ const tableColumns = [
   { key: 'price', label: 'Цена*' },
 ]
 
-const selectedRows = ref([])
-const deleteSelected = async () => {
-  const proceed = await confirmCartDelete()
-  if (!proceed) return
-  selectedRows.value.forEach(row => {
-    const index = cart.findIndex(product => product.id === row.id)
-    changeCartQuantity(index, 0)
-  })
-  selectedRows.value = []
-}
-
 const changeQuantity = async (row, quantity) => {
   if (quantity === 0) {
     const proceed = await confirmCartDelete()
     if (!proceed) return
   }
-  changeCartQuantity(cart.indexOf(row), quantity)
+  row.quantity = quantity
 }
+const clearCart = async () => {
+  const proceed = await confirmCartDelete()
+  if (!proceed) return
+  cart.length = 0
+}
+const selectedRows = ref([])
+const deleteSelected = async () => {
+  const proceed = await confirmCartDelete()
+  if (!proceed) return
+  selectedRows.value.forEach(row => (row.quantity = 0))
+  selectedRows.value = []
+}
+const confirmCartDelete = () => {
+  // return promise
+  return showMessage({
+    title: 'Подтвердите удаление',
+    description: `Товар(-ы) будут удалены из корзины без возможности восстановления. Продолжить?`,
+    isDialog: true,
+  })
+}
+
 // end of table block
 </script>
 
@@ -169,10 +179,9 @@ const changeQuantity = async (row, quantity) => {
                 color="secondary"
               />
               <UInput
-                v-model="row.quantity"
+                v-model.lazy="row.quantity"
                 type="number"
                 min="1"
-                @change="changeQuantity(row, row.quantity)"
                 inputClass="w-12 text-center"
               />
               <UButton

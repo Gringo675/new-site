@@ -25,19 +25,18 @@ const productCartIndex = computed(() => cart.findIndex(cartItem => cartItem.id =
     <div>
       <button
         class="m-2 px-2 bg-indigo-300 rounded-full"
-        @click="changeCartQuantity(productCartIndex, cart[productCartIndex].quantity - 1)"
+        @click="--cart[productCartIndex].quantity"
       >
         -
       </button>
       <input
-        :value="cart[productCartIndex].quantity"
-        @change="changeCartQuantity(productCartIndex, Number($event.target.value))"
+        v-model.lazy="cart[productCartIndex].quantity"
         type="number"
         class="w-12"
       />
       <button
         class="m-2 px-2 bg-indigo-300 rounded-full"
-        @click="changeCartQuantity(productCartIndex, cart[productCartIndex].quantity + 1)"
+        @click="++cart[productCartIndex].quantity"
       >
         +
       </button>

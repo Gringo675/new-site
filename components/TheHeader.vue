@@ -48,7 +48,7 @@ const menuState = [
       <div class="col-span-1 row-span-2 flex justify-center items-center -md:row-span-1">
         <NuxtLink to="/">
           <img
-            src="/img/svg-test/v20.svg"
+            src="/img/svg-test/v23.svg"
             alt="logo"
             class="p-1 w-full -md:max-w-20"
             width="100%"
@@ -75,12 +75,7 @@ const menuState = [
         <img
           src="/img/rst.svg"
           alt=""
-          class="w-9"
-        />
-        <img
-          src="/img/arshin.svg"
-          alt=""
-          class="w-9"
+          class="w-20"
         />
       </div>
       <div class="col-span-1 flex -md:justify-center">
@@ -95,7 +90,7 @@ const menuState = [
         <img
           src="/img/vernie2.png"
           alt="vernie"
-          class="max-w-24 min-w-0 opacity-70 -lg:max-w-20"
+          class="max-w-24 min-w-0 opacity-90 -lg:max-w-20"
         />
       </div>
       <div class="col-span-2 flex -md:hidden">

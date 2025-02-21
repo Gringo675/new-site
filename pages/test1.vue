@@ -1,29 +1,53 @@
 <script setup>
 //
+const state = reactive({
+  aaa: 111,
+  bbb: 222,
+  ccc: 333,
+  ddd: 444,
+})
+
+const pState = new Proxy(state, {
+  // get(target, key) {
+  //   console.log(`from getter`)
+  //   return Number(target[key])
+  // },
+  set(target, key, value) {
+    console.log(`from setter value: ${value}`)
+    if (Number(value) === 0) {
+      confirmDelete().then(r => {
+        if (r === true) delete target[key]
+        else {
+          const cache = target[key]
+          target[key] = 1
+          nextTick(() => {
+            console.log(`from nextTick`)
+            target[key] = cache
+          })
+        }
+      })
+      // delete target[key]
+    } else target[key] = Number(value)
+    return true
+  },
+})
+
+const confirmDelete = () => {
+  // return promise
+  return showMessage({
+    title: 'Подтвердите удаление',
+    description: `Товар(-ы) будут удалены из корзины без возможности восстановления. Продолжить?`,
+    isDialog: true,
+  })
+}
 </script>
 
 <template>
-  <h1>Test 1</h1>
   <div>
-    <UButton color="primary">Test</UButton>
-    <UButton color="secondary">Test</UButton>
-    <UButton color="tertiary">Test</UButton>
-    <UButton color="accent">Test</UButton>
+    <div>{{ state }}</div>
   </div>
-  <div class="w-[300px] h-[300px] m-5 bg-zinc-300 overflow-auto scrollbar test">
-    Lorem ipsum, dolor sit amet consectetur adipisicing elit. Veritatis recusandae illum excepturi provident culpa
-    dolore, ducimus ipsa expedita, obcaecati voluptatibus, a maxime soluta amet distinctio. A, blanditiis. Voluptatem,
-    excepturi modi? Lorem ipsum, dolor sit amet consectetur adipisicing elit. Veritatis recusandae illum excepturi
-    provident culpa dolore, ducimus ipsa expedita, obcaecati voluptatibus, a maxime soluta amet distinctio. A,
-    blanditiis. Voluptatem, excepturi modi? Lorem ipsum, dolor sit amet consectetur adipisicing elit. Veritatis
-    recusandae illum excepturi provident culpa dolore, ducimus ipsa expedita, obcaecati voluptatibus, a maxime soluta
-    amet distinctio. A, blanditiis. Voluptatem, excepturi modi? Lorem ipsum, dolor sit amet consectetur adipisicing
-    elit. Veritatis recusandae illum excepturi provident culpa dolore, ducimus ipsa expedita, obcaecati voluptatibus, a
-    maxime soluta amet distinctio. A, blanditiis. Voluptatem, excepturi modi? Lorem ipsum, dolor sit amet consectetur
-    adipisicing elit. Veritatis recusandae illum excepturi provident culpa dolore, ducimus ipsa expedita, obcaecati
-    voluptatibus, a maxime soluta amet distinctio. A, blanditiis. Voluptatem, excepturi modi? Lorem ipsum, dolor sit
-    amet consectetur adipisicing elit. Veritatis recusandae illum excepturi provident culpa dolore, ducimus ipsa
-    expedita, obcaecati voluptatibus, a maxime soluta amet distinctio. A, blanditiis. Voluptatem, excepturi modi?
+  <div>
+    <!-- <UInput :modelValue="state.aaa" /> -->
+    <UInput v-model.lazy="pState.aaa" />
   </div>
-  <div class="h-[2000px]"></div>
 </template>

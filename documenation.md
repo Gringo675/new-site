@@ -2,9 +2,7 @@
 
 # ToDo:
 
-Шапка:
-
--
+- product card images?
 
 # RoadMap:
 
