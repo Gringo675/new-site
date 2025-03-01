@@ -2,16 +2,27 @@
 //
 
 const viewer = useImageViewer()
+const viewerData = getImageViewerData()
 const closeViewer = () => {
   // console.log(`close viewer...`)
   viewer.isActive = false
 }
 
-const onTransitionBeforeEnter = el => {
-  // set css variables
-  el.style.setProperty('--viewer-transition-x', `${viewer.transitionX}px`)
-  el.style.setProperty('--viewer-transition-y', `${viewer.transitionY}px`)
-  el.style.setProperty('--viewer-scale', `${viewer.scale}`)
+const onTransitionBeforeEnter = viewer => {
+  if (!viewerData.causerId) return
+  const causer = document.getElementById(viewerData.causerId)
+  if (!causer) return
+  const causerCoords = causer.getBoundingClientRect()
+
+  viewer.style.setProperty(
+    '--viewer-transition-x',
+    `${Math.round(causerCoords.x + causerCoords.width / 2 - window.innerWidth / 2)}px`
+  )
+  viewer.style.setProperty(
+    '--viewer-transition-y',
+    `${Math.round(causerCoords.y + causerCoords.height / 2 - window.innerHeight / 2)}px`
+  )
+  viewer.style.setProperty('--viewer-scale', `${Math.round((causerCoords.width * 100) / window.innerWidth) / 100}`)
 }
 </script>
 

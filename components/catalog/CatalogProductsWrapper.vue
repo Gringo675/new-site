@@ -69,17 +69,15 @@ const changesHandler = (options = {}) => {
   options.fromPagination = options.fromPagination ?? false
   options.paginationToRight = options.paginationToRight ?? false
   //step1 - до изменения visibleProducts
-  if (!productsWrapper.value.style.height)
-    productsWrapper.value.style.height = productsWrapper.value.offsetHeight + 'px' // запоминаем высоту враппера для анимации
+  productsWrapper.value.style.height = productsWrapper.value.offsetHeight + 'px' // запоминаем высоту враппера для анимации
   if (options.fromShowMore) {
     step2()
   } else {
     if (options.fromPagination) {
       productsWrapper.value.style.transform = `translateX(${options.paginationToRight ? '-' : ''}50px)`
       // перемотка вверх
-      const wrapperTop = productsWrapper.value.getBoundingClientRect().top
-      console.log(`wrapperTop: ${wrapperTop}`)
-      if (wrapperTop < 0) productsWrapper.value.scrollIntoView({ behavior: 'smooth', block: 'start' }) //scrollBy не работает
+      const wrapperTop = productsWrapper.value.getBoundingClientRect().top - 70 // minus header
+      if (wrapperTop < 0) document.body.scrollBy({ top: wrapperTop, behavior: 'smooth' })
     } else {
       // fromProducts || from pageSetup
       pagination.activePage = 1
@@ -102,6 +100,13 @@ const changesHandler = (options = {}) => {
     productsWrapper.value.style.transitionDuration = ''
     productsWrapper.value.style.opacity = ''
     productsWrapper.value.style.height = productsWrapperHelper.value.offsetHeight + 'px' // новая высота враппера
+    productsWrapper.value.addEventListener(
+      'transitionend',
+      () => {
+        productsWrapper.value.style.height = ''
+      },
+      { once: true }
+    )
   }
 }
 
@@ -167,10 +172,13 @@ watch(pageSetup, () => changesHandler({ fromPageSetup: true }), { deep: true })
   >
     <h2>PRODUCTS</h2>
     <div
-      class="productsWrapperTransition overflow-hidden"
+      class="productsWrapperTransition my-2 overflow-hidden"
       ref="productsWrapper"
     >
-      <div ref="productsWrapperHelper">
+      <div
+        class="flex flex-col gap-y-2 @container"
+        ref="productsWrapperHelper"
+      >
         <template v-if="visibleProductsIndx.length">
           <CatalogProductCard
             v-for="indx in visibleProductsIndx"

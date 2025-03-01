@@ -46,7 +46,10 @@ const menuState = [
       class="max-w-screen-xl h-full mx-auto grid grid-cols-[120px_1fr_auto_1fr_120px] grid-rows-[auto_1fr] gap-1 -md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] -md:grid-rows-[100%] -xs:grid-cols-[auto_auto]"
     >
       <div class="col-span-1 row-span-2 flex justify-center items-center -md:row-span-1">
-        <NuxtLink to="/">
+        <ULink
+          to="/"
+          active-class="cursor-default"
+        >
           <img
             src="/img/svg-test/v23.svg"
             alt="logo"
@@ -54,7 +57,7 @@ const menuState = [
             width="100%"
             height="auto"
           />
-        </NuxtLink>
+        </ULink>
         <!-- <img
           src="/img/logo3.png"
           alt="logo"

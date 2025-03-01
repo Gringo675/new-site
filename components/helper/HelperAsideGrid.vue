@@ -3,11 +3,11 @@
 </script>
 
 <template>
-  <div class="grid grid-cols-4 gap-x-2">
-    <aside class="col-span-1 -lg:col-span-4">
+  <div class="grid grid-cols-12 gap-x-2">
+    <aside class="col-span-3 -lg:col-span-4 -md:col-span-12">
       <slot name="aside" />
     </aside>
-    <div class="col-span-3 -lg:col-span-4">
+    <div class="col-span-9 -lg:col-span-8 -md:col-span-12">
       <slot />
     </div>
   </div>

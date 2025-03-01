@@ -52,14 +52,8 @@ const preventImgClick = () => {
   )
 }
 const showFullViewer = () => {
-  const carouselRect = carousel.value.$el.getBoundingClientRect()
-  showImageViewer(
-    images,
-    carousel.value.page - 1,
-    Math.round(carouselRect.x + carouselRect.width / 2 - window.innerWidth / 2),
-    Math.round(carouselRect.y + carouselRect.height / 2 - window.innerHeight / 2),
-    Math.round((carouselRect.width * 100) / window.innerWidth) / 100
-  )
+  const activeImgIndex = carousel.value.page - 1
+  showImageViewer(images, { activeImgIndex, causerId: 'img_' + activeImgIndex })
 }
 </script>
 
@@ -84,9 +78,10 @@ const showFullViewer = () => {
     :arrows="!lite && images.length > 1"
     class="select-none"
   >
-    <template #default="{ item }">
+    <template #default="{ item, index }">
       <img
         :src="imagesDirectory + item"
+        :id="'img_' + index"
         class="border border-blue-700 w-min min-w-10 object-contain shrink cursor-zoom-in"
         draggable="false"
         @click="showFullViewer"

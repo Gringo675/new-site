@@ -26,16 +26,17 @@ const handleShowSiblingsClick = () => {
       class="relative"
     >
       <UButton
-        class="m-0 px-0 py-1"
-        color="gray"
+        icon="i-heroicons-chevron-down"
+        :ui="{ rounded: 'rounded-full' }"
+        class="p-1"
         variant="outline"
         @click="handleShowSiblingsClick"
-      >
-        <UIcon
+      />
+      <!-- <UIcon
           name="i-heroicons-slash"
           class="w-6 h-6"
-        />
-      </UButton>
+        /> -->
+      <!-- </UButton> -->
       <Transition name="transition-below">
         <div
           v-if="menuState.show"
@@ -45,7 +46,7 @@ const handleShowSiblingsClick = () => {
           <NuxtLink
             v-for="sibling in crumb.siblings"
             :to="'/catalog/' + sibling.alias"
-            :class="{ 'font-bold': sibling.current }"
+            :class="{ 'font-bold cursor-default': sibling.current }"
             >{{ sibling.name }}</NuxtLink
           >
         </div>

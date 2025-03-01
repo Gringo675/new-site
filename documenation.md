@@ -2,7 +2,16 @@
 
 # ToDo:
 
-- product card images?
+BreadCrumbs:
+
+- subCats
+
+SVG animation:
+
+- logo
+- create spinner
+
+Design colors!!!
 
 # RoadMap:
 

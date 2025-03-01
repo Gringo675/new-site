@@ -71,15 +71,7 @@ catsPath.reverse()
 <template>
   <!-- crumbs wrapper -->
   <div class="flex items-center gap-x-2">
-    <NuxtLink
-      to="/catalog"
-      title="В каталог"
-    >
-      <UIcon
-        name="i-heroicons-home-solid"
-        class="w-7 h-7 block"
-      />
-    </NuxtLink>
+    <NuxtLink to="/catalog"> Весь каталог </NuxtLink>
     <breadCrumbsItem
       v-for="(crumb, index) in catsPath"
       :crumb="crumb"
@@ -102,13 +94,19 @@ catsPath.reverse()
   <!-- category children wrapper -->
   <div
     v-if="catsPath[catsPath.length - 1].children"
-    class="flex flex-wrap"
+    class="relative mt-4 p-4 bg-gray-200 rounded-lg border border-gray-400"
   >
-    <NuxtLink
-      v-for="child in catsPath[catsPath.length - 1].children"
-      class="leading-5 rounded border border-gray-400 my-2 mr-2 p-1 w-[250px] text-center"
-      :to="'/catalog/' + child.alias"
-      >{{ child.name }}</NuxtLink
-    >
+    <div class="absolute -top-3 left-8 px-2 py-1 text-sm leading-none bg-gray-200 rounded-full border border-gray-400">
+      Категории
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <UButton
+        v-for="child in catsPath[catsPath.length - 1].children"
+        :label="child.name"
+        :to="'/catalog/' + child.alias"
+        variant="outline"
+        class="max-w-56 text-center"
+      />
+    </div>
   </div>
 </template>
