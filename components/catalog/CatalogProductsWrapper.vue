@@ -170,7 +170,6 @@ watch(pageSetup, () => changesHandler({ fromPageSetup: true }), { deep: true })
     class="overflow-x-hidden"
     id="pageProducts"
   >
-    <h2>PRODUCTS</h2>
     <div
       class="productsWrapperTransition my-2 overflow-hidden"
       ref="productsWrapper"

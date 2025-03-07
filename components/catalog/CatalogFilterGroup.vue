@@ -15,15 +15,15 @@ const inactivateVal = val => {
 </script>
 
 <template>
-  <div class="my-2">
+  <div class="mb-4">
     <!--    header-->
     <button
-      class="w-full border border-purple-200 bg-orange-200 rounded-t-md px-2 z-10 relative flex justify-between items-center"
+      class="relative z-10 flex w-full items-center justify-between rounded-t-md border border-purple-200 bg-orange-200 px-2"
       :class="{ 'rounded-b-md': !showValues && !activeValues.length }"
       @click="showValues = !showValues"
     >
       <span class="text-lg">{{ fGroup.name }}</span>
-      <div class="my-1 p-1 bg-purple-300 rounded">
+      <div class="my-1 rounded bg-purple-300 p-1">
         <img
           src="/img/chevron-down.svg"
           class="transition-transform duration-500"
@@ -35,22 +35,28 @@ const inactivateVal = val => {
     <transition name="transition-filter-values">
       <div
         v-show="showValues"
-        class="bg-orange-100 max-h-[194px] -mt-2 overflow-hidden border border-purple-200"
+        class="-mt-2 max-h-[194px] overflow-hidden border border-purple-200 bg-orange-100"
         :class="{ 'rounded-b-md': !activeValues.length }"
       >
-        <div class="max-h-44 mx-1 mt-3 mb-1 overflow-auto filter-scrollbar">
+        <div class="filter-scrollbar mx-1 mb-1 mt-3 flex max-h-44 overflow-auto md:flex-col -md:flex-wrap -md:gap-2">
+          <!-- <div
+          class="filter-scrollbar mx-1 mb-1 mt-3 grid max-h-44 grid-cols-[repeat(auto-fill,_minmax(230px,_1fr))] gap-2 overflow-auto"
+        > -->
+          <!-- <div
+          class="filter-scrollbar mx-1 mb-1 mt-3 grid max-h-44 grid-cols-[max-content_max-content_max-content] gap-2 overflow-auto"
+        > -->
           <label
             v-for="value in fGroup.values"
-            class="block"
-            :class="{ disabled: value.disabled }"
+            class="has flex w-fit cursor-pointer items-center gap-2 rounded px-1 hover:bg-gray-100 has-[:disabled]:cursor-default has-[:checked]:bg-gray-200 -md:border -md:border-gray-300"
           >
             <input
               type="checkbox"
               v-model="value.active"
               :disabled="value.disabled"
+              class="peer"
               @change="emit('filterChanged')"
             />
-            {{ value.name }}
+            <span class="peer-disabled:opacity-40">{{ value.name }}</span>
           </label>
         </div>
       </div>
@@ -62,11 +68,11 @@ const inactivateVal = val => {
         class="overflow-hidden"
       >
         <div
-          class="flex flex-wrap pt-1 min-h-[30px] bg-orange-100 border-x border-b border-purple-200 rounded-b-md z-10 relative text-sm text-indigo-700"
+          class="relative z-10 flex min-h-[30px] flex-wrap rounded-b-md border-x border-b border-purple-200 bg-orange-100 pt-1 text-sm text-indigo-700"
         >
           <div
             v-for="item in activeValues"
-            class="mb-1 ml-2 flex w-fit bg-violet-100 rounded"
+            class="mb-1 ml-2 flex w-fit rounded bg-violet-100"
           >
             <span
               class="px-1"
@@ -75,7 +81,7 @@ const inactivateVal = val => {
               {{ item.name }}
             </span>
             <button
-              class="bg-violet-200 rounded"
+              class="rounded bg-violet-200"
               @click="inactivateVal(item.val)"
             >
               <img src="/img/x.svg" />

@@ -45,6 +45,7 @@ export default defineNuxtConfig({
     },
     '~/components',
   ],
+
   runtimeConfig: {
     // dbHost: process.env.NODE_ENV === 'production' ? process.env.DB_HOST : process.env.DB_HOST_LOCAL,
     dbHost: process.env.DB_HOST_LOCAL, // работает везде, и на localhost, и удаленно
@@ -81,4 +82,6 @@ export default defineNuxtConfig({
       enabled: true,
     },
   },
+
+  compatibilityDate: '2025-03-07',
 })

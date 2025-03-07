@@ -40,15 +40,19 @@ const handleShowSiblingsClick = () => {
       <Transition name="transition-below">
         <div
           v-if="menuState.show"
-          class="absolute w-max flex flex-col gap-2 bg-slate-200 rounded-lg mt-2 p-2 z-20 overflow-auto"
-          :style="{ maxHeight: menuState.maxHeight }"
+          class="absolute bg-gray-200 border border-gray-300 rounded-lg mt-2 p-2 z-20"
         >
-          <NuxtLink
-            v-for="sibling in crumb.siblings"
-            :to="'/catalog/' + sibling.alias"
-            :class="{ 'font-bold cursor-default': sibling.current }"
-            >{{ sibling.name }}</NuxtLink
+          <div
+            class="flex flex-col gap-2 w-max pr-2 overflow-auto menu-scrollbar"
+            :style="{ maxHeight: menuState.maxHeight }"
           >
+            <NuxtLink
+              v-for="sibling in crumb.siblings"
+              :to="'/catalog/' + sibling.alias"
+              :class="{ 'font-bold cursor-default': sibling.current }"
+              >{{ sibling.name }}</NuxtLink
+            >
+          </div>
         </div>
       </Transition>
     </div>

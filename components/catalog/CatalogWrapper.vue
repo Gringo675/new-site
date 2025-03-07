@@ -115,10 +115,10 @@ function addFilterToURL() {
     <!--    breadcrumbs-->
     <BreadCrumbsWrapper :catId="catData.id" />
     <!--    name-->
-    <h1>{{ catData.name }}</h1>
+    <h1 class="text-2xl font-accent my-4">{{ catData.name }}</h1>
     <!--    description-->
     <div
-      class="my-2 p-2 bg-slate-100 rounded-xl shadow-md"
+      class="my-2 p-2 bg-gray-100 border border-bg-gray-200 rounded-xl"
       v-html="catData.description"
     ></div>
     <!--    subcats-->

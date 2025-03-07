@@ -4,7 +4,7 @@
 @tailwind utilities;
 
 @layer base {
-  html {
+  ::root {
     /* font-family: Play, system-ui, sans-serif; */
     font-family: 'Sofia Sans';
     font-size: 1rem;
@@ -233,6 +233,37 @@
   .rotate-over {
     transform: rotate3d(1, 0, 0, 180deg);
   }
+
+  /* height animation */
+  .expander {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.5s ease-out;
+
+    & > div {
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity 0.5s ease-out;
+    }
+
+    &.open {
+      grid-template-rows: 1fr;
+
+      & > div {
+        opacity: 1;
+      }
+    }
+  }
+  /* always visible on desktop */
+  @media (min-width: 768px) {
+    .expander.expander-mobile-only {
+      grid-template-rows: 1fr;
+      & > div {
+        opacity: 1;
+      }
+    }
+  }
+  /* end height animation */
 }
 
 /*эти классы всегда будут в итоговом css-файле*/

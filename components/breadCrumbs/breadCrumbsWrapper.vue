@@ -94,18 +94,21 @@ catsPath.reverse()
   <!-- category children wrapper -->
   <div
     v-if="catsPath[catsPath.length - 1].children"
-    class="relative mt-4 p-4 bg-gray-200 rounded-lg border border-gray-400"
+    class="relative mt-5 p-3 bg-gray-100 rounded-lg border border-gray-200"
   >
-    <div class="absolute -top-3 left-8 px-2 py-1 text-sm leading-none bg-gray-200 rounded-full border border-gray-400">
-      Категории
+    <div
+      class="absolute -top-3 left-8 px-2 py-1 text-sm leading-none bg-gray-100 rounded-full border border-gray-200 after:absolute after:-inset-x-px after:top-1/2 after:-bottom-px after:bg-gray-100"
+    >
+      <span class="relative -top-0.5 z-10">Категории</span>
     </div>
-    <div class="flex flex-wrap gap-2">
+    <div class="@container flex flex-wrap gap-3">
       <UButton
         v-for="child in catsPath[catsPath.length - 1].children"
         :label="child.name"
         :to="'/catalog/' + child.alias"
         variant="outline"
-        class="max-w-56 text-center"
+        :ui="{ rounded: 'rounded-full' }"
+        class="justify-center text-center w-full @sm:w-auto @sm:max-w-[calc(50%-0.375rem)]"
       />
     </div>
   </div>
