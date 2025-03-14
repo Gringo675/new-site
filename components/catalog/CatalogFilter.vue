@@ -46,8 +46,29 @@ const toggleShowFilterOnMobile = () => {
           :disabled="resetButtonDisabled"
           block
           @click="emit('resetFilter')"
-          class="m-auto w-fit"
+          class="mx-auto w-fit"
         />
+        <!-- ask question -->
+        <div
+          class="my-4 grid grid-cols-[min-content_auto_auto] items-center gap-2 rounded-xl border border-rose-200 bg-rose-100 p-2 @container"
+        >
+          <UIcon
+            name="i-heroicons-chat-bubble-oval-left-ellipsis"
+            class="col-span-1 row-span-1 h-full w-6 text-cyan-600 @[16.5rem]:row-span-2 @[16.5rem]:w-16 @md:row-span-1 @md:w-11"
+          />
+
+          <div class="col-span-2 ml-auto italic text-cyan-600 @[16.5rem]:text-lg @md:col-span-1 @md:mx-auto">
+            Нужна консультация?
+          </div>
+          <UButton
+            label="Спросить у технолога"
+            variant="outline"
+            size="lg"
+            block
+            class="col-span-3 text-base @[16.5rem]:col-span-2 @md:col-span-1"
+          />
+        </div>
+
         <UButton
           label="Свернуть"
           icon="i-heroicons-chevron-up-solid"

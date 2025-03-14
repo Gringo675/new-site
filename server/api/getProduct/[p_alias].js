@@ -27,7 +27,7 @@ export default defineEventHandler(async event => {
   productData.subCatsId = (await dbReq(query)).map(item => item.id)
 
   // отбираем related prods (из той же категории и максимально совпадающие по параметрам)
-  query = `SELECT id, name, alias, price, images, ${propsGroups.join()} 
+  query = `SELECT id, name, alias, price, special_price, images, ${propsGroups.join()} 
                  FROM i_products 
                  WHERE category_id = ${productData.category_id} AND id != ${productData.id} AND published = 1`
   const related = await dbReq(query)
@@ -39,14 +39,15 @@ export default defineEventHandler(async event => {
   })
   related.sort((a, b) => b.points - a.points)
   productData.relatedProds = []
-  const ceiling = related.length > 10 ? 10 : related.length // возвращаем не больше 10
+  const ceiling = related.length > 8 ? 8 : related.length // возвращаем не больше 8
   for (let i = 0; i < ceiling; i++) {
     productData.relatedProds.push({
       id: related[i].id,
       name: related[i].name,
       alias: related[i].alias,
-      price: related[i].price,
-      images: related[i].images,
+      price: related[i].special_price > 0 ? related[i].special_price : related[i].price,
+      priceRegular: related[i].special_price > 0 ? related[i].price : undefined,
+      image: related[i].images.match(/^[^,]+/)[0], // берем только первое изображение
     })
   }
 

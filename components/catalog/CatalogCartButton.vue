@@ -17,10 +17,11 @@ const productCartIndex = computed(() => cart.findIndex(cartItem => cartItem.id =
       variant="outline"
       icon="i-heroicons-shopping-cart"
       @click="addProductToCart(prod)"
+      class="gap-1"
     />
     <div
       v-else
-      class="flex justify-center items-center gap-1"
+      class="flex items-center justify-center gap-1"
     >
       <UButton
         :icon="cart[productCartIndex].quantity === 1 ? 'i-heroicons-trash' : 'i-heroicons-minus-small-solid'"
@@ -31,7 +32,7 @@ const productCartIndex = computed(() => cart.findIndex(cartItem => cartItem.id =
         v-model.lazy="cart[productCartIndex].quantity"
         type="number"
         min="1"
-        inputClass="w-10 h-[34px] text-center"
+        inputClass="w-10 text-center"
       />
       <UButton
         icon="i-heroicons-plus-small-solid"

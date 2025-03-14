@@ -9,7 +9,6 @@ window.addEventListener('storage', event => {
 })
 
 watch(cart, () => {
-  console.log(`from TheCart watcher`)
   const zeroIndex = cart.findIndex(item => Number(item.quantity) === 0)
   if (zeroIndex === -1) setCartToLocalStore()
   else cart.splice(zeroIndex, 1) // запустит watcher еще раз

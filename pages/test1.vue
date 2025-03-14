@@ -1,53 +1,49 @@
 <script setup>
-//
-const state = reactive({
-  aaa: 111,
-  bbb: 222,
-  ccc: 333,
-  ddd: 444,
-})
+const screen = useScreen()
 
-const pState = new Proxy(state, {
-  // get(target, key) {
-  //   console.log(`from getter`)
-  //   return Number(target[key])
-  // },
-  set(target, key, value) {
-    console.log(`from setter value: ${value}`)
-    if (Number(value) === 0) {
-      confirmDelete().then(r => {
-        if (r === true) delete target[key]
-        else {
-          const cache = target[key]
-          target[key] = 1
-          nextTick(() => {
-            console.log(`from nextTick`)
-            target[key] = cache
-          })
-        }
-      })
-      // delete target[key]
-    } else target[key] = Number(value)
-    return true
+const items = [
+  {
+    label: 'Описание',
+    icon: 'i-heroicons-information-circle',
+    content: 'This is the content shown for Tab1',
   },
-})
-
-const confirmDelete = () => {
-  // return promise
-  return showMessage({
-    title: 'Подтвердите удаление',
-    description: `Товар(-ы) будут удалены из корзины без возможности восстановления. Продолжить?`,
-    isDialog: true,
-  })
-}
+  {
+    label: 'Характеристики',
+    icon: 'i-heroicons-arrow-down-tray',
+    content: 'And, this is the content for Tab2',
+  },
+  {
+    label: 'Документация',
+    icon: 'i-heroicons-eye-dropper',
+    content: 'Finally, this is the content for Tab3',
+  },
+  {
+    label: 'Доставка',
+    icon: 'i-heroicons-eye-dropper',
+    content: 'Finally, this is the content for Tab3',
+  },
+]
 </script>
 
 <template>
-  <div>
-    <div>{{ state }}</div>
-  </div>
-  <div>
-    <!-- <UInput :modelValue="state.aaa" /> -->
-    <UInput v-model.lazy="pState.aaa" />
+  <div class="m-4 bg-green-200">
+    <UTabs :items="items">
+      <template #item="{ item }">
+        <div
+          v-if="item.label === 'Документация'"
+          class=""
+        >
+          {{ item.label }}
+        </div>
+      </template>
+    </UTabs>
+    <!-- <UTabs
+      v-if="!screen.isMobile"
+      :items="items"
+    />
+    <UAccordion
+      v-else
+      :items="items"
+    /> -->
   </div>
 </template>

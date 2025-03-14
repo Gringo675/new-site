@@ -33,77 +33,83 @@ const createFeedback = () => {
 </script>
 
 <template>
-  <div class="w-full bg-secondary-200">
-    <div class="-md:hidden flex items-center gap-x-2 flex-wrap">
-      <UButton
-        label="Admin"
-        to="/admin"
-        color="secondary"
-      />
-      <UButton
-        label="Create mess"
-        @click="createMess"
-        color="secondary"
-      />
-      <UButton
-        label="Show loader"
-        @click="showLoader"
-        color="secondary"
-      />
-      <UButton
-        label="Show notice"
-        color="secondary"
-        @click="showNotice({ title: 'some title', description: 'some description', type: 'success' })"
-      />
-      <UButton
-        label="Show feedback"
-        color="secondary"
-        @click="createFeedback"
-      />
-      <!--      <button @click="multiply" class="button">Multuply</button>-->
-    </div>
-    <div class="-md:hidden flex items-center gap-x-2 flex-wrap">
-      <UButton
-        label="ШТАНГЕНЦИРКУЛИ"
-        to="/catalog/shtangentsirkuli"
-      />
-      <UButton
-        label="ШЦ с глубиномером"
-        to="/catalog/shtangentsirkuli-shts-i-s-glubinomerom"
-      />
-      <UButton
-        label="Orders"
-        to="/user/orders"
-      />
-      <UButton
-        label="test_fetch"
-        to="/test_fetch"
-      />
-      <UButton
-        label="test1"
-        to="/test1"
-      />
-      <UButton
-        label="test2"
-        to="/test2"
-      />
+  <div>
+    <ClientOnly>
+      <RecentlyViewed />
+    </ClientOnly>
 
-      <UButton
-        label="test3"
-        to="/test3"
-      />
-      <UButton
-        label="test4"
-        to="/test4"
-      />
-      <UButton
-        label="test5"
-        to="/test5"
-      />
-      <UButton
-        label="TEST"
-        @click="test"
-      />
+    <div class="bg-secondary-200">
+      <div class="flex flex-wrap items-center gap-x-2 -md:hidden">
+        <UButton
+          label="Admin"
+          to="/admin"
+          color="secondary"
+        />
+        <UButton
+          label="Create mess"
+          @click="createMess"
+          color="secondary"
+        />
+        <UButton
+          label="Show loader"
+          @click="showLoader"
+          color="secondary"
+        />
+        <UButton
+          label="Show notice"
+          color="secondary"
+          @click="showNotice({ title: 'some title', description: 'some description', type: 'success' })"
+        />
+        <UButton
+          label="Show feedback"
+          color="secondary"
+          @click="createFeedback"
+        />
+        <!--      <button @click="multiply" class="button">Multuply</button>-->
+      </div>
+      <div class="flex flex-wrap items-center gap-x-2 -md:hidden">
+        <UButton
+          label="ШТАНГЕНЦИРКУЛИ"
+          to="/catalog/shtangentsirkuli"
+        />
+        <UButton
+          label="ШЦ с глубиномером"
+          to="/catalog/shtangentsirkuli-shts-i-s-glubinomerom"
+        />
+        <UButton
+          label="Orders"
+          to="/user/orders"
+        />
+        <UButton
+          label="test_fetch"
+          to="/test_fetch"
+        />
+        <UButton
+          label="test1"
+          to="/test1"
+        />
+        <UButton
+          label="test2"
+          to="/test2"
+        />
+
+        <UButton
+          label="test3"
+          to="/test3"
+        />
+        <UButton
+          label="test4"
+          to="/test4"
+        />
+        <UButton
+          label="test5"
+          to="/test5"
+        />
+        <UButton
+          label="TEST"
+          @click="test"
+        />
+      </div>
     </div>
   </div>
 </template>

@@ -24,37 +24,37 @@ const onMouseEnter = index => {
     }"
   >
     <!-- wrapper -->
-    <div class="flex flex-col h-screen">
+    <div class="flex h-screen flex-col">
       <!-- header -->
-      <div class="flex items-center gap-x-2 m-2 bg-gray-50 sm:justify-between">
+      <div class="m-2 flex items-center gap-x-2 bg-gray-50 sm:justify-between">
         <button
           class="opacity-80 hover:opacity-100 focus:outline-none focus-visible:outline-0"
           @click="closeMenu"
         >
           <UIcon
             name="i-heroicons-x-mark"
-            class="h-8 w-8 block"
+            class="block h-8 w-8"
           />
         </button>
-        <div class="flex-grow min-w-0 flex justify-center">
+        <div class="flex min-w-0 flex-grow justify-center">
           <TheSearch class="" />
         </div>
-        <div class="font-accent text-2xl whitespace-nowrap -sm:hidden">ТД ЧИ</div>
+        <div class="font-accent whitespace-nowrap text-2xl -sm:hidden">ТД ЧИ</div>
       </div>
       <!-- columns -->
       <div class="flex overflow-hidden border-t border-gray-300">
         <!-- first col -->
         <div
-          class="flex flex-col gap-2 w-80 overflow-auto menu-scrollbar bg-gray-100 -md:w-full -md:flex-row -md:flex-wrap -md:pt-2"
+          class="menu-scrollbar flex w-80 flex-col gap-2 overflow-auto bg-gray-100 -md:w-full -md:flex-row -md:flex-wrap -md:p-2"
         >
           <div
             v-for="(cat, i) in cats"
-            class="pl-4 py-2"
+            class="flex-grow py-2 pl-4 -md:p-0"
             :class="{ 'md:bg-gray-200': menuState.activeCatIndex === i }"
             @mouseenter="onMouseEnter(i)"
           >
             <NuxtLink
-              class="text-lg font-medium hover:underline underline-offset-8 -md:px-3 -md:py-2 -md:border -md:border-gray-500 -md:rounded-full -md:text-sm"
+              class="text-center text-lg font-medium underline-offset-8 hover:underline -md:block -md:w-full -md:rounded-full -md:border -md:border-gray-500 -md:px-3 -md:py-2 -md:text-sm"
               :to="`/catalog/${cat.alias}`"
               @click="closeMenu"
             >
@@ -64,7 +64,7 @@ const onMouseEnter = index => {
         </div>
         <!-- second col -->
         <div
-          class="flex-1 flex flex-col pl-6 pr-4 gap-y-2 overflow-auto menu-scrollbar bg-gray-200 underline-offset-4 -md:hidden"
+          class="menu-scrollbar flex flex-1 flex-col gap-y-2 overflow-auto bg-gray-200 pl-6 pr-4 underline-offset-4 -md:hidden"
         >
           <div class="">
             <div
@@ -83,7 +83,7 @@ const onMouseEnter = index => {
 
               <div
                 v-if="subCat.children"
-                class="ml-4 mb-2 flex flex-col gap-y-2"
+                class="mb-2 ml-4 flex flex-col gap-y-2"
               >
                 <div
                   v-for="subSubCat in subCat.children"
@@ -91,7 +91,7 @@ const onMouseEnter = index => {
                 >
                   <UIcon
                     name="i-heroicons-arrow-turn-down-right-16-solid"
-                    class="w-6 h-6 mt-1"
+                    class="mt-1 h-6 w-6"
                   />
                   <div>
                     <NuxtLink

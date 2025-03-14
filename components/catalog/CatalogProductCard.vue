@@ -1,32 +1,28 @@
 <script setup>
 const props = defineProps({
   prod: Object,
-});
+})
 
-const config = useRuntimeConfig();
-const imagesDirectory = config.public.IMAGES_DIRECTORY;
+const config = useRuntimeConfig()
+const imagesDirectory = config.public.IMAGES_DIRECTORY
 
 const showFullImage = () => {
-  showImageViewer([props.prod.image], { causerId: "img_" + props.prod.id });
-};
+  showImageViewer([props.prod.image], { causerId: 'img_' + props.prod.id })
+}
 
-const copied = ref(false);
+const copied = ref(false)
 const copyId = () => {
-  navigator.clipboard.writeText(props.prod.id);
-  copied.value = true;
+  navigator.clipboard.writeText(props.prod.id)
+  copied.value = true
   setTimeout(() => {
-    copied.value = false;
-  }, 2000);
-};
+    copied.value = false
+  }, 2000)
+}
 </script>
 
 <template>
-  <div
-    class="grid grid-cols-[auto_1fr_auto] grid-rows-[auto_auto] rounded-lg bg-cyan-500 hover:shadow"
-  >
-    <div
-      class="col-span-1 row-span-2 flex w-20 items-center justify-center self-center p-2 @md:h-20"
-    >
+  <div class="grid grid-cols-[auto_1fr_auto] grid-rows-[auto_auto] rounded-lg bg-cyan-500 hover:shadow">
+    <div class="col-span-1 row-span-2 flex w-20 items-center justify-center self-center p-2 @md:h-20">
       <img
         :src="`${imagesDirectory}thumb_${prod.image}`"
         :alt="prod.name"
@@ -57,9 +53,7 @@ const copyId = () => {
             class="h-8 w-auto"
           />
           <div class="rounded bg-fuchsia-400 p-0.5">
-            <div
-              class="border border-dashed border-white px-2 leading-tight text-white"
-            >
+            <div class="border border-dashed border-white px-2 leading-tight text-white">
               {{ prod.label.name }}
             </div>
           </div>
@@ -73,17 +67,17 @@ const copyId = () => {
       </NuxtLink>
     </div>
     <div
-      class="col-span-2 row-span-1 m-2 flex flex-wrap items-center justify-end gap-2 @md:col-span-1 @md:row-span-2 @md:mt-7 @md:w-28 @xl:mt-2 @xl:w-auto @xl:flex-nowrap"
+      class="col-span-2 row-span-1 m-2 flex flex-wrap content-end items-center justify-end gap-2 @md:col-span-1 @md:row-span-2 @md:mt-7 @md:w-28 @xl:mt-2 @xl:w-auto @xl:flex-nowrap"
     >
       <div class="relative w-28 shrink-0 grow-0">
         <div
           v-if="prod.priceRegular"
           class="absolute bottom-full right-0 text-sm leading-none line-through opacity-70"
         >
-          {{ prod.priceRegular.toLocaleString() + " ₽" }}
+          {{ prod.priceRegular.toLocaleString() + ' ₽' }}
         </div>
         <div class="float-right text-xl leading-none">
-          {{ prod.price.toLocaleString() + " ₽" }}
+          {{ prod.price.toLocaleString() + ' ₽' }}
         </div>
       </div>
       <div class="cartBtn w-28 shrink-0 grow-0">
@@ -94,6 +88,7 @@ const copyId = () => {
               label="В корзину"
               variant="outline"
               icon="i-heroicons-shopping-cart"
+              class="gap-1"
             />
           </template>
         </ClientOnly>

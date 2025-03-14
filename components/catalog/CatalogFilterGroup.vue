@@ -47,7 +47,7 @@ const inactivateVal = val => {
         > -->
           <label
             v-for="value in fGroup.values"
-            class="has flex w-fit cursor-pointer items-center gap-2 rounded px-1 hover:bg-gray-100 has-[:disabled]:cursor-default has-[:checked]:bg-gray-200 -md:border -md:border-gray-300"
+            class="flex w-fit cursor-pointer items-center gap-2 rounded px-1 hover:bg-gray-100 has-[:disabled]:cursor-default has-[:checked]:bg-gray-200 -md:border -md:border-gray-300"
           >
             <input
               type="checkbox"

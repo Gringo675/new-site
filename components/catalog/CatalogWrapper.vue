@@ -46,7 +46,7 @@ function setFilterFromURL() {
     fGroup.values.forEach(value => {
       value.active = activeValues.includes(value.val)
       value.disabled = false
-    })
+    }),
   )
   handleFilter(true)
 }
@@ -59,14 +59,14 @@ function handleFilter(filterFromURL = false) {
   activeProducts.length = 0
   products.forEach(product => {
     const isProductMatch = activeFilter.every(fGroup =>
-      fGroup.length ? fGroup.some(activeVal => product.props.includes(activeVal)) : true
+      fGroup.length ? fGroup.some(activeVal => product.props.includes(activeVal)) : true,
     )
     if (isProductMatch) activeProducts.push(product)
   })
   activeProductsIndx.value = []
   products.forEach((product, i) => {
     const isProductMatch = activeFilter.every(fGroup =>
-      fGroup.length ? fGroup.some(activeVal => product.props.includes(activeVal)) : true
+      fGroup.length ? fGroup.some(activeVal => product.props.includes(activeVal)) : true,
     )
     if (isProductMatch) activeProductsIndx.value.push(i)
   })
@@ -79,8 +79,8 @@ function handleFilter(filterFromURL = false) {
       localFilter[i] = [value.val] // проверяемое значение должно быть одно в группе
       value.disabled = !products.some(product =>
         localFilter.every(fGroup =>
-          fGroup.length ? fGroup.some(activeVal => product.props.includes(activeVal)) : true
-        )
+          fGroup.length ? fGroup.some(activeVal => product.props.includes(activeVal)) : true,
+        ),
       )
     })
   })
@@ -115,16 +115,16 @@ function addFilterToURL() {
     <!--    breadcrumbs-->
     <BreadCrumbsWrapper :catId="catData.id" />
     <!--    name-->
-    <h1 class="text-2xl font-accent my-4">{{ catData.name }}</h1>
+    <h1 class="font-accent my-4 text-2xl">{{ catData.name }}</h1>
     <!--    description-->
     <div
-      class="my-2 p-2 bg-gray-100 border border-bg-gray-200 rounded-xl"
+      class="border-bg-gray-200 my-2 rounded-xl border bg-gray-100 p-2"
       v-html="catData.description"
     ></div>
     <!--    subcats-->
     <div
       v-if="catData.childCats"
-      class="w-full my-2 bg-sky-100 rounded-xl flex items-center justify-center"
+      class="my-2 flex w-full items-center justify-center rounded-xl bg-sky-100"
     >
       <div
         v-for="child in catData.childCats"
@@ -150,9 +150,14 @@ function addFilterToURL() {
         :activeProductsIndx
       />
     </HelperAsideGrid>
-    <HelperDocsBlock
+    <HelperInfoBlock
+      :description="catData.description"
+      :characteristics="catData.characteristics"
+      :documentation="catData.docs"
+    />
+    <!-- <HelperDocsBlock
       v-if="catData.docs"
       :docs="catData.docs"
-    />
+    /> -->
   </div>
 </template>

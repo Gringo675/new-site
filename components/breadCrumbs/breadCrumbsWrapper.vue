@@ -81,7 +81,7 @@ catsPath.reverse()
     <template v-if="forProduct">
       <UIcon
         name="i-heroicons-slash"
-        class="w-6 h-6"
+        class="h-6 w-6"
       />
       <BreadCrumbsProductSubCat
         v-for="(subCat, i) in productCats"
@@ -94,21 +94,21 @@ catsPath.reverse()
   <!-- category children wrapper -->
   <div
     v-if="catsPath[catsPath.length - 1].children"
-    class="relative mt-5 p-3 bg-gray-100 rounded-lg border border-gray-200"
+    class="relative mt-5 rounded-lg border border-gray-200 bg-gray-100 p-3"
   >
     <div
-      class="absolute -top-3 left-8 px-2 py-1 text-sm leading-none bg-gray-100 rounded-full border border-gray-200 after:absolute after:-inset-x-px after:top-1/2 after:-bottom-px after:bg-gray-100"
+      class="absolute -top-3 left-8 rounded-full border border-gray-200 bg-gray-100 px-2 py-1 text-sm leading-none after:absolute after:-inset-x-px after:-bottom-px after:top-1/2 after:bg-gray-100"
     >
       <span class="relative -top-0.5 z-10">Категории</span>
     </div>
-    <div class="@container flex flex-wrap gap-3">
+    <div class="flex flex-wrap gap-3 @container">
       <UButton
         v-for="child in catsPath[catsPath.length - 1].children"
         :label="child.name"
         :to="'/catalog/' + child.alias"
         variant="outline"
         :ui="{ rounded: 'rounded-full' }"
-        class="justify-center text-center w-full @sm:w-auto @sm:max-w-[calc(50%-0.375rem)]"
+        class="flex-grow justify-center text-center @sm:w-auto @sm:max-w-[calc(50%-0.375rem)] @3xl:flex-grow-0"
       />
     </div>
   </div>

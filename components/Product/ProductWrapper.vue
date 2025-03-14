@@ -22,6 +22,20 @@ const subCats = cats.value
         }),
     }
   })
+
+onMounted(() => {
+  setTimeout(() => {
+    const addToViewed = useAddToViewed()
+    addToViewed.value = {
+      id: productData.id,
+      alias: productData.alias,
+      name: productData.name,
+      image: productData.images[0],
+      price: productData.price,
+      priceRegular: productData.priceRegular,
+    }
+  }, 3000)
+})
 </script>
 
 <template>
@@ -70,18 +84,19 @@ const subCats = cats.value
       </div>
     </div>
     <!--images-->
-    <div class="max-w-[400px] border border-stone-400 m-4 p-4">
+    <div class="m-4 max-w-[400px] border border-stone-400 p-4">
       <image-viewer-inline :images="productData.images" />
     </div>
     <HelperDocsBlock :docs="productData.docs" />
 
     <!--    related-->
     <div class="">
-      <h2>Похожие товары</h2>
-      <div class="">
+      <h2 class="py-2 text-lg font-semibold">Похожие товары</h2>
+      <div class="grid grid-cols-4 gap-2 -xl:grid-cols-2 -sm:grid-cols-1">
         <CatalogProductCard
           v-for="prod in productData.relatedProds"
           :prod="prod"
+          class="@container"
         />
       </div>
     </div>

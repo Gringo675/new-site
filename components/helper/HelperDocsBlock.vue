@@ -17,15 +17,14 @@ const showViewer = (title, src) => {
 </script>
 
 <template>
-  <div class="w-full p-2 border border-gray-200 rounded-lg bg-gray-100">
-    <h2>Документация</h2>
+  <div class="">
     <template
       v-if="docs.stnd?.length"
       class=""
     >
       <div
         v-for="stnd in docs.stnd"
-        class="my-2 p-2 border border-gray-400 rounded-lg bg-gray-200"
+        class="my-2 rounded-lg border border-gray-400 bg-gray-200 p-2"
       >
         <!-- title -->
         <div>{{ stnd.number }} {{ stnd.name }}</div>
@@ -42,7 +41,7 @@ const showViewer = (title, src) => {
     <template v-if="docs.rstr?.length">
       <div
         v-for="rstr in docs.rstr"
-        class="my-2 p-2 border border-gray-400 rounded-lg bg-gray-200"
+        class="my-2 rounded-lg border border-gray-400 bg-gray-200 p-2"
       >
         <!-- title -->
         <!-- в базе есть пустые записи ' ', поэтому > 1 -->
@@ -83,7 +82,7 @@ const showViewer = (title, src) => {
     >
       <div
         v-for="pasp in docs.pasp"
-        class="my-2 p-2 border border-gray-400 rounded-lg bg-gray-200"
+        class="my-2 rounded-lg border border-gray-400 bg-gray-200 p-2"
       >
         <!-- title -->
         <div>{{ pasp.name }}</div>
@@ -102,13 +101,13 @@ const showViewer = (title, src) => {
   <Transition name="transition-fade">
     <div
       v-if="viewer.show"
-      class="fixed left-0 top-0 right-0 bottom-0 bg-gray-900/90 z-30 overflow-hidden"
+      class="fixed bottom-0 left-0 right-0 top-0 z-30 overflow-hidden bg-gray-900/90"
       @click="viewer.show = false"
       v-focus
       tabindex="-1"
     >
       <!-- spinner -->
-      <div class="h-full flex flex-col items-center justify-center">
+      <div class="flex h-full flex-col items-center justify-center">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="120"
@@ -130,16 +129,16 @@ const showViewer = (title, src) => {
         </svg>
       </div>
       <!-- document block -->
-      <div class="flex flex-col w-[1200px] max-w-full h-full m-auto -translate-y-full">
+      <div class="m-auto flex h-full w-[1200px] max-w-full -translate-y-full flex-col">
         <!-- title -->
-        <div class="text-3xl text-slate-200 flex justify-between">
+        <div class="flex justify-between text-3xl text-slate-200">
           <span class="m-2 truncate">
             {{ viewer.title }}
           </span>
           <button class="m-2 opacity-80 hover:opacity-100 focus:outline-none focus-visible:outline-0">
             <UIcon
               name="i-heroicons-x-circle"
-              class="h-10 w-10 block"
+              class="block h-10 w-10"
             />
           </button>
         </div>
