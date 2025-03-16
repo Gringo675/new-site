@@ -1,59 +1,71 @@
 <script setup>
 //
+/**
+ * Логика работы:
+ * Страница товара отправляет объект с данными о товаре, заносим в кеш и localStore.
+ * Данный компонент отслеживает переход на другую страницу, берет данные из localStore и если требуется, обновляет Просмотренные товары.
+ */
 const viewed = shallowRef([])
 const route = useRoute()
 const addToViewed = useAddToViewed()
-
-const getViewedFromLocalStore = async () => {
-  const storViewed = JSON.parse(localStorage.getItem('VIEWED'))
-  if (!storViewed?.length) return
-  const products = await myFetch('/api/getProducts', {
-    method: 'post',
-    payload: storViewed,
-    silent: true,
-  })
-  if (!products) return
-  viewed.value = storViewed.map(id => products.find(p => p.id === id))
-  console.log(`начальная инициализация закончена`)
+const helper = {
+  inProgress: false,
+  needUpdate: false,
+  cache: [],
 }
-getViewedFromLocalStore()
 
-console.log(`watch activated for addToViewed`)
-watch(addToViewed, setProductToViewed)
-function setProductToViewed(newProduct) {
-  console.log(`from addToViewed watcher prod: ${newProduct.name}`)
-  const newViewed = JSON.parse(localStorage.getItem('VIEWED')) ?? [] // обрабатывать нужно localStore, т.к. в него можно внести изменения из других вкладок
+onMounted(() => {
+  watch(addToViewed, updateLocal)
+  watch(() => route.path, updateViewed, { immediate: true }) // immediate for the first load
+})
 
-  viewed.value.push(newProduct) // будет использоваться как кеш, порядок не важен
+async function updateLocal(newProduct) {
+  const newViewed = JSON.parse(localStorage.getItem('VIEWED')) ?? [] // обрабатывать нужно localStore, т.к. в него можно внести изменения с других вкладок
+  helper.cache.push(newProduct)
   const existingIndex = newViewed.indexOf(newProduct.id) // если товар уже есть в просмотренных
   if (existingIndex !== -1) newViewed.splice(existingIndex, 1)
   newViewed.unshift(newProduct.id)
-  if (newViewed.length > 4) newViewed.length = 4 // viewed should be limited to 4 items
-  console.log(`changed newViewed: ${JSON.stringify(newViewed, null, 2)}`)
+  if (newViewed.length > 5) newViewed.length = 5 // на 1 больше, чем нужно, т.к. будем удалять текущий на странице товара
   localStorage.setItem('VIEWED', JSON.stringify(newViewed))
+}
 
-  console.log(`watch activated for route`)
-  watch(
-    () => route.path,
-    async () => {
-      console.log(`from route watcher`)
-      const missingIds = newViewed.filter(id => !viewed.value.some(p => p.id === id))
-      if (missingIds.length) {
-        const missingProds = await myFetch('/api/getProducts', {
-          method: 'post',
-          payload: missingIds,
-          silent: true,
-        })
-        if (!missingProds) return
-        console.log(`after request viewed.value: ${JSON.stringify(viewed.value, null, 2)}`)
-        console.log(`newViewed: ${JSON.stringify(newViewed, null, 2)}`)
-        viewed.value.push(...missingProds)
-      }
-      viewed.value = newViewed.map(id => viewed.value.find(p => p.id === id)) // trigger reactivity on route change
-      console.log(`created viewed.value: ${JSON.stringify(viewed.value, null, 2)}`)
-    },
-    { once: true },
-  )
+async function updateViewed() {
+  await new Promise(r => setTimeout(r, 4000)) // pause should be more than on the product page
+
+  if (helper.inProgress) {
+    helper.needUpdate = true
+    return
+  }
+
+  const localViewed = JSON.parse(localStorage.getItem('VIEWED')) ?? []
+  if (localViewed === viewed.value.map(p => p.id)) return
+
+  const missingIds = localViewed.filter(id => !helper.cache.some(p => p.id === id))
+  if (missingIds.length) {
+    helper.inProgress = true
+    console.log(`missingIds: ${JSON.stringify(missingIds, null, 2)}`)
+    const missingProds = await myFetch('/api/getProducts', {
+      method: 'post',
+      payload: missingIds,
+      silent: true,
+    })
+    helper.inProgress = false
+    if (!missingProds) return
+    helper.cache.push(...missingProds)
+  }
+
+  viewed.value = localViewed.map(id => helper.cache.find(p => p.id === id))
+  if (route.params.p_alias) {
+    // находимся на странице товара, удаляем текущий товар из просмотренных
+    const currentInd = viewed.value.findIndex(p => p.alias === route.params.p_alias)
+    if (currentInd !== -1) viewed.value.splice(currentInd, 1)
+  }
+  if (viewed.value.length > 4) viewed.value.length = 4
+
+  if (helper.needUpdateLocal) {
+    helper.needUpdate = false
+    updateViewed()
+  }
 }
 </script>
 
