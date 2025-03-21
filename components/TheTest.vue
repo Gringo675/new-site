@@ -1,11 +1,9 @@
 <script setup>
 //
-const screen = useScreen()
 </script>
 
 <template>
   <div>
-    <div>The Test</div>
-    <div>Screen: {{ screen.isMobile ? 'Mobile' : 'Desktop' }}</div>
+    <div class="m-4">The Test</div>
   </div>
 </template>

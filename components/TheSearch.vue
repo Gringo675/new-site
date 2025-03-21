@@ -25,7 +25,7 @@ const searchHelper = {
     }
     searchState.result = null
     searchState.showResults = false
-    this.controller.abort('manualAbort') // set 'cause' param
+    this.abortRequest()
     if (searchState.query.length > 2) this.startingNewRequest()
   },
   async startingNewRequest() {
@@ -52,12 +52,15 @@ const searchHelper = {
       searchState.pending = false
     }
   },
+  abortRequest() {
+    this.controller.abort('manualAbort') // set 'cause' param
+  },
   activateSearchResults() {
     searchState.showResults = true
     const inputRect = searchState.ref.getBoundingClientRect()
     searchState.ref.style.setProperty(
       '--result-width',
-      `${window.innerWidth > 450 ? inputRect.width : window.innerWidth - 10}px`
+      `${window.innerWidth > 450 ? inputRect.width : window.innerWidth - 10}px`,
     )
     searchState.ref.style.setProperty('--result-left', `${window.innerWidth > 450 ? inputRect.left : 5}px`)
     // searchState.ref.style.setProperty('--result-width', `${inputRect.width}px`)
@@ -71,11 +74,12 @@ const searchHelper = {
 }
 watch(
   () => searchState.query,
-  () => searchHelper.handleQueryChange()
+  () => searchHelper.handleQueryChange(),
 )
 
 const goTo = async link => {
-  searchState.showResults = false
+  searchHelper.abortRequest()
+  searchHelper.hideSearchResults()
   closeSlideoverMenu() // для модуля поиска в боковом меню
   await navigateTo(link)
 }
@@ -120,20 +124,20 @@ const onInputClick = e => {
     <Transition name="transition-fade">
       <div
         v-if="searchState.showResults"
-        class="fixed left-0 top-0 w-full h-full bg-black bg-opacity-20 z-20"
+        class="fixed left-0 top-0 z-20 h-full w-full bg-black bg-opacity-20"
         @click="searchHelper.hideSearchResults"
       >
         <div
           @click.stop
-          class="modal-form absolute max-h-[var(--result-max-height)] w-[var(--result-width)] left-[var(--result-left)] top-[var(--result-top)] mt-1 overflow-auto border border-violet-600 rounded-md z-20 shadow-xl"
+          class="modal-form absolute left-[var(--result-left)] top-[var(--result-top)] z-20 mt-1 max-h-[var(--result-max-height)] w-[var(--result-width)] overflow-auto rounded-md border border-violet-600 shadow-xl"
         >
           <div
             v-if="searchState.result.products.length > 0"
             class=""
           >
             <!-- categories -->
-            <div class="flex flex-col items-start gap-y-1 p-2 pt-1 bg-slate-200">
-              <div class="text-sm self-end -mb-2">Категории</div>
+            <div class="flex flex-col items-start gap-y-1 bg-slate-200 p-2 pt-1">
+              <div class="-mb-2 self-end text-sm">Категории</div>
               <template v-for="cat in searchState.result.cats">
                 <UButton
                   v-for="subCat in cat.children"
@@ -147,8 +151,8 @@ const onInputClick = e => {
               </template>
             </div>
             <!-- products -->
-            <div class="flex flex-col items-start gap-y-1 p-2 pt-1 bg-slate-50">
-              <div class="text-sm self-end -mb-2">Товары</div>
+            <div class="flex flex-col items-start gap-y-1 bg-slate-50 p-2 pt-1">
+              <div class="-mb-2 self-end text-sm">Товары</div>
               <UButton
                 v-for="product in searchState.result.products"
                 variant="link"
@@ -159,7 +163,7 @@ const onInputClick = e => {
                 @click="goTo(`/product/${product.alias}`)"
               />
             </div>
-            <div class="bg-slate-300 p-2 flex justify-between">
+            <div class="flex justify-between bg-slate-300 p-2">
               <UButton
                 variant="ghost"
                 color="indigo"

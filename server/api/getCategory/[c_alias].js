@@ -26,7 +26,7 @@ export default defineEventHandler(async event => {
     const parentParentId = (await dbReq(query))[0].parent_id
     productsCatId = parentParentId > 0 ? parentParentId : catData.parent_id
   }
-  query = `SELECT id, name, alias, price, special_price, images, label_id,
+  query = `SELECT id, name, alias, price, special_price, images, label,
                  p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature, p8_pack,
                  standart_ids, reestr_ids
                  FROM i_products WHERE category_id = '${productsCatId}' 
@@ -104,14 +104,6 @@ export default defineEventHandler(async event => {
   const stnds = new Set()
   const rstrs = new Set()
 
-  const labels = {} // для кеширования
-  const getLabel = async label_id => {
-    if (!labels[label_id]) {
-      labels[label_id] = (await dbReq(`SELECT name, image FROM i_labels WHERE id = ${label_id} LIMIT 1`))[0] || {}
-    }
-    return labels[label_id]
-  }
-
   for (const [i, product] of products.entries()) {
     product.order = i
     product.image = product.images.match(/^[^,]+/)[0] // берем только первое изображение
@@ -120,8 +112,6 @@ export default defineEventHandler(async event => {
       product.priceRegular = product.price
       product.price = product.special_price
     }
-    // обрабатываем лейбл
-    if (product.label_id > 0) product.label = await getLabel(product.label_id)
     // обрабатываем документацию
     if (product.standart_ids.length) product.standart_ids.split(',').forEach(stnd => stnds.add(stnd))
     if (product.reestr_ids.length) product.reestr_ids.split(',').forEach(rstr => rstrs.add(rstr))
@@ -130,7 +120,6 @@ export default defineEventHandler(async event => {
     delete product.reestr_ids
     delete product.standart_ids
     delete product.special_price
-    delete product.label_id
   }
 
   // catData.docs = {}

@@ -33,7 +33,7 @@ const createFeedback = () => {
 </script>
 
 <template>
-  <div>
+  <div class="mx-auto max-w-screen-xl">
     <ClientOnly>
       <RecentlyViewed />
     </ClientOnly>

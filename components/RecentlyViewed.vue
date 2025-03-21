@@ -43,7 +43,6 @@ async function updateViewed() {
   const missingIds = localViewed.filter(id => !helper.cache.some(p => p.id === id))
   if (missingIds.length) {
     helper.inProgress = true
-    console.log(`missingIds: ${JSON.stringify(missingIds, null, 2)}`)
     const missingProds = await myFetch('/api/getProducts', {
       method: 'post',
       payload: missingIds,
@@ -72,7 +71,7 @@ async function updateViewed() {
 <template>
   <div
     v-if="viewed.length"
-    class="absolute bottom-0 left-0 right-0 m-2 bg-rose-200"
+    class="m-2 bg-rose-200"
   >
     <h2 class="py-2 text-lg font-semibold">Вы недавно смотрели</h2>
     <div class="grid grid-cols-4 gap-2 -xl:grid-cols-2 -sm:grid-cols-1">

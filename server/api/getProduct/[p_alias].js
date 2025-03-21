@@ -27,7 +27,7 @@ export default defineEventHandler(async event => {
   productData.subCatsId = (await dbReq(query)).map(item => item.id)
 
   // отбираем related prods (из той же категории и максимально совпадающие по параметрам)
-  query = `SELECT id, name, alias, price, special_price, images, ${propsGroups.join()} 
+  query = `SELECT id, name, alias, price, special_price, images, label, ${propsGroups.join()} 
                  FROM i_products 
                  WHERE category_id = ${productData.category_id} AND id != ${productData.id} AND published = 1`
   const related = await dbReq(query)
@@ -47,6 +47,7 @@ export default defineEventHandler(async event => {
       alias: related[i].alias,
       price: related[i].special_price > 0 ? related[i].special_price : related[i].price,
       priceRegular: related[i].special_price > 0 ? related[i].price : undefined,
+      label: related[i].label,
       image: related[i].images.match(/^[^,]+/)[0], // берем только первое изображение
     })
   }
@@ -112,12 +113,6 @@ export default defineEventHandler(async event => {
     productData.priceRegular = productData.price
     productData.price = productData.special_price
   }
-  // проверяем лейбл
-  if (productData.label_id > 0) {
-    query = `SELECT name, image FROM i_labels
-                 WHERE id = ${productData.label_id} LIMIT 1`
-    productData.label = (await dbReq(query))[0]
-  }
 
   // удаляем ненужное
   const toDelete = [
@@ -135,7 +130,6 @@ export default defineEventHandler(async event => {
     'date_modified',
     'date_price_changed',
     'date_vendor_price_changed',
-    'label_id',
     'standart_ids',
     'reestr_ids',
     'pasport_ids',

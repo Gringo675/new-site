@@ -32,7 +32,7 @@ export default defineEventHandler(async event => {
         'IFNULL(docs.stnd_id, "") AS standart_ids, ' +
         'IFNULL(docs.rstr_id, "") AS reestr_ids, ' +
         'IFNULL(docs.pasp_id, "") AS pasport_ids, ' +
-        'products.label_id AS label_id, ' +
+        'products.label_id AS label, ' +
         // 'products.`meta_title_ru-RU` AS meta_title, ' +
         // 'products.`meta_description_ru-RU` AS meta_description, ' +
         // 'products.`meta_keyword_ru-RU` AS meta_keywords, ' +
@@ -44,7 +44,7 @@ export default defineEventHandler(async event => {
         'FROM `instr_jshopping_products` AS products ' +
         'LEFT JOIN `instr_jshopping_products_to_categories` AS prods_to_cats ON products.product_id = prods_to_cats.product_id ' +
         'LEFT JOIN `instr_jshopping_prices` AS prices ON products.product_id = prices.product_id ' +
-        'LEFT JOIN `instr_jshopping_docs_products` AS docs ON products.product_id = docs.product_id '
+        'LEFT JOIN `instr_jshopping_docs_products` AS docs ON products.product_id = docs.product_id ',
       // 'WHERE products.product_id = 11011201'
       // 'WHERE prods_to_cats.category_id = 1801'
       // 'WHERE TRUNCATE(prods_to_cats.category_id/100, 0) = 11'
@@ -69,7 +69,7 @@ export default defineEventHandler(async event => {
     }
     // получим всю таблицу изображений (так быстрее, чем получать изображения для каждого товара отдельным запросом)
     const images = await dbOldReq(
-      'SELECT product_id, image_name AS name, ordering FROM instr_jshopping_products_images'
+      'SELECT product_id, image_name AS name, ordering FROM instr_jshopping_products_images',
     )
 
     for (const prod of prods) {

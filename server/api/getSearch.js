@@ -5,6 +5,7 @@
  */
 export default defineEventHandler(async event => {
   // await new Promise(resolve => setTimeout(resolve, 3000))
+
   const { q, f } = getQuery(event)
   if (typeof q !== 'string' || q.length < 3) throw createError({ statusCode: 505, statusMessage: `Incorrect request!` })
   const fastSearch = f === '1'
@@ -13,7 +14,7 @@ export default defineEventHandler(async event => {
 
   const getProducts = (qExpression, fastSearch) => {
     try {
-      const query = `SELECT id, name, alias, category_id, price, special_price, images, p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature FROM i_products WHERE name LIKE '%${qExpression}%' LIMIT ${
+      const query = `SELECT id, name, alias, category_id, price, special_price, images, p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature, label FROM i_products WHERE name LIKE '%${qExpression}%' LIMIT ${
         fastSearch ? '10' : '100'
       }`
       return dbReq(query)
@@ -54,9 +55,6 @@ export default defineEventHandler(async event => {
     if (catsWithProductProps[product.category_id] === undefined)
       catsWithProductProps[product.category_id] = [product.props]
     else catsWithProductProps[product.category_id].push(product.props)
-
-    product.image = product.images.match(/^[^,]+/)[0] // берем только первое изображение
-    product.price = product.special_price > 0 ? product.special_price : product.price // проверяем наличие спец.цены
   }
   // получаем категории
   const qWhere = []
@@ -69,7 +67,7 @@ export default defineEventHandler(async event => {
         chunks.push(
           props[i] === 0
             ? `${propsGroupOrder[i].name} = ''`
-            : `(${propsGroupOrder[i].name} = '' OR FIND_IN_SET(${props[i]}, ${propsGroupOrder[i].name}))`
+            : `(${propsGroupOrder[i].name} = '' OR FIND_IN_SET(${props[i]}, ${propsGroupOrder[i].name}))`,
         )
       }
       productsProps.push(`${chunks.join(' AND ')}`)
@@ -154,8 +152,10 @@ export default defineEventHandler(async event => {
         catId: product.category_id,
         name: product.name,
         alias: product.alias,
-        image: product.image,
-        price: product.price,
+        image: product.images.match(/^[^,]+/)[0], // берем только первое изображение
+        price: product.special_price > 0 ? product.special_price : product.price,
+        priceRegular: product.special_price > 0 ? product.price : undefined,
+        label: product.label,
         // props: product.props.filter(prop => prop > 0), // оставляем только активные значения
         order: index,
       }

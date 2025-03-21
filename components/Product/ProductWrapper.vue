@@ -33,8 +33,9 @@ onMounted(() => {
       image: productData.images[0],
       price: productData.price,
       priceRegular: productData.priceRegular,
+      label: productData.label,
     }
-  }, 3000)
+  }, 2000)
 })
 </script>
 
@@ -45,12 +46,11 @@ onMounted(() => {
       :productCats="subCats"
     />
     <!--    name + label  -->
-    <div class="flex items-end">
+    <div class="relative w-max">
       <h1 class="my-4">{{ productData.name }}</h1>
-      <img
-        v-if="productData.label"
-        :src="'/img/labels/' + productData.label.image"
-        class="w-12"
+      <CatalogProductCardLabel
+        v-if="productData.label > 0"
+        :labelId="productData.label"
       />
     </div>
     <!--    id-->

@@ -105,7 +105,7 @@ const changesHandler = (options = {}) => {
       () => {
         productsWrapper.value.style.height = ''
       },
-      { once: true }
+      { once: true },
     )
   }
 }
@@ -116,14 +116,14 @@ const changesHandler = (options = {}) => {
 // watch(isReactive(props.products) ? props.products : () => props.products, () => changesHandler({ fromProducts: true }))
 watch(
   () => activeProductsIndx,
-  () => changesHandler({ fromProducts: true })
+  () => changesHandler({ fromProducts: true }),
 )
 watch(pageSetup, () => changesHandler({ fromPageSetup: true }), { deep: true })
 </script>
 
 <template>
   <!--        order and quantity-->
-  <div class="w-full flex justify-end gap-x-2">
+  <div class="flex w-full justify-end gap-x-2">
     <USelect
       placeholder="Упорядочить:"
       v-model="pageSetup.sortBy"
@@ -171,11 +171,11 @@ watch(pageSetup, () => changesHandler({ fromPageSetup: true }), { deep: true })
     id="pageProducts"
   >
     <div
-      class="productsWrapperTransition my-2 overflow-hidden"
+      class="productsWrapperTransition overflow-hidden"
       ref="productsWrapper"
     >
       <div
-        class="flex flex-col gap-y-2 @container"
+        class="flex flex-col gap-y-2 py-2 @container"
         ref="productsWrapperHelper"
       >
         <template v-if="visibleProductsIndx.length">

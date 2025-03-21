@@ -43,8 +43,11 @@ const copyId = () => {
           :icon="copied ? 'i-lucide-copy-check' : 'i-lucide-copy'"
           @click="copyId"
         />
-
-        <div
+        <CatalogProductCardLabel
+          v-if="prod.label > 0"
+          :labelId="prod.label"
+        />
+        <!-- <div
           v-if="prod.label"
           class="absolute -top-2 left-full ml-2 flex w-max origin-bottom-left -rotate-3 items-center"
         >
@@ -57,7 +60,7 @@ const copyId = () => {
               {{ prod.label.name }}
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
       <NuxtLink
         :to="'/product/' + prod.alias"
