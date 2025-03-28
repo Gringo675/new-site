@@ -13,7 +13,7 @@ const toggleShowFilterOnMobile = () => {
 </script>
 
 <template>
-  <div class="my-4 flex w-full flex-col rounded-xl px-2 -md:bg-gray-200">
+  <div class="mb-4 mt-10 flex w-full flex-col rounded-xl px-2 -md:mt-0 -md:bg-gray-200">
     <UButton
       label="Подбор по параметрам"
       icon="i-heroicons-adjustments-vertical-solid"

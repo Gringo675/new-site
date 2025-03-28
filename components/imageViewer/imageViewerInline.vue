@@ -1,17 +1,14 @@
 <script setup>
 //
-const config = useRuntimeConfig()
 const props = defineProps({
-  images: [Array, String],
+  images: Array,
   lite: {
     type: Boolean,
     default: false,
   },
 })
 
-const images = Array.isArray(props.images) ? props.images : [props.images]
-
-const imagesDirectory = config.public.IMAGES_DIRECTORY
+const productImagesDirectory = useRuntimeConfig().public.IMAGES_DIRECTORY + 'img_products/'
 
 const carousel = ref(null)
 
@@ -32,7 +29,7 @@ onMounted(() => {
       () => {
         carousel.value.select(carousel.value.page)
       },
-      { once: true }
+      { once: true },
     )
   })
   // smooth scroll for touch
@@ -48,11 +45,17 @@ const preventImgClick = () => {
     event => {
       event.stopPropagation()
     },
-    { capture: true, once: true }
+    { capture: true, once: true },
   )
 }
 const showFullViewer = () => {
   const activeImgIndex = carousel.value.page - 1
+  const images = props.images.map(img => {
+    return {
+      full: productImagesDirectory + 'full_' + img,
+      thumb: productImagesDirectory + 'thumb_' + img,
+    }
+  })
   showImageViewer(images, { activeImgIndex, causerId: 'img_' + activeImgIndex })
 }
 </script>
@@ -80,9 +83,9 @@ const showFullViewer = () => {
   >
     <template #default="{ item, index }">
       <img
-        :src="imagesDirectory + item"
+        :src="productImagesDirectory + item"
         :id="'img_' + index"
-        class="border border-blue-700 w-min min-w-10 object-contain shrink cursor-zoom-in"
+        class="w-min min-w-10 shrink cursor-zoom-in border border-blue-700 object-contain"
         draggable="false"
         @click="showFullViewer"
       />
@@ -91,16 +94,16 @@ const showFullViewer = () => {
     <template #indicator="{ onClick, page, active }">
       <button
         v-if="lite"
-        class="rounded-full h-4 w-4 border-2 border-slate-500 bg-opacity-70"
+        class="h-4 w-4 rounded-full border-2 border-slate-500 bg-opacity-70"
         :class="{
-          'bg-slate-500 cursor-default': active,
+          'cursor-default bg-slate-500': active,
         }"
         @click="onClick(page)"
       ></button>
       <img
         v-else
-        :src="`${imagesDirectory}thumb_${images[page - 1]}`"
-        class="max-w-[100px] min-w-5 shrink object-contain"
+        :src="`${productImagesDirectory}thumb_${images[page - 1]}`"
+        class="min-w-5 max-w-[100px] shrink object-contain"
         :class="{ 'cursor-pointer border border-red-700': !active, 'cursor-default border border-green-700': active }"
         draggable="false"
         @click="onClick(page)"
@@ -112,7 +115,7 @@ const showFullViewer = () => {
         type="button"
         :disabled="disabled"
         @click.stop="onClick"
-        class="absolute top-1/2 -translate-y-1/2 rounded-full p-2 left-3 text-slate-600 bg-slate-100 opacity-60 inline-flex items-center flex-shrink-0 hover:opacity-90 focus:outline-none focus-visible:outline-0 disabled:opacity-10"
+        class="absolute left-3 top-1/2 inline-flex flex-shrink-0 -translate-y-1/2 items-center rounded-full bg-slate-100 p-2 text-slate-600 opacity-60 hover:opacity-90 focus:outline-none focus-visible:outline-0 disabled:opacity-10"
       >
         <UIcon
           name="i-heroicons-chevron-left"
@@ -126,7 +129,7 @@ const showFullViewer = () => {
         type="button"
         :disabled="disabled"
         @click.stop="onClick"
-        class="absolute top-1/2 -translate-y-1/2 rounded-full p-2 right-3 text-slate-600 bg-slate-100 opacity-60 inline-flex items-center flex-shrink-0 hover:opacity-90 focus:outline-none focus-visible:outline-0 disabled:opacity-10"
+        class="absolute right-3 top-1/2 inline-flex flex-shrink-0 -translate-y-1/2 items-center rounded-full bg-slate-100 p-2 text-slate-600 opacity-60 hover:opacity-90 focus:outline-none focus-visible:outline-0 disabled:opacity-10"
       >
         <UIcon
           name="i-heroicons-chevron-right"

@@ -1,4 +1,4 @@
-export const useViewerImgLoad = (images, carousel, imagesDirectory) => {
+export const useViewerImgLoad = (images, carousel) => {
   const viewerData = getImageViewerData()
 
   const state = {
@@ -49,13 +49,13 @@ export const useViewerImgLoad = (images, carousel, imagesDirectory) => {
     if (state.queue.length === 0) return
     const loadingImg = state.queue.shift()
     const tempImg = new Image()
-    const imgSrc = `${imagesDirectory}full_${images[loadingImg].name}`
+    const imgSrc = images[loadingImg].full
     tempImg.addEventListener(
       'load',
       () => {
         loadImg()
       },
-      true
+      true,
     )
     tempImg.addEventListener(
       'error',
@@ -64,7 +64,7 @@ export const useViewerImgLoad = (images, carousel, imagesDirectory) => {
         images[loadingImg].error = true
         loadImg()
       },
-      true
+      true,
     )
     tempImg.src = imgSrc
     images[loadingImg].load = true
@@ -77,7 +77,7 @@ export const useViewerImgLoad = (images, carousel, imagesDirectory) => {
     setTimeout(() => {
       unwatch = watch(
         () => carousel.value?.page,
-        page => state.setActiveImgDebounced(page - 1)
+        page => state.setActiveImgDebounced(page - 1),
       )
     }, 0)
   })

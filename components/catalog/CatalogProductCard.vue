@@ -3,11 +3,10 @@ const props = defineProps({
   prod: Object,
 })
 
-const config = useRuntimeConfig()
-const imagesDirectory = config.public.IMAGES_DIRECTORY
+const productImagesDirectory = useRuntimeConfig().public.IMAGES_DIRECTORY + 'img_products/'
 
 const showFullImage = () => {
-  showImageViewer([props.prod.image], { causerId: 'img_' + props.prod.id })
+  showImageViewer([`${productImagesDirectory}full_${props.prod.image}`], { causerId: 'img_' + props.prod.id })
 }
 
 const copied = ref(false)
@@ -24,7 +23,7 @@ const copyId = () => {
   <div class="grid grid-cols-[auto_1fr_auto] grid-rows-[auto_auto] rounded-lg bg-cyan-500 hover:shadow">
     <div class="col-span-1 row-span-2 flex w-20 items-center justify-center self-center p-2 @md:h-20">
       <img
-        :src="`${imagesDirectory}thumb_${prod.image}`"
+        :src="`${productImagesDirectory}thumb_${prod.image}`"
         :alt="prod.name"
         :id="'img_' + prod.id"
         class="h-auto max-h-full w-auto max-w-full cursor-zoom-in rounded-lg"
@@ -83,7 +82,7 @@ const copyId = () => {
           {{ prod.price.toLocaleString() + ' ₽' }}
         </div>
       </div>
-      <div class="cartBtn w-28 shrink-0 grow-0">
+      <div class="w-28 shrink-0 grow-0">
         <ClientOnly>
           <CatalogCartButton :prod="prod" />
           <template #fallback>

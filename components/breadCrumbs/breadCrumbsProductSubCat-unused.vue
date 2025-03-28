@@ -3,31 +3,35 @@
 const props = defineProps({
   subCat: Object,
   addSeparator: Boolean,
-});
+})
 
 const menuState = reactive({
   show: false,
-  maxHeight: "500px",
-  ref: useTemplateRef("menu-ref"),
-});
+  maxHeight: '500px',
+  ref: useTemplateRef('menu-ref'),
+})
 const handleShowChildrenClick = () => {
-  if (menuState.show) return;
-  menuState.maxHeight = `${window.innerHeight - menuState.ref.getBoundingClientRect().bottom - 30}px`;
-  menuState.show = true;
+  if (menuState.show) return
+  menuState.maxHeight = `${window.innerHeight - menuState.ref.getBoundingClientRect().bottom - 30}px`
+  menuState.show = true
   setTimeout(
     () =>
-      window.addEventListener("click", () => (menuState.show = false), {
+      window.addEventListener('click', () => (menuState.show = false), {
         once: true,
       }),
     10,
-  );
-};
+  )
+}
 </script>
 
 <template>
   <div class="flex items-center gap-x-2">
     <NuxtLink :to="'/catalog/' + subCat.alias">{{ subCat.name }}</NuxtLink>
-    <div v-if="subCat.children" ref="menu-ref" class="relative">
+    <div
+      v-if="subCat.children"
+      ref="menu-ref"
+      class="relative"
+    >
       <UButton
         class="m-0 px-0 py-1"
         color="gray"

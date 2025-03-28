@@ -1,56 +1,40 @@
 <script setup>
 //
+const productCats = reactive({
+  name: 'Индикаторы',
+  children: [
+    {
+      name: 'Индикаторы цифровые',
+    },
+    {
+      name: 'Индикаторы высокоточные',
+      children: [
+        {
+          name: 'Индикаторы высокоточные цифровые',
+        },
+      ],
+    },
+    {
+      name: 'Индикаторы ЧИЗ',
+      children: [
+        {
+          name: 'Индикаторы ЧИЗ цифровые',
+        },
+        {
+          name: 'Индикаторы ЧИЗ с точностью 0.001 мм',
+        },
+        {
+          name: 'Индикаторы ЧИЗ с диапазоном до 10 мм',
+        },
+      ],
+    },
+  ],
+})
 </script>
 
 <template>
-  <div class="container m-2 w-[600px] max-w-full bg-blue-200 p-2">
-    <div class="item">some</div>
-    <div class="item">some</div>
-    <div class="item">some</div>
-    <div class="item">some some</div>
-    <div class="item">some some</div>
-    <div class="item">some some</div>
-    <div class="item">some some some</div>
-    <div class="item">some some some</div>
-    <div class="item">some some some</div>
-    <div class="item">some</div>
-    <div class="item">some</div>
-    <div class="item">some</div>
-    <div class="item">some some</div>
-    <div class="item">some some</div>
-    <div class="item">some some</div>
-    <div class="item">some some some</div>
-    <div class="item">some some some</div>
-    <div class="item">some some some</div>
-    <div class="item">some</div>
-    <div class="item">some</div>
-    <div class="item">some</div>
-    <div class="item">some some</div>
-    <div class="item">some some</div>
-    <div class="item">some some</div>
-    <div class="item">some some some</div>
-    <div class="item">some some some</div>
-    <div class="item">some some some</div>
-    <div class="item">some</div>
-    <div class="item">some</div>
-    <div class="item">some</div>
-    <div class="item">some some</div>
-    <div class="item">some some</div>
-    <div class="item">some some</div>
-    <div class="item">some some some</div>
-    <div class="item">some some some</div>
-    <div class="item">some some some</div>
+  <!-- <h1>Индикатор цифровой ИЧЦ-10 0.001 ЧИЗ</h1> -->
+  <div class="wrapper m-4 rounded-lg border border-gray-400 bg-gray-200 p-2">
+    <TheTest :item="productCats" />
   </div>
 </template>
-
-<style>
-.container {
-  display: grid;
-  /* grid-template-columns: repeat(auto-fit, minmax(150px, min-content)); */
-  grid-template-columns: repeat(auto-fit, minmax(100px, max-content));
-}
-
-.item {
-  @apply whitespace-nowrap border border-gray-200 p-2;
-}
-</style>

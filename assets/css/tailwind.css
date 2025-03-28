@@ -266,7 +266,23 @@
   /* end height animation */
 }
 
-/*эти классы всегда будут в итоговом css-файле*/
+/*Все что ниже всегда будет в итоговом css-файле*/
+
+/* Стили для таблиц в характеристиках, со старого сайта */
+.characteristics table {
+  width: 80%;
+  margin: 15px auto;
+  text-align: center;
+}
+.characteristics table td {
+  padding: 5px;
+  border: 1px solid #d5d5c8;
+}
+.characteristics table tr:first-child,
+.table-header {
+  background: #999 0 0;
+  color: #fff;
+}
 
 .transition-fade-enter-active,
 .transition-fade-leave-active {

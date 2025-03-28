@@ -55,6 +55,7 @@ const handleLogout = async () => {
       v-else
       icon="i-heroicons-user"
       size="md"
+      truncate
       :ui="{ rounded: 'rounded-full' }"
       @click="handleShowMenuClick"
       :label="user.name"
@@ -62,7 +63,7 @@ const handleLogout = async () => {
     <Transition name="transition-below">
       <div
         v-if="menuState.show"
-        class="absolute right-0 w-28 mt-2 p-4 border border-green-600 rounded-md z-20 shadow-xl bg-slate-200 flex flex-col gap-y-2 items-end hover:*:underline"
+        class="absolute right-0 z-20 mt-2 flex w-28 flex-col items-end gap-y-2 rounded-md border border-green-600 bg-slate-200 p-4 shadow-xl hover:*:underline"
       >
         <NuxtLink to="/user/profile">Профиль</NuxtLink>
         <NuxtLink to="/user/orders">Заказы</NuxtLink>

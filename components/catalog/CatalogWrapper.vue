@@ -4,9 +4,6 @@ const props = defineProps({
   data: Object,
 })
 
-// убираем ненужную реактивность
-// const catData = JSON.parse(JSON.stringify(props.data.catData))
-// const products = JSON.parse(JSON.stringify(props.data.products))
 const catData = props.data.catData
 const products = props.data.products ?? []
 const filter = reactive(props.data.filter ?? [])
@@ -108,47 +105,18 @@ function addFilterToURL() {
   else url.searchParams.delete('f')
   window.history.replaceState({}, '', url)
 }
-
-// const shortDescrTemp = catData.description?.split('.').shift() + '.'
-// console.log(`shortDescrTemp: ${JSON.stringify(shortDescrTemp, null, 2)}`)
 </script>
 
 <template>
   <div class="w-full p-2">
-    <!--    breadcrumbs-->
     <BreadCrumbsWrapper :catId="catData.id" />
-    <!-- name + info -->
-    <CatalogInfoBlock
+    <CatalogNameAndInfoBlock
       :catName="catData.name"
+      :image="catData.image"
       :description="catData.description"
       :characteristics="catData.characteristics"
       :documentation="catData.docs"
     />
-    <!--    name-->
-    <!-- <h1 class="font-accent my-4 text-2xl">{{ catData.name }}</h1> -->
-    <!--    description-->
-    <!-- <div
-      class="border-bg-gray-200 my-2 flex items-center justify-center gap-2 rounded-xl border bg-gray-100 p-2 -md:flex-wrap"
-    >
-      <div
-        class="flex-grow -md:w-full"
-        v-html="shortDescrTemp"
-      ></div>
-      <div class="flex justify-center gap-2 -md:flex-wrap">
-        <UButton
-          label="Описание"
-          size="2xs"
-        />
-        <UButton
-          label="Характеристики"
-          size="2xs"
-        />
-        <UButton
-          label="Документация"
-          size="2xs"
-        />
-      </div>
-    </div> -->
     <HelperAsideGrid>
       <template #aside>
         <CatalogFilter
@@ -163,11 +131,11 @@ function addFilterToURL() {
         :activeProductsIndx
       />
     </HelperAsideGrid>
-    <HelperInfoBlock
+    <!-- <HelperInfoBlock
       :description="catData.description"
       :characteristics="catData.characteristics"
       :documentation="catData.docs"
-    />
+    /> -->
     <!-- <HelperDocsBlock
       v-if="catData.docs"
       :docs="catData.docs"

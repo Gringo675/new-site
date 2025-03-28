@@ -69,47 +69,53 @@ catsPath.reverse()
 </script>
 
 <template>
-  <!-- crumbs wrapper -->
-  <div class="flex items-center gap-x-2">
-    <NuxtLink to="/catalog"> Весь каталог </NuxtLink>
-    <breadCrumbsItem
-      v-for="(crumb, index) in catsPath"
-      :crumb="crumb"
-      :noLink="index === catsPath.length - 1 && !forProduct"
-    />
-    <!-- product subCats -->
-    <template v-if="forProduct">
-      <UIcon
-        name="i-heroicons-slash"
-        class="h-6 w-6"
+  <div class="">
+    <!-- crumbs wrapper -->
+    <div class="flex flex-wrap items-start gap-2">
+      <div class="flex flex-wrap items-center gap-2">
+        <NuxtLink
+          to="/catalog"
+          class="underline underline-offset-4"
+        >
+          Весь каталог
+        </NuxtLink>
+        <breadCrumbsItem
+          v-for="(crumb, index) in catsPath"
+          :crumb="crumb"
+          :noLink="index === catsPath.length - 1 && !forProduct"
+        />
+      </div>
+      <BreadCrumbsProductSubCats
+        v-if="forProduct"
+        :cats="productCats"
       />
-      <BreadCrumbsProductSubCat
-        v-for="(subCat, i) in productCats"
-        :subCat="subCat"
-        :addSeparator="i !== productCats.length - 1"
-      />
-    </template>
-  </div>
+    </div>
 
-  <!-- category children wrapper -->
-  <div
-    v-if="catsPath[catsPath.length - 1].children"
-    class="relative mt-5 rounded-lg border border-gray-200 bg-gray-100 p-3"
-  >
+    <!-- category children wrapper -->
     <div
-      class="absolute -top-3 left-8 rounded-full border border-gray-200 bg-gray-100 px-2 py-1 text-sm leading-none after:absolute after:-inset-x-px after:-bottom-px after:top-1/2 after:bg-gray-100"
+      v-if="catsPath[catsPath.length - 1].children"
+      class="relative mt-6 rounded-lg border border-gray-200 bg-gray-100 p-3"
     >
-      <span class="relative -top-0.5 z-10">Категории</span>
+      <div
+        class="absolute -top-3 left-8 rounded-full border border-gray-200 bg-gray-100 px-2 py-1 text-sm leading-none after:absolute after:-inset-x-px after:-bottom-px after:top-1/2 after:bg-gray-100"
+      >
+        <span class="relative -top-0.5 z-10">Подкатегории</span>
+      </div>
+      <div class="flex flex-wrap gap-3 -md:grid -md:grid-cols-2 -xs:grid-cols-1">
+        <UButton
+          v-for="child in catsPath[catsPath.length - 1].children"
+          :label="child.name"
+          :to="'/catalog/' + child.alias"
+          variant="outline"
+          :ui="{ rounded: 'rounded-full' }"
+          class="w-fit justify-center text-center -md:w-full"
+        />
+      </div>
     </div>
-    <div class="flex flex-wrap gap-3 @container">
-      <UButton
-        v-for="child in catsPath[catsPath.length - 1].children"
-        :label="child.name"
-        :to="'/catalog/' + child.alias"
-        variant="outline"
-        :ui="{ rounded: 'rounded-full' }"
-        class="flex-grow justify-center text-center @sm:w-auto @sm:max-w-[calc(50%-0.375rem)] @3xl:flex-grow-0"
-      />
-    </div>
+    <!-- divider -->
+    <div
+      v-else
+      class="mt-3 border-b border-gray-200"
+    ></div>
   </div>
 </template>
