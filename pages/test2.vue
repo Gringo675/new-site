@@ -1,40 +1,32 @@
 <script setup>
 //
-const productCats = reactive({
-  name: 'Индикаторы',
-  children: [
-    {
-      name: 'Индикаторы цифровые',
-    },
-    {
-      name: 'Индикаторы высокоточные',
-      children: [
-        {
-          name: 'Индикаторы высокоточные цифровые',
-        },
-      ],
-    },
-    {
-      name: 'Индикаторы ЧИЗ',
-      children: [
-        {
-          name: 'Индикаторы ЧИЗ цифровые',
-        },
-        {
-          name: 'Индикаторы ЧИЗ с точностью 0.001 мм',
-        },
-        {
-          name: 'Индикаторы ЧИЗ с диапазоном до 10 мм',
-        },
-      ],
-    },
-  ],
+definePageMeta({
+  layout: 'empty',
 })
 </script>
 
 <template>
-  <!-- <h1>Индикатор цифровой ИЧЦ-10 0.001 ЧИЗ</h1> -->
-  <div class="wrapper m-4 rounded-lg border border-gray-400 bg-gray-200 p-2">
-    <TheTest :item="productCats" />
+  <div id="parent">
+    <div>1</div>
+    <div>2</div>
+    <div>3</div>
+    <div>4</div>
+    <div>5</div>
   </div>
 </template>
+
+<style scoped>
+#parent {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: 1fr 1fr 2fr;
+  border: 2px solid #696989;
+  padding: 10px;
+  width: 400px;
+  height: 200px;
+}
+#parent > div {
+  padding: 10px;
+  border: 1px solid #696989;
+}
+</style>

@@ -88,17 +88,34 @@ export default defineEventHandler(async event => {
   productData.brand.fullName = brand.full_name
   productData.brand.image = brand.image
 
-  // получаем документацию
+  // получаем документацию и добавляем сведенья в пропсы
   productData.docs = {}
-  if (productData.standart_ids.length) {
-    query = `SELECT number, name, file FROM i_docs_stnd
-                 WHERE id IN (${productData.standart_ids})`
-    productData.docs.stnd = await dbReq(query)
-  }
+  // для правильного порядка в пропсах важно сначала обработать реестры
   if (productData.reestr_ids.length) {
     query = `SELECT number, name, type_si, brand, date, file_ot, file_mp, file_svid FROM i_docs_rstr
                  WHERE id IN (${productData.reestr_ids})`
     productData.docs.rstr = await dbReq(query)
+    productData.props.push({
+      name: 'Можно поверить',
+      val: 'Да',
+    })
+    if (productData.docs.rstr.length) {
+      productData.props.unshift({
+        name: 'Госреестр',
+        val: productData.docs.rstr.map(item => item.number).join(', '),
+      })
+    }
+  }
+  if (productData.standart_ids.length) {
+    query = `SELECT number, name, file FROM i_docs_stnd
+                 WHERE id IN (${productData.standart_ids})`
+    productData.docs.stnd = await dbReq(query)
+    if (productData.docs.stnd.length) {
+      productData.props.unshift({
+        name: 'Стандарт',
+        val: productData.docs.stnd.map(item => item.number).join(', '),
+      })
+    }
   }
   if (productData.pasport_ids.length) {
     query = `SELECT name, file FROM i_docs_pasp

@@ -110,8 +110,8 @@ function addFilterToURL() {
 <template>
   <div class="w-full p-2">
     <BreadCrumbsWrapper :catId="catData.id" />
-    <CatalogNameAndInfoBlock
-      :catName="catData.name"
+    <HelperInfoBlock
+      :title="catData.name"
       :image="catData.image"
       :description="catData.description"
       :characteristics="catData.characteristics"

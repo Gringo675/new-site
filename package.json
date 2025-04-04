@@ -19,7 +19,7 @@
     "@tailwindcss/container-queries": "^0.1.1",
     "dotenv": "^10.0.0",
     "node-ssh": "^13.0.1",
-    "nuxt": "^3.16.0",
+    "nuxt": "^3.16.2",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11"
   },

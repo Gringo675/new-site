@@ -97,7 +97,7 @@ catsPath.reverse()
       class="relative mt-6 rounded-lg border border-gray-200 bg-gray-100 p-3"
     >
       <div
-        class="absolute -top-3 left-8 rounded-full border border-gray-200 bg-gray-100 px-2 py-1 text-sm leading-none after:absolute after:-inset-x-px after:-bottom-px after:top-1/2 after:bg-gray-100"
+        class="absolute -top-3 left-8 rounded-full border border-gray-200 bg-gray-100 px-2.5 py-1 text-sm leading-none after:absolute after:-inset-x-px after:-bottom-px after:top-1/2 after:bg-gray-100"
       >
         <span class="relative -top-0.5 z-10">Подкатегории</span>
       </div>

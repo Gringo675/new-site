@@ -30,7 +30,7 @@ const copyId = () => {
         @click="showFullImage"
       />
     </div>
-    <div class="col-span-2 row-span-1 p-2 @md:col-span-1 @md:row-span-2">
+    <div class="-order-1 col-span-3 row-span-1 p-2 @xs:order-none @xs:col-span-2 @md:col-span-1 @md:row-span-2">
       <div class="relative flex w-fit">
         <div class="text-sm">{{ prod.id }}</div>
         <UButton
@@ -42,7 +42,7 @@ const copyId = () => {
           :icon="copied ? 'i-lucide-copy-check' : 'i-lucide-copy'"
           @click="copyId"
         />
-        <CatalogProductCardLabel
+        <HelperProductLabel
           v-if="prod.label > 0"
           :labelId="prod.label"
         />
@@ -83,17 +83,7 @@ const copyId = () => {
         </div>
       </div>
       <div class="w-28 shrink-0 grow-0">
-        <ClientOnly>
-          <CatalogCartButton :prod="prod" />
-          <template #fallback>
-            <UButton
-              label="В корзину"
-              variant="outline"
-              icon="i-heroicons-shopping-cart"
-              class="gap-1"
-            />
-          </template>
-        </ClientOnly>
+        <CatalogCartButton :prod="prod" />
       </div>
     </div>
   </div>

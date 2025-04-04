@@ -9,6 +9,7 @@ interface Label {
 
 const { labelId } = defineProps({
   labelId: Number,
+  forProduct: { type: Boolean, default: false },
 })
 
 const { data: label } = await useAsyncData(`label-${labelId}`, () => $fetch<Label>('/api/getLabel?id=' + labelId), {
@@ -20,7 +21,8 @@ const { data: label } = await useAsyncData(`label-${labelId}`, () => $fetch<Labe
 
 <template>
   <div
-    class="absolute -top-2 left-full ml-2 flex w-max origin-bottom-left -rotate-3 cursor-default items-center"
+    class="absolute -top-2 left-full ml-2 flex w-max origin-bottom-left cursor-default items-center"
+    :class="[!forProduct && '-rotate-3']"
     :title="label.description"
   >
     <img

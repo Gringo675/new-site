@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 //
 const props = defineProps({
   prod: Object,
@@ -10,43 +10,46 @@ const productCartIndex = computed(() => cart.findIndex(cartItem => cartItem.id =
 </script>
 
 <template>
-  <div v-if="productCartIndex === -1">
-    <button
-      class="m-2 px-2 py-1 bg-indigo-300 rounded-md"
+  <div class="">
+    <UButton
+      v-if="productCartIndex === -1"
+      label="Добавить в корзину"
+      icon="i-heroicons-shopping-cart"
       @click="addProductToCart(prod)"
+      class=""
+      block
+      size="xl"
+    />
+    <div
+      v-else
+      class="flex gap-1"
     >
-      To cart
-    </button>
-  </div>
-  <div
-    v-else
-    class="flex flex-col items-center border-2 border-lime-400 rounded-md w-36"
-  >
-    <div>
-      <button
-        class="m-2 px-2 bg-indigo-300 rounded-full"
+      <UButton
+        :icon="cart[productCartIndex].quantity === 1 ? 'i-heroicons-trash' : 'i-heroicons-minus-small-solid'"
+        size="xl"
         @click="--cart[productCartIndex].quantity"
-      >
-        -
-      </button>
-      <input
-        v-model.lazy="cart[productCartIndex].quantity"
-        type="number"
-        class="w-12"
+        variant="outline"
       />
-      <button
-        class="m-2 px-2 bg-indigo-300 rounded-full"
+      <UInput
+        v-model.lazy="cart[productCartIndex].quantity"
+        size="xl"
+        type="number"
+        min="1"
+        inputClass="w-12 px-1 text-center"
+      />
+      <UButton
+        icon="i-heroicons-plus-small-solid"
+        size="xl"
         @click="++cart[productCartIndex].quantity"
+        variant="outline"
+      />
+      <UButton
+        class="flex-grow flex-col items-center py-0.5"
+        to="/user/cart"
       >
-        +
-      </button>
-    </div>
-    <div>
-      <NuxtLink
-        :to="'/user/cart'"
-        title="Перейти в корзину"
-        >В корзине</NuxtLink
-      >
+        <div class="font-semibold">В корзине</div>
+        <div class="text-xs">Перейти</div>
+      </UButton>
     </div>
   </div>
 </template>

@@ -2,11 +2,14 @@
 
 - подумать над алгоритмом поиска: ич-1 0-1 дает нерелевантный результат в быстром поиске
 - страница поиска: скролл в начало при получении результатов
-- достать css классы из характеристик товаров и категорий
 
 # ToDo:
 
-Product page:
+- компонент доставки
+- image viewer
+- catalogProductCard refactor
+- cartButtons - use lazy hydration?
+- переезд на NuxtUI v3
 
 SVG animation:
 
@@ -81,13 +84,13 @@ Legacy: При использовании dataFetch c auth = true (=> server = f
 ~~md: - для всех экранов больше или входящих в md (c 768 px). Нативный mobile-first~~
 ~~\*После добавления своих экранов перестал работать нативный префикс max-.. Но он полностью заменяется моим префиксом -..~~
 Перешел от системы экранов к системе брекпойнтов.
-\_**\_-xs(480)xs\_\_**-sm(640)sm\_**\_-md(768)md\_\_**-lg(1024)lg\_**\_-xl(1280)xl\_\_**
+~ -xs(480)xs ~ -sm(640)sm ~-md(768)md ~ -lg(1024)lg ~ -xl(1280)xl ~
 Примеры:
 md: - для экранов больше или равных 768 px (native mobile first)
 -md: - для экранов меньше 768 px (от 767 px)
 md:-lg: - для экранов от 768 до 1023 px (-lg:md тоже будет работать)
 Tailwind @container:
-@xs @container (min-width: 20rem /_ 320px _/)
+@xs @container (min-width: 20rem /\* 320px _/)
 @sm @container (min-width: 24rem /_ 384px _/)
 @md @container (min-width: 28rem /_ 448px _/)
 @lg @container (min-width: 32rem /_ 512px _/)
@@ -96,8 +99,8 @@ Tailwind @container:
 @3xl @container (min-width: 48rem /_ 768px _/)
 @4xl @container (min-width: 56rem /_ 896px _/)
 @5xl @container (min-width: 64rem /_ 1024px _/)
-@6xl @container (min-width: 72rem /_ 1152px _/)
-@7xl @container (min-width: 80rem /_ 1280px _/)
+@6xl @container (min-width: 72rem /_ 1152px \_/)
+@7xl @container (min-width: 80rem /\_ 1280px \_/)
 Кстати, tailwind отдельно в проект устанавливать не нужно, т.к. он входит в NuxtUI.
 
 ## Обмен информацией между открытыми вкладками.
