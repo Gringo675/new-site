@@ -82,7 +82,7 @@ onMounted(() => {
         type="button"
         :disabled="disabled"
         @click.stop="onClick"
-        class="absolute left-3 top-1/2 inline-flex flex-shrink-0 -translate-y-1/2 items-center rounded-full bg-slate-100 p-2 text-slate-600 opacity-60 hover:opacity-90 focus:outline-none focus-visible:outline-0 disabled:bg-slate-400 disabled:opacity-20"
+        class="absolute left-3 top-1/2 inline-flex shrink-0 -translate-y-1/2 items-center rounded-full bg-slate-100 p-2 text-slate-600 opacity-60 hover:opacity-90 focus:outline-hidden focus-visible:outline-0 disabled:bg-slate-400 disabled:opacity-20"
       >
         <UIcon
           name="i-heroicons-chevron-left"
@@ -96,7 +96,7 @@ onMounted(() => {
         type="button"
         :disabled="disabled"
         @click.stop="onClick"
-        class="absolute right-3 top-1/2 inline-flex flex-shrink-0 -translate-y-1/2 items-center rounded-full bg-slate-100 p-2 text-slate-600 opacity-60 hover:opacity-90 focus:outline-none focus-visible:outline-0 disabled:bg-slate-400 disabled:opacity-20"
+        class="absolute right-3 top-1/2 inline-flex shrink-0 -translate-y-1/2 items-center rounded-full bg-slate-100 p-2 text-slate-600 opacity-60 hover:opacity-90 focus:outline-hidden focus-visible:outline-0 disabled:bg-slate-400 disabled:opacity-20"
       >
         <UIcon
           name="i-heroicons-chevron-right"

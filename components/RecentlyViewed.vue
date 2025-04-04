@@ -74,7 +74,7 @@ async function updateViewed() {
     class="m-2 bg-rose-200"
   >
     <h2 class="py-2 text-lg font-semibold">Вы недавно смотрели</h2>
-    <div class="grid grid-cols-4 gap-2 -xl:grid-cols-2 -sm:grid-cols-1">
+    <div class="grid grid-cols-4 gap-2 max-xl:grid-cols-2 max-sm:grid-cols-1">
       <!-- <div class="grid grid-cols-1 gap-2 @container"> -->
       <CatalogProductCard
         v-for="prod in viewed"

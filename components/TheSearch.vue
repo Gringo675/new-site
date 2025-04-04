@@ -104,7 +104,7 @@ const onInputClick = e => {
       :loading="searchState.pending"
       :ui="{ icon: { trailing: { pointer: '' } } }"
       size="md"
-      class="z-[21]"
+      class="z-21"
       inputClass="bg-slate-100"
       @keyup.enter="goTo(`/search/${searchState.query}`)"
       @click="onInputClick"

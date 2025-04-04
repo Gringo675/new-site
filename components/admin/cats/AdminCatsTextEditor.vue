@@ -79,11 +79,11 @@ const createAlias = async name => {
         class="modal-form w-[1000px] max-w-[95%] border border-amber-900 rounded-xl overflow-auto flex flex-col justify-start"
       >
         <div class="flex flex-row justify-between items-center bg-orange-300 p-2.5">
-          <div class="max-w-full whitespace-nowrap overflow-hidden overflow-ellipsis size text-xl">{{ title }}</div>
+          <div class="max-w-full whitespace-nowrap overflow-hidden text-ellipsis size text-xl">{{ title }}</div>
 
           <button
             @click="textEditor.hide"
-            class="inline-flex opacity-70 hover:opacity-100 focus:outline-none focus-visible:outline-0"
+            class="inline-flex opacity-70 hover:opacity-100 focus:outline-hidden focus-visible:outline-0"
           >
             <UIcon
               name="i-heroicons-x-circle"

@@ -44,7 +44,7 @@ const productCartIndex = computed(() => cart.findIndex(cartItem => cartItem.id =
         variant="outline"
       />
       <UButton
-        class="flex-grow flex-col items-center py-0.5"
+        class="grow flex-col items-center py-0.5"
         to="/user/cart"
       >
         <div class="font-semibold">В корзине</div>

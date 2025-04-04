@@ -1,13 +1,14 @@
 <script setup></script>
 
 <template>
-  <header class="sticky z-[21]">
+  <!-- <header class="sticky z-21">
     <TheHeader />
   </header>
-  <main class="w-full max-w-screen-xl mx-auto flex-grow bg-orange-50 2xl:my-3 2xl:rounded-xl -md:overflow-auto">
+  <main class="mx-auto w-full max-w-(--breakpoint-xl) grow bg-orange-50 max-md:overflow-auto 2xl:my-3 2xl:rounded-xl">
     <slot />
-  </main>
+  </main> -->
   <footer>
-    <LazyTheFooter />
+    <!-- <LazyTheFooter /> -->
+    <TheFooter />
   </footer>
 </template>

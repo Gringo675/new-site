@@ -33,13 +33,13 @@ const createFeedback = () => {
 </script>
 
 <template>
-  <div class="mx-auto max-w-screen-xl">
-    <ClientOnly>
+  <div class="mx-auto max-w-(--breakpoint-xl)">
+    <!-- <ClientOnly>
       <RecentlyViewed />
-    </ClientOnly>
+    </ClientOnly> -->
 
     <div class="bg-secondary-200">
-      <div class="flex flex-wrap items-center gap-x-2 -md:hidden">
+      <div class="flex flex-wrap items-center gap-x-2 max-md:hidden">
         <UButton
           label="Admin"
           to="/admin"
@@ -67,7 +67,7 @@ const createFeedback = () => {
         />
         <!--      <button @click="multiply" class="button">Multuply</button>-->
       </div>
-      <div class="flex flex-wrap items-center gap-x-2 -md:hidden">
+      <div class="flex flex-wrap items-center gap-x-2 max-md:hidden">
         <UButton
           label="ШТАНГЕНЦИРКУЛИ"
           to="/catalog/shtangentsirkuli"

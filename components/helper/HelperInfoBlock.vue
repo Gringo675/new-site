@@ -5,28 +5,28 @@
     class="relative my-4"
     @change="onChange"
   >
-    <div class="flex w-full items-end -md:flex-wrap">
+    <div class="flex w-full items-end max-md:flex-wrap">
       <div
         v-if="title"
-        class="relative flex flex-grow items-center self-stretch pb-1 pr-2 -md:py-4"
+        class="relative flex grow items-center self-stretch pr-2 pb-1 max-md:py-4"
       >
-        <h1 class="font-accent text-2xl leading-7 -xl:text-xl -xl:leading-6">{{ title }}</h1>
+        <h1 class="font-accent text-2xl leading-7 max-xl:text-xl max-xl:leading-6">{{ title }}</h1>
         <div
-          class="absolute bottom-0 w-full border-b-4 border-l-2 border-r-8 border-t-[34px] border-cyan-300 border-l-transparent border-t-transparent -md:hidden"
+          class="absolute bottom-0 w-full border-t-[34px] border-r-8 border-b-4 border-l-2 border-cyan-300 border-t-transparent border-l-transparent max-md:hidden"
         ></div>
       </div>
 
       <HTabList
         ref="listRef"
-        class="relative inline-grid h-auto items-center rounded-none rounded-t-lg bg-cyan-300 p-1 -md:w-full"
+        class="relative inline-grid h-auto items-center rounded-none rounded-t-lg bg-cyan-300 p-1 max-md:w-full"
         :class="title ? 'w-max' : 'w-full'"
         :style="`grid-template-columns: repeat(${items.length}, minmax(0, 1fr))`"
       >
         <div
           ref="markerRef"
-          class="absolute left-[4px] top-[4px] duration-200 ease-out focus:outline-none"
+          class="absolute top-[4px] left-[4px] duration-200 ease-out focus:outline-hidden"
         >
-          <div class="h-full w-full rounded-md bg-cyan-50 shadow-sm" />
+          <div class="h-full w-full rounded-md bg-cyan-50 shadow-2xs" />
         </div>
 
         <HTab
@@ -37,7 +37,7 @@
           as="template"
         >
           <button
-            class="ui-focus-visible:outline-0 ui-focus-visible:ring-2 ui-focus-visible:ring-primary-500 ui-not-focus-visible:outline-none relative inline-flex h-auto w-full flex-shrink-0 items-center justify-center rounded-md px-3 py-1 text-sm font-medium transition-colors duration-200 ease-out focus:outline-none sm:py-2 -sm:flex-wrap -xs:px-1 -xs:text-xs"
+            class="ui-focus-visible:outline-0 ui-focus-visible:ring-2 ui-focus-visible:ring-primary-500 ui-not-focus-visible:outline-none max-xs:px-1 max-xs:text-xs relative inline-flex h-auto w-full shrink-0 items-center justify-center rounded-md px-3 py-1 text-sm font-medium transition-colors duration-200 ease-out focus:outline-hidden max-sm:flex-wrap sm:py-2"
             :class="[selected ? 'text-gray-900' : 'text-gray-600']"
           >
             <slot
@@ -50,7 +50,7 @@
               <UIcon
                 v-if="item.icon"
                 :name="item.icon"
-                class="me-2 -sm:me-auto -sm:w-full"
+                class="me-2 max-sm:me-auto max-sm:w-full"
               />
             </slot>
 
@@ -78,7 +78,7 @@
         <HTabPanel
           v-for="(item, index) of items"
           :key="index"
-          class="focus:outline-none"
+          class="focus:outline-hidden"
         >
           <div
             v-if="item.html"
@@ -93,7 +93,7 @@
         </HTabPanel>
       </HTabPanels>
 
-      <div class="absolute bottom-0 flex w-full justify-end bg-gradient-to-b from-cyan-300/0 to-cyan-300/90">
+      <div class="absolute bottom-0 flex w-full justify-end bg-linear-to-b from-cyan-300/0 to-cyan-300/90">
         <UButton
           color="blue"
           :label="expand ? 'Свернуть' : 'Развернуть'"
@@ -182,7 +182,7 @@ export default defineComponent({
         icon: 'i-heroicons-information-circle',
         html: props.image
           ? `
-        <div class="float-left flex w-[120px] items-center justify-center mb-1 mr-3 -xs:w-20">
+        <div class="float-left flex w-[120px] items-center justify-center mb-1 mr-3 max-xs:w-20">
           <img
           src="${catImagesDirectory + props.image}"
           class="h-auto w-auto max-w-full"

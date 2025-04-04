@@ -70,7 +70,7 @@ const priceMultiplier = ref(1)
       :catId="product.category_id"
       :productCats="subCats"
     />
-    <h1 class="font-accent my-4 text-2xl leading-7 -xl:text-xl -xl:leading-6">{{ product.name }}</h1>
+    <h1 class="font-accent my-4 text-2xl leading-7 max-xl:text-xl max-xl:leading-6">{{ product.name }}</h1>
     <div class="relative flex w-fit">
       <div class="text-sm">Код: {{ product.id }}</div>
       <UButton
@@ -89,7 +89,7 @@ const priceMultiplier = ref(1)
       />
     </div>
     <div class="my-1 border-b border-gray-200"></div>
-    <div class="mb-6 grid grid-cols-3 grid-rows-[auto_1fr] gap-4 -lg:grid-cols-2 -sm:grid-cols-1">
+    <div class="mb-6 grid grid-cols-3 grid-rows-[auto_1fr] gap-4 max-lg:grid-cols-2 max-sm:grid-cols-1">
       <div class="bl1 sm:row-span-2">
         <imageViewerInline :images="product.images" />
       </div>
@@ -98,7 +98,7 @@ const priceMultiplier = ref(1)
           class="max-w-32"
           :src="brandImagesDirectory + product.brand.image"
         />
-        <div class="flex-grow text-sm font-semibold leading-tight">
+        <div class="grow text-sm leading-tight font-semibold">
           {{ product.brand.shortName }} ({{ product.brand.fullName }})
         </div>
       </div>
@@ -108,7 +108,7 @@ const priceMultiplier = ref(1)
             <div class="relative">
               <div
                 v-if="product.priceRegular"
-                class="absolute bottom-full right-0 line-through opacity-70"
+                class="absolute right-0 bottom-full line-through opacity-70"
               >
                 {{ product.priceRegular.toLocaleString() + ' ₽' }}
               </div>
@@ -149,13 +149,13 @@ const priceMultiplier = ref(1)
           </div>
         </NuxtLink>
       </div>
-      <div class="bl4 my-4 grid gap-x-4 gap-y-6 p-2 -lg:sm:col-span-2 -lg:xs:grid-cols-2">
+      <div class="bl4 max-lg:xs:grid-cols-2 my-4 grid gap-x-4 gap-y-6 p-2 max-lg:sm:col-span-2">
         <div
           v-for="prop in product.props"
           class="relative rounded-lg border border-gray-300 bg-gray-200 px-3 py-1.5"
         >
           <div
-            class="absolute -top-3 right-8 rounded-full border border-gray-300 bg-gray-200 px-2.5 py-1 text-sm leading-none after:absolute after:-inset-x-px after:-bottom-px after:top-1/2 after:bg-gray-200"
+            class="absolute -top-3 right-8 rounded-full border border-gray-300 bg-gray-200 px-2.5 py-1 text-sm leading-none after:absolute after:-inset-x-px after:top-1/2 after:-bottom-px after:bg-gray-200"
           >
             <span class="relative -top-0.5 z-10 font-semibold">{{ prop.name }}</span>
           </div>
@@ -174,7 +174,7 @@ const priceMultiplier = ref(1)
     <!--    related-->
     <div class="">
       <h2 class="py-2 text-lg font-semibold">Похожие товары</h2>
-      <div class="grid grid-cols-4 gap-2 -xl:grid-cols-2 -sm:grid-cols-1">
+      <div class="grid grid-cols-4 gap-2 max-xl:grid-cols-2 max-sm:grid-cols-1">
         <CatalogProductCard
           v-for="prod in product.relatedProds"
           :prod="prod"

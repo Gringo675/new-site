@@ -6,7 +6,7 @@ const { cats } = defineProps({
 </script>
 
 <template>
-  <div class="flex flex-grow flex-col gap-2">
+  <div class="flex grow flex-col gap-2">
     <div
       v-for="cat in cats"
       class="flex flex-wrap items-start gap-y-2"

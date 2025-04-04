@@ -29,7 +29,7 @@ const { data: label } = await useAsyncData(`label-${labelId}`, () => $fetch<Labe
       :src="getDynamicAsset('/img/labels/' + label.image)"
       class="h-8 w-auto"
     />
-    <div class="rounded bg-fuchsia-400 p-0.5">
+    <div class="rounded-xs bg-fuchsia-400 p-0.5">
       <div class="border border-dashed border-white px-2 leading-tight text-white">
         {{ label.name }}
       </div>

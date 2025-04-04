@@ -40,7 +40,7 @@ const onTransitionBeforeEnter = viewer => {
     >
       <button
         @click="closeViewer"
-        class="absolute top-0 right-0 z-40 m-4 inline-flex text-slate-500 opacity-60 hover:opacity-100 focus:outline-none focus-visible:outline-0"
+        class="absolute top-0 right-0 z-40 m-4 inline-flex text-slate-500 opacity-60 hover:opacity-100 focus:outline-hidden focus-visible:outline-0"
       >
         <UIcon
           name="i-heroicons-x-circle"

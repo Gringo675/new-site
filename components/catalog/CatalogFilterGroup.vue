@@ -23,7 +23,7 @@ const inactivateVal = val => {
       @click="showValues = !showValues"
     >
       <span class="text-lg">{{ fGroup.name }}</span>
-      <div class="my-1 rounded bg-purple-300 p-1">
+      <div class="my-1 rounded-xs bg-purple-300 p-1">
         <img
           src="/img/chevron-down.svg"
           class="transition-transform duration-500"
@@ -38,16 +38,18 @@ const inactivateVal = val => {
         class="-mt-2 max-h-[194px] overflow-hidden border border-purple-200 bg-orange-100"
         :class="{ 'rounded-b-md': !activeValues.length }"
       >
-        <div class="filter-scrollbar mx-1 mb-1 mt-3 flex max-h-44 overflow-auto md:flex-col -md:flex-wrap -md:gap-2">
+        <div
+          class="filter-scrollbar mx-1 mt-3 mb-1 flex max-h-44 overflow-auto max-md:flex-wrap max-md:gap-2 md:flex-col"
+        >
           <!-- <div
-          class="filter-scrollbar mx-1 mb-1 mt-3 grid max-h-44 grid-cols-[repeat(auto-fill,_minmax(230px,_1fr))] gap-2 overflow-auto"
+          class="filter-scrollbar mx-1 mb-1 mt-3 grid max-h-44 grid-cols-[repeat(auto-fill,minmax(230px,1fr))] gap-2 overflow-auto"
         > -->
           <!-- <div
           class="filter-scrollbar mx-1 mb-1 mt-3 grid max-h-44 grid-cols-[max-content_max-content_max-content] gap-2 overflow-auto"
         > -->
           <label
             v-for="value in fGroup.values"
-            class="flex w-fit cursor-pointer items-center gap-2 rounded px-1 hover:bg-gray-100 has-[:disabled]:cursor-default has-[:checked]:bg-gray-200 -md:border -md:border-gray-300"
+            class="flex w-fit cursor-pointer items-center gap-2 rounded-xs px-1 hover:bg-gray-100 has-checked:bg-gray-200 has-disabled:cursor-default max-md:border max-md:border-gray-300"
           >
             <input
               type="checkbox"
@@ -72,7 +74,7 @@ const inactivateVal = val => {
         >
           <div
             v-for="item in activeValues"
-            class="mb-1 ml-2 flex w-fit rounded bg-violet-100"
+            class="mb-1 ml-2 flex w-fit rounded-xs bg-violet-100"
           >
             <span
               class="px-1"
@@ -81,7 +83,7 @@ const inactivateVal = val => {
               {{ item.name }}
             </span>
             <button
-              class="rounded bg-violet-200"
+              class="rounded-xs bg-violet-200"
               @click="inactivateVal(item.val)"
             >
               <img src="/img/x.svg" />

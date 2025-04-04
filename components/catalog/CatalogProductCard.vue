@@ -20,7 +20,7 @@ const copyId = () => {
 </script>
 
 <template>
-  <div class="grid grid-cols-[auto_1fr_auto] grid-rows-[auto_auto] rounded-lg bg-cyan-500 hover:shadow">
+  <div class="grid grid-cols-[auto_1fr_auto] grid-rows-[auto_auto] rounded-lg bg-cyan-500 hover:shadow-xs">
     <div class="col-span-1 row-span-2 flex w-20 items-center justify-center self-center p-2 @md:h-20">
       <img
         :src="`${productImagesDirectory}thumb_${prod.image}`"
@@ -54,7 +54,7 @@ const copyId = () => {
             :src="getDynamicAsset('/img/labels/' + prod.label.image)"
             class="h-8 w-auto"
           />
-          <div class="rounded bg-fuchsia-400 p-0.5">
+          <div class="rounded-xs bg-fuchsia-400 p-0.5">
             <div class="border border-dashed border-white px-2 leading-tight text-white">
               {{ prod.label.name }}
             </div>

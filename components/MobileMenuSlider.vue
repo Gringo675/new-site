@@ -62,7 +62,7 @@ const onFeedback = () => {
       <div class="flex justify-between items-center bg-gray-100">
         <div class="font-accent text-2xl whitespace-nowrap">ТД ЧИ</div>
         <button
-          class="opacity-80 hover:opacity-100 focus:outline-none focus-visible:outline-0"
+          class="opacity-80 hover:opacity-100 focus:outline-hidden focus-visible:outline-0"
           @click="closeMenu"
         >
           <UIcon

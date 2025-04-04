@@ -9,9 +9,11 @@ export default defineNuxtConfig({
       meta: [{ name: 'robots', content: 'noindex, nofollow' }],
     },
   },
-
-  modules: ['@nuxt/ui', '@nuxt/fonts'],
-
+  css: ['~/assets/css/main.css'],
+  modules: ['@nuxt/ui'],
+  ui: {
+    colorMode: false,
+  },
   routeRules: {
     '/admin/**': { ssr: false },
     '/user/**': { ssr: false },

@@ -130,13 +130,13 @@ const handleOK = async () => {
       class="modal-form w-96 max-w-[95%] max-h-[95%] border border-amber-900 rounded-xl overflow-auto flex flex-col justify-start"
     >
       <div class="flex flex-row justify-between items-center bg-orange-300 p-2.5">
-        <div class="max-w-full whitespace-nowrap overflow-hidden overflow-ellipsis size text-xl">
+        <div class="max-w-full whitespace-nowrap overflow-hidden text-ellipsis size text-xl">
           {{ groupNameRU }}
         </div>
 
         <button
           @click="propsEditor.hide"
-          class="inline-flex opacity-70 hover:opacity-100 focus:outline-none focus-visible:outline-0"
+          class="inline-flex opacity-70 hover:opacity-100 focus:outline-hidden focus-visible:outline-0"
         >
           <UIcon
             name="i-heroicons-x-circle"
@@ -194,7 +194,7 @@ const handleOK = async () => {
               <input
                 type="text"
                 v-model.lazy="item.name"
-                class="ml-2 px-1 rounded bg-orange-100 outline-none w-48"
+                class="ml-2 px-1 rounded-xs bg-orange-100 outline-hidden w-48"
               />
               <img
                 @click="deleteItem(i)"

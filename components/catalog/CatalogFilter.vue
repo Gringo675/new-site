@@ -13,7 +13,7 @@ const toggleShowFilterOnMobile = () => {
 </script>
 
 <template>
-  <div class="mb-4 mt-10 flex w-full flex-col rounded-xl px-2 -md:mt-0 -md:bg-gray-200">
+  <div class="mt-10 mb-4 flex w-full flex-col rounded-xl px-2 max-md:mt-0 max-md:bg-gray-200">
     <UButton
       label="Подбор по параметрам"
       icon="i-heroicons-adjustments-vertical-solid"
@@ -50,14 +50,14 @@ const toggleShowFilterOnMobile = () => {
         />
         <!-- ask question -->
         <div
-          class="my-4 grid grid-cols-[min-content_auto_auto] items-center gap-2 rounded-xl border border-rose-200 bg-rose-100 p-2 @container"
+          class="@container my-4 grid grid-cols-[min-content_auto_auto] items-center gap-2 rounded-xl border border-rose-200 bg-rose-100 p-2"
         >
           <UIcon
             name="i-heroicons-chat-bubble-oval-left-ellipsis"
             class="col-span-1 row-span-1 h-full w-6 text-cyan-600 @[16.5rem]:row-span-2 @[16.5rem]:w-16 @md:row-span-1 @md:w-11"
           />
 
-          <div class="col-span-2 ml-auto italic text-cyan-600 @[16.5rem]:text-lg @md:col-span-1 @md:mx-auto">
+          <div class="col-span-2 ml-auto text-cyan-600 italic @[16.5rem]:text-lg @md:col-span-1 @md:mx-auto">
             Нужна консультация?
           </div>
           <UButton

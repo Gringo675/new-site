@@ -112,13 +112,13 @@ const onTest = () => {
         <h1>Login</h1>
         <button
           @click="onTest"
-          class="m-2 px-2 bg-cyan-500 rounded"
+          class="m-2 px-2 bg-cyan-500 rounded-xs"
         >
           Test
         </button>
         <button
           @click="closeLogin"
-          class="m-2 px-2 bg-cyan-500 rounded"
+          class="m-2 px-2 bg-cyan-500 rounded-xs"
         >
           Close
         </button>
@@ -141,7 +141,7 @@ const onTest = () => {
             <button
               @click="sendCode"
               :disabled="!isMailValid"
-              class="m-2 p-2 bg-cyan-500 rounded"
+              class="m-2 p-2 bg-cyan-500 rounded-xs"
             >
               Получить код
             </button>
@@ -150,19 +150,19 @@ const onTest = () => {
             <span>Или</span>
             <button
               @click="runOAuth('google')"
-              class="m-2 p-2 bg-cyan-500 rounded"
+              class="m-2 p-2 bg-cyan-500 rounded-xs"
             >
               Войти через google
             </button>
             <button
               @click="runOAuth('vk')"
-              class="m-2 p-2 bg-cyan-500 rounded"
+              class="m-2 p-2 bg-cyan-500 rounded-xs"
             >
               Войти через VK
             </button>
             <button
               @click="runOAuth('mailru')"
-              class="m-2 p-2 bg-cyan-500 rounded"
+              class="m-2 p-2 bg-cyan-500 rounded-xs"
             >
               Войти через mail.ru
             </button>
@@ -174,7 +174,7 @@ const onTest = () => {
           <div>
             <button
               @click="backOnMailScreen"
-              class="m-2 p-2 bg-cyan-500 rounded"
+              class="m-2 p-2 bg-cyan-500 rounded-xs"
             >
               Назад
             </button>

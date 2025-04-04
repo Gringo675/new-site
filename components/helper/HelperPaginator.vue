@@ -71,16 +71,16 @@ const hideShowMoreButton = computed(() => paginator.value[paginator.value.length
 <template>
   <div
     v-show="pageProps.totalPages > 1"
-    class="flex flex-col items-center my-2"
+    class="my-2 flex flex-col items-center"
   >
     <div
-      class="productsWrapperTransition m-2 p-2 bg-sky-100 rounded cursor-pointer hover:shadow hover:bg-sky-200"
-      :class="{ 'opacity-0 scale-y-0': hideShowMoreButton }"
+      class="productsWrapperTransition m-2 cursor-pointer rounded-xs bg-sky-100 p-2 hover:bg-sky-200 hover:shadow-xs"
+      :class="{ 'scale-y-0 opacity-0': hideShowMoreButton }"
       @click="handlePaginator('more')"
     >
       Показать еще
     </div>
-    <div class="flex justify-center items-end space-x-2">
+    <div class="flex items-end justify-center space-x-2">
       <UTooltip
         v-if="paginator.length > 1 && !paginator[0].isActive"
         text="Предыдущая"

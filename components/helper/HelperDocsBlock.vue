@@ -116,7 +116,7 @@ for (const pasp of docs.pasp ?? []) {
             <span class="m-2 truncate">
               {{ viewer.title }}
             </span>
-            <button class="m-2 opacity-80 hover:opacity-100 focus:outline-none focus-visible:outline-0">
+            <button class="m-2 opacity-80 hover:opacity-100 focus:outline-hidden focus-visible:outline-0">
               <UIcon
                 name="i-heroicons-x-circle"
                 class="block h-10 w-10"
@@ -124,7 +124,7 @@ for (const pasp of docs.pasp ?? []) {
             </button>
           </div>
           <iframe
-            class="w-full flex-grow"
+            class="w-full grow"
             :src="viewer.src"
             frameborder="0"
             scrolling="no"

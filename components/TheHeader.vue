@@ -43,9 +43,9 @@ const menuState = [
 <template>
   <div class="header-hidden">
     <div
-      class="mx-auto grid h-full max-w-screen-xl grid-cols-[120px_1fr_auto_1fr_120px] grid-rows-[auto_1fr] gap-1 -md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] -md:grid-rows-[100%] -xs:grid-cols-[auto_auto]"
+      class="max-xs:grid-cols-[auto_auto] mx-auto grid h-full max-w-(--breakpoint-xl) grid-cols-[120px_1fr_auto_1fr_120px] grid-rows-[auto_1fr] gap-1 max-md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] max-md:grid-rows-[100%]"
     >
-      <div class="col-span-1 row-span-2 flex items-center justify-center -md:row-span-1">
+      <div class="col-span-1 row-span-2 flex items-center justify-center max-md:row-span-1">
         <ULink
           to="/"
           active-class="cursor-default"
@@ -53,7 +53,7 @@ const menuState = [
           <img
             src="/img/svg-test/v23.svg"
             alt="logo"
-            class="w-full p-1 -md:max-w-20"
+            class="w-full p-1 max-md:max-w-20"
             width="100%"
             height="auto"
           />
@@ -61,43 +61,43 @@ const menuState = [
         <!-- <img
           src="/img/logo3.png"
           alt="logo"
-          class="w-full -md:max-w-20"
+          class="w-full max-md:max-w-20"
         /> -->
       </div>
-      <div class="col-span-3 flex -md:hidden">
+      <div class="col-span-3 flex max-md:hidden">
         <UHorizontalNavigation
           :links="menuState"
           :ui="{
-            base: 'py-2 -lg:text-xs -lg:px-2 -lg:gap-0.5',
-            before: 'before:rounded-sm hover:before:bg-violet-300 before:inset-x-0 before:inset-y-1 ',
+            base: 'py-2 max-lg:text-xs max-lg:px-2 max-lg:gap-0.5',
+            before: 'before:rounded-xs hover:before:bg-violet-300 before:inset-x-0 before:inset-y-1 ',
           }"
           class="font-accent mx-auto w-auto rounded-b-lg bg-violet-200"
         />
       </div>
-      <div class="col-span-1 mr-2 flex items-center justify-end gap-2 -md:hidden">
+      <div class="col-span-1 mr-2 flex items-center justify-end gap-2 max-md:hidden">
         <img
           src="/img/rst.svg"
           alt=""
           class="w-20"
         />
       </div>
-      <div class="col-span-1 flex -md:justify-center">
+      <div class="col-span-1 flex max-md:justify-center">
         <div
-          class="font-accent flex flex-col items-center justify-center text-center text-3xl text-gray-800 -xl:text-2xl -lg:text-base -md:mx-2 -md:text-2xl -xs:text-xl"
+          class="font-accent max-xs:text-xl flex flex-col items-center justify-center text-center text-3xl text-gray-800 max-xl:text-2xl max-lg:text-base max-md:mx-2 max-md:text-2xl"
         >
           <div>Торговый Дом</div>
           <div>Челябинский Инструмент</div>
         </div>
       </div>
-      <div class="col-span-1 flex items-center justify-center -xs:hidden">
+      <div class="max-xs:hidden col-span-1 flex items-center justify-center">
         <img
           src="/img/vernie2.png"
           alt="vernie"
-          class="min-w-0 max-w-24 opacity-90 -lg:max-w-20"
+          class="max-w-24 min-w-0 opacity-90 max-lg:max-w-20"
         />
       </div>
-      <div class="col-span-2 flex -md:hidden">
-        <div class="mr-2 flex w-full flex-col items-end justify-center -xl:items-center -lg:text-sm">
+      <div class="col-span-2 flex max-md:hidden">
+        <div class="mr-2 flex w-full flex-col items-end justify-center max-xl:items-center max-lg:text-sm">
           <div class="flex items-center">
             <UIcon
               name="i-heroicons-home-modern"
@@ -126,8 +126,8 @@ const menuState = [
   </div>
 
   <div class="bg-stone-900">
-    <div class="mx-auto grid max-w-screen-xl grid-cols-[1fr_auto_1fr] gap-1 px-2 py-3">
-      <div class="col-span-1 flex items-center gap-3 -md:hidden">
+    <div class="mx-auto grid max-w-(--breakpoint-xl) grid-cols-[1fr_auto_1fr] gap-1 px-2 py-3">
+      <div class="col-span-1 flex items-center gap-3 max-md:hidden">
         <UButton
           icon="i-heroicons-queue-list"
           size="md"
@@ -135,7 +135,7 @@ const menuState = [
           @click="openCatsMenuSlider"
           label="Каталог"
         />
-        <div class="flex flex-grow justify-center">
+        <div class="flex grow justify-center">
           <UButton
             icon="i-heroicons-pencil-square"
             size="md"
@@ -143,14 +143,14 @@ const menuState = [
             class=""
             @click="showFeedback"
           >
-            <span class="-lg:hidden">Быстрый заказ</span>
+            <span class="max-lg:hidden">Быстрый заказ</span>
           </UButton>
         </div>
       </div>
-      <div class="col-span-1 -md:hidden">
-        <TheSearch class="-lg:max-w-[350px]" />
+      <div class="col-span-1 max-md:hidden">
+        <TheSearch class="max-lg:max-w-[350px]" />
       </div>
-      <div class="col-span-1 flex items-center justify-end gap-3 -md:col-span-3 -md:justify-between">
+      <div class="col-span-1 flex items-center justify-end gap-3 max-md:col-span-3 max-md:justify-between">
         <UButton
           icon="i-heroicons-magnifying-glass"
           size="md"
@@ -165,7 +165,7 @@ const menuState = [
           class="md:hidden"
           @click="showFeedback"
         />
-        <div class="flex justify-center md:flex-grow">
+        <div class="flex justify-center md:grow">
           <ClientOnly>
             <TheCart />
             <template #fallback>

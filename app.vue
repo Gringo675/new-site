@@ -55,19 +55,15 @@ const setErrorToLog = async e => {
 </script>
 
 <template>
-  <div class="flex flex-col min-h-screen">
-    <NuxtLayout>
-      <NuxtPage />
-      <HelperClientComponents />
-    </NuxtLayout>
-    <!-- <NuxtLayout>
-    <NuxtErrorBoundary @error="someErrorLogger">
-      <NuxtPage />
-      <template #error="{ error }">
-        <TheError :error="error" />
-      </template>
-    </NuxtErrorBoundary>
-    <HelperClientComponents />
-    </NuxtLayout> -->
-  </div>
+  <!-- <UApp>
+    <NuxtPage />
+  </UApp> -->
+  <UApp>
+    <div class="flex min-h-screen flex-col">
+      <NuxtLayout>
+        <NuxtPage />
+        <!-- <HelperClientComponents /> -->
+      </NuxtLayout>
+    </div>
+  </UApp>
 </template>

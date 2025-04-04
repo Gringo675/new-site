@@ -97,18 +97,18 @@ catsPath.reverse()
       class="relative mt-6 rounded-lg border border-gray-200 bg-gray-100 p-3"
     >
       <div
-        class="absolute -top-3 left-8 rounded-full border border-gray-200 bg-gray-100 px-2.5 py-1 text-sm leading-none after:absolute after:-inset-x-px after:-bottom-px after:top-1/2 after:bg-gray-100"
+        class="absolute -top-3 left-8 rounded-full border border-gray-200 bg-gray-100 px-2.5 py-1 text-sm leading-none after:absolute after:-inset-x-px after:top-1/2 after:-bottom-px after:bg-gray-100"
       >
         <span class="relative -top-0.5 z-10">Подкатегории</span>
       </div>
-      <div class="flex flex-wrap gap-3 -md:grid -md:grid-cols-2 -xs:grid-cols-1">
+      <div class="max-xs:grid-cols-1 flex flex-wrap gap-3 max-md:grid max-md:grid-cols-2">
         <UButton
           v-for="child in catsPath[catsPath.length - 1].children"
           :label="child.name"
           :to="'/catalog/' + child.alias"
           variant="outline"
           :ui="{ rounded: 'rounded-full' }"
-          class="w-fit justify-center text-center -md:w-full"
+          class="w-fit justify-center text-center max-md:w-full"
         />
       </div>
     </div>

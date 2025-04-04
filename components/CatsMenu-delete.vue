@@ -32,14 +32,14 @@ const goTo = async url => {
     <template #leading>
       <UIcon
         name="i-heroicons-queue-list"
-        class="w-5 h-5 -md:hidden"
+        class="h-5 w-5 max-md:hidden"
       />
       <UIcon
         name="i-heroicons-magnifying-glass"
-        class="w-5 h-5 md:hidden"
+        class="h-5 w-5 md:hidden"
       />
     </template>
-    <span class="-md:hidden">Каталог</span>
+    <span class="max-md:hidden">Каталог</span>
   </UButton>
   <USlideover
     v-model="menuState.show"
@@ -50,33 +50,33 @@ const goTo = async url => {
     }"
   >
     <!-- wrapper (do not delete class! used in TheSearch)-->
-    <div class="menu-wrapper flex flex-col h-screen">
+    <div class="menu-wrapper flex h-screen flex-col">
       <!-- header -->
-      <div class="flex items-center gap-x-2 m-2 bg-gray-50">
+      <div class="m-2 flex items-center gap-x-2 bg-gray-50">
         <h2>Каталог</h2>
         <TheSearch forMenu />
         <button
-          class="ml-auto mr-2 opacity-80 hover:opacity-100 focus:outline-none focus-visible:outline-0"
+          class="mr-2 ml-auto opacity-80 hover:opacity-100 focus:outline-hidden focus-visible:outline-0"
           @click="menuState.show = false"
         >
           <UIcon
             name="i-heroicons-arrow-long-left-16-solid"
-            class="h-8 w-8 block"
+            class="block h-8 w-8"
           />
         </button>
       </div>
       <!-- columns -->
       <div class="flex overflow-hidden border-t border-gray-300">
         <!-- first col -->
-        <div class="flex flex-col gap-y-2 w-80 overflow-auto menu-scrollbar bg-gray-100">
+        <div class="menu-scrollbar flex w-80 flex-col gap-y-2 overflow-auto bg-gray-100">
           <div
             v-for="(cat, i) in cats"
-            class="pl-4 py-2"
+            class="py-2 pl-4"
             :class="{ 'bg-gray-200': menuState.activeCatIndex === i }"
             @mouseenter="onMouseEnter(i)"
           >
             <NuxtLink
-              class="text-lg font-medium hover:underline underline-offset-8"
+              class="text-lg font-medium underline-offset-8 hover:underline"
               :to="`/catalog/${cat.alias}`"
               @click="closeMenu"
             >
@@ -85,7 +85,7 @@ const goTo = async url => {
           </div>
         </div>
         <!-- second col -->
-        <div class="flex-1 flex flex-col pl-6 pr-4 gap-y-2 overflow-auto menu-scrollbar bg-gray-200 underline-offset-4">
+        <div class="menu-scrollbar flex flex-1 flex-col gap-y-2 overflow-auto bg-gray-200 pr-4 pl-6 underline-offset-4">
           <div class="">
             <div
               v-for="subCat in activeCat.children"
@@ -103,7 +103,7 @@ const goTo = async url => {
 
               <div
                 v-if="subCat.children"
-                class="ml-4 mb-2 flex flex-col gap-y-2"
+                class="mb-2 ml-4 flex flex-col gap-y-2"
               >
                 <div
                   v-for="subSubCat in subCat.children"
@@ -111,7 +111,7 @@ const goTo = async url => {
                 >
                   <UIcon
                     name="i-heroicons-arrow-turn-down-right-16-solid"
-                    class="w-6 h-6 mt-1"
+                    class="mt-1 h-6 w-6"
                   />
                   <div>
                     <NuxtLink
