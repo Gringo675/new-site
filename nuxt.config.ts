@@ -13,6 +13,9 @@ export default defineNuxtConfig({
   modules: ['@nuxt/ui'],
   ui: {
     colorMode: false,
+    theme: {
+      colors: ['primary', 'secondary', 'tertiary', 'info', 'success', 'warning', 'error'],
+    },
   },
   routeRules: {
     '/admin/**': { ssr: false },

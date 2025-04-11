@@ -14,7 +14,7 @@ const newUser = reactive({
   name: {
     val: user.name,
     changed: computed(() => newUser.name.val !== user.name),
-    valid: computed(() => !newUser.name.val || newUser.name.val.length > 2),
+    valid: computed(() => newUser.name.val.length > 0),
   },
   mail: {
     val: user.mail,
@@ -24,24 +24,22 @@ const newUser = reactive({
   org: {
     val: user.org,
     changed: computed(() => newUser.org.val !== user.org),
-    valid: computed(() => !newUser.org.val || newUser.org.val.length > 2),
+    valid: computed(() => newUser.org.val.length < 500),
   },
   inn: {
     val: user.inn,
     changed: computed(() => newUser.inn.val !== user.inn),
-    complete: false,
-    valid: computed(() => !newUser.inn.val || newUser.inn.complete),
+    valid: computed(() => [0, 10, 12].includes(newUser.inn.val.length)),
   },
   address: {
     val: user.address,
     changed: computed(() => newUser.address.val !== user.address),
-    valid: computed(() => !newUser.address.val || newUser.address.val.length > 2),
+    valid: computed(() => newUser.address.val.length < 1000),
   },
   phone: {
     val: user.phone,
     changed: computed(() => newUser.phone.val !== user.phone),
-    complete: false,
-    valid: computed(() => !newUser.phone.val || newUser.phone.complete),
+    valid: computed(() => [0, 13].includes(newUser.phone.val.length)),
   },
 })
 
@@ -52,7 +50,7 @@ const isUserDataChanged = computed(
     newUser.org.changed ||
     newUser.inn.changed ||
     newUser.address.changed ||
-    newUser.phone.changed
+    newUser.phone.changed,
 )
 const isUserDataValid = computed(
   () =>
@@ -62,35 +60,49 @@ const isUserDataValid = computed(
     newUser.org.valid &&
     newUser.inn.valid &&
     newUser.address.valid &&
-    newUser.phone.valid
+    newUser.phone.valid,
 )
+
+const validate = newUser => {
+  const errors = []
+  if (!newUser.name.valid) errors.push({ name: 'name', message: 'Введите имя!' })
+  if (!newUser.mail.valid) errors.push({ name: 'mail', message: 'Введите корректный почтовый адрес!' })
+  if (!newUser.org.valid) errors.push({ name: 'org', message: 'Слишком длинное наименование!' })
+  if (!newUser.inn.valid) errors.push({ name: 'inn', message: 'Введите корректный ИНН организации!' })
+  if (!newUser.address.valid) errors.push({ name: 'address', message: 'Слишком длинный адрес!' })
+  if (!newUser.phone.valid) errors.push({ name: 'phone', message: 'Введите корректный номер телефона!' })
+  console.log(`inny errors: ${JSON.stringify(errors, null, 2)}`)
+  return errors
+}
 
 const saveUserData = async () => {
   try {
-    if (!isUserDataValid) return
-    if (isUserDataChanged) {
-      // для авторизированных пользователей сохраняем изменения на сервере
-      if (user.auth) {
-        const dataKeys = ['name', 'mail', 'org', 'inn', 'address', 'phone'] // без почты, для нее отдельный компонент
-        const changedUserData = dataKeys
-          .filter(key => newUser[key].changed)
-          .map(key => {
-            return { field: key, value: newUser[key].val }
-          })
-        const isChangesSaved = await myFetch('/api/user/changeUser', {
-          method: 'post',
-          payload: changedUserData,
+    // для авторизированных пользователей сохраняем изменения на сервере
+    if (user.auth) {
+      const dataKeys = ['name', 'mail', 'org', 'inn', 'address', 'phone'] // без почты, для нее отдельный компонент
+      const changedUserData = dataKeys
+        .filter(key => newUser[key].changed)
+        .map(key => {
+          return { field: key, value: newUser[key].val }
         })
-        if (!isChangesSaved) throw new Error()
-      }
-      // перезаписываем все данные в user
-      for (const key in newUser) {
-        user[key] = newUser[key].val
-      }
+      const isChangesSaved = await myFetch('/api/user/changeUser', {
+        method: 'post',
+        payload: changedUserData,
+      })
+      if (!isChangesSaved) throw new Error()
+      localStorage.setItem('user-event', Date.now().toString()) // для обновления всех открытых вкладок
     }
+
+    // перезаписываем все данные в user
+    for (const key in newUser) {
+      user[key] = newUser[key].val
+    }
+
     return true
   } catch (e) {
     showNotice({ title: 'Ошибка при сохранении данных пользователя!', type: 'error' })
+    console.error(e)
+    return false
   }
 }
 
@@ -98,87 +110,83 @@ const emit = defineEmits(['setIsUserDataChanged', 'setIsUserDataValid', 'setSave
 emit('setIsUserDataChanged', isUserDataChanged)
 emit('setIsUserDataValid', isUserDataValid)
 emit('setSaveUserData', saveUserData)
+
+function onError(event) {
+  if (event?.errors?.[0]?.id) {
+    const element = document.getElementById(event.errors[0].id)
+    element?.focus()
+    element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }
+}
+
+const onSubmit = () => {
+  console.log(`inny submit`)
+}
 </script>
 
 <template>
-  <div>
-    <div class="m-2">
-      <span class="mr-2">Имя:</span>
-      <input
-        type="text"
-        v-model="newUser.name.val"
-        :class="{
-          'border-green-400': newUser.name.changed && newUser.name.valid,
-          'border-yellow-300': newUser.name.changed && !newUser.name.valid,
-        }"
+  <UForm
+    :validate="validate"
+    :state="newUser"
+    id="up_form"
+    @error="onError"
+    class="space-y-4"
+    @submit="onSubmit"
+  >
+    <UFormField
+      label="Имя"
+      name="name"
+      required
+      autofocus
+    >
+      <UInput v-model="newUser.name.val" />
+    </UFormField>
+    <UFormField
+      label="Почта"
+      name="mail"
+      required
+    >
+      <UInput v-model="newUser.mail.val" />
+      <MailVerifier
+        v-if="user.auth && newUser.mail.changed && newUser.mail.valid"
+        :mail="newUser.mail.val"
+        @cancel="newUser.mail.val = user.mail"
       />
-    </div>
-    <div class="m-2">
-      <span class="mr-2">Почта:&#10033;</span>
-      <input
-        type="text"
-        v-model="newUser.mail.val"
-        :class="{
-          'border-green-400': newUser.mail.changed && newUser.mail.valid,
-          'border-yellow-300': !newUser.mail.valid,
-        }"
+    </UFormField>
+    <UFormField
+      label="Организация"
+      name="org"
+    >
+      <UInput v-model="newUser.org.val" />
+    </UFormField>
+    <UFormField
+      label="ИНН"
+      name="inn"
+    >
+      <UInput
+        v-maska
+        data-maska="############"
+        v-model="newUser.inn.val"
       />
-    </div>
-    <MailVerifier
-      v-if="user.auth && newUser.mail.changed && newUser.mail.valid"
-      :mail="newUser.mail.val"
-      @cancel="newUser.mail.val = user.mail"
-    />
-    <div class="m-2">
-      <span class="mr-2">Организация:</span>
-      <input
-        type="text"
-        v-model="newUser.org.val"
-        :class="{
-          'border-green-400': newUser.org.changed && newUser.org.valid,
-          'border-yellow-300': newUser.org.changed && !newUser.org.valid,
-        }"
+    </UFormField>
+    <UFormField
+      label="Адрес"
+      name="address"
+    >
+      <UInput v-model="newUser.address.val" />
+    </UFormField>
+    <UFormField
+      label="Телефон"
+      name="phone"
+    >
+      <UInput
+        v-maska
+        data-maska="### ###-##-##"
+        v-model="newUser.phone.val"
+        type="tel"
+        placeholder="000 000-00-00"
       />
-    </div>
-    <div class="m-2">
-      <span class="mr-2">ИНН организации:</span>
-      <input
-        type="text"
-        v-mask.inn="newUser.inn.val"
-        @maskData="newUser.inn.val = $event.detail.value"
-        @maskComplete="newUser.inn.complete = $event.detail.value"
-        :class="{
-          'border-green-400': newUser.inn.changed && newUser.inn.valid,
-          'border-yellow-300': newUser.inn.changed && !newUser.inn.valid,
-        }"
-        placeholder="9999999999"
-      />
-    </div>
-    <div class="m-2">
-      <span class="mr-2">Адрес:</span>
-      <input
-        type="text"
-        v-model="newUser.address.val"
-        :class="{
-          'border-green-400': newUser.address.changed && newUser.address.valid,
-          'border-yellow-300': newUser.address.changed && !newUser.address.valid,
-        }"
-      />
-    </div>
-    <div class="m-2">
-      <span class="mr-2">Телефон:</span>
-      <span class="pr-1">+7</span>
-      <input
-        type="text"
-        v-mask.phone="newUser.phone.val"
-        @maskData="newUser.phone.val = $event.detail.value"
-        @maskComplete="newUser.phone.complete = $event.detail.value"
-        :class="{
-          'border-green-400': newUser.phone.changed && newUser.phone.valid,
-          'border-yellow-300': newUser.phone.changed && !newUser.phone.valid,
-        }"
-        placeholder="999 999-99-99"
-      />
-    </div>
-  </div>
+    </UFormField>
+    <!-- <UButton type="submit">Сохранить</UButton> -->
+  </UForm>
 </template>

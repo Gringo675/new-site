@@ -2,80 +2,104 @@
 /**
  * Компонент показа и сохранения изменений в данных пользователя.
  * Используется на странице данных пользователя (/user/profile), в корзине (/user/cart) и на форме обратной связи.
- * Нужные данные эмитятся в родитель.
+ * Передает наружу функцию saveUserData, которую нужно запускать в родителе.
  * Если пользователь авторизован, все изменения в данных записываются в базу.
  * Если нет, введенные данные просто записываются в переменную user.
  */
+
+const userFormRef = useTemplateRef('userFormRef')
+defineExpose({ userFormRef, saveUserData })
 
 await getUser({ hidden: true })
 const user = useUser().value
 
 const newUser = reactive({
-  name: {
-    val: user.name,
-    changed: computed(() => newUser.name.val !== user.name),
-    valid: computed(() => newUser.name.val.length > 0),
-  },
-  mail: {
-    val: user.mail,
-    changed: computed(() => newUser.mail.val !== user.mail),
-    valid: computed(() => validateMail(newUser.mail.val)),
-  },
-  org: {
-    val: user.org,
-    changed: computed(() => newUser.org.val !== user.org),
-    valid: computed(() => newUser.org.val.length < 500),
-  },
-  inn: {
-    val: user.inn,
-    changed: computed(() => newUser.inn.val !== user.inn),
-    valid: computed(() => [0, 10, 12].includes(newUser.inn.val.length)),
-  },
-  address: {
-    val: user.address,
-    changed: computed(() => newUser.address.val !== user.address),
-    valid: computed(() => newUser.address.val.length < 1000),
-  },
-  phone: {
-    val: user.phone,
-    changed: computed(() => newUser.phone.val !== user.phone),
-    valid: computed(() => [0, 13].includes(newUser.phone.val.length)),
-  },
+  name: user.name,
+  mail: user.mail,
+  org: user.org,
+  inn: user.inn,
+  address: user.address,
+  phone: user.phone,
 })
-
-const isUserDataChanged = computed(
-  () =>
-    newUser.name.changed ||
-    newUser.mail.changed ||
-    newUser.org.changed ||
-    newUser.inn.changed ||
-    newUser.address.changed ||
-    newUser.phone.changed
+const fieldErrors = {
+  name: '',
+  mail: '',
+  org: '',
+  inn: '',
+  address: '',
+  phone: '',
+}
+const shouldVerifyNewMail = ref(false)
+const validateField = (field, value) => {
+  switch (field) {
+    case 'name':
+      fieldErrors.name = value.length === 0 ? 'Введите имя!' : ''
+      break
+    case 'mail':
+      const isValid = validateMail(value)
+      if (user.auth && isValid && value !== user.mail) shouldVerifyNewMail.value = true
+      else shouldVerifyNewMail.value = false
+      fieldErrors.mail = !isValid ? 'Введите корректный почтовый адрес!' : ''
+      break
+    case 'org':
+      fieldErrors.org = value.length > 500 ? 'Слишком длинное наименование!' : ''
+      break
+    case 'inn':
+      fieldErrors.inn = ![0, 10, 12].includes(value.length) ? 'Введите корректный ИНН организации!' : ''
+      break
+    case 'address':
+      fieldErrors.address = value.length > 1000 ? 'Слишком длинный адрес!' : ''
+      break
+    case 'phone':
+      fieldErrors.phone = ![0, 13].includes(value.length) ? 'Введите корректный номер телефона!' : ''
+      break
+  }
+}
+watch(
+  () => newUser.name,
+  val => validateField('name', val),
+  { immediate: true },
 )
-const isUserDataValid = computed(
-  () =>
-    ((user.auth && !newUser.mail.changed) || !user.auth) &&
-    newUser.name.valid &&
-    newUser.mail.valid &&
-    newUser.org.valid &&
-    newUser.inn.valid &&
-    newUser.address.valid &&
-    newUser.phone.valid
+watch(
+  () => newUser.mail,
+  val => validateField('mail', val),
+  { immediate: true },
+)
+watch(
+  () => newUser.org,
+  val => validateField('org', val),
+  { immediate: true },
+)
+watch(
+  () => newUser.inn,
+  val => validateField('inn', val),
+  { immediate: true },
+)
+watch(
+  () => newUser.address,
+  val => validateField('address', val),
+  { immediate: true },
+)
+watch(
+  () => newUser.phone,
+  val => validateField('phone', val),
+  { immediate: true },
 )
 
-const validate = newUser => {
-  const errors = []
-  if (!newUser.name.valid) errors.push({ path: 'name', message: 'Введите имя!' })
-  if (!newUser.mail.valid) errors.push({ path: 'mail', message: 'Введите корректный почтовый адрес!' })
-  if (!newUser.org.valid) errors.push({ path: 'org', message: 'Слишком длинное наименование!' })
-  if (!newUser.inn.valid) errors.push({ path: 'inn', message: 'Введите корректный ИНН организации!' })
-  if (!newUser.address.valid) errors.push({ path: 'address', message: 'Слишком длинный адрес!' })
-  if (!newUser.phone.valid) errors.push({ path: 'phone', message: 'Введите корректный номер телефона!' })
-
-  return errors
+const validate = () => {
+  console.log(`from formValidate`)
+  return Object.entries(fieldErrors)
+    .filter(([_, message]) => message)
+    .map(([name, message]) => ({ name, message }))
 }
 
-const saveUserData = async () => {
+async function saveUserData() {
+  const isValid = await userFormRef.value.validate().catch(() => false) // если есть ошибки, выбрасывает ошибку
+  if (!isValid) {
+    userFormRef.value.submit() // для запуска onError
+    return false
+  }
+
   try {
     // для авторизированных пользователей сохраняем изменения на сервере
     if (user.auth) {
@@ -101,82 +125,81 @@ const saveUserData = async () => {
     return true
   } catch (e) {
     showNotice({ title: 'Ошибка при сохранении данных пользователя!', type: 'error' })
+    console.error(e)
+    return false
   }
 }
 
-const emit = defineEmits(['setIsUserDataChanged', 'setIsUserDataValid', 'setSaveUserData'])
-emit('setIsUserDataChanged', isUserDataChanged)
-emit('setIsUserDataValid', isUserDataValid)
-emit('setSaveUserData', saveUserData)
-
 function onError(event) {
-  const element = document.getElementById(event.errors[0].id)
-  element?.focus()
-  element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  if (event?.errors?.[0]?.id) {
+    const element = document.getElementById(event.errors[0].id)
+    element?.focus()
+    element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }
 }
 </script>
 
 <template>
   <UForm
+    ref="userFormRef"
     :validate="validate"
     :state="newUser"
-    id="up_form"
     @error="onError"
     class="space-y-4"
   >
-    <UFormGroup
+    <UFormField
       label="Имя"
       name="name"
       required
       autofocus
     >
-      <UInput v-model="newUser.name.val" />
-    </UFormGroup>
-    <UFormGroup
+      <UInput v-model="newUser.name" />
+    </UFormField>
+    <UFormField
       label="Почта"
       name="mail"
       required
     >
-      <UInput v-model="newUser.mail.val" />
+      <UInput v-model="newUser.mail" />
       <MailVerifier
-        v-if="user.auth && newUser.mail.changed && newUser.mail.valid"
-        :mail="newUser.mail.val"
-        @cancel="newUser.mail.val = user.mail"
+        v-if="shouldVerifyNewMail"
+        :mail="newUser.mail"
+        @cancel="newUser.mail = user.mail"
       />
-    </UFormGroup>
-    <UFormGroup
+    </UFormField>
+    <UFormField
       label="Организация"
       name="org"
     >
-      <UInput v-model="newUser.org.val" />
-    </UFormGroup>
-    <UFormGroup
+      <UInput v-model="newUser.org" />
+    </UFormField>
+    <UFormField
       label="ИНН"
       name="inn"
     >
       <UInput
         v-maska
         data-maska="############"
-        v-model="newUser.inn.val"
+        v-model="newUser.inn"
       />
-    </UFormGroup>
-    <UFormGroup
+    </UFormField>
+    <UFormField
       label="Адрес"
       name="address"
     >
-      <UInput v-model="newUser.address.val" />
-    </UFormGroup>
-    <UFormGroup
+      <UInput v-model="newUser.address" />
+    </UFormField>
+    <UFormField
       label="Телефон"
       name="phone"
     >
       <UInput
         v-maska
         data-maska="### ###-##-##"
-        v-model="newUser.phone.val"
+        v-model="newUser.phone"
         type="tel"
         placeholder="000 000-00-00"
       />
-    </UFormGroup>
+    </UFormField>
   </UForm>
 </template>

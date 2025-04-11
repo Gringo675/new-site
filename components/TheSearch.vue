@@ -1,6 +1,6 @@
 <script setup>
-const closeSlideoverMenu = useSlideover().close
-
+//
+const hideCatsMenu = () => {}
 const searchState = reactive({
   query: '',
   pending: false,
@@ -80,7 +80,7 @@ watch(
 const goTo = async link => {
   searchHelper.abortRequest()
   searchHelper.hideSearchResults()
-  closeSlideoverMenu() // для модуля поиска в боковом меню
+  hideCatsMenu() // для модуля поиска в боковом меню
   await navigateTo(link)
 }
 
@@ -99,23 +99,25 @@ const onInputClick = e => {
       v-model="searchState.query"
       color="primary"
       variant="outline"
+      highlight
       placeholder="Поиск по каталогу"
       leading-icon="i-heroicons-magnifying-glass-20-solid"
       :loading="searchState.pending"
-      :ui="{ icon: { trailing: { pointer: '' } } }"
       size="md"
-      class="z-21"
+      class="z-21 w-full"
       inputClass="bg-slate-100"
       @keyup.enter="goTo(`/search/${searchState.query}`)"
       @click="onInputClick"
     >
-      <template #trailing>
+      <template
+        v-if="searchState.query.length"
+        #trailing
+      >
         <UButton
-          v-show="searchState.query !== ''"
-          color="gray"
+          color="neutral"
           variant="link"
           icon="i-heroicons-x-mark-20-solid"
-          :padded="false"
+          class="p-0"
           @click="searchState.query = ''"
         />
       </template>
@@ -124,12 +126,12 @@ const onInputClick = e => {
     <Transition name="transition-fade">
       <div
         v-if="searchState.showResults"
-        class="fixed left-0 top-0 z-20 h-full w-full bg-black bg-opacity-20"
+        class="fixed top-0 left-0 z-20 h-full w-full bg-black/20"
         @click="searchHelper.hideSearchResults"
       >
         <div
           @click.stop
-          class="modal-form absolute left-[var(--result-left)] top-[var(--result-top)] z-20 mt-1 max-h-[var(--result-max-height)] w-[var(--result-width)] overflow-auto rounded-md border border-violet-600 shadow-xl"
+          class="modal-form absolute top-[var(--result-top)] left-[var(--result-left)] z-20 mt-1 max-h-[var(--result-max-height)] w-[var(--result-width)] overflow-auto rounded-md border border-violet-600 shadow-xl"
         >
           <div
             v-if="searchState.result.products.length > 0"
@@ -142,10 +144,10 @@ const onInputClick = e => {
                 <UButton
                   v-for="subCat in cat.children"
                   variant="link"
-                  :padded="false"
-                  color="indigo"
+                  color="tertiary"
                   truncate
                   :label="subCat.name"
+                  class="p-0"
                   @click="goTo(`/catalog/${subCat.alias}`)"
                 />
               </template>
@@ -156,8 +158,8 @@ const onInputClick = e => {
               <UButton
                 v-for="product in searchState.result.products"
                 variant="link"
-                :padded="false"
-                color="indigo"
+                class="p-0"
+                color="tertiary"
                 truncate
                 :label="product.name"
                 @click="goTo(`/product/${product.alias}`)"
@@ -166,15 +168,15 @@ const onInputClick = e => {
             <div class="flex justify-between bg-slate-300 p-2">
               <UButton
                 variant="ghost"
-                color="indigo"
+                color="tertiary"
                 label="Все результаты"
                 @click="goTo(`/search/${searchState.query}`)"
               />
               <UButton
-                color="gray"
+                color="neutral"
                 variant="link"
                 icon="i-heroicons-x-mark"
-                :padded="false"
+                class="p-0"
                 @click="searchHelper.hideSearchResults"
               />
             </div>

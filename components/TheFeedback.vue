@@ -1,41 +1,58 @@
 <script setup>
 //
-const feedback = useFeedback()
-const user = useUser().value
-
-const TheUserProfileData = reactive({
-  isUserDataChanged: false,
-  isUserDataValid: false,
-  saveUserData: () => {},
+const props = defineProps({
+  title: String,
+  description: String,
 })
+const emit = defineEmits(['close'])
 
-const state = reactive({
+const userProfile = useTemplateRef('userProfileRef')
+
+const formState = reactive({
   message: '',
   files: null,
 })
+const fieldErrors = {
+  message: '',
+  message2: '',
+  files: '',
+}
+const validateField = (field, value) => {
+  switch (field) {
+    case 'message':
+      fieldErrors.message = value ? '' : 'Напишите сообщение!'
+      break
+    case 'files':
+      fieldErrors.files = checkFormFiles(value)
+      break
+  }
+}
+watch(
+  () => formState.message,
+  val => validateField('message', val),
+  { immediate: true },
+)
+watch(
+  () => formState.files,
+  val => validateField('files', val),
+  { immediate: true },
+)
 
-const validate = state => {
-  const errors = []
-  if (state.message.length > 10000) errors.push({ path: 'message', message: 'Слишком длинное сообщение!' })
-  if (!state.message.length) errors.push({ path: 'message', message: 'Напишите сообщение!' })
-
-  const fileInput = document.getElementById('file_input')
-  checkFormFiles(fileInput.files, errors)
-
-  return errors
+const formValidate = () => {
+  return Object.entries(fieldErrors)
+    .filter(([_, message]) => message)
+    .map(([name, message]) => ({ name, message }))
 }
 
 const onSubmit = async () => {
-  document.getElementById('up_form').requestSubmit() // чтобы гарантировано запустить валидацию
-  if (!TheUserProfileData.isUserDataValid) return
-  if (TheUserProfileData.isUserDataChanged) {
-    const isUserSaved = await TheUserProfileData.saveUserData()
-    if (!isUserSaved) return
-  }
+  const isUserSaved = await userProfile.value.saveUserData()
+  if (!isUserSaved) return
 
-  const fbForm = document.getElementById('fb_form')
-  const formData = new FormData(fbForm)
+  const user = useUser()
+  const formData = new FormData()
   formData.append('user', JSON.stringify(user))
+  formData.append('message', formState.message)
+  formData.append('files', formState.files)
 
   const success = await myFetch('/api/user/sendFeedback', {
     method: 'post',
@@ -44,69 +61,75 @@ const onSubmit = async () => {
 
   if (success) {
     showNotice({ title: 'Сообщение отправлено!', description: 'Вам ответят в ближайшее время.', type: 'success' })
-    feedback.isActive = false
+    emit('close')
   }
 }
 
 function onError(event) {
-  const element = document.getElementById(event.errors[0].id)
-  element?.focus()
-  element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  if (event?.errors?.[0]?.id) {
+    const element = document.getElementById(event.errors[0].id)
+    element?.focus()
+    element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }
 }
 </script>
 
 <template>
-  <UCard>
-    <template #header>
-      {{ feedback.title }}
+  <UModal
+    :title="title"
+    :description="description"
+    :dismissible="false"
+  >
+    <template #body>
+      <div class="grid grid-cols-2 gap-x-6">
+        <!-- first col -->
+        <div class="col-span-2 md:col-span-1">
+          <UForm
+            :state="formState"
+            :validate="formValidate"
+            id="fb_form"
+            @submit="onSubmit"
+            @error="onError"
+            class="space-y-4"
+          >
+            <UFormField
+              name="message"
+              label="Сообщение"
+              required
+            >
+              <UTextarea
+                v-model="formState.message"
+                placeholder="Ваше сообщение..."
+                resize
+                :rows="9"
+                class=""
+              />
+            </UFormField>
+            <UFormField
+              name="files"
+              label="Прикрепить файлы"
+            >
+              <UInput
+                type="file"
+                multiple
+                @change="formState.files = $event.target.files"
+              />
+            </UFormField>
+          </UForm>
+        </div>
+        <!-- second col -->
+        <div class="col-span-2 md:col-span-1">
+          <TheUserProfile ref="userProfileRef" />
+        </div>
+      </div>
     </template>
-    <!-- columns -->
-    <div class="grid grid-cols-2 gap-x-6">
-      <!-- first col -->
-      <div class="col-span-2 md:col-span-1">
-        <div class="">{{ feedback.description }}</div>
-        <UForm
-          :state="state"
-          :validate="validate"
-          id="fb_form"
-          @submit="onSubmit"
-          @error="onError"
-        >
-          <UFormGroup name="message">
-            <UTextarea
-              v-model="state.message"
-              placeholder="Ваше сообщение..."
-              resize
-              :rows="9"
-              class="my-4"
-            />
-          </UFormGroup>
-          <UFormGroup name="files">
-            <UInput
-              v-model="state.files"
-              type="file"
-              multiple
-              id="file_input"
-            />
-          </UFormGroup>
-        </UForm>
-      </div>
-      <!-- second col -->
-      <div class="col-span-2 md:col-span-1">
-        <TheUserProfile
-          @setIsUserDataChanged="value => (TheUserProfileData.isUserDataChanged = value)"
-          @setIsUserDataValid="value => (TheUserProfileData.isUserDataValid = value)"
-          @setSaveUserData="value => (TheUserProfileData.saveUserData = value)"
-        />
-      </div>
-    </div>
     <template #footer>
-      <div class="flex justify-end items-center gap-x-4">
+      <div class="flex items-center justify-end gap-x-4">
         <UButton
           label="Отмена"
           variant="outline"
           color="secondary"
-          @click="feedback.isActive = false"
+          @click="emit('close')"
         />
         <UButton
           type="submit"
@@ -117,5 +140,5 @@ function onError(event) {
         />
       </div>
     </template>
-  </UCard>
+  </UModal>
 </template>

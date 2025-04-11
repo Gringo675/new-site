@@ -1,23 +1,20 @@
+import { LazyTheLoader } from '#components'
+
+const loader = useOverlay().create(LazyTheLoader)
+
 const debounce = 400
 let timer
 
-const loader = reactive({
-  isActive: false,
-})
-
-export const useLoader = () => {
-  return loader
-}
-
 export const showLoader = () => {
-  if (process.server) return
+  if (import.meta.server) return
+
   clearTimeout(timer)
   timer = setTimeout(() => {
-    loader.isActive = true
+    loader.open()
   }, debounce)
 }
 
 export const hideLoader = () => {
   clearTimeout(timer)
-  loader.isActive = false
+  loader.close()
 }

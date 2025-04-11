@@ -1,5 +1,5 @@
 export const showNotice = async (options = {}) => {
-  if (process.server) return
+  if (import.meta.server) return
 
   options.title = options.title ?? ''
   options.description = options.description ?? ''
@@ -9,12 +9,11 @@ export const showNotice = async (options = {}) => {
   toast.add({
     title: options.title,
     description: options.description,
-    icon:
-      options.type === 'error'
-        ? 'i-heroicons-exclamation-circle'
-        : options.type === 'success'
-        ? 'i-heroicons-check-circle'
-        : 'i-heroicons-information-circle',
-    color: options.type === 'error' ? 'red' : options.type === 'success' ? 'emerald' : 'secondary',
+    icon: {
+      info: 'i-heroicons-information-circle',
+      error: 'i-heroicons-exclamation-circle',
+      success: 'i-heroicons-check-circle',
+    }[options.type],
+    color: options.type === 'info' ? 'primary' : options.type,
   })
 }

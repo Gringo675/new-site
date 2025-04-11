@@ -1,17 +1,14 @@
 <script setup>
 //
+const loader = useLoader()
 </script>
 
 <template>
-  <UModal
-    :close="false"
-    :dismissible="false"
-    :fullscreen="false"
-    :ui="{ content: 'bg-none shadow-none ring-0 w-min' }"
-    title="loading..."
-    description="loading..."
-  >
-    <template #content>
+  <Transition name="transition-loader">
+    <div
+      v-show="loader.isActive"
+      class="fixed top-0 right-0 bottom-0 left-0 z-50 flex cursor-progress flex-col items-center justify-center bg-gray-300/60"
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="120"
@@ -31,6 +28,6 @@
           />
         </path>
       </svg>
-    </template>
-  </UModal>
+    </div>
+  </Transition>
 </template>

@@ -1,6 +1,6 @@
 <script setup>
 //
-const closeMenu = useSlideover().close
+// const closeMenu = useSlideover().close
 const user = useUser().value
 const company = useCompany()
 const menuState = [
@@ -32,12 +32,12 @@ const menuState = [
 ]
 
 const goTo = async link => {
-  closeMenu()
   await navigateTo(link)
+  hideMobileMenu()
 }
 const onLogin = () => {
   user.showLogin = true
-  closeMenu()
+  hideMobileMenu()
 }
 const onLogout = () => {
   logoutUser()
@@ -45,41 +45,19 @@ const onLogout = () => {
 }
 const onFeedback = () => {
   showFeedback()
-  closeMenu()
+  hideMobileMenu()
 }
 </script>
 
 <template>
   <USlideover
+    title="ТД ЧИ"
+    description="Ваш лучший поставщик измерительного инструмента"
     :ui="{
-      wrapper: 'z-30',
-      background: 'bg-gray-100',
-      width: 'max-w-80',
+      content: 'bg-gray-100 max-w-sm',
     }"
   >
-    <div class="p-2 overflow-auto">
-      <!-- header -->
-      <div class="flex justify-between items-center bg-gray-100">
-        <div class="font-accent text-2xl whitespace-nowrap">ТД ЧИ</div>
-        <button
-          class="opacity-80 hover:opacity-100 focus:outline-hidden focus-visible:outline-0"
-          @click="closeMenu"
-        >
-          <UIcon
-            name="i-heroicons-x-mark"
-            class="h-8 w-8 block"
-          />
-        </button>
-      </div>
-      <UDivider
-        :ui="{
-          border: {
-            base: 'border-gray-300',
-          },
-        }"
-        class="my-3"
-      />
-      <!-- menu -->
+    <template #body>
       <div class="flex flex-col gap-1">
         <UButton
           size="lg"
@@ -95,7 +73,7 @@ const onFeedback = () => {
           label="Быстрый заказ"
           icon="i-heroicons-pencil-square"
           @click="onFeedback"
-          class="mt-1"
+          class="mt-2"
         />
         <UButton
           v-for="item in menuState"
@@ -109,7 +87,7 @@ const onFeedback = () => {
 
         <div
           v-if="user.auth"
-          class="border border-gray-300 bg-gray-200 rounded-lg p-2"
+          class="rounded-lg border border-gray-300 bg-gray-200 p-2"
         >
           <div class="text-center italic">{{ user.name }}</div>
           <div class="flex justify-center gap-2 py-1">
@@ -143,12 +121,12 @@ const onFeedback = () => {
           @click="onLogin"
         />
         <!-- contacts -->
-        <div class="flex flex-col gap-2 ml-1 mt-4 text-sm">
+        <div class="mt-4 ml-1 flex flex-col gap-2 text-sm">
           <div>{{ company.address.post }}</div>
           <div class="flex gap-2">
             <a
               v-for="mail in company.mails"
-              @click="closeMenu"
+              @click="hideMobileMenu"
               :href="'mailto:' + mail"
             >
               {{ mail }}
@@ -157,7 +135,7 @@ const onFeedback = () => {
           <div class="flex gap-2">
             <a
               v-for="phone in company.phones"
-              @click="closeMenu"
+              @click="hideMobileMenu"
               :href="'tel:' + phone"
             >
               {{ phone }}
@@ -165,6 +143,6 @@ const onFeedback = () => {
           </div>
         </div>
       </div>
-    </div>
+    </template>
   </USlideover>
 </template>

@@ -8,19 +8,19 @@ const feedback = useFeedback()
 
 <template>
   <ClientOnly>
-    <UModal
+    <!-- <UModal
       v-model="user.showLogin"
       prevent-close
     >
       <LazyTheLogin />
-    </UModal>
+    </UModal> -->
     <UModal
       v-model="message.active"
       :prevent-close="message.preventClose"
     >
-      <LazyTheMessage />
+      <!-- <LazyTheMessage /> -->
     </UModal>
-    <UModal
+    <!-- <UModal
       v-model="feedback.isActive"
       prevent-close
       :ui="{
@@ -32,6 +32,6 @@ const feedback = useFeedback()
     <TheLoader />
     <UNotifications />
     <ImageViewerFull />
-    <USlideovers />
+    <USlideovers /> -->
   </ClientOnly>
 </template>

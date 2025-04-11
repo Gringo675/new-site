@@ -1,27 +1,16 @@
-const feedback = reactive({
-  isActive: false,
-  title: '',
-  description: '',
-})
+import { LazyTheFeedback } from '#components'
 
-export const useFeedback = () => {
-  return feedback
-}
+const feedback = useOverlay().create(LazyTheFeedback)
 
 export const showFeedback = (options = {}) => {
-  if (process.server) return
-  if (feedback.isActive) return
+  if (import.meta.server) return
 
-  feedback.title = options.title ?? 'Обратная связь'
-  feedback.description =
-    options.description ??
-    'Воспользуйтесь данной формой, чтобы прислать Ваши вопросы, предложения, или отправить заявку.'
-  feedback.isActive = true
+    options.title = options.title ?? 'Обратная связь'
+    options.description =
+      options.description ??
+      'Воспользуйтесь данной формой, чтобы прислать Ваши вопросы, предложения, или отправить заявку.'
+
+
+    feedback.open(options)
 }
 
-// export const closeFeedback = () => {
-//   if (process.server) return
-//   feedbackData.title = ''
-//   feedbackData.body = ''
-//   feedback.isActive = false
-// }

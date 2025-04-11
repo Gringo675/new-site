@@ -2,8 +2,8 @@
 //
 const message = useMessage()
 
-const okHandler = () => {
-  message.callback()
+const resolveHandler = answer => {
+  message.resolve(answer)
   message.active = false
 }
 
@@ -28,7 +28,7 @@ const test = () => {
           {{ message.title }}
         </h3>
         <UButton
-          v-if="!message.callback"
+          v-if="!message.resolve"
           color="gray"
           variant="ghost"
           icon="i-heroicons-x-mark-20-solid"
@@ -44,26 +44,20 @@ const test = () => {
 
     <template
       #footer
-      v-if="message.callback"
+      v-if="message.resolve"
     >
-      <div class="flex justify-end items-center gap-x-4">
-        <UButton
-          label="test"
-          variant="outline"
-          color="secondary"
-          @click="test"
-        />
+      <div class="flex items-center justify-end gap-x-4">
         <UButton
           label="Отмена"
           variant="outline"
           color="secondary"
-          @click="message.active = false"
+          @click="resolveHandler(false)"
         />
         <UButton
           label="Ok"
           color="secondary"
           class="px-8"
-          @click="okHandler"
+          @click="resolveHandler(true)"
         />
       </div>
     </template>

@@ -1,34 +1,17 @@
 /**
- * Теперь showMessage отдает промис! Для диалогового варианта ожидаем значения: Отмена - false, Ок - true.
+ * showMessage отдает промис. Для диалогового варианта ожидаем значения: Отмена - false, Ок - true.
  */
+import { LazyTheMessage } from '#components'
 
-const message = reactive({
-  active: false,
-  title: '',
-  description: '',
-  type: 'info', // info, error, success
-  resolve: null,
-  preventClose: false, // if close the message on click outside
-})
-
-export const useMessage = () => {
-  return message
-}
+const message = useOverlay().create(LazyTheMessage)
 
 export const showMessage = (options = {}) => {
-  if (process.server) return
-  if (message.active) return
+  if (import.meta.server) return
 
+  options.title = options.title ?? ''
+  options.description = options.description ?? ''
+  options.type = options.type ?? 'info' // info, error, success
   options.isDialog = options.isDialog ?? false
 
-  return new Promise(resolve => {
-    message.title = options.title ?? ''
-    message.description = options.description ?? ''
-    message.type = options.type ?? 'info' // info, error, success
-    message.resolve = options.isDialog ? resolve : null
-    message.preventClose = (options.isDialog || options.preventClose) ?? false
-    message.active = true
-
-    !options.isDialog && resolve()
-  })
+  return message.open(options)
 }

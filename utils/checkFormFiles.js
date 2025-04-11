@@ -1,19 +1,24 @@
 /**
  * Используется в валидаторе формы на страницах обратной связи и комментарии к заказу.
- * Проверяет, чтобы общий объем всех файлов на форме был не более 10 Мб и количество файлов не более 10 шт.
+ * Проверяет полученные файлы, отдает строку ошибки или пустую строку.
  * files - массив файлов из input file формы
- * errors - массив ошибок
  */
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB на 1 файл
+const MAX_TOTAL_SIZE = 20 * 1024 * 1024 // 20MB общий размер
+
 export default (files, errors) => {
-  if (files.length > 10) {
-    errors.push({ path: 'files', message: 'Допускается прикреплять не более 10 файлов!' })
-    return
-  }
-  let overallSize = 0
+  if (!files || (!files) instanceof DataTransfer || (!files) instanceof FileList) return ''
+  if (files.length > 10) return 'Допускается прикреплять не более 10 файлов!'
+
+  let totalSize = 0
+
   for (const file of files) {
-    overallSize += file.size
+    if (file.size > MAX_FILE_SIZE)
+      return `Файл "${file.name}" превышает максимальный размер ${MAX_FILE_SIZE / 1024 / 1024} MB!`
+    totalSize += file.size
   }
-  if (overallSize > 10485760)
-    errors.push({ path: 'files', message: 'Максимальный объем файлов должен быть не более 10 Мб!' })
+  if (totalSize > MAX_TOTAL_SIZE) return `Общий размер файлов превышает лимит ${MAX_TOTAL_SIZE / 1024 / 1024} MB!`
+
+  return ''
 }

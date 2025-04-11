@@ -1,12 +1,13 @@
 <script setup>
 const test = () => {
-  // localStorage.setItem('user-event', Math.random().toString())
-  const bbb = aaa * 2
-}
+  const toast = useToast()
 
-const localVar = 111
-const localFn = localWar => {
-  console.log(`localWar: ${localWar}`)
+  toast.add({
+    title: 'Uh oh! Something went wrong.',
+    description: 'There was a problem with your request.',
+    icon: 'i-lucide-wifi',
+    color: 'secondary',
+  })
 }
 
 const createMess = () => {
@@ -15,7 +16,6 @@ const createMess = () => {
     description: 'some description',
     type: 'success',
     // preventClose: false,
-    callback: () => localFn(localVar),
   })
 }
 
@@ -58,7 +58,7 @@ const createFeedback = () => {
         <UButton
           label="Show notice"
           color="secondary"
-          @click="showNotice({ title: 'some title', description: 'some description', type: 'success' })"
+          @click="showNotice({ title: 'some title', description: 'some description', type: 'info' })"
         />
         <UButton
           label="Show feedback"
@@ -108,6 +108,8 @@ const createFeedback = () => {
         <UButton
           label="TEST"
           @click="test"
+          color="tertiary"
+          disabled
         />
       </div>
     </div>

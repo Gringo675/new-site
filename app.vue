@@ -55,15 +55,14 @@ const setErrorToLog = async e => {
 </script>
 
 <template>
-  <!-- <UApp>
-    <NuxtPage />
-  </UApp> -->
   <UApp>
     <div class="flex min-h-screen flex-col">
-      <NuxtLayout>
+      <TheTest />
+      <!-- <TheTest2 /> -->
+      <!-- <NuxtLayout>
         <NuxtPage />
-        <!-- <HelperClientComponents /> -->
-      </NuxtLayout>
+        <HelperClientComponents />
+      </NuxtLayout> -->
     </div>
   </UApp>
 </template>
