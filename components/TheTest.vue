@@ -114,10 +114,10 @@ const sshowMessage = async () => {
       @click="showFeedback"
     />
     <UButton
-      label="Test"
+      label="Show login"
       color="neutral"
       variant="subtle"
-      @click="onTest"
+      @click="showLogin"
     />
   </div>
 </template>

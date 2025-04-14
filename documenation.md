@@ -5,6 +5,10 @@
 
 # ToDo:
 
+feedback:
+
+- mail validation
+
 - компонент доставки
 - image viewer
 - catalogProductCard refactor

@@ -14,7 +14,6 @@ const formState = reactive({
 })
 const fieldErrors = {
   message: '',
-  message2: '',
   files: '',
 }
 const validateField = (field, value) => {
@@ -48,11 +47,26 @@ const onSubmit = async () => {
   const isUserSaved = await userProfile.value.saveUserData()
   if (!isUserSaved) return
 
-  const user = useUser()
+  const user = useUser().value
+
   const formData = new FormData()
-  formData.append('user', JSON.stringify(user))
+  formData.append(
+    'user',
+    JSON.stringify({
+      name: user.name,
+      mail: user.mail,
+      org: user.org,
+      inn: user.inn,
+      address: user.address,
+      phone: user.phone,
+    }),
+  )
   formData.append('message', formState.message)
-  formData.append('files', formState.files)
+  if (formState.files) {
+    Array.from(formState.files).forEach(file => {
+      formData.append('files', file)
+    })
+  }
 
   const success = await myFetch('/api/user/sendFeedback', {
     method: 'post',
@@ -79,11 +93,15 @@ function onError(event) {
     :title="title"
     :description="description"
     :dismissible="false"
+    :ui="{
+      content: 'max-w-2xl',
+      header: 'min-h-auto',
+    }"
   >
     <template #body>
-      <div class="grid grid-cols-2 gap-x-6">
+      <div class="grid gap-x-6 gap-y-4 md:grid-cols-2">
         <!-- first col -->
-        <div class="col-span-2 md:col-span-1">
+        <div class="">
           <UForm
             :state="formState"
             :validate="formValidate"
@@ -102,7 +120,7 @@ function onError(event) {
                 placeholder="Ваше сообщение..."
                 resize
                 :rows="9"
-                class=""
+                class="w-full"
               />
             </UFormField>
             <UFormField
@@ -118,24 +136,25 @@ function onError(event) {
           </UForm>
         </div>
         <!-- second col -->
-        <div class="col-span-2 md:col-span-1">
+        <div class="">
           <TheUserProfile ref="userProfileRef" />
         </div>
       </div>
     </template>
     <template #footer>
-      <div class="flex items-center justify-end gap-x-4">
+      <div class="flex w-full items-center justify-end gap-x-4">
         <UButton
           label="Отмена"
           variant="outline"
-          color="secondary"
+          color="neutral"
           @click="emit('close')"
         />
         <UButton
           type="submit"
           form="fb_form"
           label="Ok"
-          color="secondary"
+          variant="subtle"
+          color="neutral"
           class="px-8"
         />
       </div>

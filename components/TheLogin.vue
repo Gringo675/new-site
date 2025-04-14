@@ -3,59 +3,67 @@
 const user = useUser().value
 const form = ref()
 
-const state = reactive({
-  mail: {
-    val: '',
-    valid: computed(() => validateMail(state.mail.val)),
-  },
-  code: {
-    val: '',
-    invalid: false,
-  },
-  verifyScreen: false,
+const showVerifyScreen = ref(false)
+const formState = reactive({
+  mail: '',
+  code: [],
 })
+const fieldErrors = {
+  mail: '',
+  code: '',
+}
 
-const validate = state => {
-  const errors = []
-  if (state.mail.val.length && !state.mail.valid)
-    errors.push({ path: 'mail', message: 'Введите корректный почтовый адрес!' })
-  if (state.code.invalid) errors.push({ path: 'code', message: 'Неверный код!' })
-  return errors
+watch(
+  () => formState.mail,
+  val => {
+    fieldErrors.mail = !validateMail(val) ? 'Введите корректный почтовый адрес!' : ''
+  },
+  { immediate: true },
+)
+const validate = () => {
+  return Object.entries(fieldErrors)
+    .filter(([_, message]) => message)
+    .map(([name, message]) => ({ name, message }))
 }
 
 const sendCode = async () => {
-  if (!state.mail.valid) {
-    showNotice({ title: 'Неправильный адрес!', description: 'Введите корректный адрес.', type: 'error' })
+  showVerifyScreen.value = true
+  return
+  if (fieldErrors.mail) {
+    showNotice({ title: 'Неправильный адрес!', description: fieldErrors.mail, type: 'error' })
     return
   }
 
   const isCodeSend = await myFetch('/api/auth/login/createCode', {
     method: 'post',
-    payload: { mail: state.mail.val },
+    payload: { mail: formState.mail },
   })
 
   if (isCodeSend) {
-    state.verifyScreen = true
-    // getUserTimer.run()
+    showVerifyScreen.value = true
   }
 }
 
-const onMaska = event => {
-  if (event.detail.completed) verifyCode(event.detail.masked)
-  else state.code.invalid = false
+const onCodeChange = event => {
+  console.log(`event: ${JSON.stringify(event.complete, null, 2)}`)
+  // if (event.detail.completed) verifyCode(event.detail.masked)
+  // else fieldErrors.code = ''
 }
 
-const verifyCode = async code => {
+const verifyCode = async () => {
+  console.log('code', formState.code.join(''))
+  fieldErrors.code = 'Неверный код!'
+  return
+
   const verified = await myFetch('/api/auth/login/verifyCode', {
     method: 'post',
     payload: {
-      mail: state.mail.val,
-      code,
+      mail: formState.mail,
+      code: formState.code.join(''),
     },
   })
 
   if (verified) {
-    // getUserTimer.stop()
     await getUser()
     user.showLogin = false
     showNotice({
@@ -63,17 +71,18 @@ const verifyCode = async code => {
       description: user.name.length ? `${user.name}, с возвращением!` : '',
       type: 'success',
     })
+    closeLogin()
   } else {
-    state.code.invalid = true
+    fieldErrors.code = 'Неверный код!'
   }
 }
 
 const backOnMailScreen = () => {
-  state.verifyScreen = false
-  state.code.val = ''
-  state.code.invalid = false
-  form.value.setErrors([]) // очищаем ошибки
-  // getUserTimer.stop()
+  showVerifyScreen.value = false
+  formState.code = []
+  fieldErrors.mail = ''
+  fieldErrors.code = ''
+  form.value.clear() // очищаем ошибки
 }
 
 const runOAuth = provider => {
@@ -86,135 +95,116 @@ const runOAuth = provider => {
       clearInterval(timer)
       await getUser({ hidden: true })
       hideLoader()
-      if (user.auth) user.showLogin = false
+      if (user.auth) closeLogin()
     }
   }, 1000)
 }
 </script>
 
 <template>
-  <UCard
+  <UModal
+    title="Вход/регистрация"
+    description=""
+    :dismissible="false"
     :ui="{
-      header: {
-        background: 'bg-secondary-200',
-      },
+      content: 'max-w-xl',
+      header: 'min-h-auto',
     }"
   >
-    <template #header>
-      <div class="flex items-center justify-between gap-x-2">
-        <h3 class="font-semibold">Вход/регистрация</h3>
-        <UButton
-          color="gray"
-          variant="ghost"
-          icon="i-heroicons-x-mark-20-solid"
-          class="-my-1"
-          @click="user.showLogin = false"
-        />
-      </div>
-    </template>
-    <UForm
-      ref="form"
-      :validate="validate"
-      :state="state"
-      class="space-y-4 mb-6"
-    >
-      <template v-if="!state.verifyScreen">
-        <UFormGroup
-          name="mail"
-          help="Указанный адрес не будет использоваться для рассылок или передаваться третьим лицам."
-        >
-          <template #label>
-            <div class="flex space-x-2">
-              <span>Ваша почта</span>
-              <UPopover
-                mode="hover"
-                :popper="{ placement: 'top' }"
-              >
-                <UIcon
-                  name="i-heroicons-question-mark-circle"
-                  class="bg-emerald-400 mx-1"
-                />
-                <template #panel>
-                  <div class="p-4 max-w-sm">
-                    Введите почтовый адрес, привязанный к вашему аккаунту. Если у вас еще нет действующего аккаунта,
-                    введите почтовый адрес, на который вы хотите его зарегистрировать. На указанный ящик придет письмо с
-                    кодом авторизации, который нужно будет указать на следующем шаге.
-                  </div>
-                </template>
-              </UPopover>
+    <template #body>
+      <UForm
+        ref="form"
+        :validate="validate"
+        :state="formState"
+        class="mb-4 space-y-4"
+      >
+        <template v-if="!showVerifyScreen">
+          <div class="mb-4 text-sm text-neutral-500">
+            Введите почтовый адрес, привязанный к аккаунту. Если у Вас еще нет действующего аккаунта, введите почтовый
+            адрес, на который он будет зарегистрирован.
+          </div>
+          <div class="flex flex-wrap items-start justify-evenly gap-x-4">
+            <UFormField
+              name="mail"
+              label="Ваша почта"
+              class=""
+            >
+              <UInput
+                v-model="formState.mail"
+                autofocus
+                placeholder="example@mail.ru"
+                class="w-3xs"
+              />
+            </UFormField>
+            <div class="flex grow justify-center pt-6">
+              <UButton
+                label="Получить код авторизации"
+                variant="subtle"
+                color="neutral"
+                @click="sendCode"
+              />
             </div>
-          </template>
-          <UInput
-            v-model="state.mail.val"
-            autofocus
-            placeholder="example@mail.ru"
-          />
-        </UFormGroup>
-        <UButton
-          label="Получить код авторизации"
-          variant="outline"
-          color="secondary"
-          :disabled="!state.mail.valid"
-          @click="sendCode"
-        />
-      </template>
-      <template v-else>
-        <div>
-          На почту <u>{{ state.mail.val }}</u> был отправлен код авторизации. Введите его в данное поле.
-        </div>
-        <div class="flex gap-x-4 justify-between items-start">
-          <UFormGroup
-            name="code"
-            eager-validation
-          >
-            <UInput
-              v-model="state.code.val"
-              autofocus
-              v-maska
-              data-maska="#####"
-              @maska="onMaska"
-              placeholder="00000"
-              input-class="tracking-widest"
-              class="w-20"
+          </div>
+          <div class="text-sm">Данный адрес не будет использоваться для рассылок или передаваться третьим лицам.</div>
+          <USeparator label="Или" />
+          <div class="mx-auto w-3xs space-y-4">
+            <UButton
+              label="Войти через google"
+              icon="i-simple-icons-github"
+              block
+              @click="runOAuth('google')"
             />
-          </UFormGroup>
-          <UButton
-            label="Назад"
-            variant="outline"
-            color="secondary"
-            @click="backOnMailScreen"
-          />
-        </div>
-      </template>
-    </UForm>
-    <div class="space-y-4">
-      <UDivider
-        label="ИЛИ"
-        color="gray"
-      />
-      <UButton
-        label="Войти через google"
-        icon="i-simple-icons-github"
-        block
-        @click="runOAuth('google')"
-      />
-      <UButton
-        label="Войти через vk"
-        icon="i-simple-icons-github"
-        block
-        @click="runOAuth('vk')"
-      />
-      <UButton
-        label="Войти через mail.ru"
-        icon="i-simple-icons-github"
-        block
-        @click="runOAuth('mailru')"
-      />
-      <UButton
-        label="Login with GitHub"
-        icon="i-simple-icons-github"
-        block
-      />
-    </div>
-  </UCard>
+            <UButton
+              label="Войти через vk"
+              icon="i-simple-icons-github"
+              block
+              @click="runOAuth('vk')"
+            />
+            <UButton
+              label="Войти через mail.ru"
+              icon="i-simple-icons-github"
+              block
+              @click="runOAuth('mailru')"
+            />
+            <UButton
+              label="Login with GitHub"
+              icon="i-simple-icons-github"
+              block
+            />
+          </div>
+        </template>
+        <template v-else>
+          <div>
+            На почту <u>{{ formState.mail }}</u> был отправлен код авторизации. Введите его в данное поле.
+          </div>
+          <div class="flex items-start justify-between gap-x-4">
+            <UFormField name="code">
+              <UPinInput
+                v-model="formState.code"
+                type="number"
+                :length="5"
+                @change="onCodeChange"
+              />
+              <!-- <UInput
+                v-model="formState.code"
+                autofocus
+                v-maska
+                data-maska="#####"
+                @maska="onMaska"
+                placeholder="00000"
+                input-class="tracking-widest"
+                class="w-20"
+              /> -->
+            </UFormField>
+            <UButton
+              label="Назад"
+              variant="outline"
+              color="secondary"
+              @click="backOnMailScreen"
+            />
+          </div>
+        </template>
+      </UForm>
+    </template>
+  </UModal>
 </template>

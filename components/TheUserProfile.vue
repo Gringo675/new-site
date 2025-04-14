@@ -87,7 +87,6 @@ watch(
 )
 
 const validate = () => {
-  console.log(`from formValidate`)
   return Object.entries(fieldErrors)
     .filter(([_, message]) => message)
     .map(([name, message]) => ({ name, message }))
@@ -119,7 +118,7 @@ async function saveUserData() {
 
     // перезаписываем все данные в user
     for (const key in newUser) {
-      user[key] = newUser[key].val
+      user[key] = newUser[key]
     }
 
     return true
@@ -153,14 +152,20 @@ function onError(event) {
       required
       autofocus
     >
-      <UInput v-model="newUser.name" />
+      <UInput
+        v-model="newUser.name"
+        class="w-full"
+      />
     </UFormField>
     <UFormField
       label="Почта"
       name="mail"
       required
     >
-      <UInput v-model="newUser.mail" />
+      <UInput
+        v-model="newUser.mail"
+        class="w-full"
+      />
       <MailVerifier
         v-if="shouldVerifyNewMail"
         :mail="newUser.mail"
@@ -171,7 +176,10 @@ function onError(event) {
       label="Организация"
       name="org"
     >
-      <UInput v-model="newUser.org" />
+      <UInput
+        v-model="newUser.org"
+        class="w-full"
+      />
     </UFormField>
     <UFormField
       label="ИНН"
@@ -181,13 +189,17 @@ function onError(event) {
         v-maska
         data-maska="############"
         v-model="newUser.inn"
+        class="w-full"
       />
     </UFormField>
     <UFormField
       label="Адрес"
       name="address"
     >
-      <UInput v-model="newUser.address" />
+      <UInput
+        v-model="newUser.address"
+        class="w-full"
+      />
     </UFormField>
     <UFormField
       label="Телефон"
@@ -199,6 +211,7 @@ function onError(event) {
         v-model="newUser.phone"
         type="tel"
         placeholder="000 000-00-00"
+        class="w-full"
       />
     </UFormField>
   </UForm>
