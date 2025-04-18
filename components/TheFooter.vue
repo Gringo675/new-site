@@ -1,115 +1,79 @@
 <script setup>
-const test = () => {
-  const toast = useToast()
-
-  toast.add({
-    title: 'Uh oh! Something went wrong.',
-    description: 'There was a problem with your request.',
-    icon: 'i-lucide-wifi',
-    color: 'secondary',
-  })
+//
+const openLoader = () => {
+  showLoader()
+  setTimeout(() => {
+    showLoader()
+  }, 2000)
+  setTimeout(() => {
+    hideLoader()
+  }, 5000)
+  setTimeout(() => {
+    hideLoader()
+  }, 7000)
 }
 
-const createMess = () => {
-  showMessage({
-    title: 'Some very big title with long long words about everything',
-    description: 'some description',
-    type: 'success',
-    // preventClose: false,
+const sshowMessage = async () => {
+  const proceed = await showMessage({
+    title: 'Подтвердите удаление',
+    description: '<p>Категория "Без имени" будет удалена.</p><p>Продолжить?</p>',
+    // isDialog: true,
   })
-}
 
-const createFeedback = () => {
-  showFeedback({
-    title: 'Обратная связь',
-    description: 'Воспользуйтесь данной формой, чтобы прислать Ваши вопросы, предложения, или отправить заявку.',
-  })
+  console.log(`proceed: ${JSON.stringify(proceed, null, 2)}`)
 }
-// const url = useRequestURL()
-// console.log(`url: ${JSON.stringify(url, null, 2)}`)
-// console.log(`pathname: ${JSON.stringify(url.pathname, null, 2)}`)
-// const route = useRoute()
-// console.log(`route: ${JSON.stringify(route.fullPath, null, 2)}`)
 </script>
 
 <template>
-  <div class="mx-auto max-w-(--breakpoint-xl)">
-    <!-- <ClientOnly>
+  <div class="bg-stone-900 p-2">
+    <div class="mx-auto max-w-7xl">
+      <!-- <ClientOnly>
       <RecentlyViewed />
     </ClientOnly> -->
-
-    <div class="bg-secondary-200">
-      <div class="flex flex-wrap items-center gap-x-2 max-md:hidden">
+      <div class="flex flex-wrap gap-4">
         <UButton
-          label="Admin"
-          to="/admin"
-          color="secondary"
-        />
-        <UButton
-          label="Create mess"
-          @click="createMess"
-          color="secondary"
-        />
-        <UButton
-          label="Show loader"
-          @click="showLoader"
-          color="secondary"
-        />
-        <UButton
-          label="Show notice"
-          color="secondary"
-          @click="showNotice({ title: 'some title', description: 'some description', type: 'info' })"
-        />
-        <UButton
-          label="Show feedback"
-          color="secondary"
-          @click="createFeedback"
-        />
-        <!--      <button @click="multiply" class="button">Multuply</button>-->
-      </div>
-      <div class="flex flex-wrap items-center gap-x-2 max-md:hidden">
-        <UButton
-          label="ШТАНГЕНЦИРКУЛИ"
-          to="/catalog/shtangentsirkuli"
-        />
-        <UButton
-          label="ШЦ с глубиномером"
-          to="/catalog/shtangentsirkuli-shts-i-s-glubinomerom"
-        />
-        <UButton
-          label="Orders"
-          to="/user/orders"
-        />
-        <UButton
-          label="test_fetch"
-          to="/test_fetch"
-        />
-        <UButton
-          label="test1"
+          label="To test1"
+          color="neutral"
+          variant="subtle"
           to="/test1"
         />
         <UButton
-          label="test2"
-          to="/test2"
-        />
-
-        <UButton
-          label="test3"
-          to="/test3"
+          label="Open message"
+          color="neutral"
+          variant="subtle"
+          @click="sshowMessage"
         />
         <UButton
-          label="test4"
-          to="/test4"
+          label="Open loader"
+          color="neutral"
+          variant="subtle"
+          @click="openLoader"
         />
         <UButton
-          label="test5"
-          to="/test5"
+          label="Open mobile menu"
+          color="neutral"
+          variant="subtle"
+          @click="showMobileMenu"
+          class="z-20"
         />
         <UButton
-          label="TEST"
-          @click="test"
-          color="tertiary"
-          disabled
+          label="Open cats menu"
+          color="neutral"
+          variant="subtle"
+          @click="showCatsMenu"
+          class="z-20"
+        />
+        <UButton
+          label="Open feedback"
+          color="neutral"
+          variant="subtle"
+          @click="showFeedback"
+        />
+        <UButton
+          label="Show login"
+          color="neutral"
+          variant="subtle"
+          @click="showLogin"
         />
       </div>
     </div>

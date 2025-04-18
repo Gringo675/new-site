@@ -131,14 +131,5 @@ function addFilterToURL() {
         :activeProductsIndx
       />
     </HelperAsideGrid>
-    <!-- <HelperInfoBlock
-      :description="catData.description"
-      :characteristics="catData.characteristics"
-      :documentation="catData.docs"
-    /> -->
-    <!-- <HelperDocsBlock
-      v-if="catData.docs"
-      :docs="catData.docs"
-    /> -->
   </div>
 </template>

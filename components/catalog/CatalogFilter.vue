@@ -40,14 +40,17 @@ const toggleShowFilterOnMobile = () => {
           :index="index"
           @filterChanged="emit('filterChanged')"
         />
-        <UButton
-          label="Сбросить"
-          icon="i-heroicons-arrow-path-rounded-square"
-          :disabled="resetButtonDisabled"
-          block
-          @click="emit('resetFilter')"
-          class="mx-auto w-fit"
-        />
+        <div class="flex justify-center">
+          <UButton
+            label="Сбросить"
+            icon="i-heroicons-arrow-path-rounded-square"
+            :disabled="resetButtonDisabled"
+            block
+            @click="emit('resetFilter')"
+            class="mx-auto max-w-60"
+          />
+        </div>
+
         <!-- ask question -->
         <div
           class="@container my-4 grid grid-cols-[min-content_auto_auto] items-center gap-2 rounded-xl border border-rose-200 bg-rose-100 p-2"

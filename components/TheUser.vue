@@ -43,10 +43,7 @@ const handleLogout = async () => {
       icon="i-heroicons-user"
       size="md"
       truncate
-      :ui="{
-        rounded: 'rounded-full',
-        // truncate: '111 text-left break-keep line-clamp-2',
-      }"
+      class="rounded-full"
       @click="handleLogin"
       label="Войти"
     />
@@ -56,7 +53,7 @@ const handleLogout = async () => {
       icon="i-heroicons-user"
       size="md"
       truncate
-      :ui="{ rounded: 'rounded-full' }"
+      class="rounded-full"
       @click="handleShowMenuClick"
       :label="user.name"
     />

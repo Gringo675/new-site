@@ -2,18 +2,15 @@
 
 - подумать над алгоритмом поиска: ич-1 0-1 дает нерелевантный результат в быстром поиске
 - страница поиска: скролл в начало при получении результатов
+- OAuth providers don't work
 
 # ToDo:
 
-feedback:
-
-- mail validation
-
+- TheError
 - компонент доставки
 - image viewer
 - catalogProductCard refactor
 - cartButtons - use lazy hydration?
-- переезд на NuxtUI v3
 - pdf viewer: сделать предзагрузку файла, и только потом открывать inframe
 
 SVG animation:

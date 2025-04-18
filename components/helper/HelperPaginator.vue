@@ -65,33 +65,34 @@ const handlePaginator = val => {
     })
   }
 }
-const hideShowMoreButton = computed(() => paginator.value[paginator.value.length - 1]?.isActive ?? true)
+const showMoreButton = computed(() => {
+  const lastPage = paginator.value[paginator.value.length - 1]
+  return lastPage && !lastPage.isActive
+})
 </script>
 
 <template>
   <div
     v-show="pageProps.totalPages > 1"
-    class="my-2 flex flex-col items-center"
+    class="my-4 flex flex-col items-center"
   >
-    <div
-      class="productsWrapperTransition m-2 cursor-pointer rounded-xs bg-sky-100 p-2 hover:bg-sky-200 hover:shadow-xs"
-      :class="{ 'scale-y-0 opacity-0': hideShowMoreButton }"
+    <UButton
+      v-if="showMoreButton"
+      label="Показать еще"
+      variant="outline"
+      color="secondary"
+      class=""
       @click="handlePaginator('more')"
-    >
-      Показать еще
-    </div>
-    <div class="flex items-end justify-center space-x-2">
-      <UTooltip
+    />
+    <div class="mt-4 flex items-end justify-center gap-2">
+      <UButton
         v-if="paginator.length > 1 && !paginator[0].isActive"
-        text="Предыдущая"
-      >
-        <UButton
-          icon="i-heroicons-arrow-small-left-20-solid"
-          color="secondary"
-          :ui="{ rounded: 'rounded-full' }"
-          @click="handlePaginator('prev')"
-        />
-      </UTooltip>
+        icon="i-heroicons-arrow-small-left-20-solid"
+        color="secondary"
+        variant="outline"
+        class="rounded-full"
+        @click="handlePaginator('prev')"
+      />
       <template v-for="link in paginator">
         <div v-if="link.isDecor">…</div>
         <UButton
@@ -103,17 +104,14 @@ const hideShowMoreButton = computed(() => paginator.value[paginator.value.length
           @click="handlePaginator(link.val)"
         />
       </template>
-      <UTooltip
+      <UButton
         v-if="paginator.length > 1 && !paginator[paginator.length - 1].isActive"
-        text="Следующая"
-      >
-        <UButton
-          icon="i-heroicons-arrow-small-right-20-solid"
-          color="secondary"
-          :ui="{ rounded: 'rounded-full' }"
-          @click="handlePaginator('next')"
-        />
-      </UTooltip>
+        icon="i-heroicons-arrow-small-right-20-solid"
+        color="secondary"
+        variant="outline"
+        class="rounded-full"
+        @click="handlePaginator('next')"
+      />
     </div>
   </div>
 </template>

@@ -1,8 +1,6 @@
-export const useViewerImgLoad = (images, carousel) => {
-  const viewerData = getImageViewerData()
-
+export const useViewerImgLoad = (images, activeImgIndex, carousel) => {
   const state = {
-    activeImg: viewerData.activeImgIndex,
+    activeImg: activeImgIndex,
     queue: createQueue(),
     setActiveImg(value) {
       if (value === this.activeImg) return
@@ -27,12 +25,12 @@ export const useViewerImgLoad = (images, carousel) => {
     const next = []
     const prev = []
     for (let i = 0; i < images.length; i++) {
-      if (i > viewerData.activeImgIndex) next.push(i)
-      else if (i !== viewerData.activeImgIndex) prev.push(i)
+      if (i > activeImgIndex) next.push(i)
+      else if (i !== activeImgIndex) prev.push(i)
     }
     prev.reverse()
     const maxLength = Math.max(next.length, prev.length)
-    queue.push(viewerData.activeImgIndex)
+    queue.push(activeImgIndex)
     for (let i = 0; i < maxLength; i++) {
       if (i < next.length) {
         queue.push(next[i])

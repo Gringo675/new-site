@@ -1,39 +1,61 @@
 <script setup>
 //
 
-const viewer = useImageViewer()
-const viewerData = getImageViewerData()
-const closeViewer = () => {
-  // console.log(`close viewer...`)
-  viewer.isActive = false
-}
+// const viewer = useImageViewer()
+// const props = getImageViewerData()
+// const closeViewer = () => {
+//   // console.log(`close viewer...`)
+//   viewer.isActive = false
+// }
 
-const onTransitionBeforeEnter = viewer => {
-  if (!viewerData.causerId) return
-  const causer = document.getElementById(viewerData.causerId)
-  if (!causer) return
-  const causerCoords = causer.getBoundingClientRect()
+const props = defineProps({
+  images: Array,
+  activeImgIndex: Number,
+  causerId: String,
+})
 
-  viewer.style.setProperty(
-    '--viewer-transition-x',
-    `${Math.round(causerCoords.x + causerCoords.width / 2 - window.innerWidth / 2)}px`
-  )
-  viewer.style.setProperty(
-    '--viewer-transition-y',
-    `${Math.round(causerCoords.y + causerCoords.height / 2 - window.innerHeight / 2)}px`
-  )
-  viewer.style.setProperty('--viewer-scale', `${Math.round((causerCoords.width * 100) / window.innerWidth) / 100}`)
-}
+// const onTransitionBeforeEnter = viewer => {
+//   if (!props.causerId) return
+//   const causer = document.getElementById(props.causerId)
+//   if (!causer) return
+//   const causerCoords = causer.getBoundingClientRect()
+
+//   viewer.style.setProperty(
+//     '--viewer-transition-x',
+//     `${Math.round(causerCoords.x + causerCoords.width / 2 - window.innerWidth / 2)}px`,
+//   )
+//   viewer.style.setProperty(
+//     '--viewer-transition-y',
+//     `${Math.round(causerCoords.y + causerCoords.height / 2 - window.innerHeight / 2)}px`,
+//   )
+//   viewer.style.setProperty('--viewer-scale', `${Math.round((causerCoords.width * 100) / window.innerWidth) / 100}`)
+// }
 </script>
 
 <template>
-  <transition
+  <UModal
+    title="viewer"
+    description="viewer"
+    fullscreen
+    :ui="{
+      content:
+        'bg-amber-300/50 data-[state=open]:animate-[scale-in_2000ms_ease-out] data-[state=closed]:animate-[scale-out_2000ms_ease-in]',
+    }"
+  >
+    <template #content>
+      <image-viewer-full-inner
+        :images="props.images"
+        :activeImgIndex="props.activeImgIndex"
+      />
+    </template>
+  </UModal>
+  <!-- <transition
     name="viewer"
     @before-enter="onTransitionBeforeEnter"
   >
     <div
       v-if="viewer.isActive"
-      class="fixed left-0 top-0 right-0 bottom-0 bg-gray-900/90 z-30 overflow-hidden select-none"
+      class="fixed top-0 right-0 bottom-0 left-0 z-30 overflow-hidden bg-gray-900/90 select-none"
       @click="closeViewer"
       v-focus
       tabindex="-1"
@@ -50,7 +72,7 @@ const onTransitionBeforeEnter = viewer => {
 
       <image-viewer-full-inner />
     </div>
-  </transition>
+  </transition> -->
 
   <!-- <UModal
     v-model="viewer.isActive"

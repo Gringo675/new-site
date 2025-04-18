@@ -74,10 +74,9 @@ const priceMultiplier = ref(1)
     <div class="relative flex w-fit">
       <div class="text-sm">Код: {{ product.id }}</div>
       <UButton
-        :padded="false"
-        :color="copied ? 'green' : 'gray'"
+        :color="copied ? 'success' : 'neutral'"
         variant="link"
-        size="2xs"
+        size="xs"
         class="px-1"
         :icon="copied ? 'i-lucide-copy-check' : 'i-lucide-copy'"
         @click="copyId"
@@ -92,6 +91,7 @@ const priceMultiplier = ref(1)
     <div class="mb-6 grid grid-cols-3 grid-rows-[auto_1fr] gap-4 max-lg:grid-cols-2 max-sm:grid-cols-1">
       <div class="bl1 sm:row-span-2">
         <imageViewerInline :images="product.images" />
+        <!-- <TheTest2 :images="product.images" /> -->
       </div>
       <div class="bl2 flex items-start gap-2 p-2">
         <img
@@ -184,13 +184,11 @@ const priceMultiplier = ref(1)
     </div>
     <UAlert
       icon="i-heroicons-exclamation-circle"
-      color="primary"
+      color="tertiary"
       variant="solid"
       class="my-5"
       title="Уважаемые покупатели, представленный ассортимент и стоимость продукции не являются окончательными."
-      description="Уточняйте
-      наличие и условия предоставления скидок у наших специалистов. Сотрудничая с нами, Вы получаете гарантию качества и
-      точность исполнения заказа!"
+      description="Уточняйте наличие и условия предоставления скидок у наших специалистов. Сотрудничая с нами, Вы получаете гарантию качества и точность исполнения заказа!"
     />
   </div>
 </template>

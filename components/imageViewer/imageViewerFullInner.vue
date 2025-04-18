@@ -2,12 +2,17 @@
 /**
  * received [{full: 'path_to_full_image', thumb: 'path_to_thumb_image'}, ...] or ['path_to_image', ...]
  */
-const viewerData = getImageViewerData()
+// const props = getImageViewerData()
+
+const props = defineProps({
+  images: Array,
+  activeImgIndex: Number,
+})
 
 const carousel = ref(null)
 
 const images = reactive(
-  viewerData.images.map(img => {
+  props.images.map(img => {
     return {
       full: img.full || img,
       thumb: img.thumb || img,
@@ -18,34 +23,24 @@ const images = reactive(
 )
 
 useViewerKeyPress(carousel)
-useViewerImgLoad(images, carousel)
+useViewerImgLoad(images, props.activeImgIndex, carousel)
 
 onMounted(() => {
   const imageContainer = carousel.value.$el.firstElementChild
   useViewerEdgeImg(imageContainer, carousel)
   useViewerImgZoom(imageContainer)
   useViewerPreventClosingAndAnimateScroll(imageContainer, carousel)
-  useViewerInitialScroll(imageContainer)
+  useViewerInitialScroll(props, imageContainer)
 })
 </script>
 
 <template>
-  <UCarousel
+  <ImageViewerCarousel
     ref="carousel"
     :items="images"
-    :ui="{
-      wrapper: 'c_wrapper w-screen h-screen flex flex-col',
-      container: 'c_container relative items-center flex-1  snap-none',
-      item: 'c_item snap-always basis-full justify-center h-full items-center p-2',
-      indicators: {
-        wrapper: 'i_wrapper relative max-h-[20vh] bottom-0 p-2 nrw:hidden bg-green-200',
-      },
-      arrows: {
-        wrapper: '',
-      },
-    }"
     :indicators="images.length > 1"
     :arrows="images.length > 1"
+    fullScreen
   >
     <template #default="{ item }">
       <div
@@ -68,7 +63,7 @@ onMounted(() => {
       <img
         @click.stop="onClick(page)"
         :src="images[page - 1].thumb"
-        class="max-h-full min-w-5 max-w-[100px] shrink object-contain"
+        class="max-h-full max-w-[100px] min-w-5 shrink object-contain"
         :class="{
           'cursor-pointer border-2 border-red-700': !active,
           'cursor-default border-2 border-green-700': active,
@@ -82,7 +77,7 @@ onMounted(() => {
         type="button"
         :disabled="disabled"
         @click.stop="onClick"
-        class="absolute left-3 top-1/2 inline-flex shrink-0 -translate-y-1/2 items-center rounded-full bg-slate-100 p-2 text-slate-600 opacity-60 hover:opacity-90 focus:outline-hidden focus-visible:outline-0 disabled:bg-slate-400 disabled:opacity-20"
+        class="absolute top-1/2 left-3 inline-flex shrink-0 -translate-y-1/2 items-center rounded-full bg-slate-100 p-2 text-slate-600 opacity-60 hover:opacity-90 focus:outline-hidden focus-visible:outline-0 disabled:bg-slate-400 disabled:opacity-20"
       >
         <UIcon
           name="i-heroicons-chevron-left"
@@ -96,7 +91,7 @@ onMounted(() => {
         type="button"
         :disabled="disabled"
         @click.stop="onClick"
-        class="absolute right-3 top-1/2 inline-flex shrink-0 -translate-y-1/2 items-center rounded-full bg-slate-100 p-2 text-slate-600 opacity-60 hover:opacity-90 focus:outline-hidden focus-visible:outline-0 disabled:bg-slate-400 disabled:opacity-20"
+        class="absolute top-1/2 right-3 inline-flex shrink-0 -translate-y-1/2 items-center rounded-full bg-slate-100 p-2 text-slate-600 opacity-60 hover:opacity-90 focus:outline-hidden focus-visible:outline-0 disabled:bg-slate-400 disabled:opacity-20"
       >
         <UIcon
           name="i-heroicons-chevron-right"
@@ -104,5 +99,5 @@ onMounted(() => {
         />
       </button>
     </template>
-  </UCarousel>
+  </ImageViewerCarousel>
 </template>

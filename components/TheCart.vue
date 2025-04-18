@@ -21,8 +21,7 @@ const cartQuantity = computed(() => cart.reduce((acc, item) => acc + item.quanti
   <UButton
     icon="i-heroicons-shopping-cart"
     size="md"
-    :ui="{ rounded: 'rounded-full' }"
-    class=""
+    class="rounded-full"
     to="/user/cart"
   >
     {{ cartQuantity }}

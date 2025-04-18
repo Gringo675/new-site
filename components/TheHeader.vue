@@ -1,14 +1,5 @@
 <script setup>
 //
-import { CatsMenuSlider, MobileMenuSlider } from '#components'
-
-const slideover = useSlideover()
-const openCatsMenuSlider = () => {
-  slideover.open(CatsMenuSlider)
-}
-const openMobileMenuSlider = () => {
-  slideover.open(MobileMenuSlider)
-}
 
 const company = useCompany()
 const menuState = [
@@ -58,20 +49,23 @@ const menuState = [
             height="auto"
           />
         </ULink>
-        <!-- <img
-          src="/img/logo3.png"
-          alt="logo"
-          class="w-full max-md:max-w-20"
-        /> -->
       </div>
-      <div class="col-span-3 flex max-md:hidden">
-        <UHorizontalNavigation
-          :links="menuState"
+      <div
+        class="col-span-3 flex max-md:hidden"
+        style="--ui-text-muted: var(--color-teal-100); --ui-text-dimmed: var(--color-teal-200)"
+      >
+        <UNavigationMenu
+          :items="menuState"
+          color="warning"
+          highlight
+          highlight-color="error"
           :ui="{
-            base: 'py-2 max-lg:text-xs max-lg:px-2 max-lg:gap-0.5',
-            before: 'before:rounded-xs hover:before:bg-violet-300 before:inset-x-0 before:inset-y-1 ',
+            item: 'py-1',
+            // label: 'text-green-400',
+            link: 'max-lg:text-xs max-lg:px-2 after:h-0.5 after:bottom-0 after:left-1 after:right-1 hover:text-teal-200',
+            linkLeadingIcon: '',
           }"
-          class="font-accent mx-auto w-auto rounded-b-lg bg-violet-200"
+          class="font-accent mx-auto w-auto rounded-b-md bg-stone-900"
         />
       </div>
       <div class="col-span-1 mr-2 flex items-center justify-end gap-2 max-md:hidden">
@@ -131,16 +125,15 @@ const menuState = [
         <UButton
           icon="i-heroicons-queue-list"
           size="md"
-          :ui="{ rounded: 'rounded-full' }"
-          @click="openCatsMenuSlider"
+          @click="showCatsMenu"
           label="Каталог"
+          class="rounded-full"
         />
         <div class="flex grow justify-center">
           <UButton
             icon="i-heroicons-pencil-square"
             size="md"
-            :ui="{ rounded: 'rounded-full' }"
-            class=""
+            class="rounded-full"
             @click="showFeedback"
           >
             <span class="max-lg:hidden">Быстрый заказ</span>
@@ -154,15 +147,13 @@ const menuState = [
         <UButton
           icon="i-heroicons-magnifying-glass"
           size="md"
-          :ui="{ rounded: 'rounded-full' }"
-          class="md:hidden"
-          @click="openCatsMenuSlider"
+          class="rounded-full md:hidden"
+          @click="showCatsMenu"
         />
         <UButton
           icon="i-heroicons-pencil-square"
           size="md"
-          :ui="{ rounded: 'rounded-full' }"
-          class="md:hidden"
+          class="rounded-full md:hidden"
           @click="showFeedback"
         />
         <div class="flex justify-center md:grow">
@@ -172,7 +163,7 @@ const menuState = [
               <UButton
                 icon="i-heroicons-shopping-cart"
                 size="md"
-                :ui="{ rounded: 'rounded-full' }"
+                class="rounded-full"
                 label="0"
               />
             </template>
@@ -185,9 +176,7 @@ const menuState = [
               icon="i-heroicons-user"
               size="md"
               truncate
-              :ui="{
-                rounded: 'rounded-full',
-              }"
+              class="rounded-full"
               label="Войти"
             />
           </template>
@@ -195,9 +184,8 @@ const menuState = [
         <UButton
           icon="i-heroicons-ellipsis-vertical-16-solid"
           size="md"
-          :ui="{ rounded: 'rounded-full' }"
-          class="md:hidden"
-          @click="openMobileMenuSlider"
+          class="rounded-full md:hidden"
+          @click="showMobileMenu"
         />
       </div>
     </div>

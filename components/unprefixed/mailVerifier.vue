@@ -3,19 +3,27 @@
 const props = defineProps({
   mail: String,
 })
+const emit = defineEmits(['cancel', 'verified'])
 
 const user = useUser().value
 const state = reactive({
   code: {
-    val: '',
+    val: [],
     invalid: false,
   },
   showCodeInput: false,
 })
+watch(
+  () => state.code.val,
+  val => {
+    const code = val.join('')
+    if (code.length === 5) verifyCode(code)
+    else state.code.invalid = false
+  },
+)
 const validate = state => {
   const errors = []
-  if (state.code.invalid) errors.push({ path: 'code', message: 'Неверный код!' })
-
+  if (state.code.invalid) errors.push({ name: 'code', message: 'Неверный код!' })
   return errors
 }
 
@@ -37,12 +45,7 @@ const sendCode = async () => {
   }
 }
 
-const onMaska = event => {
-  if (event.detail.completed) checkCode(event.detail.masked)
-  else state.code.invalid = false
-}
-
-const checkCode = async code => {
+const verifyCode = async code => {
   const utf8 = new TextEncoder().encode(code)
   const hashBuffer = await crypto.subtle.digest('SHA-256', utf8)
   const hashArray = Array.from(new Uint8Array(hashBuffer))
@@ -56,6 +59,7 @@ const checkCode = async code => {
     if (isChangesSaved) {
       user.mail = props.mail
       showNotice({ title: 'Почта успешно изменена!', type: 'success' })
+      emit('verified')
     } else showNotice({ title: 'Ошибка при изменении почты!', type: 'error' })
   } else state.code.invalid = true
 }
@@ -63,70 +67,60 @@ const checkCode = async code => {
 
 <template>
   <UAlert
-    class="m-2 max-w-sm"
+    class="my-2"
     title="Подтверждение почты"
-    color="secondary"
+    icon="i-heroicons-exclamation-triangle"
     variant="outline"
   >
     <template #description>
-      <div class="text-gray-900">
-        <div
-          v-if="!state.showCodeInput"
-          class="flex flex-col"
-        >
-          <div class="py-2">Необходимо подтвердить новую почту.</div>
-          <div class="flex gap-x-4 justify-end">
-            <UButton
-              label="Отмена"
-              variant="outline"
-              color="secondary"
-              @click="$emit('cancel')"
-            />
-            <UButton
-              label="Подтвердить"
-              variant="outline"
-              color="secondary"
-              @click="sendCode"
-            />
-          </div>
+      <div
+        v-if="!state.showCodeInput"
+        class="text-neutral-700"
+      >
+        <div class="py-2">Необходимо подтвердить новую почту.</div>
+        <div class="flex justify-end gap-x-4">
+          <UButton
+            label="Отмена"
+            variant="outline"
+            color="neutral"
+            @click="emit('cancel')"
+          />
+          <UButton
+            label="Подтвердить"
+            variant="subtle"
+            color="neutral"
+            @click="sendCode"
+          />
         </div>
-        <div
-          v-else
-          class="flex flex-col"
-        >
-          <div class="py-2 mb-2">
-            На адрес {{ props.mail }} было отправлено письмо, содержащее код активации. Пожалуйста, введите его в данное
-            поле.
-          </div>
-
-          <div class="flex gap-x-4 justify-between items-start">
-            <UForm
-              :state="state"
-              :validate="validate"
-            >
-              <UFormGroup
-                name="code"
-                eager-validation
-              >
-                <UInput
-                  v-model="state.code.val"
-                  autofocus
-                  v-maska
-                  data-maska="#####"
-                  @maska="onMaska"
-                  placeholder="00000"
-                  input-class="tracking-widest"
-                  class="w-20"
-                />
-              </UFormGroup>
-            </UForm>
-            <UButton
-              label="Отмена"
-              variant="outline"
-              color="secondary"
-              @click="$emit('cancel')"
-            />
-          </div>
+      </div>
+      <div
+        v-else
+        class="text-neutral-700"
+      >
+        <div class="py-2">
+          На адрес <span class="font-bold underline underline-offset-4">{{ props.mail }}</span> было отправлено письмо,
+          содержащее код активации. Пожалуйста, введите его в данное поле.
+        </div>
+        <div class="flex flex-wrap items-start justify-around gap-4">
+          <UForm
+            :state="state"
+            :validate="validate"
+          >
+            <UFormField name="code">
+              <UPinInput
+                v-model="state.code.val"
+                type="number"
+                :length="5"
+                otp
+              />
+            </UFormField>
+          </UForm>
+          <UButton
+            label="Отмена"
+            variant="subtle"
+            color="neutral"
+            @click="emit('cancel')"
+          />
         </div>
       </div>
     </template>

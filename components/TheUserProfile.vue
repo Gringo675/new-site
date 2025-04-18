@@ -163,6 +163,7 @@ function onError(event) {
       required
     >
       <UInput
+        type="email"
         v-model="newUser.mail"
         class="w-full"
       />
@@ -170,6 +171,7 @@ function onError(event) {
         v-if="shouldVerifyNewMail"
         :mail="newUser.mail"
         @cancel="newUser.mail = user.mail"
+        @verified="shouldVerifyNewMail = false"
       />
     </UFormField>
     <UFormField
@@ -205,14 +207,17 @@ function onError(event) {
       label="Телефон"
       name="phone"
     >
-      <UInput
-        v-maska
-        data-maska="### ###-##-##"
-        v-model="newUser.phone"
-        type="tel"
-        placeholder="000 000-00-00"
-        class="w-full"
-      />
+      <div class="flex items-center gap-2">
+        <div class="text-base">+7</div>
+        <UInput
+          v-maska
+          data-maska="### ###-##-##"
+          v-model="newUser.phone"
+          type="tel"
+          placeholder="000 000-00-00"
+          class="grow"
+        />
+      </div>
     </UFormField>
   </UForm>
 </template>

@@ -77,7 +77,7 @@ const changesHandler = (options = {}) => {
       productsWrapper.value.style.transform = `translateX(${options.paginationToRight ? '-' : ''}50px)`
       // перемотка вверх
       const wrapperTop = productsWrapper.value.getBoundingClientRect().top - 70 // minus header
-      if (wrapperTop < 0) document.body.scrollBy({ top: wrapperTop, behavior: 'smooth' })
+      if (wrapperTop < 0) window.scrollBy({ top: wrapperTop, behavior: 'smooth' })
     } else {
       // fromProducts || from pageSetup
       pagination.activePage = 1
@@ -125,43 +125,66 @@ watch(pageSetup, () => changesHandler({ fromPageSetup: true }), { deep: true })
   <!--        order and quantity-->
   <div class="flex w-full justify-end gap-x-2">
     <USelect
-      placeholder="Упорядочить:"
       v-model="pageSetup.sortBy"
-      :options="[
+      :items="[
         {
-          name: 'по типоразмеру',
+          type: 'label',
+          label: 'Упорядочить:',
+        },
+        {
+          type: 'separator',
+        },
+        {
+          label: 'по типоразмеру',
           value: 'order',
         },
         {
-          name: 'по наименованию А->Я',
+          label: 'по наименованию А->Я',
           value: 'nameAcs',
         },
         {
-          name: 'по наименованию Я->А',
+          label: 'по наименованию Я->А',
           value: 'nameDes',
         },
         {
-          name: 'по производителю',
+          label: 'по производителю',
           value: 'brand',
         },
         {
-          name: 'сначала дешевле',
+          label: 'сначала дешевле',
           value: 'priceAcs',
         },
         {
-          name: 'сначала дороже',
+          label: 'сначала дороже',
           value: 'priceDes',
         },
       ]"
-      option-attribute="name"
       color="primary"
+      variant="outline"
+      highlight
+      class="w-48"
       trailingIcon="i-heroicons-arrows-up-down-20-solid"
     />
     <USelect
       placeholder="На странице:"
       v-model="pageSetup.prodsOnPage"
-      :options="[10, 20, 40, 60]"
+      :items="[
+        {
+          type: 'label',
+          label: 'На странице:',
+        },
+        {
+          type: 'separator',
+        },
+        10,
+        20,
+        40,
+        60,
+      ]"
       color="primary"
+      variant="outline"
+      highlight
+      class="w-24"
       trailingIcon="i-heroicons-arrows-up-down-20-solid"
     />
   </div>
@@ -175,7 +198,7 @@ watch(pageSetup, () => changesHandler({ fromPageSetup: true }), { deep: true })
       ref="productsWrapper"
     >
       <div
-        class="flex flex-col gap-y-2 py-2 @container"
+        class="@container flex flex-col gap-y-2 py-2"
         ref="productsWrapperHelper"
       >
         <template v-if="visibleProductsIndx.length">

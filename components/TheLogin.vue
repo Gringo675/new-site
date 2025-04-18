@@ -1,7 +1,6 @@
 <script setup>
 //
 const user = useUser().value
-const form = ref()
 
 const showVerifyScreen = ref(false)
 const formState = reactive({
@@ -16,10 +15,19 @@ const fieldErrors = {
 watch(
   () => formState.mail,
   val => {
-    fieldErrors.mail = !validateMail(val) ? 'Введите корректный почтовый адрес!' : ''
+    fieldErrors.mail = val.length > 0 && !validateMail(val) ? 'Введите корректный почтовый адрес!' : ''
   },
   { immediate: true },
 )
+watch(
+  () => formState.code,
+  val => {
+    const code = val.join('')
+    if (code.length === 5) verifyCode(code)
+    else fieldErrors.code = ''
+  },
+)
+
 const validate = () => {
   return Object.entries(fieldErrors)
     .filter(([_, message]) => message)
@@ -27,8 +35,6 @@ const validate = () => {
 }
 
 const sendCode = async () => {
-  showVerifyScreen.value = true
-  return
   if (fieldErrors.mail) {
     showNotice({ title: 'Неправильный адрес!', description: fieldErrors.mail, type: 'error' })
     return
@@ -44,28 +50,17 @@ const sendCode = async () => {
   }
 }
 
-const onCodeChange = event => {
-  console.log(`event: ${JSON.stringify(event.complete, null, 2)}`)
-  // if (event.detail.completed) verifyCode(event.detail.masked)
-  // else fieldErrors.code = ''
-}
-
-const verifyCode = async () => {
-  console.log('code', formState.code.join(''))
-  fieldErrors.code = 'Неверный код!'
-  return
-
+const verifyCode = async code => {
   const verified = await myFetch('/api/auth/login/verifyCode', {
     method: 'post',
     payload: {
       mail: formState.mail,
-      code: formState.code.join(''),
+      code,
     },
   })
 
   if (verified) {
     await getUser()
-    user.showLogin = false
     showNotice({
       title: 'Авторизация пройдена!',
       description: user.name.length ? `${user.name}, с возвращением!` : '',
@@ -82,7 +77,6 @@ const backOnMailScreen = () => {
   formState.code = []
   fieldErrors.mail = ''
   fieldErrors.code = ''
-  form.value.clear() // очищаем ошибки
 }
 
 const runOAuth = provider => {
@@ -104,16 +98,15 @@ const runOAuth = provider => {
 <template>
   <UModal
     title="Вход/регистрация"
-    description=""
     :dismissible="false"
     :ui="{
       content: 'max-w-xl',
       header: 'min-h-auto',
     }"
   >
+    <template #description></template>
     <template #body>
       <UForm
-        ref="form"
         :validate="validate"
         :state="formState"
         class="mb-4 space-y-4"
@@ -130,6 +123,7 @@ const runOAuth = provider => {
               class=""
             >
               <UInput
+                type="email"
                 v-model="formState.mail"
                 autofocus
                 placeholder="example@mail.ru"
@@ -141,6 +135,7 @@ const runOAuth = provider => {
                 label="Получить код авторизации"
                 variant="subtle"
                 color="neutral"
+                :disabled="!formState.mail"
                 @click="sendCode"
               />
             </div>
@@ -175,32 +170,24 @@ const runOAuth = provider => {
         </template>
         <template v-else>
           <div>
-            На почту <u>{{ formState.mail }}</u> был отправлен код авторизации. Введите его в данное поле.
+            На почту <span class="font-bold underline underline-offset-4">{{ formState.mail }}</span> был отправлен код
+            авторизации. Введите его в данное поле.
           </div>
-          <div class="flex items-start justify-between gap-x-4">
+          <div class="flex flex-wrap items-start justify-around gap-4">
             <UFormField name="code">
               <UPinInput
                 v-model="formState.code"
                 type="number"
                 :length="5"
-                @change="onCodeChange"
+                otp
               />
-              <!-- <UInput
-                v-model="formState.code"
-                autofocus
-                v-maska
-                data-maska="#####"
-                @maska="onMaska"
-                placeholder="00000"
-                input-class="tracking-widest"
-                class="w-20"
-              /> -->
             </UFormField>
             <UButton
               label="Назад"
-              variant="outline"
-              color="secondary"
+              variant="subtle"
+              color="neutral"
               @click="backOnMailScreen"
+              class="px-8"
             />
           </div>
         </template>

@@ -61,7 +61,7 @@ const showFullViewer = () => {
 </script>
 
 <template>
-  <UCarousel
+  <ImageViewerCarousel
     ref="carousel"
     :items="images"
     :ui="{
@@ -94,7 +94,7 @@ const showFullViewer = () => {
     <template #indicator="{ onClick, page, active }">
       <button
         v-if="lite"
-        class="h-4 w-4 rounded-full border-2 border-slate-500 bg-opacity-70"
+        class="bg-opacity-70 h-4 w-4 rounded-full border-2 border-slate-500"
         :class="{
           'cursor-default bg-slate-500': active,
         }"
@@ -103,7 +103,7 @@ const showFullViewer = () => {
       <img
         v-else
         :src="`${productImagesDirectory}thumb_${images[page - 1]}`"
-        class="min-w-5 max-w-[100px] shrink object-contain"
+        class="max-w-[100px] min-w-5 shrink object-contain"
         :class="{ 'cursor-pointer border border-red-700': !active, 'cursor-default border border-green-700': active }"
         draggable="false"
         @click="onClick(page)"
@@ -115,7 +115,7 @@ const showFullViewer = () => {
         type="button"
         :disabled="disabled"
         @click.stop="onClick"
-        class="absolute left-3 top-1/2 inline-flex shrink-0 -translate-y-1/2 items-center rounded-full bg-slate-100 p-2 text-slate-600 opacity-60 hover:opacity-90 focus:outline-hidden focus-visible:outline-0 disabled:opacity-10"
+        class="absolute top-1/2 left-3 inline-flex shrink-0 -translate-y-1/2 items-center rounded-full bg-slate-100 p-2 text-slate-600 opacity-60 hover:opacity-90 focus:outline-hidden focus-visible:outline-0 disabled:opacity-10"
       >
         <UIcon
           name="i-heroicons-chevron-left"
@@ -129,7 +129,7 @@ const showFullViewer = () => {
         type="button"
         :disabled="disabled"
         @click.stop="onClick"
-        class="absolute right-3 top-1/2 inline-flex shrink-0 -translate-y-1/2 items-center rounded-full bg-slate-100 p-2 text-slate-600 opacity-60 hover:opacity-90 focus:outline-hidden focus-visible:outline-0 disabled:opacity-10"
+        class="absolute top-1/2 right-3 inline-flex shrink-0 -translate-y-1/2 items-center rounded-full bg-slate-100 p-2 text-slate-600 opacity-60 hover:opacity-90 focus:outline-hidden focus-visible:outline-0 disabled:opacity-10"
       >
         <UIcon
           name="i-heroicons-chevron-right"
@@ -137,5 +137,5 @@ const showFullViewer = () => {
         />
       </button>
     </template>
-  </UCarousel>
+  </ImageViewerCarousel>
 </template>

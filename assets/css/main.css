@@ -65,24 +65,16 @@
     ); */
   }
 
-  /*переносим полосу прокрутки с html на body, в этом случае модальные окна смогут ее перекрывать */
-  html,
-  body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-  }
   html {
-    overflow: hidden;
     /* background-image: var(--bg-gradient); */
-    @apply bg-linear-to-r from-red-200 via-orange-200 via-30% to-red-200;
+    /* @apply bg-linear-to-r from-red-200 via-orange-200 via-30% to-red-200; */
+    /* scrollbar-gutter: stable; */
+    scrollbar-color: #c4b5fd #fee2e2;
+    scrollbar-width: thin;
   }
   body {
     font-size: 1rem;
-    overflow-x: auto;
-    overflow-y: scroll;
-    scrollbar-color: #c4b5fd #fee2e2;
-    scrollbar-width: thin;
+    /*overflow-y: scroll;  always visible */
     background-image: url('/img/background.svg');
     background-size: 250px auto;
     background-position: center top;

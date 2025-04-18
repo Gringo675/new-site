@@ -1,23 +1,16 @@
-const viewer = reactive({
-  isActive: false,
-})
+import { LazyImageViewerFull } from '#components'
 
-const viewerData = {
-  images: [],
-  activeImgIndex: 0,
-  causerId: null,
-}
-
-export const useImageViewer = () => {
-  return viewer
-}
-export const getImageViewerData = () => {
-  return viewerData
-}
+const imageViewer = useOverlay().create(LazyImageViewerFull)
 
 export const showImageViewer = (images, options = {}) => {
-  viewerData.images = images
-  viewerData.activeImgIndex = options.activeImgIndex ?? 0
-  viewerData.causerId = options.causerId ?? null
-  viewer.isActive = true
+  if (import.meta.server) return
+  if (images.length === 0) return
+
+  options.images = images
+  options.activeImgIndex = options.activeImgIndex ?? 0
+  options.causerId = options.causerId ?? null
+
+  imageViewer.open(options)
 }
+
+export const closeImageViewer = () => imageViewer.close()

@@ -1,84 +1,206 @@
+<script lang="ts">
+import type { VariantProps } from 'tailwind-variants'
+import type { TabsRootProps, TabsRootEmits } from 'reka-ui'
+import type { AppConfig } from '@nuxt/schema'
+import _appConfig from '#build/app.config'
+import theme from '#build/ui/tabs'
+import { tv } from '#ui/utils/tv'
+import type { AvatarProps } from '#ui/types'
+import type { DynamicSlots, PartialString } from '#ui/types/utils'
+
+const appConfigTabs = _appConfig as AppConfig & { ui: { tabs: Partial<typeof theme> } }
+
+const tabs = tv({ extend: tv(theme), ...(appConfigTabs.ui?.tabs || {}) })
+
+export interface TabsItem {
+  label?: string
+  icon?: string
+  avatar?: AvatarProps
+  slot?: string
+  content?: string
+  value?: string | number
+  disabled?: boolean
+  [key: string]: any
+}
+
+type TabsVariants = VariantProps<typeof tabs>
+
+export interface TabsProps<T extends TabsItem = TabsItem>
+  extends Pick<TabsRootProps<string | number>, 'defaultValue' | 'modelValue' | 'activationMode' | 'unmountOnHide'> {
+  as?: any
+  items?: T[]
+  title?: string
+  documentation?: object
+  color?: TabsVariants['color']
+  variant?: TabsVariants['variant']
+  size?: TabsVariants['size']
+  orientation?: TabsRootProps['orientation']
+  content?: boolean
+  labelKey?: string
+  class?: any
+  ui?: PartialString<typeof tabs.slots>
+}
+
+export interface TabsEmits extends TabsRootEmits<string | number> {}
+
+type SlotProps<T extends TabsItem> = (props: { item: T; index: number }) => any
+
+export type TabsSlots<T extends TabsItem = TabsItem> = {
+  leading: SlotProps<T>
+  default: SlotProps<T>
+  trailing: SlotProps<T>
+  content: SlotProps<T>
+} & DynamicSlots<T, undefined, { index: number }>
+</script>
+
+<script setup lang="ts" generic="T extends TabsItem">
+import { TabsRoot, TabsList, TabsIndicator, TabsTrigger, TabsContent, useForwardPropsEmits } from 'reka-ui'
+import { reactivePick } from '@vueuse/core'
+import UIcon from '#ui/components/Icon.vue'
+
+const props = defineProps({
+  title: String,
+  description: String,
+  characteristics: String,
+  documentation: {
+    type: Object,
+    default: () => ({}),
+  },
+  showDelivery: Boolean,
+  content: {
+    type: Boolean,
+    default: true,
+  },
+  modelValue: String,
+  defaultValue: {
+    type: String,
+    default: '0',
+  },
+  orientation: {
+    type: String as () => 'horizontal' | 'vertical',
+    default: 'horizontal',
+  },
+  unmountOnHide: {
+    type: Boolean,
+    default: true,
+  },
+  labelKey: {
+    type: String,
+    default: 'label',
+  },
+})
+
+const emits = defineEmits<TabsEmits>()
+const slots = defineSlots<TabsSlots<T>>()
+
+const rootProps = useForwardPropsEmits(
+  reactivePick(props, 'modelValue', 'defaultValue', 'orientation', 'unmountOnHide'),
+  emits,
+)
+
+const items = []
+if (props.description)
+  items.push({
+    label: 'Описание',
+    icon: 'i-heroicons-information-circle',
+    content: 'Описание',
+    html: props.description,
+  })
+if (props.characteristics)
+  items.push({
+    label: 'Характеристики',
+    icon: 'i-heroicons-chart-bar-square',
+    content: 'Характеристики',
+    html: `<div class="characteristics">${props.characteristics}</div>`,
+  })
+if (Object.keys(props.documentation).length > 0)
+  items.push({ label: 'Документация', icon: 'i-heroicons-document-text', content: 'Документация' })
+if (props.showDelivery)
+  items.push({
+    label: 'Способы получения',
+    icon: 'i-heroicons-truck',
+    content: 'Способы получения',
+  })
+
+const contentRef = useTemplateRef('contentRef')
+function onTabChange() {
+  if (!expand.value) expand.value = true
+  else calcContainerHeight()
+}
+const expand = ref(false)
+const containerHeight = ref('75px')
+const calcContainerHeight = async () => {
+  if (expand.value) {
+    await new Promise(resolve => setTimeout(resolve, 100))
+    containerHeight.value = `${contentRef.value.scrollHeight + 54}px`
+  } else containerHeight.value = '75px'
+}
+watch(expand, calcContainerHeight)
+</script>
+
 <template>
-  <HTabGroup
-    :selected-index="selectedIndex"
-    as="div"
-    class="relative my-4"
-    @change="onChange"
+  <TabsRoot
+    class="my-4"
+    v-bind="rootProps"
+    @update:modelValue="onTabChange"
   >
-    <div class="flex w-full items-end max-md:flex-wrap">
+    <div class="flex w-full items-end max-lg:flex-wrap">
       <div
         v-if="title"
-        class="relative flex grow items-center self-stretch pr-2 pb-1 max-md:py-4"
+        class="relative flex grow items-center self-stretch pr-2 pb-1 max-lg:py-4"
       >
         <h1 class="font-accent text-2xl leading-7 max-xl:text-xl max-xl:leading-6">{{ title }}</h1>
         <div
-          class="absolute bottom-0 w-full border-t-[34px] border-r-8 border-b-4 border-l-2 border-cyan-300 border-t-transparent border-l-transparent max-md:hidden"
+          class="absolute bottom-0 w-full border-t-[34px] border-r-8 border-b-4 border-l-2 border-cyan-300 border-t-transparent border-l-transparent max-lg:hidden"
         ></div>
       </div>
-
-      <HTabList
-        ref="listRef"
-        class="relative inline-grid h-auto items-center rounded-none rounded-t-lg bg-cyan-300 p-1 max-md:w-full"
+      <TabsList
+        class="relative flex rounded-t-[var(--ui-radius)] bg-cyan-300 p-1 max-lg:w-full"
         :class="title ? 'w-max' : 'w-full'"
-        :style="`grid-template-columns: repeat(${items.length}, minmax(0, 1fr))`"
       >
-        <div
-          ref="markerRef"
-          class="absolute top-[4px] left-[4px] duration-200 ease-out focus:outline-hidden"
-        >
-          <div class="h-full w-full rounded-md bg-cyan-50 shadow-2xs" />
-        </div>
+        <TabsIndicator
+          class="absolute inset-y-1 left-0 w-(--reka-tabs-indicator-size) translate-x-(--reka-tabs-indicator-position) rounded-[calc(var(--ui-radius)*1.5)] bg-(--ui-primary) shadow-xs transition-[translate,width] duration-200"
+        />
 
-        <HTab
+        <TabsTrigger
           v-for="(item, index) of items"
           :key="index"
-          ref="itemRefs"
-          v-slot="{ selected, disabled }"
-          as="template"
+          :value="item.value || String(index)"
+          :disabled="item.disabled"
+          class="relative inline-flex w-full flex-1 items-center justify-center gap-1.5 rounded-[calc(var(--ui-radius)*1.5)] px-2 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ui-primary) disabled:cursor-not-allowed disabled:opacity-75 data-[state=active]:text-(--ui-bg) data-[state=inactive]:text-(--ui-text-muted) hover:data-[state=inactive]:not-disabled:text-(--ui-text) max-lg:min-w-0 max-sm:flex-wrap sm:px-3 sm:py-2"
         >
-          <button
-            class="ui-focus-visible:outline-0 ui-focus-visible:ring-2 ui-focus-visible:ring-primary-500 ui-not-focus-visible:outline-none max-xs:px-1 max-xs:text-xs relative inline-flex h-auto w-full shrink-0 items-center justify-center rounded-md px-3 py-1 text-sm font-medium transition-colors duration-200 ease-out focus:outline-hidden max-sm:flex-wrap sm:py-2"
-            :class="[selected ? 'text-gray-900' : 'text-gray-600']"
+          <slot
+            name="leading"
+            :item="item"
+            :index="index"
           >
-            <slot
-              name="icon"
-              :item="item"
-              :index="index"
-              :selected="selected"
-              :disabled="disabled"
-            >
-              <UIcon
-                v-if="item.icon"
-                :name="item.icon"
-                class="me-2 max-sm:me-auto max-sm:w-full"
-              />
-            </slot>
+            <UIcon
+              v-if="item.icon"
+              :name="item.icon"
+              class="UIconTabs size-4 shrink-0 max-sm:w-full"
+            />
+          </slot>
 
-            <slot
-              :item="item"
-              :index="index"
-              :selected="selected"
-              :disabled="disabled"
-            >
-              <span class="truncate">{{ item.label }}</span>
-            </slot>
-          </button>
-        </HTab>
-      </HTabList>
+          <span class="truncate">
+            {{ item.label }}
+          </span>
+        </TabsTrigger>
+      </TabsList>
     </div>
 
     <div
-      class="relative overflow-hidden rounded-b-lg border-4 border-t-2 border-cyan-300 bg-cyan-300 transition-[height] duration-[500ms]"
+      class="relative w-full overflow-hidden rounded-b-[var(--ui-radius)] border-4 border-t-2 border-cyan-300 bg-cyan-300 transition-[height] duration-[500ms]"
       :style="{ height: containerHeight }"
     >
-      <HTabPanels
+      <div
+        class=""
         ref="contentRef"
-        class="rounded-lg bg-gray-50 p-2"
       >
-        <HTabPanel
+        <TabsContent
           v-for="(item, index) of items"
           :key="index"
-          class="focus:outline-hidden"
+          :value="item.value || String(index)"
+          class="rounded-[var(--ui-radius)] bg-gray-50 p-2"
         >
           <div
             v-if="item.html"
@@ -90,12 +212,12 @@
           />
           <HelperDeliveryBlock v-else-if="item.label === 'Способы получения'" />
           <div v-else>{{ item.content }}</div>
-        </HTabPanel>
-      </HTabPanels>
+        </TabsContent>
+      </div>
 
       <div class="absolute bottom-0 flex w-full justify-end bg-linear-to-b from-cyan-300/0 to-cyan-300/90">
         <UButton
-          color="blue"
+          color="neutral"
           :label="expand ? 'Свернуть' : 'Развернуть'"
           :icon="expand ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'"
           block
@@ -104,127 +226,5 @@
         />
       </div>
     </div>
-  </HTabGroup>
+  </TabsRoot>
 </template>
-
-<script>
-// created from @nuxt\ui\dist\runtime\components\navigation\Tabs.vue
-import { ref, watch, onMounted, defineComponent, nextTick } from 'vue'
-import {
-  TabGroup as HTabGroup,
-  TabList as HTabList,
-  Tab as HTab,
-  TabPanels as HTabPanels,
-  TabPanel as HTabPanel,
-  provideUseId,
-} from '@headlessui/vue'
-import { useResizeObserver } from '@vueuse/core'
-import UIcon from '#ui/components/elements/Icon.vue'
-import { useId } from '#imports'
-export default defineComponent({
-  components: {
-    UIcon,
-    HTabGroup,
-    HTabList,
-    HTab,
-    HTabPanels,
-    HTabPanel,
-  },
-  inheritAttrs: false,
-  props: {
-    title: { type: String, default: '' },
-    image: { type: String, default: '' },
-    description: { type: String, default: '' },
-    characteristics: { type: String, default: '' },
-    documentation: { type: Object, default: () => ({}) },
-    showDelivery: { type: Boolean, default: false },
-  },
-  setup(props) {
-    const listRef = ref()
-    const itemRefs = ref([])
-    const markerRef = ref()
-    const contentRef = ref()
-    const selectedIndex = ref(0)
-    function calcMarkerSize(index) {
-      const tab = itemRefs.value[index]?.$el
-      if (!tab) {
-        return
-      }
-      if (!markerRef.value) {
-        return
-      }
-      markerRef.value.style.top = `${tab.offsetTop}px`
-      markerRef.value.style.left = `${tab.offsetLeft}px`
-      markerRef.value.style.width = `${tab.offsetWidth}px`
-      markerRef.value.style.height = `${tab.offsetHeight}px`
-    }
-    function onChange(index) {
-      selectedIndex.value = index
-      calcMarkerSize(selectedIndex.value)
-      if (!expand.value) expand.value = true
-      else calcContainerHeight()
-    }
-    useResizeObserver(listRef, () => {
-      calcMarkerSize(selectedIndex.value)
-    })
-
-    onMounted(async () => {
-      await nextTick()
-      calcMarkerSize(selectedIndex.value)
-    })
-    provideUseId(() => useId())
-
-    const catImagesDirectory = useRuntimeConfig().public.IMAGES_DIRECTORY + 'img_categories/'
-    const items = []
-    if (props.description)
-      items.push({
-        label: 'Описание',
-        icon: 'i-heroicons-information-circle',
-        html: props.image
-          ? `
-        <div class="float-left flex w-[120px] items-center justify-center mb-1 mr-3 max-xs:w-20">
-          <img
-          src="${catImagesDirectory + props.image}"
-          class="h-auto w-auto max-w-full"
-          />
-        </div>
-        <div>${props.description}</div>
-        <div class="clear-both"></div>
-        `
-          : props.description,
-      })
-    if (props.characteristics)
-      items.push({
-        label: 'Характеристики',
-        icon: 'i-heroicons-chart-bar-square',
-        html: `<div class="characteristics">${props.characteristics}</div>`,
-      })
-    if (Object.keys(props.documentation).length > 0)
-      items.push({ label: 'Документация', icon: 'i-heroicons-document-text' })
-    if (props.showDelivery)
-      items.push({
-        label: 'Способы получения',
-        icon: 'i-heroicons-truck',
-      })
-
-    const expand = ref(false)
-    const containerHeight = ref('75px')
-    const calcContainerHeight = async () => {
-      await nextTick()
-      containerHeight.value = expand.value ? `${contentRef.value.$el.scrollHeight + 54}px` : '75px'
-    }
-    watch(expand, calcContainerHeight)
-    return {
-      listRef,
-      itemRefs,
-      markerRef,
-      contentRef,
-      selectedIndex,
-      onChange,
-      items,
-      expand,
-      containerHeight,
-    }
-  },
-})
-</script>

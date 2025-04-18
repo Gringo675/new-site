@@ -15,15 +15,10 @@ const onMouseEnter = index => {
 </script>
 
 <template>
-  <!-- <USlideover
-    side="left"
-    :ui="{
-      wrapper: 'z-30',
-      width: 'max-w-(--breakpoint-md)',
-    }"
-  > -->
   <USlideover
     side="left"
+    title="catsMenu"
+    description="catsMenu"
     :ui="{
       content: 'max-w-3xl',
     }"
