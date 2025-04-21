@@ -63,6 +63,7 @@
 <script>
 import { ref, computed, defineComponent } from 'vue'
 import { useScroll, useResizeObserver, useElementSize } from '@vueuse/core'
+import { container } from '#build/ui'
 
 export default defineComponent({
   inheritAttrs: false,
@@ -127,6 +128,7 @@ export default defineComponent({
       prev: onClickPrev,
       next: onClickNext,
       select: onClick,
+      container: carouselRef,
     })
     return {
       isFirst,
@@ -142,7 +144,7 @@ export default defineComponent({
 })
 </script>
 
-<style scoped>
+<style>
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

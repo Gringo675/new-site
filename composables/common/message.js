@@ -13,5 +13,5 @@ export const showMessage = (options = {}) => {
   options.type = options.type ?? 'info' // info, error, success
   options.isDialog = options.isDialog ?? false
 
-  return message.open(options)
+  message.open(options)
 }

@@ -397,7 +397,7 @@
   transition-duration: 400ms;
 }
 
-.viewer-enter-from,
+/* .viewer-enter-from,
 .viewer-leave-to {
   opacity: 0;
   transform: translate(var(--viewer-transition-x), var(--viewer-transition-y)) scale(var(--viewer-scale));
@@ -410,4 +410,4 @@
 .viewer-enter-active,
 .viewer-leave-active {
   transition: all 0.2s linear;
-}
+} */
