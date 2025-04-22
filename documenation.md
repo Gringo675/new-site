@@ -12,6 +12,7 @@
 - catalogProductCard refactor
 - cartButtons - use lazy hydration?
 - pdf viewer: сделать предзагрузку файла, и только потом открывать inframe
+- привести к одному стилю все лоадеры (спиннеры)
 
 SVG animation:
 
@@ -25,7 +26,7 @@ Design colors!!!
 - создать единый кеш для товаров, получаемых от getProducts.js (на данный момент используется в компонентах корзины и просмотренных товаров)
 - разобраться с lazy hydration (дополнить документацию lazy loading) и применить ее на компонентах, где используется отложенная загрузка - корзина, недавно просмотренные.
 - оптимизировать изображения под используемые размеры
-- убрать из импорта и базы short_description для категорий
+- убрать из импорта и базы short_description для категорий (и изображения?)
 
 # AI's:
 
@@ -85,24 +86,27 @@ Legacy: При использовании dataFetch c auth = true (=> server = f
 ~~-md: - для всех экранов меньше или входящих в md (до 1023 px)~~
 ~~md: - для всех экранов больше или входящих в md (c 768 px). Нативный mobile-first~~
 ~~\*После добавления своих экранов перестал работать нативный префикс max-.. Но он полностью заменяется моим префиксом -..~~
-Перешел от системы экранов к системе брекпойнтов.
-~ -xs(480)xs ~ -sm(640)sm ~-md(768)md ~ -lg(1024)lg ~ -xl(1280)xl ~
+~~Перешел от системы экранов к системе брекпойнтов.~~
+Перешел на стандартный синтаксис tailwind v4:
+~ max-xs(480)xs ~ max-sm(640)sm ~ max-md(768)md ~ max-lg(1024)lg ~ max-xl(1280)xl ~
 Примеры:
 md: - для экранов больше или равных 768 px (native mobile first)
--md: - для экранов меньше 768 px (от 767 px)
-md:-lg: - для экранов от 768 до 1023 px (-lg:md тоже будет работать)
-Tailwind @container:
-@xs @container (min-width: 20rem /\* 320px _/)
-@sm @container (min-width: 24rem /_ 384px _/)
-@md @container (min-width: 28rem /_ 448px _/)
-@lg @container (min-width: 32rem /_ 512px _/)
-@xl @container (min-width: 36rem /_ 576px _/)
-@2xl @container (min-width: 42rem /_ 672px _/)
-@3xl @container (min-width: 48rem /_ 768px _/)
-@4xl @container (min-width: 56rem /_ 896px _/)
-@5xl @container (min-width: 64rem /_ 1024px _/)
-@6xl @container (min-width: 72rem /_ 1152px \_/)
-@7xl @container (min-width: 80rem /\_ 1280px \_/)
+max-md: - для экранов меньше 768 px (от 767 px)
+md:max-lg: - для экранов от 768 до 1023 px (max-lg:md тоже будет работать)
+Tailwind @container (можно использовать с классами, где есть --container-\*, например w-3xl):
+@3xs 16rem (256px)
+@2xs 18rem (288px)
+@xs 20rem (320px)
+@sm 24rem (384px)
+@md 28rem (448px)
+@lg 32rem (512px)
+@xl 36rem (576px)
+@2xl 42rem (672px)
+@3xl 48rem (768px)
+@4xl 56rem (896px)
+@5xl 64rem (1024px)
+@6xl 72rem (1152px)
+@7xl 80rem (1280px)
 Кстати, tailwind отдельно в проект устанавливать не нужно, т.к. он входит в NuxtUI.
 
 ## Обмен информацией между открытыми вкладками.

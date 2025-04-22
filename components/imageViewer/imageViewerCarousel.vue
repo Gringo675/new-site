@@ -1,49 +1,59 @@
 <template>
-  <div
-    class="relative select-none"
-    :class="[fullScreen ? 'flex h-screen w-screen flex-col' : 'p-2']"
-  >
-    <div
-      ref="carouselRef"
-      class="no-scrollbar relative flex w-full snap-none snap-mandatory overflow-x-auto scroll-smooth"
-      :class="[fullScreen && 'flex-1 items-center']"
-    >
+  <div class="carouseWrapper flex h-full w-full flex-col select-none">
+    <div class="imagesWrapper relative max-h-[80vh] grow">
       <div
-        v-for="(item, index) in items"
-        :key="index"
-        class="flex flex-none basis-full snap-center justify-center p-2"
-        :class="[fullScreen && 'h-full snap-always']"
-        :role="indicators ? 'tabpanel' : null"
+        ref="carouselRef"
+        class="imagesRibbon flex overflow-hidden bg-violet-200"
       >
-        <slot
-          :item="item"
-          :index="index"
-        />
+        <div
+          v-for="(item, index) in items"
+          :key="index"
+          class="flex flex-none basis-full justify-center p-2"
+          :class="[fullScreen && 'items-center']"
+          :role="items.length > 1 ? 'tabpanel' : null"
+        >
+          <slot
+            :item="item"
+            :index="index"
+          />
+        </div>
       </div>
+      <template
+        v-if="items.length > 1"
+        class=""
+      >
+        <button
+          type="button"
+          :disabled="isFirst"
+          @click.stop="onClickPrev"
+          class="group absolute top-1/2 flex -translate-y-1/2 rounded-full bg-slate-200 p-2 text-slate-600 opacity-60 hover:opacity-90 focus:outline-none focus-visible:outline-none disabled:opacity-20"
+          :class="[fullScreen ? 'left-3' : 'left-1']"
+        >
+          <UIcon
+            name="i-heroicons-chevron-left"
+            class="size-8 transition-transform group-hover:group-not-disabled:-translate-x-2"
+          />
+        </button>
+        <button
+          type="button"
+          :disabled="isLast"
+          @click.stop="onClickNext"
+          class="group absolute top-1/2 flex -translate-y-1/2 rounded-full bg-slate-200 p-2 text-slate-600 opacity-60 hover:opacity-90 focus:outline-none focus-visible:outline-none disabled:opacity-20"
+          :class="[fullScreen ? 'right-3' : 'right-1']"
+        >
+          <UIcon
+            name="i-heroicons-chevron-right"
+            class="size-8 transition-transform group-hover:group-not-disabled:translate-x-2"
+          />
+        </button>
+      </template>
     </div>
 
     <div
-      v-if="arrows"
-      class=""
-    >
-      <slot
-        name="prev"
-        :on-click="onClickPrev"
-        :disabled="isFirst"
-      />
-
-      <slot
-        name="next"
-        :on-click="onClickNext"
-        :disabled="isLast"
-      />
-    </div>
-
-    <div
-      v-if="indicators"
+      v-if="items.length > 1"
       role="tablist"
-      class="relative inset-x-0 bottom-0 flex items-stretch justify-center gap-3 bg-green-200"
-      :class="[fullScreen ? 'max-h-[20vh] p-2 max-sm:hidden' : 'mt-4 overflow-auto']"
+      class="flex items-center justify-center gap-3 overflow-auto bg-green-200 p-2"
+      :class="[fullScreen && 'max-h-[20vh] min-h-20 max-sm:hidden']"
     >
       <template
         v-for="page in pages"
@@ -63,7 +73,6 @@
 <script>
 import { ref, computed, defineComponent } from 'vue'
 import { useScroll, useResizeObserver, useElementSize } from '@vueuse/core'
-import { container } from '#build/ui'
 
 export default defineComponent({
   inheritAttrs: false,
@@ -71,14 +80,6 @@ export default defineComponent({
     items: {
       type: Array,
       default: () => [],
-    },
-    arrows: {
-      type: Boolean,
-      default: false,
-    },
-    indicators: {
-      type: Boolean,
-      default: false,
     },
     fullScreen: {
       type: Boolean,

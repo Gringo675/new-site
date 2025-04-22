@@ -12,6 +12,19 @@ const closeImageViewer = () => {
   emit('close')
 }
 
+const carousel = useTemplateRef('carouselRef')
+
+const images = reactive(
+  props.images.map(img => {
+    return {
+      full: img.full || img,
+      thumb: img.thumb || img,
+      load: false,
+      error: false,
+    }
+  }),
+)
+
 const setAnimation = () => {
   if (!props.causerId) return
   const causer = document.getElementById(props.causerId)
@@ -38,19 +51,6 @@ const setAnimation = () => {
   })
 }
 setAnimation()
-
-const carousel = useTemplateRef('carouselRef')
-
-const images = reactive(
-  props.images.map(img => {
-    return {
-      full: img.full || img,
-      thumb: img.thumb || img,
-      load: false,
-      error: false,
-    }
-  }),
-)
 
 useViewerKeyPress(carousel)
 useViewerImgLoad(images, props.activeImgIndex, carousel)
@@ -98,16 +98,19 @@ onMounted(async () => {
         <template #default="{ item }">
           <div
             v-if="item.error"
-            class="text-gray-100"
+            class="max-w-xs rounded-md border border-red-400 p-2 text-center text-gray-100"
           >
-            При получении изображения произошла ошибка. Попробуйте перезагрузить страницу.
+            При получении изображения произошла ошибка! Попробуйте перезагрузить страницу.
           </div>
-          <div v-else-if="!item.load">Loading...</div>
+          <div
+            v-else-if="!item.load"
+            class="size-10 animate-ping rounded-full bg-sky-400"
+          ></div>
           <img
             v-else
             @click.stop
             :src="item.full"
-            class="max-h-full max-w-full shrink cursor-zoom-in overflow-auto object-contain transition-transform duration-500"
+            class="max-h-full min-h-0 max-w-full min-w-0 shrink cursor-zoom-in overflow-auto object-contain transition-transform duration-500"
             draggable="false"
           />
         </template>
@@ -124,34 +127,6 @@ onMounted(async () => {
             draggable="false"
           />
         </template>
-
-        <template #prev="{ onClick, disabled }">
-          <button
-            type="button"
-            :disabled="disabled"
-            @click.stop="onClick"
-            class="absolute top-1/2 left-3 inline-flex shrink-0 -translate-y-1/2 items-center rounded-full bg-slate-100 p-2 text-slate-600 opacity-60 hover:opacity-90 focus:outline-hidden focus-visible:outline-0 disabled:bg-slate-400 disabled:opacity-20"
-          >
-            <UIcon
-              name="i-heroicons-chevron-left"
-              class="h-10 w-10"
-            />
-          </button>
-        </template>
-
-        <template #next="{ onClick, disabled }">
-          <button
-            type="button"
-            :disabled="disabled"
-            @click.stop="onClick"
-            class="absolute top-1/2 right-3 inline-flex shrink-0 -translate-y-1/2 items-center rounded-full bg-slate-100 p-2 text-slate-600 opacity-60 hover:opacity-90 focus:outline-hidden focus-visible:outline-0 disabled:bg-slate-400 disabled:opacity-20"
-          >
-            <UIcon
-              name="i-heroicons-chevron-right"
-              class="h-10 w-10"
-            />
-          </button>
-        </template>
       </ImageViewerCarousel>
     </template>
   </UModal>
@@ -162,22 +137,12 @@ onMounted(async () => {
   0% {
     opacity: 0;
     transform: translate(var(--viewer-transition-x), var(--viewer-transition-y)) scale(var(--viewer-scale));
-    /* transform: translate(400px, 400px) scale(0.3); */
-  }
-  100% {
-    opacity: 1;
-    transform: translate(0, 0) scale(1);
   }
 }
 @keyframes viewer-out {
-  0% {
-    opacity: 1;
-    transform: translate(0, 0) scale(1);
-  }
-  100% {
+  to {
     opacity: 0.5;
     transform: translate(var(--viewer-transition-x), var(--viewer-transition-y)) scale(var(--viewer-scale));
-    /* transform: translate(200px, 200px) scale(0.5); */
   }
 }
 </style>

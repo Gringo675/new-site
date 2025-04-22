@@ -6,27 +6,10 @@ definePageMeta({
 </script>
 
 <template>
-  <div id="parent">
-    <div>1</div>
-    <div>2</div>
-    <div>3</div>
-    <div>4</div>
-    <div>5</div>
+  <div class="wrapper m-10 flex h-100 w-md flex-col border border-black">
+    <div class="first flex max-h-70 grow items-center justify-center bg-amber-300">
+      <div class="image h-100 w-20 bg-red-400"></div>
+    </div>
+    <div class="second h-30 shrink-0 bg-cyan-400"></div>
   </div>
 </template>
-
-<style scoped>
-#parent {
-  display: grid;
-  grid-auto-flow: column;
-  grid-template-columns: 1fr 1fr 2fr;
-  border: 2px solid #696989;
-  padding: 10px;
-  width: 400px;
-  height: 200px;
-}
-#parent > div {
-  padding: 10px;
-  border: 1px solid #696989;
-}
-</style>
