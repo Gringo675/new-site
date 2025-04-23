@@ -71,7 +71,7 @@ const showFullViewer = () => {
       <img
         :src="products ? productImagesDirectory + item : item"
         :id="'img_' + index"
-        class="min-w-10 shrink cursor-zoom-in object-contain"
+        class="min-w-0 shrink cursor-zoom-in object-contain"
         draggable="false"
         @click="showFullViewer"
       />
@@ -81,7 +81,7 @@ const showFullViewer = () => {
       <img
         :src="products ? `${productImagesDirectory}thumb_${images[page - 1]}` : `${images[page - 1]}`"
         class="max-w-25 min-w-5 rounded"
-        :class="[active ? 'cursor-default ring-4 ring-violet-700/70' : 'cursor-pointer']"
+        :class="[active ? 'cursor-default ring-2 ring-violet-700/70' : 'cursor-pointer']"
         draggable="false"
         @click="onClick(page)"
       />

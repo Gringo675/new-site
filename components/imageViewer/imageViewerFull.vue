@@ -110,7 +110,7 @@ onMounted(async () => {
             v-else
             @click.stop
             :src="item.full"
-            class="max-h-full min-h-0 max-w-full min-w-0 shrink cursor-zoom-in overflow-auto object-contain transition-transform duration-500"
+            class="max-h-full min-h-0 max-w-full min-w-0 shrink cursor-zoom-in transition-transform duration-500"
             draggable="false"
           />
         </template>
@@ -119,11 +119,8 @@ onMounted(async () => {
           <img
             @click.stop="onClick(page)"
             :src="images[page - 1].thumb"
-            class="max-h-full max-w-[100px] min-w-5 shrink object-contain"
-            :class="{
-              'cursor-pointer border-2 border-red-700': !active,
-              'cursor-default border-2 border-green-700': active,
-            }"
+            class="max-h-full max-w-25 min-w-5 rounded"
+            :class="[active ? 'cursor-default ring-2 ring-violet-700/70' : 'cursor-pointer']"
             draggable="false"
           />
         </template>

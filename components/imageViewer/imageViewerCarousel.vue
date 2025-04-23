@@ -1,9 +1,9 @@
 <template>
   <div class="carouseWrapper flex h-full w-full flex-col select-none">
-    <div class="imagesWrapper relative max-h-[80vh] grow">
+    <div class="imagesWrapper relative grow overflow-hidden">
       <div
         ref="carouselRef"
-        class="imagesRibbon flex overflow-hidden bg-violet-200"
+        class="imagesRibbon flex h-full overflow-hidden bg-violet-200"
       >
         <div
           v-for="(item, index) in items"
@@ -53,7 +53,7 @@
       v-if="items.length > 1"
       role="tablist"
       class="flex items-center justify-center gap-3 overflow-auto bg-green-200 p-2"
-      :class="[fullScreen && 'max-h-[20vh] min-h-20 max-sm:hidden']"
+      :class="[fullScreen && 'max-xs:hidden max-h-[20vh] min-h-15']"
     >
       <template
         v-for="page in pages"
