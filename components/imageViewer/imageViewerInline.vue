@@ -10,47 +10,47 @@ const props = defineProps({
 
 const productImagesDirectory = useRuntimeConfig().public.IMAGES_DIRECTORY + 'img_products/'
 
+const images = props.products
+  ? props.images.map(img => {
+      return {
+        full: productImagesDirectory + img,
+        thumb: productImagesDirectory + 'thumb_' + img,
+      }
+    })
+  : props.images
+
 const carousel = ref(null)
 
+const scrollToActiveImg = () => carousel.value.select(carousel.value.page)
+
 onMounted(() => {
-  carousel.value.$el.addEventListener('mousedown', event => {
-    if (event.target.tagName === 'IMG') {
-      window.addEventListener('mousemove', preventImgClick, { once: true })
-      window.addEventListener('mouseup', () => {
-        window.removeEventListener('mousemove', preventImgClick)
-      })
-    }
-  })
-  // animate scroll (убрал "стандартную" дерганную анимацию через container: 'snap-none')
   const imageContainer = carousel.value.container
-  imageContainer.addEventListener('mousedown', () => {
-    window.addEventListener(
-      'mouseup',
-      () => {
-        carousel.value.select(carousel.value.page)
-      },
-      { once: true },
-    )
-  })
-  // smooth scroll for touch
-  imageContainer.addEventListener('touchstart', () => {
-    imageContainer.style.scrollSnapType = 'x mandatory'
-  })
+  // smooth scroll
+  // imageContainer.addEventListener('pointerdown', event => {
+  //   // Проверяем тип указателя
+  //   if (event.pointerType === 'touch') {
+  //     // Для тач-событий используем touchend
+  //     imageContainer.addEventListener('touchend', scrollToActiveImg, { once: true })
+  //     // p.s. тач-события устроены таким образом, что на изображении не будет клика, если было перемещение
+  //   } else {
+  //     // Для мыши используем pointer capture
+  //     imageContainer.addEventListener(
+  //       'pointermove',
+  //       () => {
+  //         imageContainer.setPointerCapture(event.pointerId) // это передаст все события от указателя на данный контейнер, вследствие чего на изображении не будет клика
+  //         imageContainer.addEventListener('lostpointercapture', scrollToActiveImg, { once: true })
+  //       },
+  //       { once: true },
+  //     )
+  //   }
+  // })
   // растягивание крайних изображений при перетаскивании
-  useViewerEdgeImg(imageContainer, carousel)
+  // useViewerEdgeImg(imageContainer, carousel)
 })
-const preventImgClick = () => {
-  window.addEventListener(
-    'click',
-    event => {
-      event.stopPropagation()
-    },
-    { capture: true, once: true },
-  )
-}
+
 const showFullViewer = () => {
   const activeImgIndex = carousel.value.page - 1
-  const images = props.products
+  const fullImages = props.products
     ? props.images.map(img => {
         return {
           full: productImagesDirectory + 'full_' + img,
@@ -58,7 +58,7 @@ const showFullViewer = () => {
         }
       })
     : props.images
-  showImageViewer(images, { activeImgIndex, causerId: 'img_' + activeImgIndex })
+  showImageViewer(fullImages, { activeImgIndex, causerId: 'img_' + activeImgIndex })
 }
 </script>
 
@@ -69,21 +69,11 @@ const showFullViewer = () => {
   >
     <template #default="{ item, index }">
       <img
-        :src="products ? productImagesDirectory + item : item"
+        :src="item.full ?? item"
         :id="'img_' + index"
         class="min-w-0 shrink cursor-zoom-in object-contain"
         draggable="false"
         @click="showFullViewer"
-      />
-    </template>
-
-    <template #indicator="{ onClick, page, active }">
-      <img
-        :src="products ? `${productImagesDirectory}thumb_${images[page - 1]}` : `${images[page - 1]}`"
-        class="max-w-25 min-w-5 rounded"
-        :class="[active ? 'cursor-default ring-2 ring-violet-700/70' : 'cursor-pointer']"
-        draggable="false"
-        @click="onClick(page)"
       />
     </template>
   </ImageViewerCarousel>

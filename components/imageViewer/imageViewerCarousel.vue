@@ -1,9 +1,9 @@
 <template>
-  <div class="carouseWrapper flex h-full w-full flex-col select-none">
-    <div class="imagesWrapper relative grow overflow-hidden">
+  <div class="flex h-full w-full flex-col select-none">
+    <div class="relative grow overflow-hidden">
       <div
         ref="carouselRef"
-        class="imagesRibbon flex h-full overflow-hidden bg-violet-200"
+        class="flex h-full overflow-hidden"
       >
         <div
           v-for="(item, index) in items"
@@ -59,11 +59,12 @@
         v-for="page in pages"
         :key="page"
       >
-        <slot
-          name="indicator"
-          :on-click="onClick"
-          :active="page === currentPage"
-          :page="page"
+        <img
+          @click.stop="onClick(page)"
+          :src="items[page - 1].thumb ?? items[page - 1]"
+          class="max-h-full max-w-25 min-w-5 rounded"
+          :class="[page === currentPage ? 'cursor-default ring-2 ring-violet-700/70' : 'cursor-pointer']"
+          draggable="false"
         />
       </template>
     </div>
@@ -72,7 +73,7 @@
 
 <script>
 import { ref, computed, defineComponent } from 'vue'
-import { useScroll, useResizeObserver, useElementSize } from '@vueuse/core'
+import { useScroll, useResizeObserver } from '@vueuse/core'
 
 export default defineComponent({
   inheritAttrs: false,
@@ -90,8 +91,7 @@ export default defineComponent({
     const carouselRef = ref()
     const itemWidth = ref(0)
     const { x } = useScroll(carouselRef, { behavior: 'smooth' })
-    const { width: carouselWidth } = useElementSize(carouselRef)
-    useCarouselScroll(carouselRef)
+    useCarouselScroll(carouselRef, centerCurrentPage)
     useResizeObserver(carouselRef, entries => {
       const [entry] = entries
       itemWidth.value = entry?.target?.firstElementChild?.clientWidth || 0
@@ -102,18 +102,9 @@ export default defineComponent({
       }
       return Math.round(x.value / itemWidth.value) + 1
     })
-    const pages = computed(() => {
-      if (!itemWidth.value) {
-        return 0
-      }
-      const itemDivisions = Math.round(carouselWidth.value / itemWidth.value)
-      if (props.items.length <= itemDivisions) {
-        return 0
-      }
-      return props.items.length - itemDivisions + 1
-    })
+    const pages = props.items.length
     const isFirst = computed(() => currentPage.value <= 1)
-    const isLast = computed(() => currentPage.value === pages.value)
+    const isLast = computed(() => currentPage.value === pages)
     function onClickNext() {
       x.value += itemWidth.value
     }
@@ -123,6 +114,10 @@ export default defineComponent({
     function onClick(page) {
       x.value = (page - 1) * itemWidth.value
     }
+    function centerCurrentPage() {
+      onClick(currentPage.value)
+    }
+    // todo: window.addEventListener('resize', centerCurrentPage)
     expose({
       pages,
       page: currentPage,
@@ -145,7 +140,7 @@ export default defineComponent({
 })
 </script>
 
-<style>
+<!-- <style>
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -153,4 +148,4 @@ export default defineComponent({
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-</style>
+</style> -->

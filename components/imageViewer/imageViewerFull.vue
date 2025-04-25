@@ -59,11 +59,85 @@ onMounted(async () => {
   await nextTick()
   const imageContainer = carousel.value.container
   carousel.value.$el.addEventListener('click', closeImageViewer)
-  useViewerEdgeImg(imageContainer, carousel)
-  useViewerImgZoom(imageContainer)
-  useViewerPreventClosingAndAnimateScroll(imageContainer, carousel)
+  // useViewerImgZoom(imageContainer)
   useViewerInitialScroll(props, imageContainer)
 })
+
+const imgZoom = {
+  target: null,
+  centerX: 0,
+  centerY: 0,
+  maxTranslateX: 0,
+  maxTranslateY: 0,
+  offsetX: 0,
+  offsetY: 0,
+  scale: 2,
+}
+const activateZoom = event => {
+  console.log(`activateZoom`)
+  imgZoom.target = event.target
+
+  const imgCoords = imgZoom.target.getBoundingClientRect()
+  imgZoom.centerX = imgCoords.left + imgCoords.width / 2
+  imgZoom.centerY = imgCoords.top + imgCoords.height / 2
+  imgZoom.maxTranslateX = Math.max((imgCoords.width * (imgZoom.scale - 1)) / 2 - imgCoords.left, 0)
+  imgZoom.maxTranslateY = Math.max((imgCoords.height * (imgZoom.scale - 1)) / 2 - imgCoords.top, 0)
+  imgZoom.offsetX = 0
+  imgZoom.offsetY = 0
+
+  imgZoom.target.style.cursor = 'zoom-out'
+  imgZoom.target.style.zIndex = '10'
+  imgZoom.target.addEventListener('mousemove', calculateZoom)
+
+  window.addEventListener('click', deactivateZoom, { capture: true, once: true })
+  // imgZoom.target.addEventListener('transitionend', cancelTransition, {
+  //   once: true,
+  // })
+  // window.addEventListener('resize', deactivateZoom, { once: true })
+
+  calculateZoom(event)
+}
+const calculateZoom = event => {
+  console.log(`calculateZoom`)
+  event.preventDefault()
+  let translateX = imgZoom.centerX - event.clientX - imgZoom.offsetX
+  if (translateX < -imgZoom.maxTranslateX) {
+    imgZoom.offsetX = imgZoom.centerX + imgZoom.maxTranslateX - event.clientX
+    translateX = -imgZoom.maxTranslateX
+  } else if (translateX > imgZoom.maxTranslateX) {
+    imgZoom.offsetX = imgZoom.centerX - imgZoom.maxTranslateX - event.clientX
+    translateX = imgZoom.maxTranslateX
+  }
+
+  let translateY = imgZoom.centerY - event.clientY - imgZoom.offsetY
+  if (translateY < -imgZoom.maxTranslateY) {
+    imgZoom.offsetY = imgZoom.centerY + imgZoom.maxTranslateY - event.clientY
+    translateY = -imgZoom.maxTranslateY
+  } else if (translateY > imgZoom.maxTranslateY) {
+    imgZoom.offsetY = imgZoom.centerY - imgZoom.maxTranslateY - event.clientY
+    translateY = imgZoom.maxTranslateY
+  }
+
+  imgZoom.target.style.transform = `translate(${translateX}px, ${translateY}px) scale(${imgZoom.scale})`
+  // console.log(`translateX: ${JSON.stringify(translateX, null, 2)}`)
+  // console.log(`translateY: ${JSON.stringify(translateY, null, 2)}`)
+}
+
+const deactivateZoom = event => {
+  console.log(`deactivateZoom`)
+  event.stopPropagation()
+  imgZoom.target.removeEventListener('mousemove', calculateZoom)
+  // window.removeEventListener('mousedown', deactivateZoom, { capture: true })
+  // imgZoom.target.removeEventListener('touchstart', onTouchStart)
+  // imgZoom.target.removeEventListener('touchmove', onTouchMove)
+  // imageContainer.removeEventListener('touchmove', onContainerTouchMove)
+  // imgZoom.target.removeEventListener('transitionend', cancelTransition) // double-click protection
+  imgZoom.target.style.removeProperty('transform')
+  // imgZoom.target.style.removeProperty('transition')
+  imgZoom.target.style.removeProperty('cursor')
+  imgZoom.target.style.removeProperty('z-index')
+  // delete imgZoom.target.dataset.zoomed
+}
 </script>
 
 <template>
@@ -91,8 +165,6 @@ onMounted(async () => {
       <ImageViewerCarousel
         ref="carouselRef"
         :items="images"
-        :indicators="images.length > 1"
-        :arrows="images.length > 1"
         fullScreen
       >
         <template #default="{ item }">
@@ -108,19 +180,9 @@ onMounted(async () => {
           ></div>
           <img
             v-else
-            @click.stop
+            @click.stop="activateZoom($event)"
             :src="item.full"
             class="max-h-full min-h-0 max-w-full min-w-0 shrink cursor-zoom-in transition-transform duration-500"
-            draggable="false"
-          />
-        </template>
-
-        <template #indicator="{ onClick, page, active }">
-          <img
-            @click.stop="onClick(page)"
-            :src="images[page - 1].thumb"
-            class="max-h-full max-w-25 min-w-5 rounded"
-            :class="[active ? 'cursor-default ring-2 ring-violet-700/70' : 'cursor-pointer']"
             draggable="false"
           />
         </template>

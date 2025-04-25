@@ -20,7 +20,14 @@ export const useViewerImgZoom = imageContainer => {
     event.target.removeEventListener('mouseup', activateZoom)
   }
 
+  // imageContainer.addEventListener('pointerdown', event => {
+  //   if (event.target.tagName !== 'IMG') return
+  //   event.target.addEventListener('pointerup', () => console.log(`pointerup`), { once: true })
+  //   event.target.addEventListener('pointermove', () => console.log(`pointermove`), { once: true })
+  // })
+
   const activateZoom = event => {
+    console.log(`activateZoom`)
     event.target.removeEventListener('mousemove', cancelOnImageMouseUp)
     imgZoom.target = event.target
 
@@ -34,7 +41,7 @@ export const useViewerImgZoom = imageContainer => {
 
     imgZoom.target.addEventListener('mousemove', calculateZoom)
     imgZoom.target.addEventListener('touchstart', onTouchStart)
-    imgZoom.target.addEventListener('touchmove', onTouchMove)
+    // imgZoom.target.addEventListener('touchmove', onTouchMove)
     imageContainer.addEventListener('touchmove', onContainerTouchMove)
     window.addEventListener('mousedown', deactivateZoom, { capture: true, once: true })
     imgZoom.target.addEventListener('transitionend', cancelTransition, {
@@ -44,15 +51,19 @@ export const useViewerImgZoom = imageContainer => {
 
     imgZoom.target.style.cursor = 'zoom-out'
     imgZoom.target.style.zIndex = '10'
-    imgZoom.target.dataset.zoomed = true
+    // imgZoom.target.dataset.zoomed = true
     calculateZoom(event)
   }
 
   const cancelTransition = () => {
+    console.log(`cancelTransition`)
     imgZoom.target.style.transition = 'none'
   }
 
   const onTouchStart = event => {
+    console.log(`onTouchStart`)
+    console.log(`before imgZoom.offsetX: ${JSON.stringify(imgZoom.offsetX, null, 2)}`)
+    console.log(`before imgZoom.offsetY: ${JSON.stringify(imgZoom.offsetY, null, 2)}`)
     imgZoom.target.removeEventListener('mousemove', calculateZoom)
 
     imgZoom.centerX = event.touches[0].clientX
@@ -61,23 +72,12 @@ export const useViewerImgZoom = imageContainer => {
     const match = transform.match(/translate\((-?\d*\.?\d+)px, (-?\d*\.?\d+)px\)/) ?? []
     imgZoom.offsetX = Number(match[1]) ?? 0
     imgZoom.offsetY = Number(match[2]) ?? 0
-  }
-
-  const onTouchMove = event => {
-    event.preventDefault()
-
-    const translateX = Math.min(
-      Math.max(event.touches[0].clientX - imgZoom.centerX + imgZoom.offsetX, -imgZoom.maxTranslateX),
-      imgZoom.maxTranslateX
-    )
-    const translateY = Math.min(
-      Math.max(event.touches[0].clientY - imgZoom.centerY + imgZoom.offsetY, -imgZoom.maxTranslateY),
-      imgZoom.maxTranslateY
-    )
-    imgZoom.target.style.transform = `translate(${translateX}px, ${translateY}px) scale(${imgZoom.scale})`
+    console.log(`imgZoom.offsetX: ${JSON.stringify(imgZoom.offsetX, null, 2)}`)
+    console.log(`imgZoom.offsetY: ${JSON.stringify(imgZoom.offsetY, null, 2)}`)
   }
 
   const calculateZoom = event => {
+    console.log(`calculateZoom`)
     event.preventDefault()
     let translateX = imgZoom.centerX - event.clientX - imgZoom.offsetX
     if (translateX < -imgZoom.maxTranslateX) {
@@ -98,23 +98,45 @@ export const useViewerImgZoom = imageContainer => {
     }
 
     imgZoom.target.style.transform = `translate(${translateX}px, ${translateY}px) scale(${imgZoom.scale})`
+    console.log(`translateX: ${JSON.stringify(translateX, null, 2)}`)
+    console.log(`translateY: ${JSON.stringify(translateY, null, 2)}`)
   }
 
   const onContainerTouchMove = event => {
-    event.preventDefault()
+    console.log(`onContainerTouchMove`)
+    // event.preventDefault()
+    if (event.target === imgZoom.target) calculateTouch(event)
+    else deactivateZoom(event)
+  }
+
+  const calculateTouch = event => {
+    console.log(`calculateTouch`)
+    // event.preventDefault()
+
+    const translateX = Math.min(
+      Math.max(event.touches[0].clientX - imgZoom.centerX + imgZoom.offsetX, -imgZoom.maxTranslateX),
+      imgZoom.maxTranslateX,
+    )
+    const translateY = Math.min(
+      Math.max(event.touches[0].clientY - imgZoom.centerY + imgZoom.offsetY, -imgZoom.maxTranslateY),
+      imgZoom.maxTranslateY,
+    )
+    imgZoom.target.style.transform = `translate(${translateX}px, ${translateY}px) scale(${imgZoom.scale})`
   }
 
   const deactivateZoom = event => {
+    console.log(`deactivateZoom`)
     event.stopPropagation()
     imgZoom.target.removeEventListener('mousemove', calculateZoom)
+    window.removeEventListener('mousedown', deactivateZoom, { capture: true })
     imgZoom.target.removeEventListener('touchstart', onTouchStart)
-    imgZoom.target.removeEventListener('touchmove', onTouchMove)
+    // imgZoom.target.removeEventListener('touchmove', onTouchMove)
     imageContainer.removeEventListener('touchmove', onContainerTouchMove)
     imgZoom.target.removeEventListener('transitionend', cancelTransition) // double-click protection
     imgZoom.target.style.removeProperty('transform')
     imgZoom.target.style.removeProperty('transition')
     imgZoom.target.style.removeProperty('cursor')
     imgZoom.target.style.removeProperty('z-index')
-    delete imgZoom.target.dataset.zoomed
+    // delete imgZoom.target.dataset.zoomed
   }
 }
