@@ -1,5 +1,10 @@
 <script setup>
 //
+const emit = defineEmits(['close'])
+const closeLogin = () => {
+  emit('close')
+}
+
 const user = useUser().value
 
 const showVerifyScreen = ref(false)

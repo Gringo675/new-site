@@ -1,5 +1,6 @@
 <script setup>
 //
+const emit = defineEmits(['close'])
 
 const { data: cats } = await useCats()
 
@@ -29,8 +30,8 @@ const onMouseEnter = index => {
         <!-- header -->
         <div class="m-2 flex items-center gap-x-2 bg-gray-50 sm:justify-between">
           <button
-            class="opacity-80 hover:opacity-100 focus:outline-hidden focus-visible:outline-0"
-            @click="hideCatsMenu"
+            class="cursor-pointer opacity-80 hover:opacity-100 focus:outline-hidden focus-visible:outline-0"
+            @click="emit('close')"
           >
             <UIcon
               name="i-heroicons-x-mark"

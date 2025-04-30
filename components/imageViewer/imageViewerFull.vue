@@ -25,7 +25,7 @@ const images = reactive(
   }),
 )
 
-const setAnimation = () => {
+const setAppearDisappearAnimation = () => {
   if (!props.causerId) return
   const causer = document.getElementById(props.causerId)
   if (!causer) return
@@ -50,94 +50,19 @@ const setAnimation = () => {
     document.body.style.removeProperty('--viewer-scale')
   })
 }
-setAnimation()
+setAppearDisappearAnimation()
 
 useViewerKeyPress(carousel)
 useViewerImgLoad(images, props.activeImgIndex, carousel)
+
+const activateZoom = useViewerZoom
 
 onMounted(async () => {
   await nextTick()
   const imageContainer = carousel.value.container
   carousel.value.$el.addEventListener('click', closeImageViewer)
-  // useViewerImgZoom(imageContainer)
   useViewerInitialScroll(props, imageContainer)
 })
-
-const imgZoom = {
-  target: null,
-  centerX: 0,
-  centerY: 0,
-  maxTranslateX: 0,
-  maxTranslateY: 0,
-  offsetX: 0,
-  offsetY: 0,
-  scale: 2,
-}
-const activateZoom = event => {
-  console.log(`activateZoom`)
-  imgZoom.target = event.target
-
-  const imgCoords = imgZoom.target.getBoundingClientRect()
-  imgZoom.centerX = imgCoords.left + imgCoords.width / 2
-  imgZoom.centerY = imgCoords.top + imgCoords.height / 2
-  imgZoom.maxTranslateX = Math.max((imgCoords.width * (imgZoom.scale - 1)) / 2 - imgCoords.left, 0)
-  imgZoom.maxTranslateY = Math.max((imgCoords.height * (imgZoom.scale - 1)) / 2 - imgCoords.top, 0)
-  imgZoom.offsetX = 0
-  imgZoom.offsetY = 0
-
-  imgZoom.target.style.cursor = 'zoom-out'
-  imgZoom.target.style.zIndex = '10'
-  imgZoom.target.addEventListener('mousemove', calculateZoom)
-
-  window.addEventListener('click', deactivateZoom, { capture: true, once: true })
-  // imgZoom.target.addEventListener('transitionend', cancelTransition, {
-  //   once: true,
-  // })
-  // window.addEventListener('resize', deactivateZoom, { once: true })
-
-  calculateZoom(event)
-}
-const calculateZoom = event => {
-  console.log(`calculateZoom`)
-  event.preventDefault()
-  let translateX = imgZoom.centerX - event.clientX - imgZoom.offsetX
-  if (translateX < -imgZoom.maxTranslateX) {
-    imgZoom.offsetX = imgZoom.centerX + imgZoom.maxTranslateX - event.clientX
-    translateX = -imgZoom.maxTranslateX
-  } else if (translateX > imgZoom.maxTranslateX) {
-    imgZoom.offsetX = imgZoom.centerX - imgZoom.maxTranslateX - event.clientX
-    translateX = imgZoom.maxTranslateX
-  }
-
-  let translateY = imgZoom.centerY - event.clientY - imgZoom.offsetY
-  if (translateY < -imgZoom.maxTranslateY) {
-    imgZoom.offsetY = imgZoom.centerY + imgZoom.maxTranslateY - event.clientY
-    translateY = -imgZoom.maxTranslateY
-  } else if (translateY > imgZoom.maxTranslateY) {
-    imgZoom.offsetY = imgZoom.centerY - imgZoom.maxTranslateY - event.clientY
-    translateY = imgZoom.maxTranslateY
-  }
-
-  imgZoom.target.style.transform = `translate(${translateX}px, ${translateY}px) scale(${imgZoom.scale})`
-  // console.log(`translateX: ${JSON.stringify(translateX, null, 2)}`)
-  // console.log(`translateY: ${JSON.stringify(translateY, null, 2)}`)
-}
-
-const deactivateZoom = event => {
-  console.log(`deactivateZoom`)
-  event.stopPropagation()
-  imgZoom.target.removeEventListener('mousemove', calculateZoom)
-  // window.removeEventListener('mousedown', deactivateZoom, { capture: true })
-  // imgZoom.target.removeEventListener('touchstart', onTouchStart)
-  // imgZoom.target.removeEventListener('touchmove', onTouchMove)
-  // imageContainer.removeEventListener('touchmove', onContainerTouchMove)
-  // imgZoom.target.removeEventListener('transitionend', cancelTransition) // double-click protection
-  imgZoom.target.style.removeProperty('transform')
-  // imgZoom.target.style.removeProperty('transition')
-  imgZoom.target.style.removeProperty('cursor')
-  imgZoom.target.style.removeProperty('z-index')
-  // delete imgZoom.target.dataset.zoomed
-}
 </script>
 
 <template>

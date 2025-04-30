@@ -87,6 +87,8 @@ export default defineNuxtConfig({
       enabled: true,
     },
   },
-
+  experimental: {
+    purgeCachedData: false, // nuxt v3.17 breaking change (delete cache when component-initiator is unmounted)
+  },
   compatibilityDate: '2025-03-07',
 })

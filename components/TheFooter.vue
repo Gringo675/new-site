@@ -16,11 +16,15 @@ const openLoader = () => {
 const sshowMessage = async () => {
   const proceed = await showMessage({
     title: 'Подтвердите удаление',
-    description: '<p>Категория "Без имени" будет удалена.</p><p>Продолжить?</p>',
-    // isDialog: true,
+    description: 'Категория "Без имени" будет удалена. Продолжить?',
+    isDialog: true,
   })
 
   console.log(`proceed: ${JSON.stringify(proceed, null, 2)}`)
+}
+const sshowLogin = async () => {
+  await showLogin()
+  console.log('login closed')
 }
 </script>
 
@@ -73,7 +77,7 @@ const sshowMessage = async () => {
           label="Show login"
           color="neutral"
           variant="subtle"
-          @click="showLogin"
+          @click="sshowLogin"
         />
       </div>
     </div>

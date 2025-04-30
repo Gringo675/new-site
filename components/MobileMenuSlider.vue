@@ -1,6 +1,10 @@
 <script setup>
 //
-// const closeMenu = useSlideover().close
+const emit = defineEmits(['close'])
+const closeMobileMenu = () => {
+  emit('close')
+}
+
 const user = useUser().value
 const company = useCompany()
 const menuState = [
@@ -33,19 +37,20 @@ const menuState = [
 
 const goTo = async link => {
   await navigateTo(link)
-  hideMobileMenu()
+  closeMobileMenu()
 }
 const onLogin = () => {
-  user.showLogin = true
-  hideMobileMenu()
+  showLogin()
+  closeMobileMenu()
 }
 const onLogout = () => {
   logoutUser()
+  closeMobileMenu()
   goTo('/')
 }
 const onFeedback = () => {
   showFeedback()
-  hideMobileMenu()
+  closeMobileMenu()
 }
 </script>
 
@@ -126,7 +131,7 @@ const onFeedback = () => {
           <div class="flex gap-2">
             <a
               v-for="mail in company.mails"
-              @click="hideMobileMenu"
+              @click="closeMobileMenu"
               :href="'mailto:' + mail"
             >
               {{ mail }}
@@ -135,7 +140,7 @@ const onFeedback = () => {
           <div class="flex gap-2">
             <a
               v-for="phone in company.phones"
-              @click="hideMobileMenu"
+              @click="closeMobileMenu"
               :href="'tel:' + phone"
             >
               {{ phone }}

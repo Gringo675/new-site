@@ -52,7 +52,7 @@
     <div
       v-if="items.length > 1"
       role="tablist"
-      class="flex items-center justify-center gap-3 overflow-auto bg-green-200 p-2"
+      class="flex items-center justify-center gap-3 overflow-auto p-2"
       :class="[fullScreen && 'max-xs:hidden max-h-[20vh] min-h-15']"
     >
       <template
@@ -93,8 +93,10 @@ export default defineComponent({
     const { x } = useScroll(carouselRef, { behavior: 'smooth' })
     useCarouselScroll(carouselRef, centerCurrentPage)
     useResizeObserver(carouselRef, entries => {
+      const currPage = itemWidth.value > 0 ? currentPage.value : 0
       const [entry] = entries
       itemWidth.value = entry?.target?.firstElementChild?.clientWidth || 0
+      if (currPage > 0) onClick(currPage) // centering
     })
     const currentPage = computed(() => {
       if (!itemWidth.value) {
@@ -117,7 +119,6 @@ export default defineComponent({
     function centerCurrentPage() {
       onClick(currentPage.value)
     }
-    // todo: window.addEventListener('resize', centerCurrentPage)
     expose({
       pages,
       page: currentPage,

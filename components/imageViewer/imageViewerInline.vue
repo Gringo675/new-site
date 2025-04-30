@@ -19,34 +19,7 @@ const images = props.products
     })
   : props.images
 
-const carousel = ref(null)
-
-const scrollToActiveImg = () => carousel.value.select(carousel.value.page)
-
-onMounted(() => {
-  const imageContainer = carousel.value.container
-  // smooth scroll
-  // imageContainer.addEventListener('pointerdown', event => {
-  //   // Проверяем тип указателя
-  //   if (event.pointerType === 'touch') {
-  //     // Для тач-событий используем touchend
-  //     imageContainer.addEventListener('touchend', scrollToActiveImg, { once: true })
-  //     // p.s. тач-события устроены таким образом, что на изображении не будет клика, если было перемещение
-  //   } else {
-  //     // Для мыши используем pointer capture
-  //     imageContainer.addEventListener(
-  //       'pointermove',
-  //       () => {
-  //         imageContainer.setPointerCapture(event.pointerId) // это передаст все события от указателя на данный контейнер, вследствие чего на изображении не будет клика
-  //         imageContainer.addEventListener('lostpointercapture', scrollToActiveImg, { once: true })
-  //       },
-  //       { once: true },
-  //     )
-  //   }
-  // })
-  // растягивание крайних изображений при перетаскивании
-  // useViewerEdgeImg(imageContainer, carousel)
-})
+const carousel = useTemplateRef('carouselRef')
 
 const showFullViewer = () => {
   const activeImgIndex = carousel.value.page - 1
@@ -64,7 +37,7 @@ const showFullViewer = () => {
 
 <template>
   <ImageViewerCarousel
-    ref="carousel"
+    ref="carouselRef"
     :items="images"
   >
     <template #default="{ item, index }">

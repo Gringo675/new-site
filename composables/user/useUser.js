@@ -2,14 +2,13 @@ export default () => {
   return useState('user', () => {
     return {
       auth: false,
-      showLogin: false,
+      admin: false,
       name: '',
       mail: '',
       org: '',
       inn: '',
       address: '',
       phone: '',
-      admin: false,
     }
   })
 }

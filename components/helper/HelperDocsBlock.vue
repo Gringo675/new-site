@@ -78,60 +78,39 @@ for (const pasp of docs.pasp ?? []) {
       :item="item"
       :showViewer="showViewer"
     />
-    <!-- viewer -->
-    <Transition name="transition-fade">
-      <div
-        v-if="viewer.show"
-        class="fixed bottom-0 left-0 right-0 top-0 z-30 overflow-hidden bg-gray-900/90"
-        @click="viewer.show = false"
-        v-focus
-        tabindex="-1"
-      >
-        <!-- spinner -->
-        <div class="flex h-full flex-col items-center justify-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="120"
-            height="120"
-            viewBox="0 0 24 24"
-          >
-            <path
-              class="fill-cyan-400"
-              d="M12,23a9.63,9.63,0,0,1-8-9.5,9.51,9.51,0,0,1,6.79-9.1A1.66,1.66,0,0,0,12,2.81h0a1.67,1.67,0,0,0-1.94-1.64A11,11,0,0,0,12,23Z"
-            >
-              <animateTransform
-                attributeName="transform"
-                dur="0.75s"
-                repeatCount="indefinite"
-                type="rotate"
-                values="0 12 12;360 12 12"
-              />
-            </path>
-          </svg>
-        </div>
-        <!-- document block -->
-        <div class="m-auto flex h-full w-[1200px] max-w-full -translate-y-full flex-col">
-          <!-- title -->
-          <div class="flex justify-between text-3xl text-slate-200">
-            <span class="m-2 truncate">
-              {{ viewer.title }}
-            </span>
-            <button class="m-2 opacity-80 hover:opacity-100 focus:outline-hidden focus-visible:outline-0">
-              <UIcon
-                name="i-heroicons-x-circle"
-                class="block h-10 w-10"
-              />
-            </button>
-          </div>
-          <iframe
-            class="w-full grow"
-            :src="viewer.src"
-            frameborder="0"
-            scrolling="no"
-            >Похоже, Вы используете устаревший браузер.</iframe
-          >
-        </div>
-      </div>
-    </Transition>
   </div>
+  <!-- viewer -->
+  <UModal
+    v-model:open="viewer.show"
+    :title="viewer.title"
+    fullscreen
+    :ui="{
+      overlay: 'bg-transparent',
+      content: 'bg-gray-900/90 divide-none',
+      wrapper: 'max-w-full',
+      title: 'text-gray-300 text-2xl truncate pr-8',
+      body: 'p-0 sm:p-0',
+    }"
+    :close="{
+      color: 'primary',
+      variant: 'link',
+      icon: 'i-heroicons-x-circle',
+      class: 'z-10 p-0 focus-visible:ring-0 focus-visible:outline-none',
+      ui: {
+        leadingIcon: 'size-8',
+      },
+    }"
+  >
+    <template #description></template>
+    <template #body>
+      <iframe
+        class="h-full w-full"
+        :src="viewer.src"
+        frameborder="0"
+        scrolling="no"
+        type="application/pdf"
+        >Похоже, Вы используете устаревший браузер.</iframe
+      >
+    </template>
+  </UModal>
 </template>

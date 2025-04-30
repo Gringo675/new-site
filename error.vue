@@ -4,27 +4,22 @@ const props = defineProps({
 })
 console.error(props.error)
 const user = useUser().value
-const message = useMessage()
-const feedback = useFeedback()
 
 hideLoader()
-user.showLogin = false
-message.active = false
-feedback.isActive = false
+closeLogin()
+closeFeedback()
+closeImageViewer()
+closeMessage()
+hideMobileMenu()
+hideCatsMenu()
 
-onUnmounted(() => {
-  user.showLogin = false
-})
+// onUnmounted(() => {
+//   closeLogin()
+// })
 
-const showLogin = () => {
-  user.showLogin = true
-  const unwatch = watch(
-    () => user.showLogin,
-    () => {
-      nextTick(() => unwatch()) // watch only once
-      if (user.auth) refreshPage()
-    }
-  )
+const onLogin = async () => {
+  await showLogin()
+  if (user.auth) refreshPage()
 }
 
 const refreshPage = () => {
@@ -51,7 +46,7 @@ const test = async () => {
         <div class="bg-red-400">
           <h1>Error component</h1>
           <button
-            class="m-2 p-2 bg-cyan-500"
+            class="m-2 bg-cyan-500 p-2"
             @click="test"
           >
             Test
@@ -59,13 +54,13 @@ const test = async () => {
           <div v-if="error.statusCode === 401">
             <h2>Для доступа к ресурсу необходима авторизация!</h2>
             <button
-              class="m-2 p-2 bg-cyan-500"
-              @click="showLogin"
+              class="m-2 bg-cyan-500 p-2"
+              @click="onLogin"
             >
               Войти
             </button>
             <button
-              class="m-2 p-2 bg-cyan-500"
+              class="m-2 bg-cyan-500 p-2"
               @click="toMainPage"
             >
               На главную
@@ -74,7 +69,7 @@ const test = async () => {
           <div v-else-if="error.statusCode === 403">
             <h2>Отказано в доступе!</h2>
             <button
-              class="m-2 p-2 bg-cyan-500"
+              class="m-2 bg-cyan-500 p-2"
               @click="toMainPage"
             >
               На главную
@@ -83,7 +78,7 @@ const test = async () => {
           <div v-else-if="error.statusCode === 404">
             <h2>Error 404</h2>
             <button
-              class="m-2 p-2 bg-cyan-500"
+              class="m-2 bg-cyan-500 p-2"
               @click="toMainPage"
             >
               На главную
@@ -92,8 +87,8 @@ const test = async () => {
           <div v-else-if="error.statusCode === 423">
             <h2>На сервере ведутся технические работы. Доступ временно закрыт.</h2>
             <button
-              class="m-2 p-2 bg-cyan-500"
-              @click="showLogin"
+              class="m-2 bg-cyan-500 p-2"
+              @click="onLogin"
             >
               Вход для администраторов (hidden)
             </button>
@@ -119,7 +114,6 @@ const test = async () => {
           </div>
         </div>
       </div>
-      <HelperClientComponents />
     </NuxtLayout>
   </div>
 </template>

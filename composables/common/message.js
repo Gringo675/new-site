@@ -13,5 +13,7 @@ export const showMessage = (options = {}) => {
   options.type = options.type ?? 'info' // info, error, success
   options.isDialog = options.isDialog ?? false
 
-  message.open(options)
+  return message.open(options).result // promise
 }
+
+export const closeMessage = () => message.close()

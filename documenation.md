@@ -8,10 +8,8 @@
 
 - TheError
 - компонент доставки
-- image viewer
 - catalogProductCard refactor
 - cartButtons - use lazy hydration?
-- pdf viewer: сделать предзагрузку файла, и только потом открывать inframe
 - привести к одному стилю все лоадеры (спиннеры)
 
 SVG animation:
