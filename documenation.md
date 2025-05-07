@@ -6,7 +6,6 @@
 
 # ToDo:
 
-- TheError
 - компонент доставки
 - catalogProductCard refactor
 - cartButtons - use lazy hydration?

@@ -9,7 +9,7 @@ interface Label {
 
 const { labelId } = defineProps({
   labelId: Number,
-  forProduct: { type: Boolean, default: false },
+  forProduct: { type: Boolean, default: false }, // todo: delete?
 })
 
 const { data: label } = await useAsyncData(`label-${labelId}`, () => $fetch<Label>('/api/getLabel?id=' + labelId), {
@@ -21,16 +21,15 @@ const { data: label } = await useAsyncData(`label-${labelId}`, () => $fetch<Labe
 
 <template>
   <div
-    class="absolute -top-2 left-full ml-2 flex w-max origin-bottom-left cursor-default items-center"
-    :class="[!forProduct && '-rotate-3']"
+    class="flex min-w-0 shrink origin-left -rotate-2 cursor-default items-center"
     :title="label.description"
   >
     <img
       :src="getDynamicAsset('/img/labels/' + label.image)"
-      class="h-8 w-auto"
+      class="h-6 w-auto"
     />
-    <div class="rounded-xs bg-fuchsia-400 p-0.5">
-      <div class="border border-dashed border-white px-2 leading-tight text-white">
+    <div class="min-w-0 shrink rounded-xs bg-fuchsia-400 p-0.5">
+      <div class="truncate border border-dashed border-white px-2 text-sm leading-tight text-white">
         {{ label.name }}
       </div>
     </div>

@@ -5,17 +5,7 @@ const props = defineProps({
 console.error(props.error)
 const user = useUser().value
 
-hideLoader()
-closeLogin()
-closeFeedback()
-closeImageViewer()
-closeMessage()
-hideMobileMenu()
-hideCatsMenu()
-
-// onUnmounted(() => {
-//   closeLogin()
-// })
+useOverlay().closeAll()
 
 const onLogin = async () => {
   await showLogin()
@@ -40,11 +30,11 @@ const test = async () => {
 </script>
 
 <template>
-  <div>
+  <UApp>
     <NuxtLayout>
       <div>
         <div class="bg-red-400">
-          <h1>Error component</h1>
+          <h1>Error ppppage</h1>
           <button
             class="m-2 bg-cyan-500 p-2"
             @click="test"
@@ -115,5 +105,5 @@ const test = async () => {
         </div>
       </div>
     </NuxtLayout>
-  </div>
+  </UApp>
 </template>

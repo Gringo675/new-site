@@ -71,10 +71,17 @@ async function updateViewed() {
 <template>
   <div
     v-if="viewed.length"
-    class="m-2 bg-rose-200"
+    class="m-2"
   >
-    <h2 class="py-2 text-lg font-semibold">Вы недавно смотрели</h2>
-    <div class="grid grid-cols-4 gap-2 max-xl:grid-cols-2 max-sm:grid-cols-1">
+    <USeparator
+      label="Просмотренные товары"
+      color="primary"
+      :ui="{
+        container: 'mx-0 px-2 border border-primary rounded-full',
+        label: 'text-base text-primary',
+      }"
+    />
+    <div class="my-4 grid grid-cols-4 gap-2 max-xl:grid-cols-2 max-sm:grid-cols-1">
       <!-- <div class="grid grid-cols-1 gap-2 @container"> -->
       <CatalogProductCard
         v-for="prod in viewed"

@@ -8,20 +8,15 @@ const productImagesDirectory = useRuntimeConfig().public.IMAGES_DIRECTORY + 'img
 const showFullImage = () => {
   showImageViewer([`${productImagesDirectory}full_${props.prod.image}`], { causerId: 'img_' + props.prod.id })
 }
-
-const copied = ref(false)
-const copyId = () => {
-  navigator.clipboard.writeText(props.prod.id)
-  copied.value = true
-  setTimeout(() => {
-    copied.value = false
-  }, 2000)
-}
 </script>
 
 <template>
-  <div class="grid grid-cols-[auto_1fr_auto] grid-rows-[auto_auto] rounded-lg bg-cyan-500 hover:shadow-xs">
-    <div class="col-span-1 row-span-2 flex w-20 items-center justify-center self-center p-2 @md:h-20">
+  <div
+    class="cardContainer grid grid-cols-[auto_1fr_auto] grid-rows-[min-content_auto] overflow-hidden rounded-lg border border-fuchsia-400 bg-rose-100 hover:shadow-xs"
+  >
+    <div
+      class="imageBlock col-span-1 row-span-2 flex w-20 items-center justify-center self-center bg-green-400 p-2 @md:h-20"
+    >
       <img
         :src="`${productImagesDirectory}thumb_${prod.image}`"
         :alt="prod.name"
@@ -30,55 +25,38 @@ const copyId = () => {
         @click="showFullImage"
       />
     </div>
-    <div class="-order-1 col-span-3 row-span-1 p-2 @xs:order-none @xs:col-span-2 @md:col-span-1 @md:row-span-2">
-      <div class="relative flex w-fit">
-        <div class="text-sm">{{ prod.id }}</div>
-        <UButton
-          :padded="false"
-          :color="copied ? 'green' : 'gray'"
-          variant="link"
-          size="2xs"
-          class="px-1"
-          :icon="copied ? 'i-lucide-copy-check' : 'i-lucide-copy'"
-          @click="copyId"
+    <div
+      class="infoBlock -order-1 col-span-3 row-span-1 border-b-2 border-fuchsia-200 bg-fuchsia-100 p-2 @xs:order-none @xs:col-span-2 @md:col-span-1 @md:row-span-2"
+    >
+      <div class="flex h-5 items-center gap-2">
+        <UIcon
+          name="i-material-symbols-barcode"
+          class="size-5 shrink-0"
         />
+        <div class="shrink-0 text-sm">{{ prod.id }}</div>
         <HelperProductLabel
           v-if="prod.label > 0"
           :labelId="prod.label"
         />
-        <!-- <div
-          v-if="prod.label"
-          class="absolute -top-2 left-full ml-2 flex w-max origin-bottom-left -rotate-3 items-center"
-        >
-          <img
-            :src="getDynamicAsset('/img/labels/' + prod.label.image)"
-            class="h-8 w-auto"
-          />
-          <div class="rounded-xs bg-fuchsia-400 p-0.5">
-            <div class="border border-dashed border-white px-2 leading-tight text-white">
-              {{ prod.label.name }}
-            </div>
-          </div>
-        </div> -->
       </div>
       <NuxtLink
         :to="'/product/' + prod.alias"
-        class="mt-0.5 block w-fit text-lg leading-5"
+        class="mt-0.5 block min-h-10 w-fit text-lg leading-5"
       >
         {{ prod.name }}
       </NuxtLink>
     </div>
     <div
-      class="col-span-2 row-span-1 m-2 flex flex-wrap content-end items-center justify-end gap-2 @md:col-span-1 @md:row-span-2 @md:mt-7 @md:w-28 @xl:mt-2 @xl:w-auto @xl:flex-nowrap"
+      class="buyBlock col-span-2 row-span-2 m-2 flex flex-wrap content-end items-center justify-end gap-2 self-end @md:col-span-1 @md:row-span-2 @md:mt-7 @md:w-28 @xl:mt-2 @xl:w-auto @xl:flex-nowrap"
     >
       <div class="relative w-28 shrink-0 grow-0">
         <div
           v-if="prod.priceRegular"
-          class="absolute bottom-full right-0 text-sm leading-none line-through opacity-70"
+          class="absolute right-0 bottom-full text-sm leading-none line-through opacity-70"
         >
           {{ prod.priceRegular.toLocaleString() + ' ₽' }}
         </div>
-        <div class="float-right text-xl leading-none">
+        <div class="float-right rounded-2xl bg-green-200 px-3 py-2 text-xl leading-none">
           {{ prod.price.toLocaleString() + ' ₽' }}
         </div>
       </div>

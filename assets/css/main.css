@@ -73,6 +73,7 @@
     scrollbar-width: thin;
   }
   body {
+    overflow-y: scroll; /* visible on pages without scroll (work well with modal overlay)*/
     font-size: 1rem;
     /*overflow-y: scroll;  always visible */
     background-image: url('/img/background.svg');
