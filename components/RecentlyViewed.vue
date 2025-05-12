@@ -25,7 +25,7 @@ async function updateLocal(newProduct) {
   const existingIndex = newViewed.indexOf(newProduct.id) // если товар уже есть в просмотренных
   if (existingIndex !== -1) newViewed.splice(existingIndex, 1)
   newViewed.unshift(newProduct.id)
-  if (newViewed.length > 5) newViewed.length = 5 // на 1 больше, чем нужно, т.к. будем удалять текущий на странице товара
+  if (newViewed.length > 7) newViewed.length = 7 // на 1 больше, чем нужно, т.к. будем удалять текущий на странице товара
   localStorage.setItem('VIEWED', JSON.stringify(newViewed))
 }
 
@@ -59,7 +59,7 @@ async function updateViewed() {
     const currentInd = viewed.value.findIndex(p => p.alias === route.params.p_alias)
     if (currentInd !== -1) viewed.value.splice(currentInd, 1)
   }
-  if (viewed.value.length > 4) viewed.value.length = 4
+  if (viewed.value.length > 6) viewed.value.length = 6
 
   if (helper.needUpdateLocal) {
     helper.needUpdate = false
@@ -81,13 +81,19 @@ async function updateViewed() {
         label: 'text-base text-primary',
       }"
     />
-    <div class="my-4 grid grid-cols-4 gap-2 max-xl:grid-cols-2 max-sm:grid-cols-1">
-      <!-- <div class="grid grid-cols-1 gap-2 @container"> -->
+    <div class="my-4 grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-2">
+      <!-- <div class="grid grid-cols-4 gap-2 max-xl:grid-cols-2 max-sm:grid-cols-1"> -->
       <CatalogProductCard
-        v-for="prod in viewed"
+        v-for="prod in viewed.slice(0, 6)"
         :prod="prod"
-        class="@container"
+        class="@container max-w-158"
       />
     </div>
   </div>
 </template>
+
+<style scoped>
+.vContainer {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+</style>

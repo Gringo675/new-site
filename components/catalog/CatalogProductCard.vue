@@ -12,6 +12,59 @@ const showFullImage = () => {
 
 <template>
   <div
+    class="cardContainer grid grid-cols-[auto_1fr_auto] grid-rows-[auto_min-content] overflow-hidden rounded-lg border border-fuchsia-400 bg-rose-100 hover:shadow-xs"
+  >
+    <div class="infoBlock col-span-3 row-span-1 border-b-2 border-fuchsia-200 bg-fuchsia-100 p-2">
+      <div class="flex h-5 items-center gap-2">
+        <UIcon
+          name="i-material-symbols-barcode"
+          class="size-5 shrink-0"
+        />
+        <div class="shrink-0 text-sm">{{ prod.id }}</div>
+        <HelperProductLabel
+          v-if="prod.label > 0"
+          :labelId="prod.label"
+        />
+      </div>
+      <NuxtLink
+        :to="'/product/' + prod.alias"
+        class="mt-0.5 block min-h-10 w-fit leading-5 @2xs:text-lg"
+      >
+        {{ prod.name }}
+      </NuxtLink>
+    </div>
+    <div class="imageBlock col-span-1 row-span-1 flex h-28 w-20 items-center justify-center self-center p-2">
+      <img
+        :src="`${productImagesDirectory}thumb_${prod.image}`"
+        :alt="prod.name"
+        :id="'img_' + prod.id"
+        class="h-auto max-h-full w-auto max-w-full cursor-zoom-in rounded-lg"
+        @click="showFullImage"
+      />
+    </div>
+
+    <div class="buyBlock col-span-2 row-span-1 m-2 ml-0 flex flex-wrap items-center justify-end self-end">
+      <div class="price relative my-3 shrink-0 grow-0 rounded-2xl bg-green-200 px-3 py-2 text-lg leading-none">
+        <span class=""> {{ prod.price.toLocaleString() + ' ₽' }}</span>
+        <div
+          v-if="prod.priceRegular"
+          class="absolute -top-3 right-1 rounded-full bg-green-100 p-1 text-xs leading-none text-rose-400 line-through opacity-70"
+        >
+          {{ prod.priceRegular.toLocaleString() + ' ₽' }}
+        </div>
+      </div>
+      <div class="flex w-full shrink-0 grow-0 justify-center">
+        <CatalogCartButton
+          :prod="prod"
+          class="w-29"
+        />
+      </div>
+    </div>
+  </div>
+</template>
+
+<!-- <template>
+  <div
     class="cardContainer grid grid-cols-[auto_1fr_auto] grid-rows-[min-content_auto] overflow-hidden rounded-lg border border-fuchsia-400 bg-rose-100 hover:shadow-xs"
   >
     <div
@@ -65,4 +118,4 @@ const showFullImage = () => {
       </div>
     </div>
   </div>
-</template>
+</template> -->
