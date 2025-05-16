@@ -58,7 +58,7 @@ const onMouseEnter = index => {
               <NuxtLink
                 class="text-center text-lg font-medium underline-offset-8 hover:underline max-md:block max-md:w-full max-md:rounded-full max-md:border max-md:border-gray-500 max-md:px-3 max-md:py-2 max-md:text-sm"
                 :to="`/catalog/${cat.alias}`"
-                @click="hideCatsMenu"
+                @click="emit('close')"
                 no-prefetch
               >
                 {{ cat.name }}
@@ -78,7 +78,7 @@ const onMouseEnter = index => {
                   <NuxtLink
                     class="font-medium hover:underline"
                     :to="`/catalog/${subCat.alias}`"
-                    @click="hideCatsMenu"
+                    @click="emit('close')"
                     no-prefetch
                   >
                     {{ subCat.name }}
@@ -101,7 +101,7 @@ const onMouseEnter = index => {
                       <NuxtLink
                         class="hover:underline"
                         :to="'/catalog/' + subSubCat.alias"
-                        @click="hideCatsMenu"
+                        @click="emit('close')"
                         no-prefetch
                       >
                         {{ subSubCat.name }}

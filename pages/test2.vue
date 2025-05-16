@@ -6,6 +6,10 @@ definePageMeta({
 </script>
 
 <template>
+  <div class="m-4 text-5xl">
+    <div>принимая во внимание, что пренебрежение и презрение к правам человека</div>
+    <div>Штангенциркуль ШЦ-I-125-0,1 ЧИЗ</div>
+  </div>
   <div id="container">
     <div class="el">ONE</div>
     <div class="el">TWO</div>
@@ -26,7 +30,8 @@ definePageMeta({
   background-color: lightgray;
   font-family: sans-serif;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-auto-flow: dense;
 }
 
 .el {

@@ -1,12 +1,12 @@
 <script setup>
 //
-const hideCatsMenu = () => {}
 const searchState = reactive({
   query: '',
   pending: false,
   result: null,
   showResults: false,
   ref: useTemplateRef('search-ref'),
+  resultBlockMaxHeight: '',
 })
 
 const searchHelper = {
@@ -58,15 +58,17 @@ const searchHelper = {
   activateSearchResults() {
     searchState.showResults = true
     const inputRect = searchState.ref.getBoundingClientRect()
-    searchState.ref.style.setProperty(
-      '--result-width',
-      `${window.innerWidth > 450 ? inputRect.width : window.innerWidth - 10}px`,
-    )
-    searchState.ref.style.setProperty('--result-left', `${window.innerWidth > 450 ? inputRect.left : 5}px`)
-    // searchState.ref.style.setProperty('--result-width', `${inputRect.width}px`)
-    // searchState.ref.style.setProperty('--result-left', `${inputRect.left}px`)
-    searchState.ref.style.setProperty('--result-max-height', `${window.innerHeight - inputRect.bottom - 10}px`)
-    searchState.ref.style.setProperty('--result-top', `${inputRect.bottom}px`)
+    searchState.resultBlockMaxHeight = window.innerHeight - inputRect.bottom - 30 + 'px'
+    setTimeout(() => window.addEventListener('click', () => (searchState.showResults = false), { once: true }), 10)
+    // searchState.ref.style.setProperty(
+    //   '--result-width',
+    //   `${window.innerWidth > 450 ? inputRect.width : window.innerWidth - 10}px`,
+    // )
+    // searchState.ref.style.setProperty('--result-left', `${window.innerWidth > 450 ? inputRect.left : 5}px`)
+    // // searchState.ref.style.setProperty('--result-width', `${inputRect.width}px`)
+    // // searchState.ref.style.setProperty('--result-left', `${inputRect.left}px`)
+    // searchState.ref.style.setProperty('--result-max-height', `${window.innerHeight - inputRect.bottom - 10}px`)
+    // searchState.ref.style.setProperty('--result-top', `${inputRect.bottom}px`)
   },
   hideSearchResults() {
     searchState.showResults = false
@@ -92,7 +94,7 @@ const onInputClick = e => {
 
 <template>
   <div
-    class="w-[450px]"
+    class="relative w-112"
     ref="search-ref"
   >
     <UInput
@@ -123,22 +125,24 @@ const onInputClick = e => {
       </template>
     </UInput>
     <!-- search results -->
-    <Transition name="transition-fade">
+    <Transition name="transition-below">
       <div
         v-if="searchState.showResults"
-        class="fixed top-0 left-0 z-20 h-full w-full bg-black/20"
-        @click="searchHelper.hideSearchResults"
+        class="absolute right-0 left-0 z-20 mt-1 rounded-md border border-violet-600 bg-gray-200 p-2 shadow-xl"
+        @click.stop
       >
         <div
-          @click.stop
-          class="modal-form absolute top-[var(--result-top)] left-[var(--result-left)] z-20 mt-1 max-h-[var(--result-max-height)] w-[var(--result-width)] overflow-auto rounded-md border border-violet-600 shadow-xl"
+          class="menu-scrollbar overflow-auto"
+          :style="{
+            maxHeight: searchState.resultBlockMaxHeight,
+          }"
         >
           <div
             v-if="searchState.result.products.length > 0"
             class=""
           >
             <!-- categories -->
-            <div class="flex flex-col items-start gap-y-1 bg-slate-200 p-2 pt-1">
+            <div class="flex flex-col items-start gap-y-1 bg-gray-200 p-2 pt-1">
               <div class="-mb-2 self-end text-sm">Категории</div>
               <template v-for="cat in searchState.result.cats">
                 <UButton
@@ -153,8 +157,8 @@ const onInputClick = e => {
               </template>
             </div>
             <!-- products -->
-            <div class="flex flex-col items-start gap-y-1 bg-slate-50 p-2 pt-1">
-              <div class="-mb-2 self-end text-sm">Товары</div>
+            <div class="flex flex-col items-start gap-y-1 rounded-md bg-gray-50 p-2 pt-1">
+              <div class="-mb-1 self-end text-sm">Товары</div>
               <UButton
                 v-for="product in searchState.result.products"
                 variant="link"
@@ -165,7 +169,7 @@ const onInputClick = e => {
                 @click="goTo(`/product/${product.alias}`)"
               />
             </div>
-            <div class="flex justify-between bg-slate-300 p-2">
+            <div class="flex justify-between p-2">
               <UButton
                 variant="ghost"
                 color="tertiary"

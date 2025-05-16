@@ -39,7 +39,7 @@ export default defineEventHandler(async event => {
   })
   related.sort((a, b) => b.points - a.points)
   productData.relatedProds = []
-  const ceiling = related.length > 8 ? 8 : related.length // возвращаем не больше 8
+  const ceiling = related.length > 6 ? 6 : related.length // возвращаем не больше 6
   for (let i = 0; i < ceiling; i++) {
     productData.relatedProds.push({
       id: related[i].id,

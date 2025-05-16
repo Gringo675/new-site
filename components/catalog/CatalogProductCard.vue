@@ -12,10 +12,12 @@ const showFullImage = () => {
 
 <template>
   <div
-    class="cardContainer grid grid-cols-[auto_1fr_auto] grid-rows-[auto_min-content] overflow-hidden rounded-lg border border-fuchsia-400 bg-rose-100 hover:shadow-xs"
+    class="cardContainer grid grid-cols-[auto_minmax(0,1fr)_auto] grid-rows-[auto_min-content] overflow-hidden rounded-lg border border-fuchsia-400 bg-rose-100 hover:shadow-xs"
   >
-    <div class="infoBlock col-span-3 row-span-1 border-b-2 border-fuchsia-200 bg-fuchsia-100 p-2">
-      <div class="flex h-5 items-center gap-2">
+    <div
+      class="infoBlock col-span-3 row-span-1 flex flex-col border-b-2 border-fuchsia-200 bg-fuchsia-100 p-2 @xs:col-span-2 @lg:col-span-1 @lg:row-span-2 @lg:border-b-0"
+    >
+      <div class="mb-0.5 flex h-5 items-center gap-2">
         <UIcon
           name="i-material-symbols-barcode"
           class="size-5 shrink-0"
@@ -28,12 +30,14 @@ const showFullImage = () => {
       </div>
       <NuxtLink
         :to="'/product/' + prod.alias"
-        class="mt-0.5 block min-h-10 w-fit leading-5 @2xs:text-lg"
+        class="my-auto block w-fit leading-5 @2xs:text-lg"
       >
         {{ prod.name }}
       </NuxtLink>
     </div>
-    <div class="imageBlock col-span-1 row-span-1 flex h-28 w-20 items-center justify-center self-center p-2">
+    <div
+      class="imageBlock col-span-1 row-span-1 flex h-28 w-20 items-center justify-center self-center p-2 @xs:-order-1 @xs:row-span-2 @xs:h-auto"
+    >
       <img
         :src="`${productImagesDirectory}thumb_${prod.image}`"
         :alt="prod.name"
@@ -43,8 +47,12 @@ const showFullImage = () => {
       />
     </div>
 
-    <div class="buyBlock col-span-2 row-span-1 m-2 ml-0 flex flex-wrap items-center justify-end self-end">
-      <div class="price relative my-3 shrink-0 grow-0 rounded-2xl bg-green-200 px-3 py-2 text-lg leading-none">
+    <div
+      class="buyBlock col-span-2 row-span-1 m-2 ml-0 flex flex-col items-center justify-end gap-x-3 self-end @xs:@max-lg:flex-row @lg:col-span-1 @lg:row-span-2 @lg:ml-2 @lg:self-center @2xl:flex-row"
+    >
+      <div
+        class="price relative my-3 shrink-0 grow-0 self-end rounded-2xl bg-green-200 px-3 py-2 text-lg leading-none whitespace-nowrap"
+      >
         <span class=""> {{ prod.price.toLocaleString() + ' ₽' }}</span>
         <div
           v-if="prod.priceRegular"
@@ -53,12 +61,10 @@ const showFullImage = () => {
           {{ prod.priceRegular.toLocaleString() + ' ₽' }}
         </div>
       </div>
-      <div class="flex w-full shrink-0 grow-0 justify-center">
-        <CatalogCartButton
-          :prod="prod"
-          class="w-29"
-        />
-      </div>
+      <CatalogCartButton
+        :prod="prod"
+        class="w-28 @lg:@max-2xl:w-30"
+      />
     </div>
   </div>
 </template>

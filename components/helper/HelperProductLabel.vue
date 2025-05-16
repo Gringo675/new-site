@@ -21,7 +21,8 @@ const { data: label } = await useAsyncData(`label-${labelId}`, () => $fetch<Labe
 
 <template>
   <div
-    class="flex min-w-0 shrink origin-left -rotate-2 cursor-default items-center"
+    class="flex min-w-0 shrink origin-left cursor-default items-center"
+    :class="!forProduct && '-rotate-2'"
     :title="label.description"
   >
     <img

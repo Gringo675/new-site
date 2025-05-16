@@ -42,15 +42,6 @@ onMounted(() => {
   }, 2000)
 })
 
-const copied = ref(false)
-const copyId = () => {
-  navigator.clipboard.writeText(product.id)
-  copied.value = true
-  setTimeout(() => {
-    copied.value = false
-  }, 2000)
-}
-
 const priceOptions = [
   {
     value: 1,
@@ -71,16 +62,12 @@ const priceMultiplier = ref(1)
       :productCats="subCats"
     />
     <h1 class="font-accent my-4 text-2xl leading-7 max-xl:text-xl max-xl:leading-6">{{ product.name }}</h1>
-    <div class="relative flex w-fit">
-      <div class="text-sm">Код: {{ product.id }}</div>
-      <UButton
-        :color="copied ? 'success' : 'neutral'"
-        variant="link"
-        size="xs"
-        class="px-1"
-        :icon="copied ? 'i-lucide-copy-check' : 'i-lucide-copy'"
-        @click="copyId"
+    <div class="flex items-center gap-2">
+      <UIcon
+        name="i-material-symbols-barcode"
+        class="size-6 shrink-0"
       />
+      <div class="shrink-0 text-lg font-bold">{{ product.id }}</div>
       <HelperProductLabel
         v-if="product.label > 0"
         :labelId="product.label"
@@ -104,24 +91,23 @@ const priceMultiplier = ref(1)
       </div>
       <div class="bl3 lg:row-span-2">
         <div class="flex flex-wrap items-center justify-center gap-4">
-          <div class="price my-6 flex items-center gap-4">
-            <div class="relative">
-              <div
-                v-if="product.priceRegular"
-                class="absolute right-0 bottom-full line-through opacity-70"
-              >
-                {{ product.priceRegular.toLocaleString() + ' ₽' }}
-              </div>
-              <div class="rounded-lg bg-green-100 px-2 py-1 text-2xl">
-                {{ Math.round(product.price * priceMultiplier).toLocaleString() + ' ₽' }}
-              </div>
+          <div
+            class="price relative my-5 shrink-0 grow-0 rounded-2xl bg-green-200 px-4 py-2 text-2xl leading-none whitespace-nowrap"
+          >
+            <span class=""> {{ Math.round(product.price * priceMultiplier).toLocaleString() + ' ₽' }}</span>
+            <div
+              v-if="product.priceRegular"
+              class="absolute -top-5 right-3 rounded-full bg-green-100 p-1 text-sm leading-none text-rose-400 line-through opacity-70"
+            >
+              {{ Math.round(product.priceRegular * priceMultiplier).toLocaleString() + ' ₽' }}
             </div>
-            <URadioGroup
-              v-model="priceMultiplier"
-              :options="priceOptions"
-            />
           </div>
-          <div class="buttons flex w-[280px] flex-col gap-5">
+          <URadioGroup
+            v-model="priceMultiplier"
+            :items="priceOptions"
+          />
+
+          <div class="buttons flex w-70 flex-col gap-5">
             <ProductCartButton :prod="product" />
             <UButton
               label="Быстрый заказ"
@@ -130,7 +116,7 @@ const priceMultiplier = ref(1)
               @click="showFeedback"
               block
               size="xl"
-              class=""
+              class="font-fancy font-bold"
             />
           </div>
         </div>
@@ -170,18 +156,6 @@ const priceMultiplier = ref(1)
       :documentation="product.docs"
       showDelivery
     />
-
-    <!--    related-->
-    <div class="">
-      <h2 class="py-2 text-lg font-semibold">Похожие товары</h2>
-      <div class="grid grid-cols-4 gap-2 max-xl:grid-cols-2 max-sm:grid-cols-1">
-        <CatalogProductCard
-          v-for="prod in product.relatedProds"
-          :prod="prod"
-          class="@container"
-        />
-      </div>
-    </div>
     <UAlert
       icon="i-heroicons-exclamation-circle"
       color="tertiary"
@@ -190,5 +164,27 @@ const priceMultiplier = ref(1)
       title="Уважаемые покупатели, представленный ассортимент и стоимость продукции не являются окончательными."
       description="Уточняйте наличие и условия предоставления скидок у наших специалистов. Сотрудничая с нами, Вы получаете гарантию качества и точность исполнения заказа!"
     />
+    <div
+      v-if="product.relatedProds.length"
+      class=""
+    >
+      <USeparator
+        label="Похожие товары"
+        color="primary"
+        :ui="{
+          container: 'mx-0 px-4 py-0.5 border border-primary rounded-full',
+          label: 'text-primary font-fancy text-base font-bold ',
+        }"
+      />
+
+      <div class="my-4 grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-2">
+        <!-- <div class="my-4 grid grid-cols-1 gap-2"> -->
+        <CatalogProductCard
+          v-for="prod in product.relatedProds"
+          :prod="prod"
+          class="@container"
+        />
+      </div>
+    </div>
   </div>
 </template>

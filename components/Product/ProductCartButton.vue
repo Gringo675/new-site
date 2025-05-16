@@ -22,7 +22,7 @@ const productCartIndex = computed(() => cart.findIndex(cartItem => cartItem.id =
     />
     <div
       v-else
-      class="flex gap-1"
+      class="flex items-center justify-center gap-1"
     >
       <UButton
         :icon="cart[productCartIndex].quantity === 1 ? 'i-heroicons-trash' : 'i-heroicons-minus-small-solid'"
@@ -35,7 +35,9 @@ const productCartIndex = computed(() => cart.findIndex(cartItem => cartItem.id =
         size="xl"
         type="number"
         min="1"
-        inputClass="w-12 px-1 text-center"
+        :ui="{
+          base: 'text-center w-15',
+        }"
       />
       <UButton
         icon="i-heroicons-plus-small-solid"
@@ -44,7 +46,7 @@ const productCartIndex = computed(() => cart.findIndex(cartItem => cartItem.id =
         variant="outline"
       />
       <UButton
-        class="grow flex-col items-center py-0.5"
+        class="grow flex-col items-center gap-0 py-0.5"
         to="/user/cart"
       >
         <div class="font-semibold">В корзине</div>

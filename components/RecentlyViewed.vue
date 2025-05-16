@@ -77,16 +77,17 @@ async function updateViewed() {
       label="Просмотренные товары"
       color="primary"
       :ui="{
-        container: 'mx-0 px-2 border border-primary rounded-full',
-        label: 'text-base text-primary',
+        container: 'mx-0 px-4 border border-primary rounded-full',
+        label: 'text-primary italic font-bold text-lg',
       }"
     />
+
     <div class="my-4 grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-2">
-      <!-- <div class="grid grid-cols-4 gap-2 max-xl:grid-cols-2 max-sm:grid-cols-1"> -->
+      <!-- <div class="my-4 grid grid-cols-1 gap-2"> -->
       <CatalogProductCard
         v-for="prod in viewed.slice(0, 6)"
         :prod="prod"
-        class="@container max-w-158"
+        class="@container"
       />
     </div>
   </div>

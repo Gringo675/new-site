@@ -27,7 +27,6 @@ const handleShowSiblingsClick = () => {
   >
     <UButton
       icon="i-heroicons-chevron-down"
-      :ui="{ rounded: 'rounded-full' }"
       class="p-1"
       variant="outline"
       @click="handleShowSiblingsClick"
@@ -36,6 +35,7 @@ const handleShowSiblingsClick = () => {
       <div
         v-if="menuState.show"
         class="absolute z-20 mt-2 rounded-lg border border-gray-300 bg-gray-200 p-2"
+        @click.stop
       >
         <div
           class="menu-scrollbar flex w-max flex-col gap-2 overflow-auto pr-2"
@@ -44,7 +44,7 @@ const handleShowSiblingsClick = () => {
           <NuxtLink
             v-for="item in items"
             :to="'/catalog/' + item.alias"
-            class="underline-offset-4 hover:underline"
+            class="w-fit underline-offset-4 hover:underline"
             :class="{ 'cursor-default font-bold hover:no-underline': item.current }"
             >{{ item.name }}</NuxtLink
           >

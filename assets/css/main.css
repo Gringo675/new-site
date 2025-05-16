@@ -4,6 +4,7 @@
 @theme {
   --breakpoint-xs: 30rem;
   --font-sans: 'Sofia Sans';
+  /* --font-sans: 'Marck Script'; */
 }
 /*
   The default border color has changed to `currentcolor` in Tailwind CSS v4,
@@ -66,7 +67,8 @@
   }
 
   html {
-    /* background-image: var(--bg-gradient); */
+    --bg-gradient: red;
+    background-image: var(--bg-gradient);
     /* @apply bg-linear-to-r from-red-200 via-orange-200 via-30% to-red-200; */
     /* scrollbar-gutter: stable; */
     scrollbar-color: #c4b5fd #fee2e2;
@@ -83,6 +85,10 @@
   }
   .font-accent {
     font-family: 'Russo One';
+  }
+  .font-fancy {
+    /* font-family: 'Caveat'; */
+    font-family: 'Bad Script';
   }
   header {
     --header-hidden-block: 120px;

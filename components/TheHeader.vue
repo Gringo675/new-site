@@ -127,13 +127,13 @@ const menuState = [
           size="md"
           @click="showCatsMenu"
           label="Каталог"
-          class="rounded-full"
+          class="font-fancy rounded-full font-bold text-yellow-100"
         />
         <div class="flex grow justify-center">
           <UButton
             icon="i-heroicons-pencil-square"
             size="md"
-            class="rounded-full"
+            class="font-fancy rounded-full font-bold"
             @click="showFeedback"
           >
             <span class="max-lg:hidden">Быстрый заказ</span>
@@ -141,7 +141,7 @@ const menuState = [
         </div>
       </div>
       <div class="col-span-1 max-md:hidden">
-        <TheSearch class="max-lg:max-w-[350px]" />
+        <TheSearch class="max-lg:max-w-88" />
       </div>
       <div class="col-span-1 flex items-center justify-end gap-3 max-md:col-span-3 max-md:justify-between">
         <UButton

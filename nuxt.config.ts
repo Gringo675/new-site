@@ -16,6 +16,7 @@ export default defineNuxtConfig({
     theme: {
       colors: ['primary', 'secondary', 'tertiary', 'info', 'success', 'warning', 'error'],
     },
+    fonts: true,
   },
   routeRules: {
     '/admin/**': { ssr: false },
