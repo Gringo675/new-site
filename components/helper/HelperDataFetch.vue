@@ -13,7 +13,7 @@ const { status, data, error } = await useLazyAsyncData(
   props.url,
   () => {
     return $fetch(
-      props.url
+      props.url,
       //, { headers }
     )
   },
@@ -21,7 +21,7 @@ const { status, data, error } = await useLazyAsyncData(
     getCachedData: key => useNuxtData(key).data?.value,
     deep: false,
     dedupe: 'defer',
-  }
+  },
 )
 
 // если на странице случилась ошибка, и мы заходим на нее повторно, то значение status = error будет изначально.
@@ -34,22 +34,20 @@ watch(status, statusValue => {
 </script>
 
 <template>
-  <div class="w-full p-2">
-    <Transition
-      name="page"
-      mode="out-in"
+  <Transition
+    name="page"
+    mode="out-in"
+  >
+    <div
+      v-if="status !== 'success'"
+      class="flex cursor-progress flex-col items-center justify-center py-3"
     >
       <div
-        v-if="status !== 'success'"
-        class="py-3 flex flex-col items-center justify-center cursor-progress"
-      >
-        <div
-          class="border-[16px] border-t-[#2578FBFF] border-r-[#42ecc8] border-b-[#f7ef72] border-l-[#f34a5f] rounded-full w-32 h-32 animate-[spin_2s_linear_infinite]"
-        ></div>
-      </div>
-      <div v-else>
-        <slot :data="data">some fallback</slot>
-      </div>
-    </Transition>
-  </div>
+        class="h-32 w-32 animate-[spin_2s_linear_infinite] rounded-full border-[16px] border-t-[#2578FBFF] border-r-[#42ecc8] border-b-[#f7ef72] border-l-[#f34a5f]"
+      ></div>
+    </div>
+    <div v-else>
+      <slot :data="data">some fallback</slot>
+    </div>
+  </Transition>
 </template>

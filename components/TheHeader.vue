@@ -6,12 +6,12 @@ const menuState = [
   {
     label: 'О компании',
     to: '/about',
-    icon: 'i-heroicons-information-circle',
+    icon: 'i-mynaui-info-waves',
   },
   {
     label: 'Как купить',
     to: '/help',
-    icon: 'i-heroicons-question-mark-circle',
+    icon: 'i-mynaui-question-waves',
   },
   {
     label: 'Доставка',
@@ -50,23 +50,23 @@ const menuState = [
           />
         </ULink>
       </div>
-      <div
-        class="col-span-3 flex max-md:hidden"
-        style="--ui-text-muted: var(--color-teal-100); --ui-text-dimmed: var(--color-teal-200)"
-      >
-        <UNavigationMenu
-          :items="menuState"
-          color="warning"
-          highlight
-          highlight-color="error"
-          :ui="{
-            item: 'py-1',
-            // label: 'text-green-400',
-            link: 'max-lg:text-xs max-lg:px-2 after:h-0.5 after:bottom-0 after:left-1 after:right-1 hover:text-teal-200',
-            linkLeadingIcon: '',
-          }"
-          class="font-accent mx-auto w-auto rounded-b-md bg-stone-900"
-        />
+      <div class="col-span-3 flex max-md:hidden">
+        <div class="font-accent bg-black-striped mx-auto rounded-b-md p-1 pt-0">
+          <div class="rounded-b-md border-2 border-t-0 border-dashed border-orange-100">
+            <UButton
+              v-for="item in menuState"
+              variant="link"
+              :label="item.label"
+              :to="item.to"
+              :icon="item.icon"
+              :ui="{
+                leadingIcon: 'max-lg:size-4',
+              }"
+              class="p-1.5 text-orange-200 hover:text-orange-300 max-lg:text-xs"
+              active-class="cursor-default underline underline-offset-4 decoration-orange-300"
+            />
+          </div>
+        </div>
       </div>
       <div class="col-span-1 mr-2 flex items-center justify-end gap-2 max-md:hidden">
         <img
@@ -91,7 +91,9 @@ const menuState = [
         />
       </div>
       <div class="col-span-2 flex max-md:hidden">
-        <div class="mr-2 flex w-full flex-col items-end justify-center max-xl:items-center max-lg:text-sm">
+        <div
+          class="mr-2 flex w-full flex-col items-end justify-center text-slate-900 italic max-xl:items-center max-lg:text-sm"
+        >
           <div class="flex items-center">
             <UIcon
               name="i-heroicons-home-modern"
@@ -119,15 +121,16 @@ const menuState = [
     </div>
   </div>
 
-  <div class="bg-stone-900">
+  <!-- <div class="bg-stone-900"> -->
+  <div class="bg-black-striped">
     <div class="mx-auto grid max-w-(--breakpoint-xl) grid-cols-[1fr_auto_1fr] gap-1 px-2 py-3">
       <div class="col-span-1 flex items-center gap-3 max-md:hidden">
         <UButton
-          icon="i-heroicons-queue-list"
+          icon="i-carbon-catalog-publish"
           size="md"
           @click="showCatsMenu"
           label="Каталог"
-          class="font-fancy rounded-full font-bold text-yellow-100"
+          class="rounded-full font-bold"
         />
         <div class="flex grow justify-center">
           <UButton

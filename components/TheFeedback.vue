@@ -7,49 +7,15 @@ const props = defineProps({
 const emit = defineEmits(['close'])
 
 const userProfile = useTemplateRef('userProfileRef')
+const userForm = useTemplateRef('userFormRef')
 
-const formState = reactive({
-  message: '',
-  files: null,
-})
-const fieldErrors = {
-  message: '',
-  files: '',
-}
-const validateField = (field, value) => {
-  switch (field) {
-    case 'message':
-      fieldErrors.message = value ? '' : 'Напишите сообщение!'
-      break
-    case 'files':
-      fieldErrors.files = checkFormFiles(value)
-      break
-  }
-}
-watch(
-  () => formState.message,
-  val => validateField('message', val),
-  { immediate: true },
-)
-watch(
-  () => formState.files,
-  val => validateField('files', val),
-  { immediate: true },
-)
-
-const formValidate = () => {
-  return Object.entries(fieldErrors)
-    .filter(([_, message]) => message)
-    .map(([name, message]) => ({ name, message }))
-}
-
-const onSubmit = async () => {
+const submitForm = async () => {
+  const formData = await userForm.value.getUserFormData()
+  if (!formData) return
   const isUserSaved = await userProfile.value.saveUserData()
   if (!isUserSaved) return
 
   const user = useUser().value
-
-  const formData = new FormData()
   formData.append(
     'user',
     JSON.stringify({
@@ -61,12 +27,6 @@ const onSubmit = async () => {
       phone: user.phone,
     }),
   )
-  formData.append('message', formState.message)
-  if (formState.files) {
-    Array.from(formState.files).forEach(file => {
-      formData.append('files', file)
-    })
-  }
 
   const success = await myFetch('/api/user/sendFeedback', {
     method: 'post',
@@ -76,14 +36,6 @@ const onSubmit = async () => {
   if (success) {
     showNotice({ title: 'Сообщение отправлено!', description: 'Вам ответят в ближайшее время.', type: 'success' })
     emit('close')
-  }
-}
-
-function onError(event) {
-  if (event?.errors?.[0]?.id) {
-    const element = document.getElementById(event.errors[0].id)
-    element?.focus()
-    element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }
 }
 </script>
@@ -102,38 +54,7 @@ function onError(event) {
       <div class="grid gap-x-6 gap-y-4 md:grid-cols-2">
         <!-- first col -->
         <div class="">
-          <UForm
-            :state="formState"
-            :validate="formValidate"
-            id="fb_form"
-            @submit="onSubmit"
-            @error="onError"
-            class="space-y-4"
-          >
-            <UFormField
-              name="message"
-              label="Сообщение"
-              required
-            >
-              <UTextarea
-                v-model="formState.message"
-                placeholder="Ваше сообщение..."
-                resize
-                :rows="9"
-                class="w-full"
-              />
-            </UFormField>
-            <UFormField
-              name="files"
-              label="Прикрепить файлы"
-            >
-              <UInput
-                type="file"
-                multiple
-                @change="formState.files = $event.target.files"
-              />
-            </UFormField>
-          </UForm>
+          <TheUserForm ref="userFormRef" />
         </div>
         <!-- second col -->
         <div class="">
@@ -150,9 +71,8 @@ function onError(event) {
           @click="emit('close')"
         />
         <UButton
-          type="submit"
-          form="fb_form"
           label="Ok"
+          @click="submitForm"
           variant="subtle"
           color="neutral"
           class="px-8"

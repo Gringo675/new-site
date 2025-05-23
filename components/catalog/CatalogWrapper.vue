@@ -108,7 +108,7 @@ function addFilterToURL() {
 </script>
 
 <template>
-  <div class="w-full p-2">
+  <div class="">
     <BreadCrumbsWrapper :catId="catData.id" />
     <HelperInfoBlock
       :title="catData.name"

@@ -3,10 +3,9 @@ const cart = reactive([])
 export const useCart = () => cart
 
 export const addProductToCart = product => {
-  const { id, name, alias, price } = product
+  const { id, name, alias, price, label, priceRegular } = product
   const image = product.image ?? (Array.isArray(product.images) ? product.images[0] : product.images.match(/\S+/)[0])
-  const quantity = 1
-  cart.push({ id, name, alias, price, image, quantity })
+  cart.push({ id, name, alias, price, image, label, priceRegular, quantity: 1 })
 }
 
 // using in TheCart.vue

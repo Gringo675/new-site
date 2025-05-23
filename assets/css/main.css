@@ -25,63 +25,33 @@
 } */
 
 @layer base {
-  ::root {
-    --bg-gradient: linear-gradient(
-      to right,
-      #fda4af,
-      #ffaca3,
-      #ffb797,
-      #ffc48e,
-      #ffd28a,
-      #ffd989,
-      #ffe089,
-      #fde88a,
-      #fdea8a,
-      #feec8a,
-      #fde88a,
-      #ffe089
-    );
-    /* --bg-gradient: linear-gradient(
-      to right,
-      #fda4af,
-      #ffaca3,
-      #ffb797,
-      #ffc48e,
-      #ffd28a,
-      #ffd989,
-      #ffe089,
-      #fde88a,
-      #fdea8a,
-      #feec8a,
-      #feee8a,
-      #fef08a
-    ); */
-    /* --bg-gradient: linear-gradient(
-      90deg,
-      rgb(235, 150, 150) 0%,
-      rgb(232, 153, 106) 25%,
-      rgb(227, 179, 109) 50%,
-      rgb(239, 179, 134) 75%,
-      rgb(232, 172, 172) 100%
-    ); */
-  }
-
-  html {
-    --bg-gradient: red;
-    background-image: var(--bg-gradient);
-    /* @apply bg-linear-to-r from-red-200 via-orange-200 via-30% to-red-200; */
+  :root {
     /* scrollbar-gutter: stable; */
     scrollbar-color: #c4b5fd #fee2e2;
     scrollbar-width: thin;
+    @apply bg-gradient-to-r from-purple-100 via-fuchsia-200/85 via-30% to-violet-100 2xl:from-purple-50 2xl:to-violet-50;
+  }
+
+  html {
   }
   body {
-    overflow-y: scroll; /* visible on pages without scroll (work well with modal overlay)*/
-    font-size: 1rem;
-    /*overflow-y: scroll;  always visible */
+    background: none;
     background-image: url('/img/background.svg');
     background-size: 250px auto;
     background-position: center top;
     background-repeat: repeat;
+    background-attachment: fixed;
+    overflow-y: scroll; /* visible on pages without scroll (work well with modal overlay)*/
+    font-size: 1rem;
+    /*overflow-y: scroll;  always visible */
+    /* background-image: url('/img/background.svg'), var(--bg-gradient);
+    background-size:
+      250px auto,
+      100% 100%;
+    background-position:
+      center top,
+      center center;
+    background-repeat: repeat, no-repeat; */
   }
   .font-accent {
     font-family: 'Russo One';
@@ -90,13 +60,21 @@
     /* font-family: 'Caveat'; */
     font-family: 'Bad Script';
   }
+  .bg-black-striped {
+    background: repeating-linear-gradient(
+      45deg,
+      var(--color-stone-900),
+      var(--color-stone-900) 30px,
+      var(--color-stone-800) 30px,
+      var(--color-stone-800) 60px
+    );
+  }
   header {
     --header-hidden-block: 120px;
     top: calc(-1 * var(--header-hidden-block));
     & .header-hidden {
       height: var(--header-hidden-block);
       overflow: hidden;
-      /* background-image: var(--bg-gradient); */
     }
   }
   @media (max-width: 767px) {

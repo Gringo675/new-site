@@ -16,6 +16,8 @@ export default async event => {
   const fileError = checkFormFiles(data.files)
   if (fileError) throw createError({ statusCode: 511, statusMessage: 'Incorrect file(s)!' }) // не работает с кириллицей, поэтому прописываем общую ошибку
 
-  data.user = JSON.parse(data.user)
+  if (data.user) data.user = JSON.parse(data.user)
+  if (data.cart) data.cart = JSON.parse(data.cart)
+
   return data
 }

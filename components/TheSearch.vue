@@ -107,7 +107,9 @@ const onInputClick = e => {
       :loading="searchState.pending"
       size="md"
       class="z-21 w-full"
-      inputClass="bg-slate-100"
+      :ui="{
+        base: 'bg-violet-100 focus:bg-violet-50',
+      }"
       @keyup.enter="goTo(`/search/${searchState.query}`)"
       @click="onInputClick"
     >
@@ -128,7 +130,7 @@ const onInputClick = e => {
     <Transition name="transition-below">
       <div
         v-if="searchState.showResults"
-        class="absolute right-0 left-0 z-20 mt-1 rounded-md border border-violet-600 bg-gray-200 p-2 shadow-xl"
+        class="absolute right-0 left-0 z-20 mt-1 rounded-md border border-violet-600 bg-violet-100 p-2 shadow-xl"
         @click.stop
       >
         <div
@@ -142,7 +144,7 @@ const onInputClick = e => {
             class=""
           >
             <!-- categories -->
-            <div class="flex flex-col items-start gap-y-1 bg-gray-200 p-2 pt-1">
+            <div class="flex flex-col items-start gap-y-1 bg-violet-100 p-2 pt-1">
               <div class="-mb-2 self-end text-sm">Категории</div>
               <template v-for="cat in searchState.result.cats">
                 <UButton
@@ -157,7 +159,7 @@ const onInputClick = e => {
               </template>
             </div>
             <!-- products -->
-            <div class="flex flex-col items-start gap-y-1 rounded-md bg-gray-50 p-2 pt-1">
+            <div class="flex flex-col items-start gap-y-1 rounded-lg bg-violet-50 p-2 pt-1">
               <div class="-mb-1 self-end text-sm">Товары</div>
               <UButton
                 v-for="product in searchState.result.products"
@@ -187,7 +189,7 @@ const onInputClick = e => {
           </div>
           <div
             v-else
-            class="bg-slate-50 p-2"
+            class="bg-violet-100 p-2"
           >
             Нет результатов! Попробуйте изменить запрос.
           </div>

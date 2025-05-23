@@ -24,11 +24,13 @@ const productCartIndex = computed(() => cart.findIndex(cartItem => cartItem.id =
     class="flex items-center justify-center gap-1"
   >
     <UButton
+      color="secondary"
       :icon="cart[productCartIndex].quantity === 1 ? 'i-heroicons-trash' : 'i-heroicons-minus-small-solid'"
       @click="--cart[productCartIndex].quantity"
       variant="outline"
     />
     <UInput
+      color="secondary"
       v-model.lazy="cart[productCartIndex].quantity"
       type="number"
       min="1"
@@ -37,6 +39,7 @@ const productCartIndex = computed(() => cart.findIndex(cartItem => cartItem.id =
       }"
     />
     <UButton
+      color="secondary"
       icon="i-heroicons-plus-small-solid"
       @click="++cart[productCartIndex].quantity"
       variant="outline"

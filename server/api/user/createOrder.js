@@ -7,22 +7,19 @@ export default defineEventHandler(async event => {
   //
 
   const order = await getFormData(event)
-  order.fastOrder = order.user !== undefined
-  if (!order.fastOrder) {
-    const tokenUser = await checkToken(event)
-    order.user_id = tokenUser.id
-  }
+  console.log(`order: ${JSON.stringify(order, null, 2)}`)
+
   order.created = new Date().toISOString()
-  order.id = await saveOrder(order)
+  order.id = order.user.auth ? await saveOrder(event, order) : 1
   await sendMails(order)
 
   return order.id
 })
 
-const saveOrder = async order => {
+const saveOrder = async (event, order) => {
   // сохраняем заказ в базе и возвращаем id (номер) заказа
-  if (order.fastOrder) return 1
-  const query = `INSERT INTO i_orders SET created = '${order.created}', user_id = '${order.user_id}',
+  const userId = (await checkToken(event)).id
+  const query = `INSERT INTO i_orders SET created = '${order.created}', user_id = '${userId}',
                   cart = '${prepareString(order.cart)}', comment = '${prepareString(order.comment)}',
                   files = '${
                     order.files.length ? prepareString(order.files.map(file => file.filename).join(', ')) : ''

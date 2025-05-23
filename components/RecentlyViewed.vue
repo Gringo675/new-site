@@ -83,9 +83,8 @@ async function updateViewed() {
     />
 
     <div class="my-4 grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-2">
-      <!-- <div class="my-4 grid grid-cols-1 gap-2"> -->
       <CatalogProductCard
-        v-for="prod in viewed.slice(0, 6)"
+        v-for="prod in viewed"
         :prod="prod"
         class="@container"
       />

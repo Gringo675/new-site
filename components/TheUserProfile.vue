@@ -7,8 +7,8 @@
  * Если нет, введенные данные просто записываются в переменную user.
  */
 
-const userFormRef = useTemplateRef('userFormRef')
-defineExpose({ userFormRef, saveUserData })
+const userProfileRef = useTemplateRef('userProfileRef')
+defineExpose({ userProfileRef, saveUserData })
 
 await getUser({ hidden: true })
 const user = useUser().value
@@ -92,10 +92,18 @@ const validate = () => {
     .map(([name, message]) => ({ name, message }))
 }
 
+function onError(event) {
+  if (event?.errors?.[0]?.id) {
+    const element = document.getElementById(event.errors[0].id)
+    element?.focus()
+    element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }
+}
+
 async function saveUserData() {
-  const isValid = await userFormRef.value.validate().catch(() => false) // если есть ошибки, выбрасывает ошибку
+  const isValid = await userProfileRef.value.validate().catch(() => false) // если есть ошибки, выбрасывает ошибку
   if (!isValid) {
-    userFormRef.value.submit() // для запуска onError
+    userProfileRef.value.submit() // для запуска onError
     return false
   }
 
@@ -108,17 +116,19 @@ async function saveUserData() {
         .map(key => {
           return { field: key, value: newUser[key].val }
         })
-      const isChangesSaved = await myFetch('/api/user/changeUser', {
-        method: 'post',
-        payload: changedUserData,
-      })
-      if (!isChangesSaved) throw new Error()
-      localStorage.setItem('user-event', Date.now().toString()) // для обновления всех открытых вкладок
-    }
 
-    // перезаписываем все данные в user
-    for (const key in newUser) {
-      user[key] = newUser[key]
+      if (changedUserData.length) {
+        const isChangesSaved = await myFetch('/api/user/changeUser', {
+          method: 'post',
+          payload: changedUserData,
+        })
+        if (!isChangesSaved) throw new Error()
+        localStorage.setItem('user-event', Date.now().toString()) // для обновления всех открытых вкладок
+      }
+      // перезаписываем все данные в user
+      for (const key in newUser) {
+        user[key] = newUser[key]
+      }
     }
 
     return true
@@ -128,19 +138,11 @@ async function saveUserData() {
     return false
   }
 }
-
-function onError(event) {
-  if (event?.errors?.[0]?.id) {
-    const element = document.getElementById(event.errors[0].id)
-    element?.focus()
-    element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-  }
-}
 </script>
 
 <template>
   <UForm
-    ref="userFormRef"
+    ref="userProfileRef"
     :validate="validate"
     :state="newUser"
     @error="onError"
