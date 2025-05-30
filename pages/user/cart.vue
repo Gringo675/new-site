@@ -3,8 +3,21 @@
 useSeoMeta({
   title: 'Корзина',
 })
+const user = useUser().value
 
 const cart = useCart()
+const cartTotal = computed(() => {
+  const summ = cart.reduce((total, item) => total + item.quantity * item.price, 0)
+  const Formatter = new Intl.NumberFormat('ru-RU', {
+    style: 'currency',
+    currency: 'RUB',
+  })
+  return {
+    items: cart.reduce((acc, item) => acc + item.quantity, 0),
+    total: Formatter.format(summ),
+    totalWithVat: Formatter.format(summ * 1.2),
+  }
+})
 const cartWrapper = useTemplateRef('cartWrapperRef')
 const userForm = useTemplateRef('userFormRef')
 
@@ -41,32 +54,31 @@ const onCartOrderButtonClick = async () => {
     cartState.value = 1
   }
 }
+
+const orderNumber = ref(0)
 const createOrder = async () => {
   // если дошли до этого шага, значит у нас уже есть formData и сохраненный user
 
-  // const formData = new FormData(cartForm)
-  // formData.append('cart', JSON.stringify(cart))
-  // if (orderHandler.fastOrder) formData.append('user', JSON.stringify(user))
-  // orderHandler.orderNumber = await myFetch('/api/user/createOrder', {
-  //   method: 'post',
-  //   payload: formData,
-  // })
-  // if (orderHandler.orderNumber > 0) {
-  //   orderHandler.step = 4
-  //   cart.length = 0 // clear cart
-  // }
-
-  const user = useUser().value
   formData.append('user', JSON.stringify(user))
   formData.append('cart', JSON.stringify(cart))
 
-  const orderNumber = await myFetch('/api/user/createOrder', {
+  orderNumber.value = await myFetch('/api/user/createOrder', {
     method: 'post',
     payload: formData,
   })
-  if (orderNumber > 0) {
-    cartState.value = 3
-    cart.length = 0 // clear cart
+  if (orderNumber.value > 0) cart.length = 0
+}
+
+const clearCart = async () => {
+  const proceed = await showMessage({
+    title: 'Очистка корзины',
+    description: `Товары будут удалены из корзины без возможности восстановления. Продолжить?`,
+    isDialog: true,
+    type: 'error',
+  })
+  if (proceed) {
+    cart.length = 0
+    cartState.value = 0
   }
 }
 </script>
@@ -94,79 +106,94 @@ const createOrder = async () => {
       v-else
     >
       <h1 class="font-accent my-4 text-2xl">{{ cartState === 1 ? 'Корзина' : 'Оформление заказа' }}</h1>
-
-      <HelperAsideGrid
-        v-if="cartState !== 3"
-        reverse
-      >
-        <template v-if="cartState === 1">
-          <div class="@container flex flex-col gap-2">
-            <CatalogProductCard
-              v-for="prod in cart"
-              :key="prod.id"
-              :prod="prod"
+      <template v-if="cartState !== 3">
+        <HelperAsideGrid reverse>
+          <template v-if="cartState === 1">
+            <div class="@container flex flex-col gap-2">
+              <CatalogProductCard
+                v-for="prod in cart"
+                :key="prod.id"
+                :prod="prod"
+              />
+            </div>
+            <UButton
+              class="float-right my-2"
+              label="Очистить корзину"
+              color="error"
+              variant="ghost"
+              icon="i-heroicons-trash-solid"
+              @click="clearCart"
             />
-          </div>
-          <!-- attach comment and file -->
-          <TheUserForm
-            forCart
-            ref="userFormRef"
-            class="my-4"
+            <!-- attach comment and file -->
+            <TheUserForm
+              forCart
+              ref="userFormRef"
+              class="my-6"
+            />
+          </template>
+          <HelperUserOrder
+            v-if="cartState === 2"
+            @createOrder="createOrder"
           />
-        </template>
-        <HelperUserOrder
-          v-if="cartState === 2"
-          @createOrder="createOrder"
-        />
-        <template #aside>
-          <div class="sticky top-15 rounded-lg border border-violet-200 bg-violet-50 p-2 shadow-lg">
-            <h2 class="mb-4 border-b border-gray-200 text-lg font-bold">В корзине</h2>
-            <div class="flex flex-col gap-2">
-              <div class="flex">
-                <div class="">Товаров:</div>
-                <div class="ml-auto font-bold">{{ cart.reduce((acc, item) => acc + item.quantity, 0) }}</div>
-              </div>
-              <div class="flex">
-                <div class="">Сумма без НДС:</div>
-                <div class="ml-auto font-bold">
-                  {{ cart.reduce((total, item) => total + item.quantity * item.price, 0).toLocaleString() + ' ₽' }}
+          <template #aside>
+            <div class="sticky top-15 rounded-lg border border-violet-200 bg-violet-50 p-2 shadow-lg">
+              <h2 class="mb-4 border-b border-gray-200 text-lg font-bold">В корзине</h2>
+              <div class="flex flex-col gap-2">
+                <div class="flex">
+                  <div class="">Товаров:</div>
+                  <div class="ml-auto font-bold">{{ cartTotal.items }}</div>
+                </div>
+                <div class="flex">
+                  <div class="">Сумма без НДС:</div>
+                  <div class="ml-auto font-bold">
+                    {{ cartTotal.total }}
+                  </div>
+                </div>
+                <div class="flex">
+                  <div class="">Сумма с НДС:</div>
+                  <div class="ml-auto font-bold">
+                    {{ cartTotal.totalWithVat }}
+                  </div>
                 </div>
               </div>
-              <div class="flex">
-                <div class="">Сумма с НДС:</div>
-                <div class="ml-auto font-bold">
-                  {{
-                    (cart.reduce((total, item) => total + item.quantity * item.price, 0) * 1.2).toLocaleString() + ' ₽'
-                  }}
-                </div>
+              <div class="mx-auto my-4 max-w-80">
+                <UButton
+                  :label="cartState === 1 ? 'Оформить заказ' : 'Назад в корзину'"
+                  :icon="cartState === 1 ? 'i-heroicons-shopping-cart-solid' : 'i-heroicons-arrow-left-solid'"
+                  color="tertiary"
+                  size="xl"
+                  block
+                  class=""
+                  @click="onCartOrderButtonClick"
+                />
               </div>
             </div>
-
-            <UButton
-              :label="cartState === 1 ? 'Оформить заказ' : 'Назад в корзину'"
-              color="tertiary"
-              block
-              size="xl"
-              class="my-4"
-              @click="onCartOrderButtonClick"
-            />
-          </div>
-        </template>
-      </HelperAsideGrid>
+          </template>
+        </HelperAsideGrid>
+        <div class="my-6 rounded-lg border border-violet-200 bg-violet-100 p-4 shadow-lg">
+          <p>
+            Вы можете редактировать позиции в корзине, уменьшая и увеличивая их количество. Чтобы удалить товар,
+            достаточно уменьшить его количество до нуля. Все требования к заказу, такие, как наличие поверки или
+            калибровки, включение доставки в стоимость, требования к документации или упаковке, можно указать в
+            комментарии. Реквизиты организации и другую относящуюся к заявке информацию можно прикрепить отдельным
+            файлом.
+          </p>
+          <p>
+            Нажмите «Оформить заказ» и заполните контактную информацию для продолжения покупки. После обработки заказа
+            мы отправим счет на указанную электронную почту или свяжемся с Вами для уточнения деталей. Отгрузка по
+            России осуществляется транспортными компаниями, забрать товар самостоятельно можно с нашего склада в
+            Челябинске.
+          </p>
+        </div>
+      </template>
       <div
         v-else
-        class=""
+        class="mx-auto my-4 max-w-lg rounded-lg border border-violet-200 bg-violet-50 p-4"
       >
-        Заказ оформлен!
-      </div>
-      <div class="my-4 rounded-lg border border-violet-200 bg-violet-100 p-2 text-sm shadow-lg">
-        Вы можете редактировать позиции в корзине, уменьшая и увеличивая количество. Для удаления отдельной позиции
-        уменьшите ее количество до нуля. Все требования к заказу, такие, как наличие поверки, включение доставки,
-        требования к документации или упаковке, можно указать в комментарии. Реквизиты организации и другую относящуюся
-        к заявке информацию можно прикрепить отдельным файлом, нажав соответствующую кнопку. После нажатия кнопки
-        «Оформить заказ» введите контактную информацию. На указанную почту Вы получите счет на оплату, либо наш
-        сотрудник свяжется с Вами для уточнения деталей заказа. Отгрузка заказов по России осуществляется транспортными
-        компаниями, забрать товар самостоятельно можно с нашего склада в Челябинске.
+        <h2 class="mb-4 border-b border-gray-200 text-lg font-bold">
+          Заказ {{ orderNumber > 1 ? `№${orderNumber}` : '' }} успешно создан!
+        </h2>
+        <p class="">На почту {{ user.mail }} отправлено письмо, содержащее информацию по заказу.</p>
       </div>
     </div>
   </div>

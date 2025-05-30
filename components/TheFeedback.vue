@@ -3,6 +3,7 @@
 const props = defineProps({
   title: String,
   description: String,
+  message: String,
 })
 const emit = defineEmits(['close'])
 
@@ -54,7 +55,10 @@ const submitForm = async () => {
       <div class="grid gap-x-6 gap-y-4 md:grid-cols-2">
         <!-- first col -->
         <div class="">
-          <TheUserForm ref="userFormRef" />
+          <TheUserForm
+            ref="userFormRef"
+            :message="message"
+          />
         </div>
         <!-- second col -->
         <div class="">

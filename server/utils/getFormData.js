@@ -17,7 +17,6 @@ export default async event => {
   if (fileError) throw createError({ statusCode: 511, statusMessage: 'Incorrect file(s)!' }) // не работает с кириллицей, поэтому прописываем общую ошибку
 
   if (data.user) data.user = JSON.parse(data.user)
-  if (data.cart) data.cart = JSON.parse(data.cart)
 
   return data
 }

@@ -34,11 +34,12 @@ const menuState = [
 <template>
   <div class="header-hidden">
     <div
-      class="max-xs:grid-cols-[auto_auto] mx-auto grid h-full max-w-(--breakpoint-xl) grid-cols-[120px_1fr_auto_1fr_120px] grid-rows-[auto_1fr] gap-1 max-md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] max-md:grid-rows-[100%]"
+      class="max-xs:grid-cols-[70px_1fr] mx-auto grid h-full max-w-(--breakpoint-xl) grid-cols-[120px_1fr_auto_1fr_120px] grid-rows-[auto_1fr] gap-1 max-md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] max-md:grid-rows-[100%]"
     >
       <div class="col-span-1 row-span-2 flex items-center justify-center max-md:row-span-1">
         <ULink
           to="/"
+          class="w-full"
           active-class="cursor-default"
         >
           <img
@@ -47,12 +48,13 @@ const menuState = [
             class="w-full p-1 max-md:max-w-20"
             width="100%"
             height="auto"
+            style="shape-rendering: crispEdges; text-rendering: crispEdges"
           />
         </ULink>
       </div>
       <div class="col-span-3 flex max-md:hidden">
         <div class="font-accent bg-black-striped mx-auto rounded-b-md p-1 pt-0">
-          <div class="rounded-b-md border-2 border-t-0 border-dashed border-orange-100">
+          <div class="flex rounded-b-md border-2 border-t-0 border-dashed border-orange-100">
             <UButton
               v-for="item in menuState"
               variant="link"
@@ -137,7 +139,12 @@ const menuState = [
             icon="i-heroicons-pencil-square"
             size="md"
             class="font-fancy rounded-full font-bold"
-            @click="showFeedback"
+            @click="
+              showFeedback({
+                title: 'Быстрый заказ',
+                description: 'Напишите, какие позиции Вас интересуют, или прикрепите файл с заявкой.',
+              })
+            "
           >
             <span class="max-lg:hidden">Быстрый заказ</span>
           </UButton>

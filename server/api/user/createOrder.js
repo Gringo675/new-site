@@ -7,7 +7,6 @@ export default defineEventHandler(async event => {
   //
 
   const order = await getFormData(event)
-  console.log(`order: ${JSON.stringify(order, null, 2)}`)
 
   order.created = new Date().toISOString()
   order.id = order.user.auth ? await saveOrder(event, order) : 1
@@ -20,7 +19,7 @@ const saveOrder = async (event, order) => {
   // сохраняем заказ в базе и возвращаем id (номер) заказа
   const userId = (await checkToken(event)).id
   const query = `INSERT INTO i_orders SET created = '${order.created}', user_id = '${userId}',
-                  cart = '${prepareString(order.cart)}', comment = '${prepareString(order.comment)}',
+                  cart = '${prepareString(order.cart)}', message = '${prepareString(order.message)}',
                   files = '${
                     order.files.length ? prepareString(order.files.map(file => file.filename).join(', ')) : ''
                   }'`
@@ -30,9 +29,7 @@ const saveOrder = async (event, order) => {
 
 const sendMails = async order => {
   // посылаем письма клиенту и менеджеру
-  const client =
-    order.user ||
-    (await dbReq(`SELECT mail, name, org, inn, address, phone FROM i_users WHERE id = ${order.user_id} LIMIT 1`))[0]
+  const client = order.user
 
   const cart = JSON.parse(order.cart)
   const cartTemplate =
@@ -51,13 +48,13 @@ const sendMails = async order => {
 
   const sellerMail = {
     to: 'gringo675@mail.ru',
-    subject: order.fastOrder ? 'Сайт - Быстрый заказ' : `Сайт - Новый заказ №${order.id}`,
+    subject: order.id === 1 ? 'Сайт - Быстрый заказ' : `Сайт - Новый заказ №${order.id}`,
     attachments: order.files,
   }
   sellerMail.html = `
   <h1>Заголовок</h1>
   ${cartTemplate}
-  <div>Примечание к заказу: <pre>${order.comment}</pre></div>
+  <div>Примечание к заказу: <pre>${order.message}</pre></div>
   <div>Client name: ${client.name}</div>
   <div>Client mail: ${client.mail}</div>
   <div>Client org: ${client.org}</div>
@@ -75,7 +72,6 @@ const sendMails = async order => {
   ${cartTemplate}
   <div>Подвал</div>
   `
-
   await sendMail(sellerMail)
   await sendMail(clientMail)
 }

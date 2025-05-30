@@ -9,6 +9,7 @@ export const showFeedback = (options = {}) => {
   options.description =
     options.description ??
     'Воспользуйтесь данной формой, чтобы прислать Ваши вопросы, предложения, или отправить заявку.'
+  options.message = options.message ?? ''
 
   feedback.open(options)
 }

@@ -1,4 +1,30 @@
-export default async (options = {}) => {
+const initUser = () => {
+  return {
+    auth: false,
+    admin: false,
+    name: '',
+    mail: '',
+    org: '',
+    inn: '',
+    address: '',
+    phone: '',
+  }
+}
+
+export const useUser = () => {
+  return useState('user', initUser)
+}
+
+export const logoutUser = async () => {
+  const user = useUser()
+
+  user.value = initUser() // сбрасываем состояние пользователя
+  // удаляем cookie (refreshToken)
+  await $fetch('/api/auth/logout')
+  localStorage.setItem('user-event', '0') // для обновления всех открытых вкладок
+}
+
+export const getUser = async (options = {}) => {
   options.hidden = options.hidden ?? false // не возвращать ошибки в случае неудачи
   options.force = options.force ?? false // для обновления данных
 

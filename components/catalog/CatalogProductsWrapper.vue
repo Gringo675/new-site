@@ -123,7 +123,7 @@ watch(pageSetup, () => changesHandler({ fromPageSetup: true }), { deep: true })
 
 <template>
   <!--        order and quantity-->
-  <div class="flex w-full justify-end gap-x-2">
+  <div class="flex w-full flex-wrap justify-end gap-2">
     <USelect
       v-model="pageSetup.sortBy"
       :items="[

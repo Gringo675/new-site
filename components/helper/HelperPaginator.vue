@@ -79,18 +79,19 @@ const showMoreButton = computed(() => {
     <UButton
       v-if="showMoreButton"
       label="Показать еще"
-      variant="outline"
-      color="secondary"
-      class=""
+      variant="subtle"
+      color="tertiary"
+      size="lg"
+      class="px-6"
       @click="handlePaginator('more')"
     />
     <div class="mt-4 flex items-end justify-center gap-2">
       <UButton
         v-if="paginator.length > 1 && !paginator[0].isActive"
         icon="i-heroicons-arrow-small-left-20-solid"
-        color="secondary"
+        color="tertiary"
         variant="outline"
-        class="rounded-full"
+        class="max-xs:p-1 rounded-full"
         @click="handlePaginator('prev')"
       />
       <template v-for="link in paginator">
@@ -99,17 +100,17 @@ const showMoreButton = computed(() => {
           v-else
           :label="link.val.toString()"
           :variant="link.isActive ? 'solid' : 'outline'"
-          class="min-w-10 justify-center"
-          color="secondary"
+          class="max-xs:p-1 max-xs:min-w-7 min-w-10 justify-center"
+          color="tertiary"
           @click="handlePaginator(link.val)"
         />
       </template>
       <UButton
         v-if="paginator.length > 1 && !paginator[paginator.length - 1].isActive"
         icon="i-heroicons-arrow-small-right-20-solid"
-        color="secondary"
+        color="tertiary"
         variant="outline"
-        class="rounded-full"
+        class="max-xs:p-1 rounded-full"
         @click="handlePaginator('next')"
       />
     </div>

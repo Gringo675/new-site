@@ -39,7 +39,7 @@ const inactivateVal = val => {
         :class="{ 'rounded-b-md': !activeValues.length }"
       >
         <div
-          class="filter-scrollbar mx-1 mt-3 mb-1 flex max-h-44 overflow-auto max-md:flex-wrap max-md:gap-2 md:flex-col"
+          class="menu-scrollbar mx-1 mt-3 mb-1 flex max-h-44 overflow-auto max-md:flex-wrap max-md:gap-2 md:flex-col"
         >
           <!-- <div
           class="filter-scrollbar mx-1 mb-1 mt-3 grid max-h-44 grid-cols-[repeat(auto-fill,minmax(230px,1fr))] gap-2 overflow-auto"

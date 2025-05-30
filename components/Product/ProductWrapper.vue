@@ -113,7 +113,13 @@ const priceMultiplier = ref(1)
               label="Быстрый заказ"
               variant="outline"
               icon="i-heroicons-pencil-square"
-              @click="showFeedback"
+              @click="
+                showFeedback({
+                  title: 'Быстрый заказ',
+                  description: 'Оставьте заявку на товар, и мы свяжемся с Вами для уточнения деталей.',
+                  message: `Я хочу заказать товар ${product.name} (артикул ${product.id}).`,
+                })
+              "
               block
               size="xl"
               class="font-fancy font-bold"

@@ -11,12 +11,16 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  message: {
+    type: String,
+    default: '',
+  },
 })
 const userFormRef = useTemplateRef('userFormRef')
 defineExpose({ userFormRef, getUserFormData })
 
 const formState = reactive({
-  message: '',
+  message: props.message,
   files: null,
 })
 const fieldErrors = {
@@ -26,7 +30,7 @@ const fieldErrors = {
 const validateField = (field, value) => {
   switch (field) {
     case 'message':
-      fieldErrors.message = props.forCart || value ? '' : 'Напишите сообщение!'
+      fieldErrors.message = value.length > 3000 ? 'Слишком длинное сообщение!' : ''
       break
     case 'files':
       fieldErrors.files = checkFormFiles(value)
@@ -82,32 +86,33 @@ async function getUserFormData() {
     :validate="formValidate"
     ref="userFormRef"
     @error="onError"
-    class="flex w-full flex-wrap gap-4"
-    :class="forCart && 'justify-evenly'"
+    class="flex w-full flex-wrap gap-6"
   >
     <UFormField
       name="message"
       :label="forCart ? 'Комментарий к заказу' : 'Сообщение'"
-      :required="!forCart"
-      :class="forCart ? 'w-80' : 'w-full'"
+      class="w-full"
+      :class="forCart && 'max-w-100'"
     >
       <UTextarea
         v-model="formState.message"
         :placeholder="
           forCart
-            ? 'Можно указать здесь дополнительные требования к товару, например, наличие поверки.'
+            ? 'Укажите дополнительные требования к товару, например, наличие поверки, включение доставки в стоимость и т.п.'
             : 'Ваше сообщение...'
         "
         resize
-        :rows="forCart ? 4 : 9"
+        :rows="forCart ? 3 : 9"
         class="w-full"
+        :size="forCart ? 'xl' : 'md'"
       />
     </UFormField>
     <UFormField
       name="files"
-      label="Прикрепить файлы"
-      description="Можно прикрепить файл, например, реквизиты организации."
+      label="Прикрепить файл(-ы)"
+      :description="'Например, реквизиты организации' + (forCart ? '' : ' или заявку')"
       :class="forCart && 'max-w-75'"
+      :size="forCart ? 'xl' : 'md'"
     >
       <UInput
         type="file"

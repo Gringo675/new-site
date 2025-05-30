@@ -33,7 +33,7 @@ const shouldVerifyNewMail = ref(false)
 const validateField = (field, value) => {
   switch (field) {
     case 'name':
-      fieldErrors.name = value.length === 0 ? 'Введите имя!' : ''
+      fieldErrors.name = value.length === 0 ? 'Введите имя!' : value.length > 100 ? 'Слишком длинное имя!' : ''
       break
     case 'mail':
       const isValid = validateMail(value)
@@ -125,10 +125,10 @@ async function saveUserData() {
         if (!isChangesSaved) throw new Error()
         localStorage.setItem('user-event', Date.now().toString()) // для обновления всех открытых вкладок
       }
-      // перезаписываем все данные в user
-      for (const key in newUser) {
-        user[key] = newUser[key]
-      }
+    }
+    // перезаписываем все данные в user
+    for (const key in newUser) {
+      user[key] = newUser[key]
     }
 
     return true

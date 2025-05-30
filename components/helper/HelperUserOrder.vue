@@ -44,7 +44,7 @@ const onCreateOrderClick = async () => {
         label="Оформить заказ"
         color="tertiary"
         size="xl"
-        class="mx-auto my-6 block px-4"
+        class="mx-auto my-6 block px-10"
         @click="onCreateOrderClick"
       />
     </div>
