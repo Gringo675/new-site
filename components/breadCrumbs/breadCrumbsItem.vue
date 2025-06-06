@@ -11,10 +11,29 @@ const props = defineProps({
 
 <template>
   <div class="flex items-center gap-x-2">
-    <breadCrumbsItemMenu
-      v-if="crumb.siblings"
-      :items="crumb.siblings"
-    />
+    <HelperPopupMenu v-if="crumb.siblings">
+      <template #trigger="{ show }">
+        <UButton
+          icon="i-heroicons-chevron-down"
+          class="p-1"
+          variant="outline"
+          @click="show"
+        />
+      </template>
+      <template #content>
+        <div class="flex w-max flex-col gap-2">
+          <NuxtLink
+            v-for="sibling in crumb.siblings"
+            :to="'/catalog/' + sibling.alias"
+            class="leading-tight underline-offset-4 hover:underline"
+            :class="{ 'cursor-default font-bold hover:no-underline': sibling.current }"
+          >
+            {{ sibling.name }}
+          </NuxtLink>
+        </div>
+      </template>
+    </HelperPopupMenu>
+
     <slot
       name="icon"
       v-else

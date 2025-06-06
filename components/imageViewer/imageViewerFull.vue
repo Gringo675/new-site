@@ -30,19 +30,17 @@ const setAppearDisappearAnimation = () => {
   const causer = document.getElementById(props.causerId)
   if (!causer) return
   const causerCoords = causer.getBoundingClientRect()
-
+  const viewportWidth = document.documentElement.clientWidth
+  const viewportHeight = document.documentElement.clientHeight
   document.body.style.setProperty(
     '--viewer-transition-x',
-    `${Math.round(causerCoords.x + causerCoords.width / 2 - window.innerWidth / 2)}px`,
+    `${Math.round(causerCoords.x + causerCoords.width / 2 - viewportWidth / 2)}px`,
   )
   document.body.style.setProperty(
     '--viewer-transition-y',
-    `${Math.round(causerCoords.y + causerCoords.height / 2 - window.innerHeight / 2)}px`,
+    `${Math.round(causerCoords.y + causerCoords.height / 2 - viewportHeight / 2)}px`,
   )
-  document.body.style.setProperty(
-    '--viewer-scale',
-    `${Math.round((causerCoords.width * 100) / window.innerWidth) / 100}`,
-  )
+  document.body.style.setProperty('--viewer-scale', `${Math.round((causerCoords.width * 100) / viewportWidth) / 100}`)
 
   onBeforeUnmount(() => {
     document.body.style.removeProperty('--viewer-transition-x')

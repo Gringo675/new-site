@@ -1,73 +1,42 @@
 <script setup>
 //
-// const open = defineModel('open')
-// const wrapper = useTemplateRef('wrapperRef')
-// const handleShowSiblingsClick = () => {
-//   if (menuState.show) return
-//   menuState.maxHeight = `${window.innerHeight - menuState.ref.getBoundingClientRect().bottom - 30}px`
-//   menuState.maxWidth = `${window.innerWidth - menuState.ref.getBoundingClientRect().left - 25}px`
-//   menuState.show = true
-//   setTimeout(() => window.addEventListener('click', () => (menuState.show = false), { once: true }), 10)
-// }
-// onMounted(() => {
-//   setTimeout(() => window.addEventListener('click', () => (open.value = false), { once: true }), 10)
-// })
-// watch(open, val => {
-//   if (val) {
-//     setTimeout(() => window.addEventListener('click', () => (open.value = false), { once: true }), 10)
-//   }
-// })
-const open = ref(false)
-const show = () => {
-  if (open.value) return
-  open.value = true
-  setTimeout(() => window.addEventListener('click', close, { once: true }), 10)
-}
-const close = () => {
-  open.value = false
-}
+const props = defineProps({
+  contentClass: {
+    type: String,
+    default: '',
+  },
+})
+
+const open = defineModel('open', { type: Boolean, default: false })
+const show = () => (open.value = true)
+const close = () => (open.value = false)
 
 const handleContentClick = event => {
   if (event.target.closest('a') || event.target.closest('button')) {
     open.value = false
-    window.removeEventListener('click', close)
   } else event.stopPropagation()
 }
 
 const contentRef = useTemplateRef('contentRef')
 const handleContentSize = () => {
   const rect = contentRef.value.getBoundingClientRect()
-  if (rect.left < 0) contentRef.value.style.maxWidth = `${rect.width + rect.left - 20}px`
-  else if (rect.right > window.innerWidth)
-    contentRef.value.style.maxWidth = `${rect.width - (rect.right - window.innerWidth) - 20}px`
-  if (rect.bottom > window.innerHeight) {
-    // transition-below adds 20px
-    contentRef.value.style.maxHeight = `${rect.height - (rect.bottom - window.innerHeight)}px`
-  }
-  // // Выход за правую границу
-  // const overflowRight = rect.right - window.innerWidth
-  // // Выход за нижнюю границу
-  // const overflowBottom = rect.bottom - window.innerHeight
-  // // Выход за левую границу
-  // const overflowLeft = Math.abs(Math.min(0, rect.left))
-  // // Выход за верхнюю границу
-  // const overflowTop = Math.abs(Math.min(0, rect.top))
-
-  // console.log({
-  //   overflowRight: Math.max(0, overflowRight),
-  //   overflowBottom: Math.max(0, overflowBottom),
-  //   overflowLeft,
-  //   overflowTop,
-  // })
-  // if (overflowBottom > 0) {
-  //   // transition-below adds 20px
-  //   contentRef.value.style.maxHeight = `${rect.height - overflowBottom + 10}px`
-  // }
+  const viewportWidth = document.documentElement.clientWidth
+  const viewportHeight = document.documentElement.clientHeight
+  contentRef.value.style.maxHeight = `${viewportHeight - rect.top}px` // transition-below adds 20px
+  if (rect.left < 0) contentRef.value.style.maxWidth = `${rect.width + rect.left - 10}px`
+  else if (rect.right > viewportWidth)
+    contentRef.value.style.maxWidth = `${rect.width - (rect.right - viewportWidth) - 10}px`
+}
+const installCloseListener = () => {
+  window.addEventListener('click', close, { once: true })
+}
+const removeCloseListener = () => {
+  window.removeEventListener('click', close)
 }
 </script>
 
 <template>
-  <div class="relative w-fit">
+  <div class="relative">
     <slot
       name="trigger"
       :show="show"
@@ -75,14 +44,19 @@ const handleContentSize = () => {
     <Transition
       name="transition-below"
       @enter="handleContentSize"
+      @after-enter="installCloseListener"
+      @after-leave="removeCloseListener"
     >
       <div
         v-if="open"
-        ref="contentRef"
-        class="absolute z-20 mt-2 overflow-hidden rounded-lg border border-gray-300 bg-gray-200"
+        class="absolute z-20 mt-2 overflow-hidden rounded-lg border border-violet-300 bg-violet-100 px-1 py-2 shadow-md"
+        :class="contentClass"
         @click="handleContentClick"
       >
-        <div class="menu-scrollbar m-2 h-full w-full overflow-auto">
+        <div
+          ref="contentRef"
+          class="menu-scrollbar overflow-auto px-1"
+        >
           <slot name="content" />
         </div>
       </div>
