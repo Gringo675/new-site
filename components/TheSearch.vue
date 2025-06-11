@@ -66,6 +66,11 @@ const clearAll = () => {
   hideCatsMenu() // для модуля поиска в боковом меню
 }
 
+const goTo = async path => {
+  clearAll()
+  await navigateTo(path)
+}
+
 const onInputClick = e => {
   if (!searchState.showResults && searchState.result) searchState.showResults = true
   e.stopPropagation() // чтобы не закрывать открытые результаты
@@ -116,34 +121,23 @@ const onInputClick = e => {
       >
         <!-- categories -->
         <div class="flex flex-col items-start gap-y-1 p-2 pt-1">
-          <div class="-mb-2 self-end text-sm">Категории</div>
+          <div class="-mb-2 self-end text-sm font-semibold">Категории</div>
           <template v-for="cat in searchState.result.cats">
-            <UButton
+            <NuxtLink
               v-for="subCat in cat.children"
-              variant="link"
-              color="tertiary"
-              truncate
-              :label="subCat.name"
-              class="p-0"
-              @click="goTo(`/catalog/${subCat.alias}`)"
-            />
+              class="text-sm leading-tight underline-offset-4 hover:underline"
+              :to="`/catalog/${subCat.alias}`"
+              @click="clearAll"
+            >
+              {{ subCat.name }}
+            </NuxtLink>
           </template>
         </div>
         <!-- products -->
         <div class="flex flex-col items-start gap-y-1 rounded-lg bg-violet-50 p-2 pt-1">
-          <div class="-mb-1 self-end text-sm">Товары</div>
-          <!-- <UButton
-            v-for="product in searchState.result.products"
-            variant="link"
-            class="p-0"
-            color="tertiary"
-            truncate
-            :label="product.name"
-            @click="goTo(`/product/${product.alias}`)"
-          /> -->
+          <div class="-mb-1 self-end text-sm font-semibold">Товары</div>
           <NuxtLink
             v-for="product in searchState.result.products"
-            :key="product.id"
             class="text-sm leading-tight underline-offset-4 hover:underline"
             :to="`/product/${product.alias}`"
             @click="clearAll"

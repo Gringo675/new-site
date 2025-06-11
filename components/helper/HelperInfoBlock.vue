@@ -147,19 +147,16 @@ watch(expand, calcContainerHeight)
     <div class="flex w-full items-end max-lg:flex-wrap">
       <div
         v-if="title"
-        class="relative flex grow items-center self-stretch pr-2 pb-1 max-lg:py-4"
+        class="flex grow items-center self-stretch pr-2 pb-1 max-lg:py-4"
       >
         <h1 class="font-accent text-2xl leading-7 max-xl:text-xl max-xl:leading-6">{{ title }}</h1>
-        <div
-          class="absolute bottom-0 w-full border-t-[34px] border-r-8 border-b-4 border-l-2 border-cyan-300 border-t-transparent border-l-transparent max-lg:hidden"
-        ></div>
       </div>
       <TabsList
-        class="relative flex rounded-t-[var(--ui-radius)] bg-cyan-300 p-1 max-lg:w-full"
+        class="relative flex rounded-t-lg border-b-20 border-stone-800 bg-stone-800 p-1 max-lg:w-full"
         :class="title ? 'w-max' : 'w-full'"
       >
         <TabsIndicator
-          class="absolute inset-y-1 left-0 w-(--reka-tabs-indicator-size) translate-x-(--reka-tabs-indicator-position) rounded-[calc(var(--ui-radius)*1.5)] bg-(--ui-primary) shadow-xs transition-[translate,width] duration-200"
+          class="absolute inset-y-1 left-0 w-(--reka-tabs-indicator-size) translate-x-(--reka-tabs-indicator-position) rounded-md bg-(--ui-primary) shadow-xs transition-[translate,width] duration-200"
         />
 
         <TabsTrigger
@@ -167,7 +164,7 @@ watch(expand, calcContainerHeight)
           :key="index"
           :value="item.value || String(index)"
           :disabled="item.disabled"
-          class="relative inline-flex w-full flex-1 items-center justify-center gap-1.5 rounded-[calc(var(--ui-radius)*1.5)] px-2 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ui-primary) disabled:cursor-not-allowed disabled:opacity-75 data-[state=active]:text-(--ui-bg) data-[state=inactive]:text-(--ui-text-muted) hover:data-[state=inactive]:not-disabled:text-(--ui-text) max-lg:min-w-0 max-sm:flex-wrap sm:px-3 sm:py-2"
+          class="relative inline-flex w-full flex-1 items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ui-primary) data-[state=active]:text-white data-[state=inactive]:text-orange-200 hover:data-[state=inactive]:text-orange-100 max-lg:min-w-0 max-sm:flex-wrap sm:px-3 sm:py-2"
         >
           <slot
             name="leading"
@@ -189,7 +186,7 @@ watch(expand, calcContainerHeight)
     </div>
 
     <div
-      class="relative w-full overflow-hidden rounded-b-[var(--ui-radius)] border-4 border-t-2 border-cyan-300 bg-cyan-300 transition-[height] duration-[500ms]"
+      class="relative mt-2 w-full overflow-hidden rounded-lg border-4 border-stone-800 bg-stone-800 transition-[height] duration-[500ms]"
       :style="{ height: containerHeight }"
     >
       <div

@@ -1,10 +1,7 @@
 # ToDo:
-- change window.innerWidth to const viewportWidth = document.documentElement.clientWidth
-- same for innerHeight
 
 - создать шаблоны писем для заказа
 
-- сменить скроллер на стандартный? И проверить после этого шапку, тк сейчас стоит тонкий.
 - компонент доставки
 - cartButtons - use lazy hydration?
 - привести к одному стилю все лоадеры (спиннеры)
