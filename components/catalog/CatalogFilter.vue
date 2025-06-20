@@ -57,10 +57,10 @@ const toggleShowFilterOnMobile = () => {
         >
           <UIcon
             name="i-heroicons-chat-bubble-oval-left-ellipsis"
-            class="col-span-1 row-span-1 h-full w-6 text-cyan-600 @[16.5rem]:row-span-2 @[16.5rem]:w-16 @md:row-span-1 @md:w-11"
+            class="col-span-1 row-span-1 h-full w-6 text-indigo-500 @[16.5rem]:row-span-2 @[16.5rem]:w-16 @md:row-span-1 @md:w-11"
           />
 
-          <div class="col-span-2 ml-auto text-cyan-600 italic @[16.5rem]:text-lg @md:col-span-1 @md:mx-auto">
+          <div class="col-span-2 ml-auto text-indigo-500 italic @[16.5rem]:text-lg @md:col-span-1 @md:mx-auto">
             Нужна консультация?
           </div>
           <UButton
@@ -69,6 +69,12 @@ const toggleShowFilterOnMobile = () => {
             size="lg"
             block
             class="col-span-3 text-base @[16.5rem]:col-span-2 @md:col-span-1"
+            @click="
+              showFeedback({
+                title: 'Вопрос технологу',
+                description: 'Напишите требуемые параметры инструмента, и мы подберем для Вас подходящие варианты.',
+              })
+            "
           />
         </div>
 

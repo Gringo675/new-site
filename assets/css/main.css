@@ -352,7 +352,7 @@
   transition: transform 0.4s linear, opacity 0.2s linear;
 } */
 
-.transition-filter-values-enter-from,
+/* .transition-filter-values-enter-from,
 .transition-filter-values-leave-to {
   max-height: 8px !important;
 }
@@ -374,7 +374,7 @@
 .transition-filter-active-values-enter-active,
 .transition-filter-active-values-leave-active {
   transition: height 0.3s linear;
-}
+} */
 
 .page-enter-from,
 .page-leave-to {

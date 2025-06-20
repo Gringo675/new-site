@@ -7,7 +7,7 @@ const { item } = defineProps({
 </script>
 
 <template>
-  <div class="rounded-lg border border-cyan-200 bg-cyan-50 p-2">
+  <div class="rounded-lg border border-orange-200 bg-orange-50 p-2">
     <div>{{ item.title }}</div>
     <div class="mt-2 flex flex-wrap gap-2">
       <UButton

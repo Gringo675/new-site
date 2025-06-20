@@ -123,48 +123,47 @@ if (props.showDelivery)
   })
 
 const contentRef = useTemplateRef('contentRef')
-function onTabChange() {
-  if (!expand.value) expand.value = true
-  else calcContainerHeight()
-}
+const contentHeight = ref(0)
 const expand = ref(false)
-const containerHeight = ref('75px')
-const calcContainerHeight = async () => {
-  if (expand.value) {
-    await new Promise(resolve => setTimeout(resolve, 100))
-    containerHeight.value = `${contentRef.value.scrollHeight + 54}px`
-  } else containerHeight.value = '75px'
-}
-watch(expand, calcContainerHeight)
+const containerHeight = computed(() => (expand.value ? `${contentHeight.value + 70}px` : '80px'))
+let observer = null
+onMounted(() => {
+  observer = new ResizeObserver(entries => {
+    contentHeight.value = entries[0].contentRect.height
+  })
+  observer.observe(contentRef.value)
+})
+onUnmounted(() => {
+  observer.disconnect()
+})
 </script>
 
 <template>
   <TabsRoot
     class="my-4"
     v-bind="rootProps"
-    @update:modelValue="onTabChange"
+    @update:modelValue="expand = true"
   >
     <div class="flex w-full items-end max-lg:flex-wrap">
       <div
         v-if="title"
-        class="flex grow items-center self-stretch pr-2 pb-1 max-lg:py-4"
+        class="flex grow items-center self-stretch pr-2 pb-3 max-lg:py-4"
       >
         <h1 class="font-accent text-2xl leading-7 max-xl:text-xl max-xl:leading-6">{{ title }}</h1>
       </div>
       <TabsList
-        class="relative flex rounded-t-lg border-b-20 border-stone-800 bg-stone-800 p-1 max-lg:w-full"
+        class="relative flex rounded-t-lg bg-stone-800 p-1 pb-2 max-lg:w-full"
         :class="title ? 'w-max' : 'w-full'"
       >
         <TabsIndicator
-          class="absolute inset-y-1 left-0 w-(--reka-tabs-indicator-size) translate-x-(--reka-tabs-indicator-position) rounded-md bg-(--ui-primary) shadow-xs transition-[translate,width] duration-200"
+          class="TabsIndicator absolute top-1 bottom-2 left-0 w-(--reka-tabs-indicator-size) translate-x-(--reka-tabs-indicator-position) rounded-md bg-(--ui-primary) transition-[translate,width] duration-400"
         />
 
         <TabsTrigger
           v-for="(item, index) of items"
           :key="index"
           :value="item.value || String(index)"
-          :disabled="item.disabled"
-          class="relative inline-flex w-full flex-1 items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ui-primary) data-[state=active]:text-white data-[state=inactive]:text-orange-200 hover:data-[state=inactive]:text-orange-100 max-lg:min-w-0 max-sm:flex-wrap sm:px-3 sm:py-2"
+          class="relative inline-flex w-full flex-1 items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ui-primary) data-[state=active]:text-white data-[state=inactive]:text-orange-200 hover:data-[state=inactive]:cursor-pointer hover:data-[state=inactive]:text-orange-100 max-lg:min-w-0 max-sm:flex-wrap sm:px-3 sm:py-2"
         >
           <slot
             name="leading"
@@ -186,7 +185,7 @@ watch(expand, calcContainerHeight)
     </div>
 
     <div
-      class="relative mt-2 w-full overflow-hidden rounded-lg border-4 border-stone-800 bg-stone-800 transition-[height] duration-[500ms]"
+      class="relative -mt-2 w-full overflow-hidden rounded-lg border-4 border-stone-800 bg-gray-50 p-2 transition-[height] duration-400"
       :style="{ height: containerHeight }"
     >
       <div
@@ -197,7 +196,7 @@ watch(expand, calcContainerHeight)
           v-for="(item, index) of items"
           :key="index"
           :value="item.value || String(index)"
-          class="rounded-[var(--ui-radius)] bg-gray-50 p-2"
+          class=""
         >
           <div
             v-if="item.html"
@@ -212,13 +211,13 @@ watch(expand, calcContainerHeight)
         </TabsContent>
       </div>
 
-      <div class="absolute bottom-0 flex w-full justify-end bg-linear-to-b from-cyan-300/0 to-cyan-300/90">
+      <div class="from-muted absolute inset-x-0 bottom-0 flex h-12 items-center justify-end bg-gradient-to-t">
         <UButton
-          color="neutral"
+          color="primary"
           :label="expand ? 'Свернуть' : 'Развернуть'"
           :icon="expand ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'"
           block
-          class="mx-4 my-2 w-32"
+          class="mx-10 w-32"
           @click="expand = !expand"
         />
       </div>

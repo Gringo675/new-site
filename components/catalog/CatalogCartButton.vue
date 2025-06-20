@@ -13,7 +13,8 @@ const productCartIndex = computed(() => cart.findIndex(cartItem => cartItem.id =
   <UButton
     v-if="productCartIndex === -1"
     label="В корзину"
-    variant="outline"
+    color="tertiary"
+    variant="subtle"
     icon="i-heroicons-shopping-cart"
     @click="addProductToCart(prod)"
     block
@@ -31,11 +32,12 @@ const productCartIndex = computed(() => cart.findIndex(cartItem => cartItem.id =
     />
     <UInput
       color="secondary"
+      highlight
       v-model.lazy="cart[productCartIndex].quantity"
       type="number"
       min="1"
       :ui="{
-        base: 'text-center',
+        base: 'text-center bg-indigo-50 focus:bg-gray-50',
       }"
     />
     <UButton

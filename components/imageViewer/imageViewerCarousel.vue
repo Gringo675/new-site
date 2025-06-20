@@ -26,7 +26,7 @@
           type="button"
           :disabled="isFirst"
           @click.stop="onClickPrev"
-          class="group absolute top-1/2 flex -translate-y-1/2 rounded-full bg-slate-200 p-2 text-slate-600 opacity-60 hover:opacity-90 focus:outline-none focus-visible:outline-none disabled:opacity-20"
+          class="group absolute top-1/2 flex -translate-y-1/2 rounded-full bg-violet-100 p-2 text-violet-400 opacity-60 hover:opacity-90 focus:outline-none focus-visible:outline-none disabled:opacity-20"
           :class="[fullScreen ? 'left-3' : 'left-1']"
         >
           <UIcon
@@ -38,7 +38,7 @@
           type="button"
           :disabled="isLast"
           @click.stop="onClickNext"
-          class="group absolute top-1/2 flex -translate-y-1/2 rounded-full bg-slate-200 p-2 text-slate-600 opacity-60 hover:opacity-90 focus:outline-none focus-visible:outline-none disabled:opacity-20"
+          class="group absolute top-1/2 flex -translate-y-1/2 rounded-full bg-violet-100 p-2 text-violet-400 opacity-60 hover:opacity-90 focus:outline-none focus-visible:outline-none disabled:opacity-20"
           :class="[fullScreen ? 'right-3' : 'right-1']"
         >
           <UIcon
@@ -63,7 +63,7 @@
           @click.stop="onClick(page)"
           :src="items[page - 1].thumb ?? items[page - 1]"
           class="max-h-full max-w-25 min-w-5 rounded"
-          :class="[page === currentPage ? 'cursor-default ring-2 ring-violet-700/70' : 'cursor-pointer']"
+          :class="[page === currentPage ? 'cursor-default ring-3 ring-violet-400 brightness-85' : 'cursor-pointer']"
           draggable="false"
         />
       </template>

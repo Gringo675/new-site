@@ -33,12 +33,13 @@ const productCartIndex = computed(() => cart.findIndex(cartItem => cartItem.id =
       />
       <UInput
         color="secondary"
+        highlight
         v-model.lazy="cart[productCartIndex].quantity"
         size="xl"
         type="number"
         min="1"
         :ui="{
-          base: 'text-center w-15',
+          base: 'text-center w-15 bg-gray-50',
         }"
       />
       <UButton

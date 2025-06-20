@@ -71,7 +71,7 @@ async function updateViewed() {
 <template>
   <div
     v-if="viewed.length"
-    class="m-2"
+    class="bg-gray-50 p-2 2xl:mb-3 2xl:rounded-xl"
   >
     <USeparator
       label="Просмотренные товары"

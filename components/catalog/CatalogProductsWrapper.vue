@@ -159,7 +159,7 @@ watch(pageSetup, () => changesHandler({ fromPageSetup: true }), { deep: true })
           value: 'priceDes',
         },
       ]"
-      color="primary"
+      color="tertiary"
       variant="outline"
       highlight
       class="w-48"
@@ -181,7 +181,7 @@ watch(pageSetup, () => changesHandler({ fromPageSetup: true }), { deep: true })
         40,
         60,
       ]"
-      color="primary"
+      color="tertiary"
       variant="outline"
       highlight
       class="w-24"
