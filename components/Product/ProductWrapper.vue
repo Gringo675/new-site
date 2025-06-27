@@ -92,12 +92,12 @@ const priceMultiplier = ref(1)
       <div class="lg:row-span-2">
         <div class="flex flex-wrap items-center justify-center gap-4">
           <div
-            class="relative my-5 shrink-0 grow-0 rounded-2xl bg-orange-200 px-4 py-2 text-2xl leading-none whitespace-nowrap text-indigo-500"
+            class="relative my-5 shrink-0 grow-0 rounded-2xl bg-teal-500 px-4 py-2 text-2xl leading-none whitespace-nowrap text-teal-50"
           >
             <span class=""> {{ Math.round(product.price * priceMultiplier).toLocaleString() + ' ₽' }}</span>
             <div
               v-if="product.priceRegular"
-              class="absolute -top-5 right-3 rounded-full bg-orange-200 p-1 text-sm leading-none line-through opacity-70"
+              class="absolute -top-5 right-3 rounded-full bg-gradient-to-b from-fuchsia-400 to-fuchsia-300 p-1 text-sm leading-none line-through opacity-70"
             >
               {{ Math.round(product.priceRegular * priceMultiplier).toLocaleString() + ' ₽' }}
             </div>
@@ -141,7 +141,7 @@ const priceMultiplier = ref(1)
           </div>
         </NuxtLink>
       </div>
-      <div class="bl4 max-lg:xs:grid-cols-2 my-4 grid gap-x-4 gap-y-6 p-2 max-lg:sm:col-span-2">
+      <div class="bl4 max-lg:xs:grid-cols-2 my-4 grid items-start gap-x-4 gap-y-6 p-2 max-lg:sm:col-span-2">
         <div
           v-for="prop in product.props"
           class="relative rounded-lg border border-gray-300 bg-gray-200 px-3 py-1.5"
@@ -162,24 +162,14 @@ const priceMultiplier = ref(1)
       :documentation="product.docs"
       showDelivery
     />
-    <div class="my-6 flex gap-2 rounded-lg border border-indigo-300 bg-indigo-50 p-2">
-      <UIcon
-        name="i-mynaui-info-waves"
-        class="size-10 shrink-0 text-indigo-500"
-      />
-      <div class="">
-        <div class="leading-tight font-bold">
-          Уважаемые покупатели, представленный ассортимент и стоимость продукции не являются окончательными!
-        </div>
-        <div class="leading-tight">
-          <p>
+    <HelperAlarm
+      :title="' Уважаемые покупатели, представленный ассортимент и стоимость продукции не являются окончательными!'"
+      :description="`<p>
             Уточняйте наличие и условия предоставления скидок у наших специалистов. Возможен индивидуальный подбор
             аналогов и комплектация заказа под Ваши задачи.
           </p>
-          <p>Сотрудничая с нами, Вы получаете гарантию качества и точность исполнения заказа!</p>
-        </div>
-      </div>
-    </div>
+          <p>Сотрудничая с нами, Вы получаете гарантию качества и точность исполнения заказа!</p>`"
+    />
     <div
       v-if="product.relatedProds.length"
       class="md:-mx-2"

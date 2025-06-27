@@ -21,7 +21,7 @@ export default (...args) => {
         text += `${key}${ifRef ? '(Ref)' : ''}${ifReactive ? '(Reactive)' : ''}: ${JSON.stringify(
           ifRef ? arg[key].value : arg[key],
           null,
-          2
+          2,
         )}\n`
       }
     } else {
@@ -31,7 +31,7 @@ export default (...args) => {
   }
   console.log(text)
 
-  if (process.server || fromAPI) {
+  if (import.meta.server || fromAPI) {
     $fetch('/api/console', {
       method: 'POST',
       body: { text }, // после обновления readBody перестал принимать строки, дополнительно заворачиваем в объект

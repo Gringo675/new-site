@@ -7,12 +7,13 @@
     :close="false"
     :dismissible="false"
     :fullscreen="false"
-    :ui="{ content: 'bg-none shadow-none ring-0 w-min' }"
+    :ui="{ content: 'bg-transparent shadow-none ring-0 ' }"
     title="loading..."
     description="loading..."
   >
     <template #content>
-      <svg
+      <HelperLoader />
+      <!-- <svg
         xmlns="http://www.w3.org/2000/svg"
         width="120"
         height="120"
@@ -30,7 +31,7 @@
             values="0 12 12;360 12 12"
           />
         </path>
-      </svg>
+      </svg> -->
     </template>
   </UModal>
 </template>

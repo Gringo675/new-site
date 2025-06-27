@@ -1,10 +1,10 @@
 {
+  "plugins": ["prettier-plugin-tailwindcss"],
   "semi": false,
-  "singleAttributePerLine": true,
   "singleQuote": true,
+  "singleAttributePerLine": true,
   "arrowParens": "avoid",
   "printWidth": 120,
-  "plugins": ["prettier-plugin-tailwindcss"],
   "overrides": [
     {
       "files": "*.md",

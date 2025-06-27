@@ -1,89 +1,68 @@
 <script setup>
 //
-const openLoader = () => {
-  showLoader()
-  setTimeout(() => {
-    showLoader()
-  }, 2000)
-  setTimeout(() => {
-    hideLoader()
-  }, 5000)
-  setTimeout(() => {
-    hideLoader()
-  }, 7000)
-}
-
-const sshowMessage = async () => {
-  const proceed = await showMessage({
-    title: 'Подтвердите удаление',
-    description: 'Категория "Без имени" будет удалена. Продолжить?',
-    isDialog: true,
-  })
-
-  console.log(`proceed: ${JSON.stringify(proceed, null, 2)}`)
-}
-const sshowLogin = async () => {
-  await showLogin()
-  console.log('login closed')
-}
+const company = useCompany()
 </script>
 
 <template>
-  <div class="mx-auto max-w-7xl">
-    <ClientOnly>
-      <RecentlyViewed />
-    </ClientOnly>
-    <div class="flex flex-wrap gap-4 bg-stone-900 p-2">
-      <UButton
-        label="To test1"
-        color="neutral"
-        variant="subtle"
-        to="/test1"
-      />
-      <UButton
-        label="To admin"
-        color="neutral"
-        variant="subtle"
-        to="/admin"
-      />
-      <UButton
-        label="Open message"
-        color="neutral"
-        variant="subtle"
-        @click="sshowMessage"
-      />
-      <UButton
-        label="Open loader"
-        color="neutral"
-        variant="subtle"
-        @click="openLoader"
-      />
-      <UButton
-        label="Open mobile menu"
-        color="neutral"
-        variant="subtle"
-        @click="showMobileMenu"
-        class="z-20"
-      />
-      <UButton
-        label="Open cats menu"
-        color="neutral"
-        variant="subtle"
-        @click="showCatsMenu"
-        class="z-20"
-      />
-      <UButton
-        label="Open feedback"
-        color="neutral"
-        variant="subtle"
-        @click="showFeedback"
-      />
-      <UButton
-        label="Show login"
-        color="neutral"
-        variant="subtle"
-        @click="sshowLogin"
-      />
+  <div class="bg-black-striped">
+    <div
+      class="max-xs:grid-cols-1 footer-links mx-auto grid max-w-screen-xl grid-cols-[2fr_1fr_1fr] gap-6 p-4 text-violet-200 max-lg:grid-cols-2"
+    >
+      <div class="flex flex-col items-start gap-1.5 max-lg:items-center">
+        <NuxtLink to="/">Как сделать заказ</NuxtLink>
+        <NuxtLink to="/">Доставка инструмента</NuxtLink>
+        <NuxtLink to="/">Возврат товара</NuxtLink>
+        <NuxtLink to="/">Гарантия качества</NuxtLink>
+        <NuxtLink to="/">Поверка инструмента</NuxtLink>
+      </div>
+
+      <div class="flex flex-col gap-1.5 max-lg:items-center">
+        <div class="flex items-center gap-1">
+          <UIcon
+            name="i-heroicons-phone"
+            class="size-5"
+          />
+          <NuxtLink :to="'tel:' + company.phones[0]">
+            {{ company.phones[0] }}
+          </NuxtLink>
+        </div>
+
+        <div class="flex items-center gap-1">
+          <UIcon
+            name="i-heroicons-envelope"
+            class="size-5"
+          />
+          <NuxtLink :to="'mailto:' + company.mails[0]">
+            {{ company.mails[0] }}
+          </NuxtLink>
+        </div>
+        <div class="flex items-center gap-1">
+          <UIcon
+            name="i-heroicons-home-modern"
+            class="size-5"
+          />
+          <NuxtLink to="/contacts">
+            {{ company.address.short }}
+          </NuxtLink>
+        </div>
+        <UButton
+          icon="i-heroicons-pencil-square"
+          variant="outline"
+          color="primary"
+          block
+          class="font-fancy mt-3 max-w-64 text-base font-bold text-violet-300 ring-violet-300/50"
+          label="Задать вопрос"
+          @click="showFeedback()"
+        />
+      </div>
+      <div class="xs:max-lg:col-span-2 flex flex-col items-start text-sm text-violet-100/70 lg:-order-1 lg:max-w-110">
+        <p class="text-lg">© ООО ТД "Челябинский Инструмент", 2000–2025</p>
+        <p class="">Сайт использует файлы cookie, которые содержат информацию о предыдущих посещениях веб-сайта.</p>
+        <p>Если вы не хотите использовать файлы cookie, измените настройки браузера.</p>
+        <NuxtLink to="/about"> Информация на сайте не является публичной офертой </NuxtLink>
+        <NuxtLink to="/about"> Политика конфиденциальности </NuxtLink>
+      </div>
     </div>
   </div>
+  <!-- <TheDebug /> -->
 </template>

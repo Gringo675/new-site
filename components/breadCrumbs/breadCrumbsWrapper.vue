@@ -11,13 +11,13 @@ const props = defineProps({
   productCats: {
     type: Array,
   },
-})
+});
 
-const forProduct = props.productCats !== undefined
+const forProduct = props.productCats !== undefined;
 
-const { data: cats } = await useCats()
-const catsPath = []
-createPath(cats.value)
+const { data: cats } = await useCats();
+const catsPath = [];
+createPath(cats.value);
 function createPath(cats) {
   for (const cat of cats) {
     if (cat.id === props.catId) {
@@ -27,45 +27,45 @@ function createPath(cats) {
         alias: cat.alias,
         siblings: forProduct
           ? undefined
-          : cats.map(sCat => {
+          : cats.map((sCat) => {
               return {
                 alias: sCat.alias,
                 name: sCat.name,
                 current: sCat.id === cat.id,
-              }
+              };
             }),
         children: forProduct
           ? undefined
-          : cat.children?.map(cat => {
+          : cat.children?.map((cat) => {
               return {
                 alias: cat.alias,
                 name: cat.name,
-              }
+              };
             }),
-      })
-      return true
+      });
+      return true;
     }
     if (!forProduct && cat.children) {
-      const isParent = createPath(cat.children)
+      const isParent = createPath(cat.children);
       if (isParent) {
         catsPath.push({
           name: cat.name,
           alias: cat.alias,
-          siblings: cats.map(sCat => {
+          siblings: cats.map((sCat) => {
             return {
               alias: sCat.alias,
               name: sCat.name,
               current: sCat.id === cat.id,
-            }
+            };
           }),
-        })
-        return true
+        });
+        return true;
       }
     }
   }
-  return false
+  return false;
 }
-catsPath.reverse()
+catsPath.reverse();
 </script>
 
 <template>
@@ -73,10 +73,7 @@ catsPath.reverse()
     <!-- crumbs wrapper -->
     <div class="flex flex-wrap items-start gap-2">
       <div class="flex flex-wrap items-center gap-2">
-        <NuxtLink
-          to="/catalog"
-          class="underline underline-offset-4"
-        >
+        <NuxtLink to="/catalog" class="underline underline-offset-4">
           Весь каталог
         </NuxtLink>
         <breadCrumbsItem
@@ -85,10 +82,7 @@ catsPath.reverse()
           :noLink="index === catsPath.length - 1 && !forProduct"
         />
       </div>
-      <BreadCrumbsProductSubCats
-        v-if="forProduct"
-        :cats="productCats"
-      />
+      <BreadCrumbsProductSubCats v-if="forProduct" :cats="productCats" />
     </div>
 
     <!-- category children wrapper -->
@@ -101,21 +95,19 @@ catsPath.reverse()
       >
         <span class="relative -top-0.5 z-10">Подкатегории</span>
       </div>
-      <div class="max-xs:grid-cols-1 flex flex-wrap gap-3 max-md:grid max-md:grid-cols-2">
+      <div
+        class="max-xs:grid-cols-1 flex flex-wrap gap-3 max-md:grid max-md:grid-cols-2"
+      >
         <UButton
           v-for="child in catsPath[catsPath.length - 1].children"
           :label="child.name"
           :to="'/catalog/' + child.alias"
           variant="outline"
-          :ui="{ rounded: 'rounded-full' }"
-          class="w-fit justify-center text-center max-md:w-full"
+          class="justify-center text-center max-md:w-full"
         />
       </div>
     </div>
     <!-- divider -->
-    <div
-      v-else
-      class="mt-3 border-b border-gray-200"
-    ></div>
+    <div v-else class="mt-3 border-b border-gray-200"></div>
   </div>
 </template>

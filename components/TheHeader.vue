@@ -1,34 +1,34 @@
 <script setup>
 //
 
-const company = useCompany()
+const company = useCompany();
 const menuState = [
   {
-    label: 'О компании',
-    to: '/about',
-    icon: 'i-mynaui-info-waves',
+    label: "О компании",
+    to: "/about",
+    icon: "i-mynaui-info-waves",
   },
   {
-    label: 'Как купить',
-    to: '/help',
-    icon: 'i-mynaui-question-waves',
+    label: "Как купить",
+    to: "/help",
+    icon: "i-mynaui-question-waves",
   },
   {
-    label: 'Доставка',
-    to: '/shipping',
-    icon: 'i-heroicons-gift',
+    label: "Доставка",
+    to: "/shipping",
+    icon: "i-heroicons-gift",
   },
   {
-    label: 'Контакты',
-    to: '/contacts',
-    icon: 'i-heroicons-globe-alt',
+    label: "Контакты",
+    to: "/contacts",
+    icon: "i-heroicons-globe-alt",
   },
   {
-    label: 'Материалы',
-    to: '/contacts',
-    icon: 'i-heroicons-book-open',
+    label: "Материалы",
+    to: "/contacts",
+    icon: "i-heroicons-book-open",
   },
-]
+];
 </script>
 
 <template>
@@ -36,12 +36,10 @@ const menuState = [
     <div
       class="max-xs:grid-cols-[70px_1fr] mx-auto grid h-full max-w-(--breakpoint-xl) grid-cols-[120px_1fr_auto_1fr_120px] grid-rows-[auto_1fr] gap-1 max-md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] max-md:grid-rows-[100%]"
     >
-      <div class="col-span-1 row-span-2 flex items-center justify-center max-md:row-span-1">
-        <ULink
-          to="/"
-          class="w-full"
-          active-class="cursor-default"
-        >
+      <div
+        class="col-span-1 row-span-2 flex items-center justify-center max-md:row-span-1"
+      >
+        <ULink to="/" class="w-full" active-class="cursor-default">
           <img
             src="/img/svg-test/v23.svg"
             alt="logo"
@@ -54,7 +52,9 @@ const menuState = [
       </div>
       <div class="col-span-3 flex max-md:hidden">
         <div class="font-accent bg-black-striped mx-auto rounded-b-md p-1 pt-0">
-          <div class="flex rounded-b-md border-2 border-t-0 border-dashed border-orange-100">
+          <div
+            class="flex rounded-b-md border-2 border-t-0 border-dashed border-orange-100"
+          >
             <UButton
               v-for="item in menuState"
               variant="link"
@@ -71,12 +71,10 @@ const menuState = [
           </div>
         </div>
       </div>
-      <div class="col-span-1 mr-2 flex items-center justify-end gap-2 max-md:hidden">
-        <img
-          src="/img/rst.svg"
-          alt=""
-          class="w-20"
-        />
+      <div
+        class="col-span-1 mr-2 flex items-center justify-end gap-2 max-md:hidden"
+      >
+        <img src="/img/rst.svg" alt="" class="w-20" />
       </div>
       <div class="col-span-1 flex max-md:justify-center">
         <div
@@ -97,27 +95,32 @@ const menuState = [
         <div
           class="mr-2 flex w-full flex-col items-end justify-center text-slate-900 italic max-xl:items-center max-lg:text-sm"
         >
-          <div class="flex items-center">
-            <UIcon
-              name="i-heroicons-home-modern"
-              class="mx-2 h-5 w-5"
-            />
-            <span>{{ company.address.post }}</span>
+          <div class="flex items-center gap-2">
+            <UIcon name="i-heroicons-home-modern" class="size-5" />
+            <NuxtLink to="/contacts" class="">
+              {{ company.address.post }}
+            </NuxtLink>
           </div>
 
-          <div class="flex items-center">
-            <UIcon
-              name="i-heroicons-envelope"
-              class="mx-2 h-5 w-5"
-            />
-            <span>{{ company.mails.join(' ') }}</span>
+          <div class="flex items-center gap-2">
+            <UIcon name="i-heroicons-envelope" class="size-5" />
+            <NuxtLink
+              v-for="mail in company.mails"
+              :to="'mailto:' + mail"
+              class=""
+            >
+              {{ mail }}
+            </NuxtLink>
           </div>
-          <div class="flex items-center">
-            <UIcon
-              name="i-heroicons-phone"
-              class="mx-2 h-5 w-5"
-            />
-            <span> {{ company.phones.join(' ') }} </span>
+          <div class="flex items-center gap-2">
+            <UIcon name="i-heroicons-phone" class="size-5" />
+            <NuxtLink
+              v-for="phone in company.phones"
+              :to="'tel:' + phone"
+              class=""
+            >
+              {{ phone }}
+            </NuxtLink>
           </div>
         </div>
       </div>
@@ -126,10 +129,12 @@ const menuState = [
 
   <!-- <div class="bg-stone-900"> -->
   <div class="bg-black-striped">
-    <div class="mx-auto grid max-w-(--breakpoint-xl) grid-cols-[1fr_auto_1fr] gap-1 px-2 py-3">
+    <div
+      class="mx-auto grid max-w-(--breakpoint-xl) grid-cols-[1fr_auto_1fr] gap-1 px-2 py-3"
+    >
       <div class="col-span-1 flex items-center gap-3 max-md:hidden">
         <UButton
-          icon="i-carbon-catalog-publish"
+          icon="i-carbon-catalog"
           size="md"
           @click="showCatsMenu"
           label="Каталог"
@@ -143,7 +148,8 @@ const menuState = [
             @click="
               showFeedback({
                 title: 'Быстрый заказ',
-                description: 'Напишите, какие позиции Вас интересуют, или прикрепите файл с заявкой.',
+                description:
+                  'Напишите, какие позиции Вас интересуют, или прикрепите файл с заявкой.',
               })
             "
           >
@@ -154,7 +160,9 @@ const menuState = [
       <div class="col-span-1 max-md:hidden">
         <TheSearch class="max-lg:max-w-88" />
       </div>
-      <div class="col-span-1 flex items-center justify-end gap-3 max-md:col-span-3 max-md:justify-between">
+      <div
+        class="col-span-1 flex items-center justify-end gap-3 max-md:col-span-3 max-md:justify-between"
+      >
         <UButton
           icon="i-heroicons-magnifying-glass"
           size="md"

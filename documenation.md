@@ -4,7 +4,7 @@
 
 - компонент доставки
 - cartButtons - use lazy hydration?
-- привести к одному стилю все лоадеры (спиннеры)
+- привести к одному стилю все лоадеры (спиннеры): showLoader, HelperDataFetch, images
 - OAuth providers don't work
 SVG animation:
 - logo
@@ -12,8 +12,8 @@ SVG animation:
 - blur/sharpness filters (try shape-rendering="geometricPrecision"  text-rendering="geometricPrecision")
 
 # Chore:
+- анимация перехода по страницам: проверить актуальную реализацию
 - подумать над алгоритмом поиска: ич-1 0-1 дает нерелевантный результат в быстром поиске
-- страница поиска: скролл в начало при получении результатов
 - не смог изменить цвет текста у активного пункта в верхнем меню. active-class не хочет принимать соответствующий класс (text-orange-300). Проверить поведение в следующих релизах.
 
 # RoadMap:

@@ -6,7 +6,7 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-})
+});
 </script>
 
 <template>
@@ -21,12 +21,14 @@ const props = defineProps({
         />
       </template>
       <template #content>
-        <div class="flex w-max flex-col gap-2">
+        <div class="flex w-max flex-col items-start gap-2">
           <NuxtLink
             v-for="sibling in crumb.siblings"
             :to="'/catalog/' + sibling.alias"
             class="leading-tight underline-offset-4 hover:underline"
-            :class="{ 'cursor-default font-bold hover:no-underline': sibling.current }"
+            :class="{
+              'cursor-default font-bold hover:no-underline': sibling.current,
+            }"
           >
             {{ sibling.name }}
           </NuxtLink>
@@ -34,14 +36,8 @@ const props = defineProps({
       </template>
     </HelperPopupMenu>
 
-    <slot
-      name="icon"
-      v-else
-    >
-      <UIcon
-        name="i-heroicons-slash"
-        class="h-6 w-6"
-      />
+    <slot name="icon" v-else>
+      <UIcon name="i-heroicons-slash" class="h-6 w-6" />
     </slot>
 
     <span v-if="noLink">{{ crumb.name }}</span>
