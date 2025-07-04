@@ -13,18 +13,20 @@ const searchData = searchQuery.length > 2 ? await myFetch(`/api/getSearch?q=${se
   </h1>
   <HelperAlarm
     v-if="searchQuery.length < 3"
-    title="Минимальная длина поискового запроса - 3 символа."
-    description="Пожалуйста, уточните запрос."
     type="error"
     class="max-w-screen-xs mx-auto"
-  />
+  >
+    <template #title>Минимальная длина поискового запроса - 3 символа.</template>
+    Пожалуйста, уточните запрос.
+  </HelperAlarm>
   <HelperAlarm
     v-else-if="!searchData.products?.length"
-    title="Ничего не найдено!"
-    description="Попробуйте изменить запрос."
     type="error"
     class="max-w-screen-xs mx-auto"
-  />
+  >
+    <template #title>Ничего не найдено!</template>
+    Попробуйте изменить запрос.
+  </HelperAlarm>
   <div v-else>
     <CatalogSearchWrapper :searchData />
   </div>

@@ -1,9 +1,9 @@
-@import "tailwindcss";
-@import "@nuxt/ui";
+@import 'tailwindcss';
+@import '@nuxt/ui';
 
 @theme {
   --breakpoint-xs: 30rem;
-  --font-sans: "Sofia Sans";
+  --font-sans: 'Sofia Sans';
   /* --font-sans: 'Marck Script'; */
 }
 /*
@@ -36,7 +36,7 @@
   }
   body {
     background: none;
-    background-image: url("/img/background.svg");
+    background-image: url('/img/background.svg');
     background-size: 250px auto;
     background-position: center top;
     background-repeat: repeat;
@@ -54,11 +54,11 @@
     background-repeat: repeat, no-repeat; */
   }
   .font-accent {
-    font-family: "Russo One";
+    font-family: 'Russo One';
   }
   .font-fancy {
     /* font-family: 'Caveat'; */
-    font-family: "Bad Script";
+    font-family: 'Bad Script';
   }
   .bg-black-striped {
     background: repeating-linear-gradient(
@@ -104,10 +104,13 @@
     -webkit-appearance: none;
     margin: 0;
   }
-  input[type="number"] {
+  input[type='number'] {
     -moz-appearance: textfield;
   }
 
+  button {
+    @apply cursor-pointer;
+  }
   /* select {
     @apply cursor-pointer border-2 border-gray-400 rounded outline-none;
   }

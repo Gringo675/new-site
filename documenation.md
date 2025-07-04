@@ -4,7 +4,6 @@
 
 - компонент доставки
 - cartButtons - use lazy hydration?
-- привести к одному стилю все лоадеры (спиннеры): showLoader, HelperDataFetch, images
 - OAuth providers don't work
 SVG animation:
 - logo
