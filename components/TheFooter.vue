@@ -13,7 +13,7 @@ const company = useCompany()
         <NuxtLink to="/">Доставка инструмента</NuxtLink>
         <NuxtLink to="/">Возврат товара</NuxtLink>
         <NuxtLink to="/">Гарантия качества</NuxtLink>
-        <NuxtLink to="/">Поверка инструмента</NuxtLink>
+        <NuxtLink to="/poverka">Поверка инструмента</NuxtLink>
       </div>
 
       <div class="flex flex-col gap-1.5 max-lg:items-center">

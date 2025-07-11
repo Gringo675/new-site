@@ -11,5 +11,9 @@ const nodeVersion = useState('nv', () => process.version)
     <h1 class="text-2xl text-white">Node Version</h1>
     <p class="text-lg text-gray-300">{{ nodeVersion }}</p>
     <p class="text-lg text-gray-300">This page is for testing purposes.</p>
+    <UButton
+      label="ttest"
+      color="secondary"
+    />
   </div>
 </template>
