@@ -1,5 +1,6 @@
 export default defineEventHandler(async event => {
   // функция по алиасу отдает статический контент
+  // на данный момент не используется
 
   const alias = getRouterParam(event, 'cont_alias')
   if (!alias.length) throw createError({ statusCode: 500, statusMessage: 'Incorrect URI!' })

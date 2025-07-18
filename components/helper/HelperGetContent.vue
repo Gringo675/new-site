@@ -1,6 +1,8 @@
 <script setup>
+// компонент для получения статического контента из базы. В настоящее время не используется. Возможно, в будущем...
+//todo: title
+
 const route = useRoute()
-// console.log(`route: ${JSON.stringify(route, null, 2)}`)
 const url = `/api/getContent/${String(route.name)}`
 </script>
 

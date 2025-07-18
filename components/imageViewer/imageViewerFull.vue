@@ -5,65 +5,62 @@ const props = defineProps({
   images: Array,
   activeImgIndex: Number,
   causerId: String,
-});
+})
 
-const emit = defineEmits(["close"]);
+const emit = defineEmits(['close'])
 const closeImageViewer = () => {
-  emit("close");
-};
+  emit('close')
+}
 
-const carousel = useTemplateRef("carouselRef");
+const carousel = useTemplateRef('carouselRef')
 
 const images = reactive(
-  props.images.map((img) => {
+  props.images.map(img => {
     return {
       full: img.full || img,
       thumb: img.thumb || img,
       load: false,
       error: false,
-    };
+    }
   }),
-);
+)
 
 const setAppearDisappearAnimation = () => {
-  if (!props.causerId) return;
-  const causer = document.getElementById(props.causerId);
-  if (!causer) return;
-  const causerCoords = causer.getBoundingClientRect();
-  const viewportWidth = document.documentElement.clientWidth;
-  const viewportHeight = document.documentElement.clientHeight;
+  if (!props.causerId) return
+  const causer = document.getElementById(props.causerId)
+  if (!causer) return
+  const causerCoords = causer.getBoundingClientRect()
+  const viewportWidth = document.documentElement.clientWidth
+  const viewportHeight = document.documentElement.clientHeight
   document.body.style.setProperty(
-    "--viewer-transition-x",
+    '--viewer-transition-x',
     `${Math.round(causerCoords.x + causerCoords.width / 2 - viewportWidth / 2)}px`,
-  );
+  )
   document.body.style.setProperty(
-    "--viewer-transition-y",
+    '--viewer-transition-y',
     `${Math.round(causerCoords.y + causerCoords.height / 2 - viewportHeight / 2)}px`,
-  );
-  document.body.style.setProperty(
-    "--viewer-scale",
-    `${Math.round((causerCoords.width * 100) / viewportWidth) / 100}`,
-  );
+  )
+  document.body.style.setProperty('--viewer-scale', `${Math.round((causerCoords.width * 100) / viewportWidth) / 100}`)
 
   onBeforeUnmount(() => {
-    document.body.style.removeProperty("--viewer-transition-x");
-    document.body.style.removeProperty("--viewer-transition-y");
-    document.body.style.removeProperty("--viewer-scale");
-  });
-};
-setAppearDisappearAnimation();
+    document.body.style.removeProperty('--viewer-transition-x')
+    document.body.style.removeProperty('--viewer-transition-y')
+    document.body.style.removeProperty('--viewer-scale')
+  })
+}
+setAppearDisappearAnimation()
 
-useViewerKeyPress(carousel);
-useViewerImgLoad(images, props.activeImgIndex, carousel);
+useViewerKeyPress(carousel)
+useViewerImgLoad(images, props.activeImgIndex, carousel)
 
-const activateZoom = useViewerZoom;
+const activateZoom = useViewerZoom
 
 onMounted(async () => {
-  await nextTick();
-  const imageContainer = carousel.value.container;
-  carousel.value.$el.addEventListener("click", closeImageViewer);
-  useViewerInitialScroll(props, imageContainer);
-});
+  await nextTick()
+  const imageContainer = carousel.value.container
+  carousel.value.$el.addEventListener('click', closeImageViewer)
+  useViewerInitialScroll(props, imageContainer)
+})
 </script>
 
 <template>
@@ -88,14 +85,17 @@ onMounted(async () => {
         }"
         @click="closeImageViewer"
       />
-      <ImageViewerCarousel ref="carouselRef" :items="images" fullScreen>
+      <ImageViewerCarousel
+        ref="carouselRef"
+        :items="images"
+        fullScreen
+      >
         <template #default="{ item }">
           <div
             v-if="item.error"
             class="max-w-xs rounded-md border border-red-400 p-2 text-center text-gray-100"
           >
-            При получении изображения произошла ошибка! Попробуйте перезагрузить
-            страницу.
+            При получении изображения произошла ошибка! Попробуйте перезагрузить страницу.
           </div>
           <HelperLoader v-else-if="!item.load" />
           <!-- <div
@@ -119,15 +119,13 @@ onMounted(async () => {
 @keyframes viewer-in {
   0% {
     opacity: 0;
-    transform: translate(var(--viewer-transition-x), var(--viewer-transition-y))
-      scale(var(--viewer-scale));
+    transform: translate(var(--viewer-transition-x), var(--viewer-transition-y)) scale(var(--viewer-scale));
   }
 }
 @keyframes viewer-out {
   to {
     opacity: 0.5;
-    transform: translate(var(--viewer-transition-x), var(--viewer-transition-y))
-      scale(var(--viewer-scale));
+    transform: translate(var(--viewer-transition-x), var(--viewer-transition-y)) scale(var(--viewer-scale));
   }
 }
 </style>

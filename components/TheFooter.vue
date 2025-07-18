@@ -9,10 +9,10 @@ const company = useCompany()
       class="max-xs:grid-cols-1 footer-links mx-auto grid max-w-screen-xl grid-cols-[2fr_1fr_1fr] gap-6 p-4 text-violet-200 max-lg:grid-cols-2"
     >
       <div class="flex flex-col items-start gap-1.5 max-lg:items-center">
-        <NuxtLink to="/">Как сделать заказ</NuxtLink>
-        <NuxtLink to="/">Доставка инструмента</NuxtLink>
-        <NuxtLink to="/">Возврат товара</NuxtLink>
-        <NuxtLink to="/">Гарантия качества</NuxtLink>
+        <NuxtLink to="/help">Как сделать заказ</NuxtLink>
+        <NuxtLink to="/shipping">Доставка инструмента</NuxtLink>
+        <NuxtLink to="/returns">Возврат товара</NuxtLink>
+        <NuxtLink to="/warranty">Гарантия качества</NuxtLink>
         <NuxtLink to="/poverka">Поверка инструмента</NuxtLink>
       </div>
 

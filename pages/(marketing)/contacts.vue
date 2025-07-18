@@ -1,5 +1,9 @@
 <script setup>
 //
+useTitle('Контакты - Челябинский Инструмент | Поставщик измерительного инструмента')
+
+const company = useCompany()
+
 onMounted(() => {
   if (typeof ymaps !== 'undefined') {
     ymaps.ready(init)
@@ -166,41 +170,46 @@ function init() {
 
     <div class="grid gap-6 md:grid-cols-2">
       <div class="col1 space-y-4">
-        <p class="font-bold">ООО ТД «Челябинский Инструмент»</p>
+        <p class="font-bold">{{ company.name }}</p>
         <div class="space-y-2">
-          <div class="flex items-center gap-2">
+          <div
+            class="flex items-center gap-2"
+            v-for="(phone, idx) in company.phones"
+            :key="phone"
+          >
             <Icon
               name="i-lucide-phone"
               class="text-primary size-5"
             />
             <a
-              href="tel:+73517907748"
+              :href="`tel:${phone.replace(/\D/g, '')}`"
               class="font-medium text-indigo-600 underline-offset-4 hover:underline"
-              >+7 (351) 790-77-48</a
+              >{{ phone }}</a
             >
-            <span class="text-xs text-gray-500">(отдел продаж, 9:00–18:00)</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <Icon
-              name="i-lucide-phone"
-              class="text-primary size-5"
-            />
-            <a
-              href="tel:+73512359921"
-              class="font-medium text-indigo-600 underline-offset-4 hover:underline"
-              >+7 (351) 235-99-21</a
+            <span
+              v-if="idx === 0"
+              class="text-xs text-gray-500"
+              >(отдел продаж, 9:00–18:00)</span
             >
-            <span class="text-xs text-gray-500">(бухгалтерия)</span>
+            <span
+              v-else-if="idx === 1"
+              class="text-xs text-gray-500"
+              >(бухгалтерия)</span
+            >
           </div>
-          <div class="flex items-center gap-2">
+          <div
+            class="flex items-center gap-2"
+            v-for="(mail, idx) in company.mails"
+            :key="mail"
+          >
             <Icon
               name="i-lucide-mail"
               class="text-primary size-5"
             />
             <a
-              href="mailto:info@chelinstrument.ru"
+              :href="`mailto:${mail}`"
               class="font-medium text-indigo-600 underline-offset-4 hover:underline"
-              >info@chelinstrument.ru</a
+              >{{ mail }}</a
             >
           </div>
         </div>
@@ -211,7 +220,7 @@ function init() {
               class="text-primary mt-1 size-5"
             />
             <div>
-              <span class="font-semibold">Офис и склад:</span> г. Челябинск, ул. Болейко, 5<br />
+              <span class="font-semibold">Офис и склад:</span> {{ company.address.short }}<br />
               <span class="text-xs text-gray-500"
                 >Пн–Пт: 9:00–18:00 (выдача продукции: 10:00–17:00, в другое время — по согласованию)</span
               >
@@ -222,16 +231,14 @@ function init() {
               name="i-lucide-mailbox"
               class="text-primary size-5"
             />
-            <div><span class="font-semibold">Почтовый адрес:</span> 454084, г. Челябинск, ул. Болейко, 5</div>
+            <div><span class="font-semibold">Почтовый адрес:</span> {{ company.address.post }}</div>
           </div>
           <div class="flex items-start gap-2">
             <Icon
               name="i-lucide-file-text"
               class="text-primary size-5"
             />
-            <div>
-              <span class="font-semibold">Юридический адрес:</span> 454008, г. Челябинск, Свердловский тракт, 28А
-            </div>
+            <div><span class="font-semibold">Юридический адрес:</span> {{ company.address.official }}</div>
           </div>
         </div>
 
@@ -244,10 +251,15 @@ function init() {
             <div class="font-semibold">Реквизиты:</div>
           </div>
           <ul class="ml-6 list-disc space-y-2">
-            <li class=""><span class="font-semibold">ИНН:</span> <span class="">7448078612</span></li>
-
-            <li class=""><span class="font-semibold">КПП:</span> <span class="">745301001</span></li>
-            <li class=""><span class="font-semibold">ОГРН:</span> <span class="">1067448049624</span></li>
+            <li>
+              <span class="font-semibold">ИНН:</span> <span>{{ company.requisites.inn }}</span>
+            </li>
+            <li>
+              <span class="font-semibold">КПП:</span> <span>{{ company.requisites.kpp }}</span>
+            </li>
+            <li>
+              <span class="font-semibold">ОГРН:</span> <span>{{ company.requisites.ogrn }}</span>
+            </li>
           </ul>
         </div>
       </div>

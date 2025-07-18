@@ -1,8 +1,6 @@
 <script setup>
 //
-useSeoMeta({
-  title: 'Мои заказы',
-})
+useTitle('Мои заказы')
 
 const user = useUser().value
 </script>
@@ -23,7 +21,7 @@ const user = useUser().value
         { variant: 'solid', color: 'primary', label: 'Войти/зарегистрироваться', click: () => (user.showLogin = true) },
         { variant: 'outline', color: 'primary', label: 'На главную', click: () => navigateTo('/') },
       ]"
-      class="max-w-lg mx-auto"
+      class="mx-auto max-w-lg"
     />
   </div>
 </template>

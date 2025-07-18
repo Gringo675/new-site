@@ -1,4 +1,6 @@
-<!-- script setup removed: NuxtUI auto-imports Icon component -->
+<script setup>
+useTitle('Доставка - Челябинский Инструмент | Условия и способы доставки')
+</script>
 
 <template>
   <article class="mx-4 my-8">

@@ -14,12 +14,11 @@ const feedback = useFeedback()
     >
       <LazyTheLogin />
     </UModal> -->
-    <UModal
+    <!-- <UModal
       v-model="message.active"
       :prevent-close="message.preventClose"
     >
-      <!-- <LazyTheMessage /> -->
-    </UModal>
+    </UModal> -->
     <!-- <UModal
       v-model="feedback.isActive"
       prevent-close

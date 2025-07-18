@@ -3,17 +3,6 @@
 const { docs } = defineProps({
   docs: Object,
 })
-const viewer = reactive({
-  show: false,
-  title: '',
-  src: '',
-})
-const showViewer = (title, url) => {
-  const fileFolder = 'https://chelinstrument.ru/docs/'
-  viewer.title = title
-  viewer.src = fileFolder + url + '#toolbar=0'
-  viewer.show = true
-}
 
 const items = []
 for (const stnd of docs.stnd ?? []) {
@@ -76,41 +65,6 @@ for (const pasp of docs.pasp ?? []) {
     <HelperDocsBlockItem
       v-for="item in items"
       :item="item"
-      :showViewer="showViewer"
     />
   </div>
-  <!-- viewer -->
-  <UModal
-    v-model:open="viewer.show"
-    :title="viewer.title"
-    fullscreen
-    :ui="{
-      overlay: 'bg-transparent',
-      content: 'bg-gray-900/90 divide-none',
-      wrapper: 'max-w-full',
-      title: 'text-gray-300 text-2xl truncate pr-8',
-      body: 'p-0 sm:p-0',
-    }"
-    :close="{
-      color: 'primary',
-      variant: 'link',
-      icon: 'i-heroicons-x-circle',
-      class: 'z-10 p-0 focus-visible:ring-0 focus-visible:outline-none',
-      ui: {
-        leadingIcon: 'size-8',
-      },
-    }"
-  >
-    <template #description></template>
-    <template #body>
-      <iframe
-        class="h-full w-full"
-        :src="viewer.src"
-        frameborder="0"
-        scrolling="no"
-        type="application/pdf"
-        >Похоже, Вы используете устаревший браузер.</iframe
-      >
-    </template>
-  </UModal>
 </template>

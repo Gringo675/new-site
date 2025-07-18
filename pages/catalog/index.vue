@@ -1,9 +1,7 @@
 <script setup>
 // todo: no sub-sub cats
 
-useSeoMeta({
-  title: 'Каталог инструмента',
-})
+useTitle('Каталог инструмента')
 const { data: cats } = await useCats()
 </script>
 
@@ -14,14 +12,14 @@ const { data: cats } = await useCats()
       <!--      категория-->
       <div
         v-for="cat in cats"
-        class="w-80 bg-slate-100 m-2 p-2 rounded-md shadow-md"
+        class="m-2 w-80 rounded-md bg-slate-100 p-2 shadow-md"
       >
         <NuxtLink
           :to="'/catalog/' + cat.alias"
           class=""
         >
           <img :src="'https://chelinstrument.ru/components/com_jshopping/files/img_categories/' + cat.image" />
-          <span class="text-xl text-center block w-full">{{ cat.name }}</span>
+          <span class="block w-full text-center text-xl">{{ cat.name }}</span>
         </NuxtLink>
         <!--        подкатегория-->
         <div
@@ -30,7 +28,7 @@ const { data: cats } = await useCats()
         >
           <NuxtLink
             :to="'/catalog/' + child.alias"
-            class="flex items-center my-1"
+            class="my-1 flex items-center"
           >
             <img
               :src="'https://chelinstrument.ru/components/com_jshopping/files/img_categories/' + child.image"

@@ -2,7 +2,6 @@
 //
 const { item } = defineProps({
   item: Object,
-  showViewer: Function,
 })
 </script>
 
@@ -16,7 +15,7 @@ const { item } = defineProps({
         variant="outline"
         truncate
         class="max-w-full"
-        @click="showViewer(item.title, button.url)"
+        @click="showDocViewer({ title: item.title, url: button.url })"
       />
     </div>
   </div>

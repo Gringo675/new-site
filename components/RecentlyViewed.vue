@@ -71,7 +71,7 @@ async function updateViewed() {
 <template>
   <div
     v-if="viewed.length"
-    class="mt-6 md:-mx-2"
+    class="mt-8 md:-mx-2"
   >
     <USeparator
       label="Просмотренные товары"

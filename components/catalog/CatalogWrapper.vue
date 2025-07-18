@@ -10,9 +10,7 @@ const filter = reactive(props.data.filter ?? [])
 const activeProducts = shallowReactive([])
 const activeProductsIndx = ref([])
 
-useSeoMeta({
-  title: catData.name + ' - цены, фото, характеристики',
-})
+useTitle(catData.name + ' - цены, фото, характеристики')
 useServerSeoMeta({
   description: `Купить ${catData.name}${
     catData.docs?.stnd?.length ? ' ' + catData.docs.stnd.map(stnd => stnd.number).join(', ') : ''

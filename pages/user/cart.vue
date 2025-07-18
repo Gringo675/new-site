@@ -1,8 +1,6 @@
 <script setup>
 //
-useSeoMeta({
-  title: 'Корзина',
-})
+useTitle('Корзина')
 const user = useUser().value
 
 const cart = useCart()

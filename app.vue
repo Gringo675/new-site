@@ -1,4 +1,11 @@
 <script setup>
+import { StagewiseToolbar } from '@stagewise/toolbar-vue'
+import VuePlugin from '@stagewise-plugins/vue'
+
+const toolbarConfig = {
+  plugins: [VuePlugin],
+}
+
 onErrorCaptured(e => {
   handleError(e)
   return false
@@ -56,6 +63,9 @@ const setErrorToLog = async e => {
 <template>
   <UApp>
     <div class="flex min-h-screen flex-col">
+      <ClientOnly>
+        <StagewiseToolbar :config="toolbarConfig" />
+      </ClientOnly>
       <NuxtLayout>
         <NuxtPage />
       </NuxtLayout>

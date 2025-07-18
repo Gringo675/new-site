@@ -1,8 +1,6 @@
 <script setup>
 //
-useSeoMeta({
-  title: 'Профиль пользователя',
-})
+useTitle('Профиль пользователя')
 
 const user = useUser().value
 
@@ -22,7 +20,7 @@ const buttonHandler = async () => {
 <template>
   <div
     v-if="user.auth"
-    class="p-4 max-w-md mx-auto flex flex-col"
+    class="mx-auto flex max-w-md flex-col p-4"
   >
     <TheUserProfile
       @setIsUserDataChanged="value => (TheUserProfileData.isUserDataChanged = value)"
@@ -35,7 +33,7 @@ const buttonHandler = async () => {
       color="secondary"
       :disabled="!TheUserProfileData.isUserDataChanged || !TheUserProfileData.isUserDataValid"
       @click="buttonHandler"
-      class="self-center m-4"
+      class="m-4 self-center"
     />
   </div>
   <div
@@ -52,7 +50,7 @@ const buttonHandler = async () => {
         { variant: 'solid', color: 'primary', label: 'Войти/зарегистрироваться', click: () => (user.showLogin = true) },
         { variant: 'outline', color: 'primary', label: 'На главную', click: () => navigateTo('/') },
       ]"
-      class="max-w-lg mx-auto"
+      class="mx-auto max-w-lg"
     />
   </div>
 </template>

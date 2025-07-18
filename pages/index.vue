@@ -1,8 +1,6 @@
 <script setup>
 //
-useSeoMeta({
-  title: 'Главная',
-})
+useTitle('Интернет-магазин измерительных инструментов')
 </script>
 
 <template>

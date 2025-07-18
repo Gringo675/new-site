@@ -4,9 +4,7 @@ const { data: product } = defineProps({
   data: Object,
 })
 
-useSeoMeta({
-  title: product.name + ' - цена, фото, характеристики',
-})
+useTitle(product.name + ' - цена, фото, характеристики')
 
 const brandImagesDirectory = useRuntimeConfig().public.IMAGES_DIRECTORY + 'img_manufs/'
 
