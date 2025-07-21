@@ -77,9 +77,12 @@ npm run deploy
 
 ### Project Colors
 - Primary: violet
-- Secondary: orange  
+- Secondary: orange
 - Tertiary: indigo
 - Neutral: slate
+
+#### Nuxt UI color usage
+The colors primary (violet), secondary (orange), tertiary (indigo), and neutral (slate) are registered in `app.config.ts` and available as variants in Nuxt UI components. For example, to make an orange button, use `<UButton variant="secondary" />`. No extra classes are needed for these colors.
 
 ### Error Handling
 - Use `createError()` for HTTP errors
