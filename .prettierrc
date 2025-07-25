@@ -3,6 +3,7 @@
   "semi": false,
   "singleQuote": true,
   "singleAttributePerLine": true,
+  "bracketSameLine": true,
   "arrowParens": "avoid",
   "printWidth": 120,
   "overrides": [

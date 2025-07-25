@@ -5,7 +5,7 @@
 ## Project Overview
 This is a Nuxt 3 e-commerce website built with:
 - Nuxt 3 for the core framework
-- Nuxt UI and TailwindCSS for styling
+- Nuxt UI v3 and TailwindCSS for styling
 - Vue 3 Composition API for component logic
 - MySQL for the database
 - Server-side features include email (nodemailer) and authentication

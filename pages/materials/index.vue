@@ -1,5 +1,6 @@
 <script setup>
 //
+useTitle('Материалы')
 </script>
 
 <template>
@@ -12,13 +13,39 @@
       <ul class="space-y-4">
         <li>
           <UButton
-            to="/materials/articles"
+            label="Как выбрать штангенциркуль?"
+            to="/materials/kak-vybrat-shtangentsirkul"
             variant="outline"
             class="rounded-full px-6"
             size="xl"
-          >
-            Статьи
-          </UButton>
+          />
+        </li>
+        <li>
+          <UButton
+            label="Как выбрать микрометр?"
+            to="/materials/kak-vybrat-mikrometr"
+            variant="outline"
+            class="rounded-full px-6"
+            size="xl"
+          />
+        </li>
+        <li>
+          <UButton
+            label="Что такое поверка?"
+            to="/materials/chto-takoe-poverka-instrumenta"
+            variant="outline"
+            class="rounded-full px-6"
+            size="xl"
+          />
+        </li>
+        <li>
+          <UButton
+            label="Что такое калибровка?"
+            to="/materials/chto-takoe-kalibrovka-instrumenta"
+            variant="outline"
+            class="rounded-full px-6"
+            size="xl"
+          />
         </li>
         <li>
           <UButton
@@ -27,7 +54,7 @@
             class="rounded-full px-6"
             size="xl"
           >
-            ГОСТы, ТУ
+            Нормативная документация - ГОСТы, ТУ
           </UButton>
         </li>
         <li>

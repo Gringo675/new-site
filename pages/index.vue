@@ -5,4 +5,5 @@ useTitle('Интернет-магазин измерительных инстр�
 
 <template>
   <div class="m-2">MAIN PAGE 222</div>
+  <TheTest />
 </template>
