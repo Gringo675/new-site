@@ -1,7 +1,7 @@
 <script setup>
 //
 useTitle('Корзина')
-const user = useUser().value
+const user = useUser()
 
 const cart = useCart()
 const cartTotal = computed(() => {
@@ -84,25 +84,21 @@ const clearCart = async () => {
 <template>
   <div
     ref="cartWrapperRef"
-    class="scroll-mt-16"
-  >
+    class="scroll-mt-16">
     <div
       v-if="cartState === 0"
-      class="py-8 text-center"
-    >
+      class="py-8 text-center">
       <div class="mb-4 text-xl">Ваша корзина пуста.</div>
       <p class="text-muted mb-6">Добавьте товары в корзину для оформления заказа.</p>
       <UButton
         to="/catalog"
         label="Перейти в каталог"
         size="xl"
-        color="tertiary"
-      />
+        color="tertiary" />
     </div>
     <div
       class=""
-      v-else
-    >
+      v-else>
       <h1 class="font-accent my-4 text-2xl">{{ cartState === 1 ? 'Корзина' : 'Оформление заказа' }}</h1>
       <template v-if="cartState !== 3">
         <HelperAsideGrid reverse>
@@ -111,8 +107,7 @@ const clearCart = async () => {
               <CatalogProductCard
                 v-for="prod in cart"
                 :key="prod.id"
-                :prod="prod"
-              />
+                :prod="prod" />
             </div>
             <UButton
               class="float-right my-2"
@@ -120,19 +115,16 @@ const clearCart = async () => {
               color="error"
               variant="ghost"
               icon="i-heroicons-trash-solid"
-              @click="clearCart"
-            />
+              @click="clearCart" />
             <!-- attach comment and file -->
             <TheUserForm
               forCart
               ref="userFormRef"
-              class="my-6"
-            />
+              class="my-6" />
           </template>
           <HelperUserOrder
             v-if="cartState === 2"
-            @createOrder="createOrder"
-          />
+            @createOrder="createOrder" />
           <template #aside>
             <div class="sticky top-15 rounded-lg border border-violet-200 bg-violet-50 p-2 shadow-lg">
               <h2 class="mb-4 border-b border-gray-200 text-lg font-bold">В корзине</h2>
@@ -162,8 +154,7 @@ const clearCart = async () => {
                   size="xl"
                   block
                   class=""
-                  @click="onCartOrderButtonClick"
-                />
+                  @click="onCartOrderButtonClick" />
               </div>
             </div>
           </template>
@@ -186,8 +177,7 @@ const clearCart = async () => {
       </template>
       <div
         v-else
-        class="mx-auto my-4 max-w-lg rounded-lg border border-violet-200 bg-violet-50 p-4"
-      >
+        class="mx-auto my-4 max-w-lg rounded-lg border border-violet-200 bg-violet-50 p-4">
         <h2 class="mb-4 border-b border-gray-200 text-lg font-bold">
           Заказ {{ orderNumber > 1 ? `№${orderNumber}` : '' }} успешно создан!
         </h2>

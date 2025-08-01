@@ -1,5 +1,50 @@
 <script setup>
 useTitle('О компании - Челябинский Инструмент | Поставщик измерительного инструмента')
+
+const advantages = [
+  {
+    icon: 'i-heroicons-trophy',
+    title: '20+ лет опыта',
+    description:
+      'С 2000 года снабжаем клиентов по всей России современным измерительным инструментом и промышленным оборудованием.',
+  },
+  {
+    icon: 'i-heroicons-archive-box',
+    title: 'Более 5 000 позиций',
+    description:
+      'Широкий ассортимент продукции от ведущих российских и зарубежных производителей — для любых задач и отраслей.',
+  },
+  {
+    icon: 'i-heroicons-shield-check',
+    title: 'Гарантия качества',
+    description: 'Только сертифицированный инструмент, соответствующий ГОСТам РФ и международным стандартам.',
+  },
+  {
+    icon: 'i-heroicons-truck',
+    title: 'Доставка по всей России',
+    description: 'Оперативная доставка транспортными компаниями и собственным автотранспортом — в любой регион страны.',
+  },
+  {
+    icon: 'i-heroicons-building-office-2',
+    title: 'Прямые поставки от производителей',
+    description: 'Официальные дилерские и партнерские соглашения с заводами-изготовителями.',
+  },
+  {
+    icon: 'i-heroicons-document-check',
+    title: 'Поверка и калибровка',
+    description: 'Организуем поверку и калибровку инструмента для гарантии точности и надежности.',
+  },
+  {
+    icon: 'i-heroicons-bolt',
+    title: 'Минимальные сроки поставки',
+    description: 'Быстрая комплектация и отгрузка — получение продукции на складе сразу после оплаты.',
+  },
+  {
+    icon: 'i-heroicons-user-group',
+    title: 'Персональный подход',
+    description: 'Индивидуальные условия, скидки и консультации для каждого клиента. Мы ценим ваше доверие!',
+  },
+]
 </script>
 
 <template>
@@ -60,8 +105,7 @@ useTitle('О компании - Челябинский Инструмент | П
               <div class="font-fancy relative rounded-2xl bg-violet-100 p-4 font-semibold text-gray-500 shadow">
                 ...остались довольны качеством поставленной продукции, а также профессионализмом ваших сотрудников.
                 <span
-                  class="absolute -bottom-4 left-8 h-0 w-0 border-t-[16px] border-r-[16px] border-l-[16px] border-t-violet-100 border-r-transparent border-l-transparent"
-                ></span>
+                  class="absolute -bottom-4 left-8 h-0 w-0 border-t-[16px] border-r-[16px] border-l-[16px] border-t-violet-100 border-r-transparent border-l-transparent"></span>
               </div>
               <cite class="mt-6 block pl-6 text-sm font-semibold text-gray-900">
                 Осипова Н.Н, метролог ООО «Газпром газнадзор»
@@ -71,8 +115,7 @@ useTitle('О компании - Челябинский Инструмент | П
               <div class="font-fancy relative rounded-2xl bg-violet-100 p-4 font-semibold text-gray-500 shadow">
                 …благодарны за четкое соблюдение сроков договора, что было крайне важно для запуска новой лаборатории.
                 <span
-                  class="absolute -bottom-4 left-8 h-0 w-0 border-t-[16px] border-r-[16px] border-l-[16px] border-t-violet-100 border-r-transparent border-l-transparent"
-                ></span>
+                  class="absolute -bottom-4 left-8 h-0 w-0 border-t-[16px] border-r-[16px] border-l-[16px] border-t-violet-100 border-r-transparent border-l-transparent"></span>
               </div>
               <cite class="mt-6 block pl-6 text-sm font-semibold text-gray-900">
                 Михайлов А.Ю., инженер ОМТС ОАО «Транссибнефть»
@@ -82,8 +125,7 @@ useTitle('О компании - Челябинский Инструмент | П
               <div class="font-fancy relative rounded-2xl bg-violet-100 p-4 font-semibold text-gray-500 shadow">
                 ...всегда удается найти общий язык, возникающие сложности оперативно решаются по первому обращению.
                 <span
-                  class="absolute -bottom-4 left-8 h-0 w-0 border-t-[16px] border-r-[16px] border-l-[16px] border-t-violet-100 border-r-transparent border-l-transparent"
-                ></span>
+                  class="absolute -bottom-4 left-8 h-0 w-0 border-t-[16px] border-r-[16px] border-l-[16px] border-t-violet-100 border-r-transparent border-l-transparent"></span>
               </div>
               <cite class="mt-6 block pl-6 text-sm font-semibold">
                 Гринь К.Е., специалист отдела поставок АО «Атомэнергомаш»
@@ -93,8 +135,7 @@ useTitle('О компании - Челябинский Инструмент | П
               <div class="font-fancy relative rounded-2xl bg-violet-100 p-4 font-semibold text-gray-500 shadow">
                 ...после долгих проб и ошибок наконец-то нашли ответственного поставщика инструмента.
                 <span
-                  class="absolute -bottom-4 left-8 h-0 w-0 border-t-[16px] border-r-[16px] border-l-[16px] border-t-violet-100 border-r-transparent border-l-transparent"
-                ></span>
+                  class="absolute -bottom-4 left-8 h-0 w-0 border-t-[16px] border-r-[16px] border-l-[16px] border-t-violet-100 border-r-transparent border-l-transparent"></span>
               </div>
               <cite class="mt-6 block pl-6 text-sm font-semibold">
                 Шульц А. С., технолог ВРД Арчеда - филиал ООО «НВК»
@@ -105,122 +146,12 @@ useTitle('О компании - Челябинский Инструмент | П
       </div>
 
       <div>
-        <h3 class="mb-6 text-2xl font-semibold">Наши преимущества</h3>
+        <h3 class="mb-4 text-2xl font-semibold text-violet-800">Наши преимущества</h3>
         <div class="grid gap-6 md:grid-cols-2">
-          <div
-            class="flex flex-col gap-4 rounded-2xl border border-purple-200 bg-white/80 p-7 shadow-xl transition-shadow hover:shadow-2xl"
-          >
-            <h4 class="mb-2 flex items-center gap-3 text-xl font-bold text-purple-800">
-              <Icon
-                name="i-heroicons-trophy"
-                class="text-5xl text-purple-500 drop-shadow-md"
-              />
-              20+ лет опыта
-            </h4>
-            <p class="text-base text-purple-700">
-              С 2000 года снабжаем клиентов по всей России современным измерительным инструментом и промышленным
-              оборудованием.
-            </p>
-          </div>
-          <div
-            class="flex flex-col gap-4 rounded-2xl border border-purple-200 bg-white/80 p-7 shadow-xl transition-shadow hover:shadow-2xl"
-          >
-            <h4 class="mb-2 flex items-center gap-3 text-xl font-bold text-purple-800">
-              <Icon
-                name="i-heroicons-archive-box"
-                class="text-5xl text-purple-500 drop-shadow-md"
-              />
-              Более 5 000 позиций
-            </h4>
-            <p class="text-base text-purple-700">
-              Широкий ассортимент продукции от ведущих российских и зарубежных производителей — для любых задач и
-              отраслей.
-            </p>
-          </div>
-          <div
-            class="flex flex-col gap-4 rounded-2xl border border-purple-200 bg-white/80 p-7 shadow-xl transition-shadow hover:shadow-2xl"
-          >
-            <h4 class="mb-2 flex items-center gap-3 text-xl font-bold text-purple-800">
-              <Icon
-                name="i-heroicons-shield-check"
-                class="text-5xl text-purple-500 drop-shadow-md"
-              />
-              Гарантия качества
-            </h4>
-            <p class="text-base text-purple-700">
-              Только сертифицированный инструмент, соответствующий ГОСТам РФ и международным стандартам.
-            </p>
-          </div>
-          <div
-            class="flex flex-col gap-4 rounded-2xl border border-purple-200 bg-white/80 p-7 shadow-xl transition-shadow hover:shadow-2xl"
-          >
-            <h4 class="mb-2 flex items-center gap-3 text-xl font-bold text-purple-800">
-              <Icon
-                name="i-heroicons-truck"
-                class="text-5xl text-purple-500 drop-shadow-md"
-              />
-              Доставка по всей России
-            </h4>
-            <p class="text-base text-purple-700">
-              Оперативная доставка транспортными компаниями и собственным автотранспортом — в любой регион страны.
-            </p>
-          </div>
-          <div
-            class="flex flex-col gap-4 rounded-2xl border border-purple-200 bg-white/80 p-7 shadow-xl transition-shadow hover:shadow-2xl"
-          >
-            <h4 class="mb-2 flex items-center gap-3 text-xl font-bold text-purple-800">
-              <Icon
-                name="i-heroicons-building-office-2"
-                class="text-5xl text-purple-500 drop-shadow-md"
-              />
-              Прямые поставки от производителей
-            </h4>
-            <p class="text-base text-purple-700">
-              Официальные дилерские и партнерские соглашения с заводами-изготовителями.
-            </p>
-          </div>
-          <div
-            class="flex flex-col gap-4 rounded-2xl border border-purple-200 bg-white/80 p-7 shadow-xl transition-shadow hover:shadow-2xl"
-          >
-            <h4 class="mb-2 flex items-center gap-3 text-xl font-bold text-purple-800">
-              <Icon
-                name="i-heroicons-document-check"
-                class="text-5xl text-purple-500 drop-shadow-md"
-              />
-              Поверка и калибровка
-            </h4>
-            <p class="text-base text-purple-700">
-              Организуем поверку и калибровку инструмента для гарантии точности и надежности.
-            </p>
-          </div>
-          <div
-            class="flex flex-col gap-4 rounded-2xl border border-purple-200 bg-white/80 p-7 shadow-xl transition-shadow hover:shadow-2xl"
-          >
-            <h4 class="mb-2 flex items-center gap-3 text-xl font-bold text-purple-800">
-              <Icon
-                name="i-heroicons-bolt"
-                class="text-5xl text-purple-500 drop-shadow-md"
-              />
-              Минимальные сроки поставки
-            </h4>
-            <p class="text-base text-purple-700">
-              Быстрая комплектация и отгрузка — получение продукции на складе сразу после оплаты.
-            </p>
-          </div>
-          <div
-            class="flex flex-col gap-4 rounded-2xl border border-purple-200 bg-white/80 p-7 shadow-xl transition-shadow hover:shadow-2xl"
-          >
-            <h4 class="mb-2 flex items-center gap-3 text-xl font-bold text-purple-800">
-              <Icon
-                name="i-heroicons-user-group"
-                class="text-5xl text-purple-500 drop-shadow-md"
-              />
-              Персональный подход
-            </h4>
-            <p class="text-base text-purple-700">
-              Индивидуальные условия, скидки и консультации для каждого клиента. Мы ценим ваше доверие!
-            </p>
-          </div>
+          <HelperPresentationCard
+            v-for="(adv, idx) in advantages"
+            :key="idx"
+            :item="adv" />
         </div>
       </div>
 
@@ -241,8 +172,7 @@ useTitle('О компании - Челябинский Инструмент | П
           >, либо
           <button
             class="text-indigo-600 underline-offset-4 hover:underline"
-            @click="showFeedback()"
-          >
+            @click="showFeedback()">
             задайте вопрос через форму обратной связи.
           </button>
         </p>

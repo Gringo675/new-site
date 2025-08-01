@@ -2,7 +2,7 @@
 //
 // await new Promise(r => setTimeout(r, 3000))
 
-const user = useUser().value
+const user = useUser()
 
 onMounted(async () => {
   window.addEventListener('storage', event => {
@@ -29,12 +29,10 @@ onMounted(async () => {
       truncate
       class="rounded-full"
       @click="showLogin"
-      label="Войти"
-    />
+      label="Войти" />
     <HelperPopupMenu
       v-else
-      contentClass="right-0 "
-    >
+      contentClass="right-0">
       <template #trigger="{ show }">
         <UButton
           icon="i-heroicons-user"
@@ -42,8 +40,7 @@ onMounted(async () => {
           truncate
           class="rounded-full"
           @click="show"
-          :label="user.name"
-        />
+          :label="user.name" />
       </template>
       <template #content>
         <div class="flex flex-col items-end gap-2">
@@ -51,21 +48,18 @@ onMounted(async () => {
             icon="i-material-symbols-settings-account-box-outline-rounded"
             to="/user/profile"
             label="Профиль"
-            variant="ghost"
-          />
+            variant="ghost" />
           <UButton
             icon="i-material-symbols-work-history-outline-rounded"
             to="/user/orders"
             label="Заказы"
-            variant="ghost"
-          />
+            variant="ghost" />
           <UButton
             icon="i-iconamoon-exit"
             to="/"
             label="Выход"
             variant="ghost"
-            @click="logoutUser"
-          />
+            @click="logoutUser" />
         </div>
       </template>
     </HelperPopupMenu>

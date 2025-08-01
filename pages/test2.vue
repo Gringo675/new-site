@@ -1,19 +1,16 @@
 <script setup>
-definePageMeta({
-  layout: 'empty',
-})
+//
 
-const nodeVersion = useState('nv', () => process.version)
+const items = 4
 </script>
 
 <template>
-  <div class="m-20 bg-gray-800">
-    <h1 class="text-2xl text-white">Node Version</h1>
-    <p class="text-lg text-gray-300">{{ nodeVersion }}</p>
-    <p class="text-lg text-gray-300">This page is for testing purposes.</p>
-    <UButton
-      label="ttest"
-      color="secondary"
-    />
+  <div class="menu-scrollbar m-2 flex gap-2 overflow-auto bg-amber-200 p-2">
+    <div
+      v-for="item in items"
+      :key="item"
+      class="h-10 w-100 min-w-80 bg-fuchsia-300 p-2">
+      {{ item }}
+    </div>
   </div>
 </template>

@@ -5,7 +5,7 @@ const props = defineProps({
 })
 const emit = defineEmits(['cancel', 'verified'])
 
-const user = useUser().value
+const user = useUser()
 const state = reactive({
   code: {
     val: [],
@@ -57,7 +57,7 @@ const verifyCode = async code => {
       payload: [{ field: 'mail', value: props.mail }],
     })
     if (isChangesSaved) {
-      user.mail = props.mail
+      user.value.mail = props.mail
       showNotice({ title: 'Почта успешно изменена!', type: 'success' })
       emit('verified')
     } else showNotice({ title: 'Ошибка при изменении почты!', type: 'error' })
@@ -70,33 +70,28 @@ const verifyCode = async code => {
     class="my-2"
     title="Подтверждение почты"
     icon="i-heroicons-exclamation-triangle"
-    variant="outline"
-  >
+    variant="outline">
     <template #description>
       <div
         v-if="!state.showCodeInput"
-        class="text-neutral-700"
-      >
+        class="text-neutral-700">
         <div class="py-2">Необходимо подтвердить новую почту.</div>
         <div class="flex justify-end gap-x-4">
           <UButton
             label="Отмена"
             variant="outline"
             color="neutral"
-            @click="emit('cancel')"
-          />
+            @click="emit('cancel')" />
           <UButton
             label="Подтвердить"
             variant="subtle"
             color="neutral"
-            @click="sendCode"
-          />
+            @click="sendCode" />
         </div>
       </div>
       <div
         v-else
-        class="text-neutral-700"
-      >
+        class="text-neutral-700">
         <div class="py-2">
           На адрес <span class="font-bold underline underline-offset-4">{{ props.mail }}</span> было отправлено письмо,
           содержащее код активации. Пожалуйста, введите его в данное поле.
@@ -104,23 +99,20 @@ const verifyCode = async code => {
         <div class="flex flex-wrap items-start justify-around gap-4">
           <UForm
             :state="state"
-            :validate="validate"
-          >
+            :validate="validate">
             <UFormField name="code">
               <UPinInput
                 v-model="state.code.val"
                 type="number"
                 :length="5"
-                otp
-              />
+                otp />
             </UFormField>
           </UForm>
           <UButton
             label="Отмена"
             variant="subtle"
             color="neutral"
-            @click="emit('cancel')"
-          />
+            @click="emit('cancel')" />
         </div>
       </div>
     </template>

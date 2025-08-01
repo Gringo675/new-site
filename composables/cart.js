@@ -53,7 +53,7 @@ const updateCartFromLocalStoreHelper = {
     const addedProductIds = addedProducts.map(item => item.id)
     const newProducts = await myFetch('/api/getProducts', {
       method: 'post',
-      payload: addedProductIds,
+      payload: { productIds: addedProductIds },
       silent: true,
     })
     newProducts.forEach(newProduct => {

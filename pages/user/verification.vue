@@ -2,7 +2,7 @@
 // страница авторизации по ссылке в письме
 useTitle('Активация аккаунта')
 
-const user = useUser().value
+const user = useUser()
 
 try {
   const { mail, code } = useRoute().query

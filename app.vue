@@ -64,7 +64,7 @@ const setErrorToLog = async e => {
   <UApp>
     <div class="flex min-h-screen flex-col">
       <ClientOnly>
-        <!-- <StagewiseToolbar :config="toolbarConfig" /> -->
+        <StagewiseToolbar :config="toolbarConfig" />
       </ClientOnly>
       <NuxtLayout>
         <NuxtPage />

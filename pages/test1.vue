@@ -1,32 +1,29 @@
 <script setup>
 //
-// definePageMeta({
-//   layout: 'empty',
-// })
-const items = [
-  // 'https://picsum.photos/seed/qqqaaa/200/300',
-  // 'https://picsum.photos/seed/qqqaaa/600/200',
-  // 'https://picsum.photos/seed/qqqaaa/300/300',
-  // 'https://picsum.photos/seed/aaabbbaabbb/3000/2000',
-  // 'https://picsum.photos/seed/aaabbbaabbb/200/600',
-  // 'https://picsum.photos/seed/aaabbbaabbb/600/200',
-]
 
-const aaa = await $fetch('/api/apiTest')
+const response = shallowRef(null)
+const onTest1 = async () => {
+  const request = {
+    // productIds: [120002, 120003, 120006],
+    labelId: 5,
+  }
+  response.value = await myFetch('/api/getProducts', {
+    method: 'post',
+    payload: request,
+    silent: true,
+  })
+}
 </script>
 
 <template>
-  <div class="">aaa: {{ aaa }}</div>
-  <!-- <div class="m-10 w-sm">
-    <imageViewerInline
-      :images="items"
-      :products="false"
-    />
-  </div> -->
-  <!-- <div class="absolute top-4 left-200">
+  <div>
     <UButton
-      label="test"
-      @click="console.log('test')"
-    />
-  </div> -->
+      icon="i-heroicons-user"
+      size="md"
+      truncate
+      class="rounded-full"
+      @click="onTest1"
+      label="Test1" />
+  </div>
+  <div class="">{{ response }}</div>
 </template>

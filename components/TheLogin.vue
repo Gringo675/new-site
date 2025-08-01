@@ -5,7 +5,7 @@ const closeLogin = () => {
   emit('close')
 }
 
-const user = useUser().value
+const user = useUser()
 
 const showVerifyScreen = ref(false)
 const formState = reactive({
@@ -68,7 +68,7 @@ const verifyCode = async code => {
     await getUser()
     showNotice({
       title: 'Авторизация пройдена!',
-      description: user.name.length ? `${user.name}, с возвращением!` : '',
+      description: user.value.name.length ? `${user.value.name}, с возвращением!` : '',
       type: 'success',
     })
     closeLogin()
@@ -94,7 +94,7 @@ const runOAuth = provider => {
       clearInterval(timer)
       await getUser({ hidden: true })
       hideLoader()
-      if (user.auth) closeLogin()
+      if (user.value.auth) closeLogin()
     }
   }, 1000)
 }
@@ -107,15 +107,13 @@ const runOAuth = provider => {
     :ui="{
       content: 'max-w-xl',
       header: 'min-h-auto',
-    }"
-  >
+    }">
     <template #description></template>
     <template #body>
       <UForm
         :validate="validate"
         :state="formState"
-        class="mb-4 space-y-4"
-      >
+        class="mb-4 space-y-4">
         <template v-if="!showVerifyScreen">
           <div class="mb-4 text-sm text-neutral-500">
             Введите почтовый адрес, привязанный к аккаунту. Если у Вас еще нет действующего аккаунта, введите почтовый
@@ -125,15 +123,13 @@ const runOAuth = provider => {
             <UFormField
               name="mail"
               label="Ваша почта"
-              class=""
-            >
+              class="">
               <UInput
                 type="email"
                 v-model="formState.mail"
                 autofocus
                 placeholder="example@mail.ru"
-                class="w-3xs"
-              />
+                class="w-3xs" />
             </UFormField>
             <div class="flex grow justify-center pt-6">
               <UButton
@@ -141,8 +137,7 @@ const runOAuth = provider => {
                 variant="subtle"
                 color="neutral"
                 :disabled="!formState.mail"
-                @click="sendCode"
-              />
+                @click="sendCode" />
             </div>
           </div>
           <div class="text-sm">Данный адрес не будет использоваться для рассылок или передаваться третьим лицам.</div>
@@ -152,25 +147,21 @@ const runOAuth = provider => {
               label="Войти через google"
               icon="i-simple-icons-github"
               block
-              @click="runOAuth('google')"
-            />
+              @click="runOAuth('google')" />
             <UButton
               label="Войти через vk"
               icon="i-simple-icons-github"
               block
-              @click="runOAuth('vk')"
-            />
+              @click="runOAuth('vk')" />
             <UButton
               label="Войти через mail.ru"
               icon="i-simple-icons-github"
               block
-              @click="runOAuth('mailru')"
-            />
+              @click="runOAuth('mailru')" />
             <UButton
               label="Login with GitHub"
               icon="i-simple-icons-github"
-              block
-            />
+              block />
           </div>
         </template>
         <template v-else>
@@ -184,16 +175,14 @@ const runOAuth = provider => {
                 v-model="formState.code"
                 type="number"
                 :length="5"
-                otp
-              />
+                otp />
             </UFormField>
             <UButton
               label="Назад"
               variant="subtle"
               color="neutral"
               @click="backOnMailScreen"
-              class="px-8"
-            />
+              class="px-8" />
           </div>
         </template>
       </UForm>

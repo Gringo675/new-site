@@ -45,7 +45,7 @@ async function updateViewed() {
     helper.inProgress = true
     const missingProds = await myFetch('/api/getProducts', {
       method: 'post',
-      payload: missingIds,
+      payload: { productIds: missingIds },
       silent: true,
     })
     helper.inProgress = false
@@ -69,27 +69,10 @@ async function updateViewed() {
 </script>
 
 <template>
-  <div
+  <ProductsSlider
     v-if="viewed.length"
-    class="mt-8 md:-mx-2"
-  >
-    <USeparator
-      label="Просмотренные товары"
-      color="primary"
-      :ui="{
-        container: 'mx-0 px-4 border border-primary rounded-full',
-        label: 'text-primary italic font-bold text-lg',
-      }"
-    />
-
-    <div class="my-4 grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-2">
-      <CatalogProductCard
-        v-for="prod in viewed"
-        :prod="prod"
-        class="@container"
-      />
-    </div>
-  </div>
+    :products="viewed"
+    label="Просмотренные товары" />
 </template>
 
 <style scoped>

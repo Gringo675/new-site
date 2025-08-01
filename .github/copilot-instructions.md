@@ -4,16 +4,11 @@
 
 ## Project Overview
 This is a Nuxt 3 e-commerce website built with:
-- Nuxt 3 for the core framework
-- Nuxt UI v3 and TailwindCSS for styling
+ Nuxt UI v3 and TailwindCSS v4 for styling
 - Vue 3 Composition API for component logic
-- MySQL for the database
-- Server-side features include email (nodemailer) and authentication
-
-## Key Technologies & Dependencies
 - Frontend: Nuxt 3, TailwindCSS, Nuxt UI
 - Backend: Node.js, MySQL
-- Utilities: nodemailer, maska (for input masking)
+ Use TailwindCSS v4 for styling
 
 ## Project Structure
 - `pages/` - Route pages following Nuxt file-based routing

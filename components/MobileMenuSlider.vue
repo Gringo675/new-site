@@ -5,7 +5,7 @@ const closeMobileMenu = () => {
   emit('close')
 }
 
-const user = useUser().value
+const user = useUser()
 const company = useCompany()
 const menuState = [
   {
@@ -60,8 +60,7 @@ const onFeedback = () => {
     description="Ваш лучший поставщик измерительного инструмента"
     :ui="{
       content: 'bg-gray-100 max-w-sm',
-    }"
-  >
+    }">
     <template #body>
       <div class="flex flex-col gap-1">
         <UButton
@@ -69,8 +68,7 @@ const onFeedback = () => {
           block
           label="Весь каталог инструмента"
           icon="i-heroicons-queue-list"
-          @click="goTo('/catalog')"
-        />
+          @click="goTo('/catalog')" />
         <UButton
           size="lg"
           variant="outline"
@@ -78,8 +76,7 @@ const onFeedback = () => {
           label="Быстрый заказ"
           icon="i-heroicons-pencil-square"
           @click="onFeedback"
-          class="mt-2"
-        />
+          class="mt-2" />
         <UButton
           v-for="item in menuState"
           variant="link"
@@ -87,33 +84,28 @@ const onFeedback = () => {
           :label="item.label"
           :icon="item.icon"
           @click="goTo(item.to)"
-          class="w-max"
-        />
+          class="w-max" />
 
         <div
           v-if="user.auth"
-          class="rounded-lg border border-gray-300 bg-gray-200 p-2"
-        >
+          class="rounded-lg border border-gray-300 bg-gray-200 p-2">
           <div class="text-center italic">{{ user.name }}</div>
           <div class="flex justify-center gap-2 py-1">
             <UButton
               variant="outline"
               label="Профиль"
               @click="goTo('/user/profile')"
-              class="w-max"
-            />
+              class="w-max" />
             <UButton
               variant="outline"
               label="Заказы"
               @click="goTo('/user/orders')"
-              class="w-max"
-            />
+              class="w-max" />
             <UButton
               variant="outline"
               label="Выход"
               @click="onLogout"
-              class="w-max"
-            />
+              class="w-max" />
           </div>
         </div>
         <UButton
@@ -123,8 +115,7 @@ const onFeedback = () => {
           block
           label="Войти / зарегистрироваться"
           icon="i-heroicons-queue-list"
-          @click="onLogin"
-        />
+          @click="onLogin" />
         <!-- contacts -->
         <div class="mt-4 ml-1 flex flex-col gap-2 text-sm">
           <div>{{ company.address.post }}</div>
@@ -132,8 +123,7 @@ const onFeedback = () => {
             <a
               v-for="mail in company.mails"
               @click="closeMobileMenu"
-              :href="'mailto:' + mail"
-            >
+              :href="'mailto:' + mail">
               {{ mail }}
             </a>
           </div>
@@ -141,8 +131,7 @@ const onFeedback = () => {
             <a
               v-for="phone in company.phones"
               @click="closeMobileMenu"
-              :href="'tel:' + phone"
-            >
+              :href="'tel:' + phone">
               {{ phone }}
             </a>
           </div>

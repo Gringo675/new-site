@@ -1,5 +1,28 @@
 <script setup>
 useTitle('Как купить - Челябинский Инструмент | Условия покупки и оплаты')
+
+const advantages = [
+  {
+    icon: 'i-heroicons-check-badge',
+    title: 'Официальный поставщик',
+    description: 'Только сертифицированная продукция с гарантией и всеми необходимыми документами.',
+  },
+  {
+    icon: 'i-heroicons-truck',
+    title: 'Быстрая доставка',
+    description: 'Оперативная отгрузка и доставка по всей России и СНГ, самовывоз со склада в Челябинске.',
+  },
+  {
+    icon: 'i-heroicons-user-group',
+    title: 'Персональный подход',
+    description: 'Индивидуальные условия, скидки и консультации для каждого клиента.',
+  },
+  {
+    icon: 'i-heroicons-shield-check',
+    title: 'Поддержка и сервис',
+    description: 'Профессиональная поддержка на всех этапах покупки и эксплуатации инструмента.',
+  },
+]
 </script>
 
 <template>
@@ -60,58 +83,10 @@ useTitle('Как купить - Челябинский Инструмент | У
       <div class="my-10">
         <h2 class="mb-4 text-2xl font-semibold text-violet-800">Почему выбирают нас?</h2>
         <div class="grid gap-6 md:grid-cols-2">
-          <div
-            class="flex flex-col gap-2 rounded-2xl border border-violet-200 bg-white/80 p-6 shadow-xl transition-shadow hover:shadow-2xl"
-          >
-            <h3 class="flex items-center gap-2 text-lg font-bold text-violet-700">
-              <Icon
-                name="i-heroicons-check-badge"
-                class="text-2xl text-violet-500"
-              />
-              Официальный поставщик
-            </h3>
-            <p class="text-violet-700">
-              Только сертифицированная продукция с гарантией и всеми необходимыми документами.
-            </p>
-          </div>
-          <div
-            class="flex flex-col gap-2 rounded-2xl border border-violet-200 bg-white/80 p-6 shadow-xl transition-shadow hover:shadow-2xl"
-          >
-            <h3 class="flex items-center gap-2 text-lg font-bold text-violet-700">
-              <Icon
-                name="i-heroicons-truck"
-                class="text-2xl text-violet-500"
-              />
-              Быстрая доставка
-            </h3>
-            <p class="text-violet-700">
-              Оперативная отгрузка и доставка по всей России и СНГ, самовывоз со склада в Челябинске.
-            </p>
-          </div>
-          <div
-            class="flex flex-col gap-2 rounded-2xl border border-violet-200 bg-white/80 p-6 shadow-xl transition-shadow hover:shadow-2xl"
-          >
-            <h3 class="flex items-center gap-2 text-lg font-bold text-violet-700">
-              <Icon
-                name="i-heroicons-user-group"
-                class="text-2xl text-violet-500"
-              />
-              Персональный подход
-            </h3>
-            <p class="text-violet-700">Индивидуальные условия, скидки и консультации для каждого клиента.</p>
-          </div>
-          <div
-            class="flex flex-col gap-2 rounded-2xl border border-violet-200 bg-white/80 p-6 shadow-xl transition-shadow hover:shadow-2xl"
-          >
-            <h3 class="flex items-center gap-2 text-lg font-bold text-violet-700">
-              <Icon
-                name="i-heroicons-shield-check"
-                class="text-2xl text-violet-500"
-              />
-              Поддержка и сервис
-            </h3>
-            <p class="text-violet-700">Профессиональная поддержка на всех этапах покупки и эксплуатации инструмента.</p>
-          </div>
+          <HelperPresentationCard
+            v-for="(adv, idx) in advantages"
+            :key="idx"
+            :item="adv" />
         </div>
       </div>
 
@@ -193,8 +168,7 @@ useTitle('Как купить - Челябинский Инструмент | У
           >, либо
           <button
             class="text-indigo-600 underline-offset-4 hover:underline"
-            @click="showFeedback()"
-          >
+            @click="showFeedback()">
             задайте вопрос через форму обратной связи.
           </button>
         </p>

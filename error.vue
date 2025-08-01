@@ -3,13 +3,13 @@ const props = defineProps({
   error: Object,
 })
 console.error(props.error)
-const user = useUser().value
+const user = useUser()
 
 useOverlay().closeAll()
 
 const onLogin = async () => {
   await showLogin()
-  if (user.auth) refreshPage()
+  if (user.value.auth) refreshPage()
 }
 
 const refreshPage = () => {
@@ -37,22 +37,19 @@ const test = async () => {
           <h1>Error ppppage</h1>
           <button
             class="m-2 bg-cyan-500 p-2"
-            @click="test"
-          >
+            @click="test">
             Test
           </button>
           <div v-if="error.statusCode === 401">
             <h2>Для доступа к ресурсу необходима авторизация!</h2>
             <button
               class="m-2 bg-cyan-500 p-2"
-              @click="onLogin"
-            >
+              @click="onLogin">
               Войти
             </button>
             <button
               class="m-2 bg-cyan-500 p-2"
-              @click="toMainPage"
-            >
+              @click="toMainPage">
               На главную
             </button>
           </div>
@@ -60,8 +57,7 @@ const test = async () => {
             <h2>Отказано в доступе!</h2>
             <button
               class="m-2 bg-cyan-500 p-2"
-              @click="toMainPage"
-            >
+              @click="toMainPage">
               На главную
             </button>
           </div>
@@ -69,8 +65,7 @@ const test = async () => {
             <h2>Error 404</h2>
             <button
               class="m-2 bg-cyan-500 p-2"
-              @click="toMainPage"
-            >
+              @click="toMainPage">
               На главную
             </button>
           </div>
@@ -78,8 +73,7 @@ const test = async () => {
             <h2>На сервере ведутся технические работы. Доступ временно закрыт.</h2>
             <button
               class="m-2 bg-cyan-500 p-2"
-              @click="onLogin"
-            >
+              @click="onLogin">
               Вход для администраторов (hidden)
             </button>
           </div>
@@ -94,13 +88,11 @@ const test = async () => {
             <UButton
               label="На главную"
               @click="toMainPage"
-              class="m-2"
-            />
+              class="m-2" />
             <UButton
               label="Обновить страницу"
               @click="refreshPage"
-              class="m-2"
-            />
+              class="m-2" />
           </div>
         </div>
       </div>

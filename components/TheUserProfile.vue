@@ -11,15 +11,15 @@ const userProfileRef = useTemplateRef('userProfileRef')
 defineExpose({ userProfileRef, saveUserData })
 
 await getUser({ hidden: true })
-const user = useUser().value
+const user = useUser()
 
 const newUser = reactive({
-  name: user.name,
-  mail: user.mail,
-  org: user.org,
-  inn: user.inn,
-  address: user.address,
-  phone: user.phone,
+  name: user.value.name,
+  mail: user.value.mail,
+  org: user.value.org,
+  inn: user.value.inn,
+  address: user.value.address,
+  phone: user.value.phone,
 })
 const fieldErrors = {
   name: '',
@@ -37,7 +37,7 @@ const validateField = (field, value) => {
       break
     case 'mail':
       const isValid = validateMail(value)
-      if (user.auth && isValid && value !== user.mail) shouldVerifyNewMail.value = true
+      if (user.value.auth && isValid && value !== user.value.mail) shouldVerifyNewMail.value = true
       else shouldVerifyNewMail.value = false
       fieldErrors.mail = !isValid ? 'Введите корректный почтовый адрес!' : ''
       break
@@ -109,7 +109,7 @@ async function saveUserData() {
 
   try {
     // для авторизированных пользователей сохраняем изменения на сервере
-    if (user.auth) {
+    if (user.value.auth) {
       const dataKeys = ['name', 'mail', 'org', 'inn', 'address', 'phone'] // без почты, для нее отдельный компонент
       const changedUserData = dataKeys
         .filter(key => newUser[key].changed)
@@ -146,69 +146,56 @@ async function saveUserData() {
     :validate="validate"
     :state="newUser"
     @error="onError"
-    class="space-y-4"
-  >
+    class="space-y-4">
     <UFormField
       label="Имя"
       name="name"
       required
-      autofocus
-    >
+      autofocus>
       <UInput
         v-model="newUser.name"
-        class="w-full"
-      />
+        class="w-full" />
     </UFormField>
     <UFormField
       label="Почта"
       name="mail"
-      required
-    >
+      required>
       <UInput
         type="email"
         v-model="newUser.mail"
-        class="w-full"
-      />
+        class="w-full" />
       <MailVerifier
         v-if="shouldVerifyNewMail"
         :mail="newUser.mail"
         @cancel="newUser.mail = user.mail"
-        @verified="shouldVerifyNewMail = false"
-      />
+        @verified="shouldVerifyNewMail = false" />
     </UFormField>
     <UFormField
       label="Организация"
-      name="org"
-    >
+      name="org">
       <UInput
         v-model="newUser.org"
-        class="w-full"
-      />
+        class="w-full" />
     </UFormField>
     <UFormField
       label="ИНН"
-      name="inn"
-    >
+      name="inn">
       <UInput
         v-maska
         data-maska="############"
         v-model="newUser.inn"
-        class="w-full"
-      />
+        class="w-full" />
     </UFormField>
     <UFormField
       label="Адрес"
-      name="address"
-    >
+      name="address">
       <UInput
         v-model="newUser.address"
-        class="w-full"
-      />
+        class="w-full" />
     </UFormField>
     <UFormField
       label="Телефон"
-      name="phone"
-    >
+      name="phone">
       <div class="flex items-center gap-2">
         <div class="text-base">+7</div>
         <UInput
@@ -217,8 +204,7 @@ async function saveUserData() {
           v-model="newUser.phone"
           type="tel"
           placeholder="000 000-00-00"
-          class="grow"
-        />
+          class="grow" />
       </div>
     </UFormField>
   </UForm>
