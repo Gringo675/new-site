@@ -31,7 +31,7 @@ export default defineEventHandler(async event => {
   } AND published = 1`
   const products = (await dbReq(query)) as Product[]
 
-  if (!products.length) return false
+  if (!products.length) return []
 
   products.forEach(product => {
     // Берем только первое изображение

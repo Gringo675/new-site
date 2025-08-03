@@ -1,14 +1,13 @@
-<script setup>
+<script setup lang="ts">
 //
-const bestSellers = await useFetch('/api/getProducts', {
+const { data: bestSellers } = await useFetch('/api/getProducts', {
   method: 'post',
-  body: { labelId: 5 }, // Assuming labelId 5 is for best sellers
+  body: { labelId: 5 },
 })
 </script>
 
 <template>
   <ProductsSlider
-    :products="bestSellers.data"
+    :products="bestSellers"
     label="Лидеры продаж" />
-  <div class="">{{ bestSellers }}</div>
 </template>
