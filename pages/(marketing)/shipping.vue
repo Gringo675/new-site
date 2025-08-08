@@ -41,15 +41,13 @@ useTitle('Доставка - Челябинский Инструмент | Ус�
 
           <div class="mt-6 grid gap-6 md:grid-cols-2">
             <div
-              class="rounded-2xl border-2 border-indigo-200 bg-indigo-50/60 p-6 shadow-sm transition-shadow hover:shadow-lg"
-            >
+              class="rounded-2xl border-2 border-indigo-200 bg-indigo-50/60 p-6 shadow-sm transition-shadow hover:shadow-lg">
               <div class="mb-2 flex items-center justify-between gap-2 border-b border-indigo-200 pb-1">
                 <h3 class="text-lg font-bold tracking-tight text-indigo-800">Деловые Линии</h3>
                 <img
                   src="/img/carriers/dl.svg"
                   alt="Деловые Линии"
-                  class="h-8 w-auto"
-                />
+                  class="h-8 w-auto" />
               </div>
 
               <p class="mb-3 text-sm text-gray-700">
@@ -94,15 +92,13 @@ useTitle('Доставка - Челябинский Инструмент | Ус�
               </ul>
             </div>
             <div
-              class="rounded-2xl border-2 border-indigo-200 bg-indigo-50/60 p-6 shadow-sm transition-shadow hover:shadow-lg"
-            >
+              class="rounded-2xl border-2 border-indigo-200 bg-indigo-50/60 p-6 shadow-sm transition-shadow hover:shadow-lg">
               <div class="mb-2 flex items-center justify-between gap-2 border-b border-indigo-200 pb-1">
                 <h3 class="text-lg font-bold tracking-tight text-indigo-800">ПЭК</h3>
                 <img
                   src="/img/carriers/pek.svg"
                   alt="ПЭК"
-                  class="h-8 w-auto"
-                />
+                  class="h-8 w-auto" />
               </div>
               <p class="mb-3 text-sm text-gray-700">
                 Одна из крупнейших ТК, доставка по России, СНГ, Китаю. Услуги: перевозка, упаковка, страхование,
@@ -147,18 +143,16 @@ useTitle('Доставка - Челябинский Инструмент | Ус�
               </ul>
             </div>
             <div
-              class="rounded-2xl border-2 border-indigo-200 bg-indigo-50/60 p-6 shadow-sm transition-shadow hover:shadow-lg"
-            >
+              class="rounded-2xl border-2 border-indigo-200 bg-indigo-50/60 p-6 shadow-sm transition-shadow hover:shadow-lg">
               <div class="mb-2 flex items-center justify-between gap-2 border-b border-indigo-200 pb-1">
                 <h3 class="text-lg font-bold tracking-tight text-indigo-800">ЖелДорЭкспедиция</h3>
                 <img
                   src="/img/carriers/jde.svg"
                   alt="ЖелДорЭкспедиция"
-                  class="h-8 w-auto"
-                />
+                  class="h-8 w-auto" />
               </div>
               <p class="mb-3 text-sm text-gray-700">
-                20+ лет на рынке, доставка по России, Китаю, Казахстану, ЕС. Услуги: перевозка, упаковка, доставка до
+                25 лет на рынке, доставка по России, Китаю, Казахстану, ЕС. Услуги: перевозка, упаковка, доставка до
                 двери, страхование, хранение.
               </p>
               <ul class="space-y-1 text-xs">
@@ -185,8 +179,7 @@ useTitle('Доставка - Челябинский Инструмент | Ус�
                   <NuxtLink
                     to="https://www.jde.ru/"
                     target="_blank"
-                    class="text-indigo-600 underline-offset-4 hover:underline"
-                  >
+                    class="text-indigo-600 underline-offset-4 hover:underline">
                     jde.ru
                   </NuxtLink>
                 </li>
@@ -201,15 +194,13 @@ useTitle('Доставка - Челябинский Инструмент | Ус�
               </ul>
             </div>
             <div
-              class="rounded-2xl border-2 border-indigo-200 bg-indigo-50/60 p-6 shadow-sm transition-shadow hover:shadow-lg"
-            >
+              class="rounded-2xl border-2 border-indigo-200 bg-indigo-50/60 p-6 shadow-sm transition-shadow hover:shadow-lg">
               <div class="mb-2 flex items-center justify-between gap-2 border-b border-indigo-200 pb-1">
                 <h3 class="text-lg font-bold tracking-tight text-indigo-800">ТК КИТ</h3>
                 <img
                   src="/img/carriers/kit.svg"
                   alt="ТК КИТ"
-                  class="h-8 w-auto"
-                />
+                  class="h-8 w-auto" />
               </div>
               <p class="mb-3 text-sm text-gray-700">
                 Широкая география перевозок, персональный менеджер 24/7, интеграция с ЭДО, адаптация под бизнес-процессы
@@ -221,8 +212,7 @@ useTitle('Доставка - Челябинский Инструмент | Ус�
                   <NuxtLink
                     to="https://tk-kit.ru/order"
                     target="_blank"
-                    class="text-indigo-600 underline-offset-4 hover:underline"
-                  >
+                    class="text-indigo-600 underline-offset-4 hover:underline">
                     tk-kit.ru/order
                   </NuxtLink>
                 </li>
@@ -231,8 +221,7 @@ useTitle('Доставка - Челябинский Инструмент | Ус�
                   <NuxtLink
                     to="https://tk-kit.ru/services#track-load-modal"
                     target="_blank"
-                    class="text-indigo-600 underline-offset-4 hover:underline"
-                  >
+                    class="text-indigo-600 underline-offset-4 hover:underline">
                     tk-kit.ru/services#track-load-modal
                   </NuxtLink>
                 </li>
@@ -300,8 +289,7 @@ useTitle('Доставка - Челябинский Инструмент | Ус�
           >, либо
           <button
             class="text-indigo-600 underline-offset-4 hover:underline"
-            @click="showFeedback()"
-          >
+            @click="showFeedback()">
             задайте вопрос через форму обратной связи.
           </button>
         </p>

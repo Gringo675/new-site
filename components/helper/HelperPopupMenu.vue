@@ -39,24 +39,20 @@ const removeCloseListener = () => {
   <div class="relative">
     <slot
       name="trigger"
-      :show="show"
-    />
+      :show="show" />
     <Transition
       name="transition-below"
       @enter="handleContentSize"
       @after-enter="installCloseListener"
-      @after-leave="removeCloseListener"
-    >
+      @after-leave="removeCloseListener">
       <div
         v-if="open"
-        class="absolute z-20 mt-2 overflow-hidden rounded-lg border border-violet-300 bg-violet-100 px-1 py-2 shadow-md"
+        class="absolute z-20 mt-2 overflow-hidden rounded-lg border border-violet-300 bg-violet-100 px-1 py-3 shadow-md"
         :class="contentClass"
-        @click="handleContentClick"
-      >
+        @click="handleContentClick">
         <div
           ref="contentRef"
-          class="menu-scrollbar overflow-auto px-1"
-        >
+          class="menu-scrollbar overflow-auto px-2">
           <slot name="content" />
         </div>
       </div>

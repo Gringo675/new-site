@@ -86,11 +86,11 @@ const priceMultiplier = ref(1)
       <div class="lg:row-span-2">
         <div class="flex flex-wrap items-center justify-center gap-4">
           <div
-            class="relative my-5 shrink-0 grow-0 rounded-2xl bg-teal-500 px-4 py-2 text-2xl leading-none whitespace-nowrap text-teal-50">
+            class="relative my-5 shrink-0 grow-0 rounded-2xl bg-slate-400 px-4 py-2 text-2xl leading-none whitespace-nowrap text-slate-50">
             <span class=""> {{ Math.round(product.price * priceMultiplier).toLocaleString() + ' ₽' }}</span>
             <div
               v-if="product.priceRegular"
-              class="absolute -top-5 right-3 rounded-full bg-gradient-to-b from-fuchsia-400 to-fuchsia-300 p-1 text-sm leading-none line-through opacity-70">
+              class="absolute -top-4 right-3 rounded-full bg-gradient-to-b from-fuchsia-400 to-fuchsia-300 px-2 py-1 text-sm leading-none line-through">
               {{ Math.round(product.priceRegular * priceMultiplier).toLocaleString() + ' ₽' }}
             </div>
           </div>

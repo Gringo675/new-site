@@ -3,48 +3,40 @@
     <div class="relative grow overflow-hidden">
       <div
         ref="carouselRef"
-        class="flex h-full overflow-hidden"
-      >
+        class="flex h-full overflow-hidden">
         <div
           v-for="(item, index) in items"
           :key="index"
           class="flex flex-none basis-full justify-center p-2"
           :class="[fullScreen && 'items-center']"
-          :role="items.length > 1 ? 'tabpanel' : null"
-        >
+          :role="items.length > 1 ? 'tabpanel' : null">
           <slot
             :item="item"
-            :index="index"
-          />
+            :index="index" />
         </div>
       </div>
       <template
         v-if="items.length > 1"
-        class=""
-      >
+        class="">
         <button
           type="button"
           :disabled="isFirst"
           @click.stop="onClickPrev"
           class="group absolute top-1/2 flex -translate-y-1/2 rounded-full bg-violet-100 p-2 text-violet-400 opacity-60 hover:opacity-90 focus:outline-none focus-visible:outline-none disabled:opacity-20"
-          :class="[fullScreen ? 'left-3' : 'left-1']"
-        >
+          :class="[fullScreen ? 'left-3' : 'left-1']">
           <UIcon
             name="i-heroicons-chevron-left"
-            class="size-8 transition-transform group-hover:group-not-disabled:-translate-x-2"
-          />
+            class="size-8 transition-transform group-hover:group-not-disabled:-translate-x-2" />
         </button>
         <button
           type="button"
           :disabled="isLast"
           @click.stop="onClickNext"
           class="group absolute top-1/2 flex -translate-y-1/2 rounded-full bg-violet-100 p-2 text-violet-400 opacity-60 hover:opacity-90 focus:outline-none focus-visible:outline-none disabled:opacity-20"
-          :class="[fullScreen ? 'right-3' : 'right-1']"
-        >
+          :class="[fullScreen ? 'right-3' : 'right-1']">
           <UIcon
             name="i-heroicons-chevron-right"
-            class="size-8 transition-transform group-hover:group-not-disabled:translate-x-2"
-          />
+            class="size-8 transition-transform group-hover:group-not-disabled:translate-x-2" />
         </button>
       </template>
     </div>
@@ -53,19 +45,23 @@
       v-if="items.length > 1"
       role="tablist"
       class="flex items-center justify-center gap-3 overflow-auto p-2"
-      :class="[fullScreen && 'max-xs:hidden max-h-[20vh] min-h-15']"
-    >
+      :class="[fullScreen && 'max-xs:hidden max-h-[20vh] min-h-15']">
       <template
         v-for="page in pages"
-        :key="page"
-      >
+        :key="page">
         <img
           @click.stop="onClick(page)"
           :src="items[page - 1].thumb ?? items[page - 1]"
           class="max-h-full max-w-25 min-w-5 rounded"
-          :class="[page === currentPage ? 'cursor-default ring-3 ring-violet-400 brightness-85' : 'cursor-pointer']"
-          draggable="false"
-        />
+          :class="[
+            page === currentPage
+              ? [
+                  'cursor-default ring-1',
+                  fullScreen ? 'ring-violet-600 brightness-80' : 'ring-violet-600/40 brightness-90',
+                ].join(' ')
+              : 'cursor-pointer',
+          ]"
+          draggable="false" />
       </template>
     </div>
   </div>

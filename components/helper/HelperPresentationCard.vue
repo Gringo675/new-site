@@ -8,7 +8,7 @@ defineProps({
 </script>
 
 <template>
-  <div class="flex h-full gap-4 rounded-2xl border border-orange-300 bg-orange-50 p-4 shadow-md">
+  <div class="flex h-full gap-4 rounded-2xl border border-orange-900 bg-slate-100 p-4 shadow-lg">
     <Icon
       :name="item.icon"
       class="size-12 flex-none text-violet-500" />
@@ -19,5 +19,4 @@ defineProps({
       </div>
     </div>
   </div>
-  <!-- </div> -->
 </template>

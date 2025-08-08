@@ -4,7 +4,7 @@ useTitle('О компании - Челябинский Инструмент | П
 const advantages = [
   {
     icon: 'i-heroicons-trophy',
-    title: '20+ лет опыта',
+    title: '25+ лет опыта',
     description:
       'С 2000 года снабжаем клиентов по всей России современным измерительным инструментом и промышленным оборудованием.',
   },
@@ -149,8 +149,7 @@ const advantages = [
         <h3 class="mb-4 text-2xl font-semibold text-violet-800">Наши преимущества</h3>
         <div class="grid gap-6 md:grid-cols-2">
           <HelperPresentationCard
-            v-for="(adv, idx) in advantages"
-            :key="idx"
+            v-for="adv in advantages"
             :item="adv" />
         </div>
       </div>

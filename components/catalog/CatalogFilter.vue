@@ -48,7 +48,7 @@ const toggleShowFilterOnMobile = () => {
 
         <!-- ask question -->
         <div
-          class="@container my-8 grid grid-cols-[min-content_auto_auto] items-center gap-2 rounded-xl border border-fuchsia-400 bg-fuchsia-100 p-2">
+          class="@container my-8 grid grid-cols-[min-content_auto_auto] items-center gap-2 rounded-xl border border-fuchsia-300 bg-fuchsia-50 p-2">
           <UIcon
             name="i-heroicons-chat-bubble-oval-left-ellipsis"
             class="col-span-1 row-span-1 h-full w-6 text-indigo-500 @[16.5rem]:row-span-2 @[16.5rem]:w-16 @md:row-span-1 @md:w-11" />

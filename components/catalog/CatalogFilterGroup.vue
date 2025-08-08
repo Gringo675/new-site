@@ -16,7 +16,7 @@ const inactivateVal = val => {
 
 <template>
   <div class="mb-4">
-    <div class="overflow-hidden rounded-lg border border-fuchsia-300 bg-fuchsia-200">
+    <div class="overflow-hidden rounded-lg border border-slate-400 bg-slate-200">
       <div class="flex items-center justify-between gap-2 px-2">
         <span class="py-1 text-lg leading-5">{{ fGroup.name }}</span>
         <UButton
@@ -26,7 +26,7 @@ const inactivateVal = val => {
           :class="{ 'rotate-over': showValues }" />
       </div>
       <div
-        class="overflow-hidden bg-fuchsia-100 transition-[max-height] duration-500 ease-out"
+        class="overflow-hidden bg-slate-100 transition-[max-height] duration-500 ease-out"
         :class="showValues ? 'max-h-50' : 'max-h-0'">
         <div
           class="menu-scrollbar m-2 mr-1 flex max-h-46 items-start overflow-auto pr-1 max-md:flex-wrap max-md:gap-2 md:flex-col">
@@ -44,23 +44,23 @@ const inactivateVal = val => {
         </div>
       </div>
       <div
-        class="overflow-hidden bg-fuchsia-50 transition-[max-height] duration-500 ease-out"
+        class="overflow-hidden bg-slate-300 transition-[max-height] duration-500 ease-out"
         :class="activeValues.length ? 'max-h-20' : 'max-h-0'">
         <div class="menu-scrollbar m-2 mr-1 flex max-h-16 flex-wrap gap-2 overflow-auto pr-1 text-sm text-indigo-700">
           <div
             v-for="item in activeValues"
-            class="flex rounded-xs bg-violet-100">
+            class="flex rounded-xs bg-violet-50">
             <span
               class="px-1"
               :class="{ 'line-through': item.disabled }">
               {{ item.name }}
             </span>
             <button
-              class="cursor-pointer rounded-xs bg-violet-200"
+              class="cursor-pointer rounded-xs bg-violet-400"
               @click="inactivateVal(item.val)">
               <UIcon
                 name="i-heroicons-x-mark"
-                class="block size-4 text-indigo-700" />
+                class="block size-4 text-violet-50" />
             </button>
           </div>
         </div>

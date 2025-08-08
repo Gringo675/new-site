@@ -10,11 +10,10 @@ defineProps({
 </script>
 
 <template>
-  <div class="flex gap-4 max-md:flex-wrap">
+  <div class="flex gap-6 max-md:flex-wrap">
     <aside
       class="w-full md:w-1/4 md:min-w-70"
-      :class="reverse && 'order-last'"
-    >
+      :class="reverse && 'order-last'">
       <slot name="aside" />
     </aside>
     <div class="grow"><slot /></div>

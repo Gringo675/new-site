@@ -7,5 +7,5 @@ if (!user.value.admin) throw createError({ statusCode: 403, statusMessage: `Forb
 </script>
 
 <template>
-  <slot v-if="user.value.admin" />
+  <slot v-if="user.admin" />
 </template>
