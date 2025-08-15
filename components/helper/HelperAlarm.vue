@@ -22,13 +22,11 @@ const slots = useSlots()
     <UIcon
       :name="icon"
       class="max-xs:size-6 size-10 shrink-0 max-md:size-8"
-      :class="iconClasses[type]"
-    />
+      :class="iconClasses[type]" />
     <div class="grow">
       <div
         v-if="slots.title"
-        class="mb-0.5 leading-tight font-bold"
-      >
+        class="mb-1 leading-tight font-bold">
         <slot name="title"></slot>
       </div>
       <div class="leading-tight"><slot></slot></div>

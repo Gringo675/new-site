@@ -1,13 +1,17 @@
 <script setup>
 //
-const onResolved = item => {
-  console.log('Resolved:', item)
+const onResolved = async path => {
+  hideCatsMenu() // для модуля поиска в боковом меню
+  await navigateTo(path)
 }
 </script>
 
 <template>
   <div class="m-10 bg-gray-800 p-4">
-    <HelperInputMenu @resolved="onResolved">
+    <HelperInputMenu
+      forCatalog
+      @resolved="onResolved"
+      class="w-112">
       <template #result="{ searchState, resolve }">
         <div
           v-if="searchState.result.products.length > 0"
@@ -16,25 +20,25 @@ const onResolved = item => {
           <div class="flex flex-col items-start gap-y-1 p-2 pt-1">
             <div class="-mb-2 self-end text-sm font-semibold">Категории</div>
             <template v-for="cat in searchState.result.cats">
-              <NuxtLink
+              <button
+                role="link"
                 v-for="subCat in cat.children"
                 class="text-sm leading-tight underline-offset-4 hover:underline"
-                :to="`/catalog/${subCat.alias}`"
                 @click="resolve(`/catalog/${subCat.alias}`)">
                 {{ subCat.name }}
-              </NuxtLink>
+              </button>
             </template>
           </div>
           <!-- products -->
           <div class="flex flex-col items-start gap-y-1 rounded-lg bg-violet-50 p-2 pt-1">
             <div class="-mb-1 self-end text-sm font-semibold">Товары</div>
-            <NuxtLink
+            <button
+              role="link"
               v-for="product in searchState.result.products"
               class="text-sm leading-tight underline-offset-4 hover:underline"
-              :to="`/product/${product.alias}`"
               @click="resolve(`/product/${product.alias}`)">
               {{ product.name }}
-            </NuxtLink>
+            </button>
           </div>
           <div class="flex justify-between p-2">
             <UButton

@@ -1,10 +1,7 @@
 # stage 0
 
-- HelperPopupMenu redesign
 - создать шаблоны писем для заказа
 - orders component
-- компонент доставки
-- Политика конфиденциальности, не является публичной офертой.
 - OAuth providers don't work
 - logo svg blur/sharpness filters (try shape-rendering="geometricPrecision"  text-rendering="geometricPrecision")
   + logo animation

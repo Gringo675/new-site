@@ -1,6 +1,8 @@
+const config = useRuntimeConfig()
+
 export default defineEventHandler(async event => {
   const { q } = getQuery(event)
-  const appkey = '07953400-E08A-4F57-8AD8-4D95596D7AA9'
+  const appkey = config.DL_APP_KEY
   const params = {
     appkey,
     q,
@@ -14,7 +16,10 @@ export default defineEventHandler(async event => {
       },
       body: params,
     })
-    return response.cities
+    return ((response as { cities: any[] }).cities || []).map(city => ({
+      name: city.aString,
+      code: city.code,
+    }))
   } catch (e) {
     return []
   }

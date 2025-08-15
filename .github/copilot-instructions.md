@@ -121,5 +121,15 @@ The colors primary (violet), secondary (orange), tertiary (indigo), and neutral 
 2. Follow the established component naming conventions
 3. For any question or code generation related to NuxtJS or NuxtUI components, MUST consult the official documentation using Context7 first
 4. Environment variables stored in `.env` (not in repo)
-5. Do NOT import composables (e.g., useCompany, useUser, useCart) if they are available via Nuxt auto-import. Just use them directly in <script setup>.
-6. Do NOT import components manually if they are available via Nuxt auto-import (i.e., placed in the components/ directory or registered by a Nuxt module). Use them directly in templates without import statements.
+5. **Never manually import composables (e.g., useCompany, useUser, useCart, useRuntimeConfig, defineEventHandler, etc.) if they are available via Nuxt auto-import.**
+  - Use composables directly in `<script setup>` or server files without import statements.
+  - [Official Nuxt auto-imports documentation](https://nuxt.com/docs/guide/directory-structure/composables#auto-imports)
+  - [Auto-imports API reference](https://nuxt.com/docs/api/kit#addinportsdir)
+  - [Auto-imports concept](https://nuxt.com/docs/guide/concepts/auto-imports)
+6. **Never manually import components if they are available via Nuxt auto-import (i.e., placed in the `components/` directory or registered by a Nuxt module).**
+  - Use components directly in templates without import statements.
+  - [Official Nuxt components auto-import documentation](https://nuxt.com/docs/guide/directory-structure/components#auto-import)
+7. Nuxt 3 auto-imports most Vue and Nuxt composables, utilities, and components automatically using the directory structure and naming conventions. This is powered by the `unimport` library.
+8. If you need to explicitly import something (e.g., for testing or if auto-import is disabled), use the `#imports` alias: `import { ref } from '#imports'`.
+9. For server composables, auto-imports also work in `server/` routes and utilities.
+10. Never add manual imports for anything that is auto-imported by Nuxt, unless you have disabled auto-imports in your `nuxt.config.ts`.

@@ -142,39 +142,32 @@ onUnmounted(() => {
   <TabsRoot
     class="my-4"
     v-bind="rootProps"
-    @update:modelValue="expand = true"
-  >
+    @update:modelValue="expand = true">
     <div class="flex w-full items-end max-lg:flex-wrap">
       <div
         v-if="title"
-        class="flex grow items-center self-stretch pr-2 pb-3 max-lg:py-4"
-      >
+        class="flex grow items-center self-stretch pr-2 pb-3 max-lg:py-4">
         <h1 class="font-accent text-2xl leading-7 max-xl:text-xl max-xl:leading-6">{{ title }}</h1>
       </div>
       <TabsList
         class="relative flex rounded-t-lg bg-stone-800 p-1 pb-2 max-lg:w-full"
-        :class="title ? 'w-max' : 'w-full'"
-      >
+        :class="title ? 'w-max' : 'w-full'">
         <TabsIndicator
-          class="TabsIndicator absolute top-1 bottom-2 left-0 w-(--reka-tabs-indicator-size) translate-x-(--reka-tabs-indicator-position) rounded-md bg-(--ui-primary) transition-[translate,width] duration-400"
-        />
+          class="TabsIndicator absolute top-1 bottom-2 left-0 w-(--reka-tabs-indicator-size) translate-x-(--reka-tabs-indicator-position) rounded-md bg-(--ui-primary) transition-[translate,width] duration-400" />
 
         <TabsTrigger
           v-for="(item, index) of items"
           :key="index"
           :value="item.value || String(index)"
-          class="relative inline-flex w-full flex-1 items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ui-primary) data-[state=active]:text-white data-[state=inactive]:text-orange-200 hover:data-[state=inactive]:cursor-pointer hover:data-[state=inactive]:text-orange-100 max-lg:min-w-0 max-sm:flex-wrap sm:px-3 sm:py-2"
-        >
+          class="relative inline-flex w-full flex-1 items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ui-primary) data-[state=active]:text-white data-[state=inactive]:text-orange-200 hover:data-[state=inactive]:cursor-pointer hover:data-[state=inactive]:text-orange-100 max-lg:min-w-0 max-sm:flex-wrap sm:px-3 sm:py-2">
           <slot
             name="leading"
             :item="item"
-            :index="index"
-          >
+            :index="index">
             <UIcon
               v-if="item.icon"
               :name="item.icon"
-              class="UIconTabs size-4 shrink-0 max-sm:w-full"
-            />
+              class="UIconTabs size-4 shrink-0 max-sm:w-full" />
           </slot>
 
           <span class="truncate">
@@ -186,27 +179,25 @@ onUnmounted(() => {
 
     <div
       class="relative -mt-2 w-full overflow-hidden rounded-lg border-4 border-stone-800 bg-gray-50 p-2 transition-[height] duration-400"
-      :style="{ height: containerHeight }"
-    >
+      id="info_block_container"
+      :style="{ height: containerHeight }">
       <div
         class=""
-        ref="contentRef"
-      >
+        ref="contentRef">
         <TabsContent
           v-for="(item, index) of items"
           :key="index"
           :value="item.value || String(index)"
-          class=""
-        >
+          class="">
           <div
             v-if="item.html"
-            v-html="item.html"
-          ></div>
+            v-html="item.html"></div>
+
           <HelperDocsBlock
             v-else-if="item.label === 'Документация'"
-            :docs="documentation"
-          />
+            :docs="documentation" />
           <HelperDeliveryBlock v-else-if="item.label === 'Способы получения'" />
+
           <div v-else>{{ item.content }}</div>
         </TabsContent>
       </div>
@@ -218,8 +209,7 @@ onUnmounted(() => {
           :icon="expand ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'"
           block
           class="mx-10 w-32"
-          @click="expand = !expand"
-        />
+          @click="expand = !expand" />
       </div>
     </div>
   </TabsRoot>

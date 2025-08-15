@@ -2,14 +2,19 @@
 // хелпер для поиска по каталогу и пункта доставки
 
 const props = defineProps({
-  cargoSearch: {
+  forCatalog: {
     type: Boolean,
     default: false,
   },
+  // forDelivery: {
+  //   type: Boolean,
+  //   default: false,
+  // },
 })
 
 const options = {
-  searchAPI: props.cargoSearch ? '/api/dellin/getCities?q=' : '/api/getSearch?f=1&q=',
+  searchAPI: props.forCatalog ? '/api/getSearch?f=1&q=' : '/api/dellin/getCities?q=',
+  placeHolder: props.forCatalog ? 'Поиск по каталогу' : 'Укажите пункт назначения',
 }
 
 const searchState = reactive({
@@ -75,13 +80,7 @@ const clearAll = () => {
   searchState.query = ''
   searchState.showResults = false
   searchState.result = null
-  !props.cargoSearch && hideCatsMenu() // для модуля поиска в боковом меню при поиске по каталогу
 }
-
-// const goTo = async path => {
-//   clearAll()
-//   await navigateTo(path)
-// }
 
 const onInputClick = e => {
   if (!searchState.showResults && searchState.result) searchState.showResults = true
@@ -99,7 +98,7 @@ const resolve = item => {
 <template>
   <HelperPopupMenu
     v-model:open="searchState.showResults"
-    class="w-full"
+    class=""
     contentClass="left-0 right-0">
     <template #trigger>
       <UInput
@@ -107,15 +106,16 @@ const resolve = item => {
         color="primary"
         variant="outline"
         highlight
-        placeholder="Поиск по каталогу"
+        :placeholder="options.placeHolder"
         leading-icon="i-heroicons-magnifying-glass-20-solid"
         :loading="searchState.pending"
         size="md"
-        class="z-21 w-full"
+        class="w-full"
+        :class="props.forCatalog && 'z-21'"
         :ui="{
-          base: 'bg-violet-100 focus:bg-violet-50',
+          base: props.forCatalog ? 'bg-violet-100 focus:bg-violet-50' : 'bg-gray-100 focus:bg-white',
         }"
-        @keyup.enter="!props.cargoSearch && goTo(`/search/${searchState.query}`)"
+        @keyup.enter="props.forCatalog && resolve(`/search/${searchState.query}`)"
         @click="onInputClick">
         <template
           v-if="searchState.query.length"

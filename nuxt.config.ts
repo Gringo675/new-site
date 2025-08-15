@@ -71,6 +71,7 @@ export default defineNuxtConfig({
     MAIL_PORT: process.env.MAIL_PORT,
     MAIL_USER: process.env.MAIL_USER,
     MAIL_PASS: process.env.MAIL_PASS,
+    DL_APP_KEY: process.env.DL_APP_KEY,
     public: {
       GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
       VK_CLIENT_ID: process.env.VK_CLIENT_ID,

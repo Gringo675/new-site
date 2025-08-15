@@ -5,6 +5,7 @@ const closeLogin = () => {
   emit('close')
 }
 
+const formRef = useTemplateRef('loginForm')
 const user = useUser()
 
 const showVerifyScreen = ref(false)
@@ -40,10 +41,7 @@ const validate = () => {
 }
 
 const sendCode = async () => {
-  if (fieldErrors.mail) {
-    showNotice({ title: 'Неправильный адрес!', description: fieldErrors.mail, type: 'error' })
-    return
-  }
+  if (fieldErrors.mail) return
 
   const isCodeSend = await myFetch('/api/auth/login/createCode', {
     method: 'post',
@@ -63,17 +61,17 @@ const verifyCode = async code => {
       code,
     },
   })
-
   if (verified) {
-    await getUser()
     showNotice({
       title: 'Авторизация пройдена!',
       description: user.value.name.length ? `${user.value.name}, с возвращением!` : '',
       type: 'success',
     })
+    await getUser()
     closeLogin()
   } else {
     fieldErrors.code = 'Неверный код!'
+    formRef.value.validate().catch(() => false) // to trigger validation (show error)
   }
 }
 
@@ -98,6 +96,11 @@ const runOAuth = provider => {
     }
   }, 1000)
 }
+
+const onSubmit = () => {
+  // for Enter handling. UForm run this only if the form is valid.
+  if (!showVerifyScreen.value) sendCode()
+}
 </script>
 
 <template>
@@ -113,6 +116,8 @@ const runOAuth = provider => {
       <UForm
         :validate="validate"
         :state="formState"
+        @submit="onSubmit"
+        ref="loginForm"
         class="mb-4 space-y-4">
         <template v-if="!showVerifyScreen">
           <div class="mb-4 text-sm text-neutral-500">
@@ -166,8 +171,8 @@ const runOAuth = provider => {
         </template>
         <template v-else>
           <div>
-            На почту <span class="font-bold underline underline-offset-4">{{ formState.mail }}</span> был отправлен код
-            авторизации. Введите его в данное поле.
+            На почту <span class="text-primary font-bold">{{ formState.mail }}</span> был отправлен код авторизации.
+            Введите его в данное поле.
           </div>
           <div class="flex flex-wrap items-start justify-around gap-4">
             <UFormField name="code">
@@ -175,6 +180,7 @@ const runOAuth = provider => {
                 v-model="formState.code"
                 type="number"
                 :length="5"
+                autofocus
                 otp />
             </UFormField>
             <UButton
