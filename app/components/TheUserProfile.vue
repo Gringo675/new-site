@@ -128,7 +128,7 @@ async function saveUserData() {
     }
     // перезаписываем все данные в user
     for (const key in newUser) {
-      user[key] = newUser[key]
+      user.value[key] = newUser[key]
     }
 
     return true

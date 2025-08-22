@@ -1,7 +1,6 @@
 # stage 0
 
 - создать шаблоны писем для заказа
-- orders component
 - OAuth providers don't work
 - logo svg blur/sharpness filters (try shape-rendering="geometricPrecision"  text-rendering="geometricPrecision")
   + logo animation
@@ -15,7 +14,7 @@
 - прописать редиректы
 - перенос пользователей со старого сайта
 - система кэширования
-
+- проверить/изменить все ссылки на статичные ресурсы (изображения) со старого сайта: в статьях, шаблонах писем,...
 
 # stage 1
 
@@ -29,8 +28,11 @@
 
 # Copilots:
 - Gringo675 - 25
-- Gringo675-duo - 17
+- Gringo675-duo - 17 (перепрыгнуло на 19, когда пытался переключится на акк 19 августа)
 - Gringo675-jet2 - 01
+- Gringo675-jet3 - 11
+- Gringo675-jet4 - 20
+Пароли у всех одинаковые.
 
 # AI's:
 ## Design:

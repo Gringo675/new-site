@@ -1,16 +1,10 @@
 <script setup lang="ts">
 //
-type DlCalc = {
-  term_price: number | null
-  term_days: number | null
-  door_price: number | null
-  door_days: number | null
-}
 
 const city = ref(getCityFromLocalStore())
 
 const { data: dlCalc, status } = await useAsyncData<DlCalc>(
-  computed(() => `dl-${city.value.code}`),
+  'dellinCalc',
   () => {
     return $fetch<DlCalc>('/api/dellin/getCalc?kladr=' + city.value.code)
   },
@@ -24,7 +18,11 @@ const { data: dlCalc, status } = await useAsyncData<DlCalc>(
         door_days: null,
       }
     },
-    getCachedData: key => useNuxtData(key).data?.value as DlCalc,
+    getCachedData: (key, nuxtApp, ctx) => {
+      if (ctx.cause === 'watch') return undefined
+      return nuxtApp.payload.data[key]
+    },
+    watch: [city],
   },
 )
 

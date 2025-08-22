@@ -62,7 +62,7 @@ The colors primary (violet), secondary (orange), tertiary (indigo), and neutral 
 ## Important Notes
 1. Always check user authentication for admin routes
 2. Follow the established component naming conventions
-3. For any question or code generation related to NuxtJS or NuxtUI components, MUST consult the official documentation using Context7 first
+3. For any question or code generation related to NuxtJS or NuxtUI components, MUST consult the official documentation using web-search.
 4. Environment variables stored in `.env` (not in repo)
 5. **Never manually import composables (e.g., useCompany, useUser, useCart, useRuntimeConfig, defineEventHandler, etc.) if they are available via Nuxt auto-import.**
   - Use composables directly in `<script setup>` or server files without import statements.

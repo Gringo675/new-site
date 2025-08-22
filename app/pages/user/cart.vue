@@ -57,14 +57,25 @@ const orderNumber = ref(0)
 const createOrder = async () => {
   // если дошли до этого шага, значит у нас уже есть formData и сохраненный user
 
-  formData.append('user', JSON.stringify(user))
-  formData.append('cart', JSON.stringify(cart))
+  formData.append('user', JSON.stringify(user.value))
+  const cartItems = cart.map(item => ({
+    id: item.id,
+    image: item.image,
+    name: item.name,
+    alias: item.alias,
+    price: item.price,
+    quantity: item.quantity,
+  }))
+  formData.append('cart', JSON.stringify(cartItems))
 
   orderNumber.value = await myFetch('/api/user/createOrder', {
     method: 'post',
     payload: formData,
   })
-  if (orderNumber.value > 0) cart.length = 0
+  if (orderNumber.value > 0) {
+    cartState.value = 3
+    cart.length = 0
+  }
 }
 
 const clearCart = async () => {
@@ -181,7 +192,9 @@ const clearCart = async () => {
         <h2 class="mb-4 border-b border-gray-200 text-lg font-bold">
           Заказ {{ orderNumber > 1 ? `№${orderNumber}` : '' }} успешно создан!
         </h2>
-        <p class="">На почту {{ user.mail }} отправлено письмо, содержащее информацию по заказу.</p>
+        <p class="">
+          На почту <span class="text-primary">{{ user.mail }}</span> отправлено письмо, содержащее информацию по заказу.
+        </p>
       </div>
     </div>
   </div>

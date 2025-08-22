@@ -1,16 +1,11 @@
-interface DlResult {
-  term_price: number | null
-  term_days: number | null
-  door_price: number | null
-  door_days: number | null
-}
 const config = useRuntimeConfig()
 
 export default defineEventHandler(async event => {
+  //
   const { kladr } = getQuery(event)
   const appkey = config.DL_APP_KEY
   const kladr_chelyabinsk = '7400000100000000000000000'
-  let dl: DlResult = {
+  let dl: DlCalc = {
     term_price: null,
     term_days: null,
     door_price: null,

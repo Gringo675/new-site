@@ -11,6 +11,7 @@ export default defineNuxtConfig({
   },
   css: ['~/assets/css/main.css'],
   modules: ['@nuxt/ui'],
+
   ui: {
     colorMode: false,
     theme: {
@@ -78,10 +79,6 @@ export default defineNuxtConfig({
       MAILRU_CLIENT_ID: process.env.MAILRU_CLIENT_ID,
       IMAGES_DIRECTORY: process.env.IMAGES_DIRECTORY,
     },
-  },
-
-  colorMode: {
-    preference: 'light',
   },
 
   devtools: {
