@@ -14,6 +14,6 @@ export const showNotice = async (options = {}) => {
       error: 'i-heroicons-exclamation-circle',
       success: 'i-heroicons-check-circle',
     }[options.type],
-    color: options.type === 'info' ? 'primary' : options.type,
+    color: options.type === 'error' ? 'error' : 'primary',
   })
 }

@@ -189,9 +189,7 @@ const clearCart = async () => {
       <div
         v-else
         class="mx-auto my-4 max-w-lg rounded-lg border border-violet-200 bg-violet-50 p-4">
-        <h2 class="mb-4 border-b border-gray-200 text-lg font-bold">
-          Заказ {{ orderNumber > 1 ? `№${orderNumber}` : '' }} успешно создан!
-        </h2>
+        <h2 class="mb-4 border-b border-gray-200 text-lg font-bold">Заказ № {{ orderNumber }} успешно создан!</h2>
         <p class="">
           На почту <span class="text-primary">{{ user.mail }}</span> отправлено письмо, содержащее информацию по заказу.
         </p>

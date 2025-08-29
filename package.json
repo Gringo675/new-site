@@ -13,7 +13,10 @@
     "serv": "npm run build && npm run deploy"
   },
   "devDependencies": {
+    "@iconify-json/carbon": "^1.2.13",
     "@iconify-json/heroicons": "^1.2.2",
+    "@iconify-json/material-symbols": "^1.2.33",
+    "@iconify-json/mynaui": "^1.2.16",
     "@nuxt/devtools": "latest",
     "@nuxt/ui": "^3.1.1",
     "dotenv": "^10.0.0",

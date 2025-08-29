@@ -34,22 +34,18 @@ const menuState = [
 <template>
   <div class="header-hidden">
     <div
-      class="max-xs:grid-cols-[70px_1fr] mx-auto grid h-full max-w-(--breakpoint-xl) grid-cols-[120px_1fr_auto_1fr_120px] grid-rows-[auto_1fr] gap-1 max-md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] max-md:grid-rows-[100%]"
-    >
+      class="max-xs:grid-cols-[70px_1fr] mx-auto grid h-full max-w-(--breakpoint-xl) grid-cols-[120px_1fr_auto_1fr_120px] grid-rows-[auto_1fr] gap-1 max-md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] max-md:grid-rows-[100%]">
       <div class="col-span-1 row-span-2 flex items-center justify-center max-md:row-span-1">
         <ULink
           to="/"
           class="w-full"
-          active-class="cursor-default"
-        >
+          active-class="cursor-default">
           <img
-            src="/img/svg-test/v23.svg"
+            src="/img/logo.svg"
             alt="logo"
             class="w-full p-1 max-md:max-w-20"
             width="100%"
-            height="auto"
-            style="shape-rendering: crispEdges; text-rendering: crispEdges"
-          />
+            height="auto" />
         </ULink>
       </div>
       <div class="col-span-3 flex max-md:hidden">
@@ -66,8 +62,7 @@ const menuState = [
                 label: 'leading-[19px]',
               }"
               class="p-1.5 text-orange-200 hover:text-orange-100 max-lg:text-xs"
-              active-class="cursor-default underline underline-offset-4 decoration-orange-300"
-            />
+              active-class="cursor-default underline underline-offset-4 decoration-orange-300" />
           </div>
         </div>
       </div>
@@ -75,13 +70,11 @@ const menuState = [
         <img
           src="/img/rst.svg"
           alt=""
-          class="w-20"
-        />
+          class="w-20" />
       </div>
       <div class="col-span-1 flex max-md:justify-center">
         <div
-          class="font-accent max-xs:text-xl flex flex-col items-center justify-center text-center text-3xl text-gray-800 max-xl:text-2xl max-lg:text-base max-md:mx-2 max-md:text-2xl"
-        >
+          class="font-accent max-xs:text-xl flex flex-col items-center justify-center text-center text-3xl text-gray-800 max-xl:text-2xl max-lg:text-base max-md:mx-2 max-md:text-2xl">
           <div>Торговый Дом</div>
           <div>Челябинский Инструмент</div>
         </div>
@@ -90,22 +83,18 @@ const menuState = [
         <img
           src="/img/vernie2.png"
           alt="vernie"
-          class="max-w-24 min-w-0 opacity-90 max-lg:max-w-20"
-        />
+          class="max-w-24 min-w-0 opacity-90 max-lg:max-w-20" />
       </div>
       <div class="col-span-2 flex max-md:hidden">
         <div
-          class="mr-2 flex w-full flex-col items-end justify-center text-slate-900 italic max-xl:items-center max-lg:text-sm"
-        >
+          class="mr-2 flex w-full flex-col items-end justify-center text-slate-900 italic max-xl:items-center max-lg:text-sm">
           <div class="flex items-center gap-2">
             <UIcon
               name="i-heroicons-home-modern"
-              class="size-5"
-            />
+              class="size-5" />
             <NuxtLink
               to="/contacts"
-              class=""
-            >
+              class="">
               {{ company.address.post }}
             </NuxtLink>
           </div>
@@ -113,26 +102,22 @@ const menuState = [
           <div class="flex items-center gap-2">
             <UIcon
               name="i-heroicons-envelope"
-              class="size-5"
-            />
+              class="size-5" />
             <NuxtLink
               v-for="mail in company.mails"
               :to="'mailto:' + mail"
-              class=""
-            >
+              class="">
               {{ mail }}
             </NuxtLink>
           </div>
           <div class="flex items-center gap-2">
             <UIcon
               name="i-heroicons-phone"
-              class="size-5"
-            />
+              class="size-5" />
             <NuxtLink
               v-for="phone in company.phones"
               :to="'tel:' + phone"
-              class=""
-            >
+              class="">
               {{ phone }}
             </NuxtLink>
           </div>
@@ -150,8 +135,7 @@ const menuState = [
           size="md"
           @click="showCatsMenu"
           label="Каталог"
-          class="rounded-full font-bold"
-        />
+          class="rounded-full font-bold" />
         <div class="flex grow justify-center">
           <UButton
             icon="i-heroicons-pencil-square"
@@ -162,8 +146,7 @@ const menuState = [
                 title: 'Быстрый заказ',
                 description: 'Напишите, какие позиции Вас интересуют, или прикрепите файл с заявкой.',
               })
-            "
-          >
+            ">
             <span class="max-lg:hidden">Быстрый заказ</span>
           </UButton>
         </div>
@@ -176,14 +159,12 @@ const menuState = [
           icon="i-heroicons-magnifying-glass"
           size="md"
           class="rounded-full md:hidden"
-          @click="showCatsMenu"
-        />
+          @click="showCatsMenu" />
         <UButton
           icon="i-heroicons-pencil-square"
           size="md"
           class="rounded-full md:hidden"
-          @click="showFeedback"
-        />
+          @click="showFeedback" />
         <div class="flex justify-center md:grow">
           <ClientOnly>
             <TheCart />
@@ -192,8 +173,7 @@ const menuState = [
                 icon="i-heroicons-shopping-cart"
                 size="md"
                 class="rounded-full"
-                label="0"
-              />
+                label="0" />
             </template>
           </ClientOnly>
         </div>
@@ -205,16 +185,14 @@ const menuState = [
               size="md"
               truncate
               class="rounded-full"
-              label="Войти"
-            />
+              label="Войти" />
           </template>
         </ClientOnly>
         <UButton
           icon="i-heroicons-ellipsis-vertical-16-solid"
           size="md"
           class="rounded-full md:hidden"
-          @click="showMobileMenu"
-        />
+          @click="showMobileMenu" />
       </div>
     </div>
   </div>

@@ -1,48 +1,30 @@
 import { useStorage } from '#imports'
 
 // --- Помощники и кэш для генерации писем ---
-let cachedClientTemplate: string | null = null
-let cachedSellerTemplate: string | null = null
-let cachedRowTemplate: string | null = null
+let cachedClientTemplate = null
+let cachedSellerTemplate = null
+let cachedRowTemplate = null
 
-function formatCurrency(value: number) {
+function formatCurrency(value) {
   return new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB', minimumFractionDigits: 0 }).format(value)
 }
 
-function escapeRegExp(string: string) {
+function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\\\]]/g, '\\$&')
 }
 // --- Конец блока помощников ---
 
 /**
  * Получает formData c полями: user, cart (JSON), comment, files.
- * Быстрые заказы не сохраняются в базе, для них всегда возвращается номер (id) = 1.
+ * Быстрые заказы не сохраняются в базе, для них номером заказа возвращаем случайное число.
  */
 
 export default defineEventHandler(async event => {
-  // const order = await getFormData(event)
+  const order = await getFormData(event)
 
-  // order.created = new Date().toISOString()
-  // order.id = order.user.auth ? await saveOrder(event, order) : 1
+  order.created = new Date().toISOString()
+  order.id = order.user.auth ? await saveOrder(event, order) : getRandomCode()
 
-  // console.log(`order: ${JSON.stringify(order, null, 2)}`)
-  const order = {
-    files: [],
-    message: '',
-    user: {
-      auth: false,
-      admin: false,
-      name: '',
-      mail: '',
-      org: '',
-      inn: '',
-      address: '',
-      phone: '',
-    },
-    cart: '[{"id":180072,"image":"NIC-PT-CHIZ.jpg","name":"Нутромер индикаторный электронный НИЦ-ПТ 35-50 0,001 ЧИЗ","alias":"nut tromer-indikatornyy-elektronnyy-nic-pt-35-50-0001-chiz","price":93200,"quantity":1}]',
-    created: '2025-08-22T09:48:58.814Z',
-    id: 1,
-  }
   await sendMails(order, event)
 
   return order.id
@@ -77,7 +59,7 @@ const sendMails = async order => {
 
   // 2. Сборка общего контента для обоих писем
   const cartProducts = JSON.parse(order.cart)
-  const total = cartProducts.reduce((sum: number, product: any) => sum + product.price * product.quantity, 0)
+  const total = cartProducts.reduce((sum, product) => sum + product.price * product.quantity, 0)
 
   const imagePath = 'https://chelinstrument.ru/components/com_jshopping/files/img_products/thumb_'
   const productBaseUrl = 'https://chelinstrument.ru/product/'
@@ -122,7 +104,7 @@ const sendMails = async order => {
     '{{currentYear}}': String(new Date().getFullYear()),
   }
 
-  // 3. Рендер обоих шаблонов
+  // 3. Рендер HTML-шаблонов
   let clientHtml = cachedClientTemplate
   let sellerHtml = cachedSellerTemplate
 
@@ -132,18 +114,66 @@ const sendMails = async order => {
     sellerHtml = sellerHtml.replace(new RegExp(escapedKey, 'g'), String(value))
   }
 
-  // 4. Подготовка и отправка писем
+  // 4. Генерация текстовых версий писем
+  const productRowsText = cartProducts
+    .map(
+      product =>
+        `* ${product.name} (Арт: ${product.id}) - ${product.quantity} шт. x ${formatCurrency(
+          product.price,
+        )} = ${formatCurrency(product.price * product.quantity)}`,
+    )
+    .join('\n')
+
+  const clientText = `Здравствуйте, ${order.user.name}!
+
+Спасибо за ваш заказ №${order.id} от ${new Date(order.created).toLocaleDateString('ru-RU')}.
+В ближайшее время Вы получите счет для оплаты, или наш менеджер свяжется с Вами для уточнения делатей заказа.
+
+СОСТАВ ЗАКАЗА:
+${productRowsText}
+
+ИТОГО: ${formatCurrency(total)}
+Стоимость указана в рублях РФ без учета НДС.
+
+С уважением,
+Команда ООО Торговый Дом "Челябинский Инструмент"
+г. Челябинск, ул. Болейко, 5 | +7 (351) 790-77-48`
+
+  const sellerText = `Новый заказ №${order.id} от ${new Date(order.created).toLocaleDateString('ru-RU')}
+
+ИНФОРМАЦИЯ О КЛИЕНТЕ:
+Имя: ${order.user.name}
+Email: ${order.user.mail}
+Телефон: ${order.user.phone}
+Организация: ${order.user.org || '-'}
+ИНН: ${order.user.inn || '-'}
+Адрес: ${order.user.address || '-'}
+
+СОСТАВ ЗАКАЗА:
+${productRowsText}
+
+ИТОГО: ${formatCurrency(total)}
+
+ПРИМЕЧАНИЕ К ЗАКАЗУ:
+${order.message || 'Нет'}
+
+ПРИКРЕПЛЕННЫЕ ФАЙЛЫ:
+${order.files && order.files.length > 0 ? order.files.map(f => f.filename).join(', ') : 'Нет'}`
+
+  // 5. Подготовка и отправка писем
   const sellerMail = {
     to: 'gringo675@mail.ru', // Адрес менеджера
-    subject: order.id === 1 ? 'Сайт - Быстрый заказ' : `Сайт - Новый заказ №${order.id}`,
+    subject: order.user.auth ? 'Сайт - Быстрый заказ' : `Сайт - Новый заказ №${order.id}`,
     attachments: order.files,
     html: sellerHtml,
+    text: sellerText, // Текстовая версия
   }
 
   const clientMail = {
     to: order.user.mail,
-    subject: `chelinstrument.ru - Информация по заказу` + order.fastOrder ? '' : ` №${order.id}`,
+    subject: `chelinstrument.ru - Информация по заказу №${order.id}`,
     html: clientHtml,
+    text: clientText, // Текстовая версия
   }
 
   await sendMail(sellerMail)

@@ -5,6 +5,7 @@
  * to: кому (должна валидироваться заранее!)
  * subject: тема
  * html: тело письма
+ * text: текстовая версия письма
  * attachments: массив вложений из объектов вида {filename, content}
  */
 
@@ -12,10 +13,10 @@ import nodemailer from 'nodemailer'
 
 export default async mail => {
   // defaults
-  mail.from = mail.from ?? 'admin@chelinstrument.ru'
+  mail.from = mail.from ?? '"ТД Челябинский Инструмент" <admin@chelinstrument.ru>'
   mail.subject = mail.subject ?? 'Сообщение с сайта chelinstrument.ru'
   mail.attachments = mail.attachments ?? []
-  mail.text = 'This app can not read the message. Try another program.'
+  mail.text = mail.text ?? 'This app can not read the message. Try another program.'
 
   if (!mail.to.length || !mail.html.length) throw new Error('Incorrect data provided!')
   const config = useRuntimeConfig()
@@ -30,8 +31,6 @@ export default async mail => {
     },
   })
 
-  console.log(`Mail is sended to: ${mail.to}`)
-  return true
   const result = await transporter.sendMail(mail)
   if (result.rejected.length === 0) return true
   else throw new Error('Server rejected email!')

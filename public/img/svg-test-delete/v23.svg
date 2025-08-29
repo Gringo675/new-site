@@ -1,6 +1,6 @@
 <svg version="1.1" viewBox="0 0 1e3 980" xmlns="http://www.w3.org/2000/svg" stroke="#292524">
  <defs>
-  <filter id="filter8" x="-.02949" y="-.030032" width="1.0589" height="1.0601" color-interpolation-filters="sRGB">
+  <filter id="filter88" x="-.02949" y="-.030032" width="1.0589" height="1.0601" color-interpolation-filters="sRGB">
    <feGaussianBlur stdDeviation="4.6711336"/>
   </filter>
  </defs>
