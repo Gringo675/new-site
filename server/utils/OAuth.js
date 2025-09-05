@@ -2,6 +2,7 @@ const config = useRuntimeConfig()
 
 export const getVkUser = async event => {
   const siteFullOrigin = getSiteFullOrigin(event)
+
   const code = getQuery(event).code
   const urlOrigin = 'https://oauth.vk.com/access_token'
   const values = {
@@ -14,6 +15,7 @@ export const getVkUser = async event => {
     .map(key => `${key}=${encodeURI(values[key])}`)
     .join('&')
   const res = await $fetch(urlOrigin + '?' + urlQuery)
+
   const email = res.email
   if (!validateMail(email)) throw new Error('Incorrect mail format!')
   const userAccessURL = `https://api.vk.com/method/users.get?user_ids=${res.user_id}&access_token=${res.access_token}&v=5.131`

@@ -10,7 +10,18 @@ export default defineNuxtConfig({
     },
   },
   css: ['~/assets/css/main.css'],
-  modules: ['@nuxt/ui'],
+  modules: ['@nuxt/ui', '@nuxtjs/sitemap'],
+
+  site: {
+    url: 'https://chelinstrument.ru',
+  },
+
+  sitemap: {
+    // не учитывает baseUrl
+    exclude: ['/admin/**', '/test/admin/**', '/user/**', '/test/user/**', '/try/**', '/test/try/**'],
+    sources: ['/api/__sitemap__/urls'],
+    xslColumns: [{ label: 'URL', width: '100%' }],
+  },
 
   ui: {
     colorMode: false,

@@ -1,4 +1,6 @@
 import { EventEmitter } from 'node:events'
+import fs from 'node:fs'
+import path from 'node:path'
 
 // todo 2 listeners перебивают друг друга?
 
@@ -9,13 +11,18 @@ const buffer = {
   isReady: true,
   timer: null,
   addData(text) {
+    const newData = {
+      time: new Date().toLocaleTimeString(),
+      text,
+    }
+    // записываем в текстовый файл (beget: /chelinstrument.ru/public_html/test/cv_log.txt)
+    // putty: tail -f chelinstrument.ru/public_html/test/cv_log.txt
+    const logPath = path.resolve(process.cwd(), 'cv_log.txt')
+    fs.appendFileSync(logPath, newData.time + ' ' + newData.text + '\n')
     if (!listener.isActive) return
     this.isReady = false
     clearTimeout(this.timer)
-    this.data.push({
-      time: new Date().toLocaleTimeString(),
-      text,
-    })
+    this.data.push(newData)
     this.timer = setTimeout(() => {
       this.isReady = true
       emitter.emit('dataReady')
@@ -27,7 +34,7 @@ const buffer = {
       try {
         await Promise.race([
           new Promise((resolve, reject) =>
-            emitter.once('newRequest', () => reject(new Error('Received another request!')))
+            emitter.once('newRequest', () => reject(new Error('Received another request!'))),
           ),
           new Promise((resolve, reject) => setTimeout(reject, 10000, new Error('Time is out!'))),
           new Promise(resolve => emitter.once('dataReady', resolve)),

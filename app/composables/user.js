@@ -21,7 +21,7 @@ export const logoutUser = async () => {
   user.value = initUser() // сбрасываем состояние пользователя
   // удаляем cookie (refreshToken)
   await $fetch('/api/auth/logout')
-  localStorage.setItem('user-event', '0') // для обновления всех открытых вкладок
+  createUserEvent('0') // для обновления всех открытых вкладок
 }
 
 export const getUser = async (options = {}) => {
@@ -36,16 +36,22 @@ export const getUser = async (options = {}) => {
 
   try {
     const response = await $fetch(url)
-
     if (response) {
       user.auth = true
       for (const key in response) {
         user[key] = response[key]
       }
-      localStorage.setItem('user-event', '1') // для обновления всех открытых вкладок
+      createUserEvent('1') // для обновления всех открытых вкладок
     }
   } catch (e) {
     console.error(`Can't get user!`)
     throw createError(e)
   }
+}
+
+export const createUserEvent = value => {
+  localStorage.setItem('user-event', value)
+  setTimeout(() => {
+    localStorage.removeItem('user-event')
+  }, 3000)
 }

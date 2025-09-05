@@ -1,4 +1,6 @@
 import crypto from 'node:crypto'
+// Для загрузки шаблона
+let cachedVerifyMailTemplate = null
 
 export default defineEventHandler(async event => {
   const { mail } = await readBody(event)
@@ -35,15 +37,37 @@ export default defineEventHandler(async event => {
       .map(key => `${key}=${encodeURI(values[key])}`)
       .join('&')
 
+  // --- Загрузка и кэширование шаблона ---
+  if (process.env.NODE_ENV === 'development' || !cachedVerifyMailTemplate) {
+    const storage = useStorage('assets:server')
+    const tpl = await storage.getItem('emails/verifyMailTemplate.html')
+    if (!tpl) throw new Error('Не удалось загрузить шаблон письма верификации.')
+    cachedVerifyMailTemplate = tpl
+  }
+
+  // --- Подстановка переменных ---
+  function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\\\]]/g, '\\$&')
+  }
+  const replacements = {
+    '{{code}}': code,
+    '{{loginURL}}': loginURL,
+    '{{currentYear}}': String(new Date().getFullYear()),
+  }
+  let html = cachedVerifyMailTemplate
+  for (const [key, value] of Object.entries(replacements)) {
+    const escapedKey = escapeRegExp(key)
+    html = html.replace(new RegExp(escapedKey, 'g'), String(value))
+  }
+
+  // --- Текстовая версия письма ---
+  const text = `Ваш код авторизации: ${code}\n\nСсылка для автоматического входа:\n${loginURL}\n\nЕсли вы не запрашивали вход, просто проигнорируйте это письмо.\n\nС уважением, команда ООО Торговый Дом "Челябинский Инструмент"\nг. Челябинск, ул. Болейко, 5 | +7 (351) 790-77-48\n© ${new Date().getFullYear()} ООО Торговый Дом "Челябинский Инструмент". Все права защищены.`
+
   const mailData = {
     to: mail,
     subject: 'Подтверждение входа на сайт chelinstrument.ru',
-    html: `<div>
-                        <h2>Ваш код авторизации:</h2>
-                        <div style="font-size: 20px"> ${code} </div>
-                        <span>Ссылка для автоматического входа:</span>
-                        <a href="${loginURL}">${loginURL}</a>
-                  </div>`,
+    html,
+    text,
   }
   // await sendMail(mailData)
   if (mail !== 'gringo675g@gmail.com') await sendMail(mailData)

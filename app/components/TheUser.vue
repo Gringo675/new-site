@@ -7,11 +7,13 @@ const user = useUser()
 onMounted(async () => {
   window.addEventListener('storage', event => {
     if (event.storageArea !== localStorage || event.key !== 'user-event') return
-    if (event.newValue === '0') logoutUser()
-    else if (event.newValue === '1') {
+    if (event.newValue === null) return // при удалении
+    if (event.newValue === '0') {
+      logoutUser()
+    } else if (event.newValue === '1') {
       closeLogin()
       getUser()
-    } else getUser({ force: true })
+    } else if (event.newValue === '2') getUser({ force: true })
   })
 
   setTimeout(() => {
@@ -44,6 +46,12 @@ onMounted(async () => {
       </template>
       <template #content>
         <div class="flex flex-col items-end gap-2">
+          <UButton
+            v-if="user.admin"
+            icon="i-material-symbols-admin-panel-settings-rounded"
+            to="/admin"
+            label="Админка"
+            variant="outline" />
           <UButton
             icon="i-material-symbols-settings-account-box-outline-rounded"
             to="/user/profile"

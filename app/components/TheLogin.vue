@@ -150,23 +150,19 @@ const onSubmit = () => {
           <div class="mx-auto w-3xs space-y-4">
             <UButton
               label="Войти через google"
-              icon="i-simple-icons-github"
+              icon="i-mdi-google"
               block
               @click="runOAuth('google')" />
             <UButton
               label="Войти через vk"
-              icon="i-simple-icons-github"
+              icon="i-mdi-vk"
               block
               @click="runOAuth('vk')" />
             <UButton
               label="Войти через mail.ru"
-              icon="i-simple-icons-github"
+              icon="i-mdi-mail-ru"
               block
               @click="runOAuth('mailru')" />
-            <UButton
-              label="Login with GitHub"
-              icon="i-simple-icons-github"
-              block />
           </div>
         </template>
         <template v-else>

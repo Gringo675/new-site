@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0" />
+    <title>Подтверждение входа на сайт</title>
+    <style>
+      a:hover {
+        text-decoration: underline !important;
+      }
+      @media screen and (max-width: 600px) {
+        body {
+          padding: 0 !important;
+        }
+        .card {
+          padding: 15px !important;
+        }
+        .footer {
+          padding: 15px !important;
+        }
+      }
+    </style>
+  </head>
+  <body
+    style="
+      padding: 15px 0;
+      background-color: #f4f4f4;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    ">
+    <table
+      role="presentation"
+      class="email-container"
+      width="100%"
+      border="0"
+      cellspacing="0"
+      cellpadding="0"
+      style="max-width: 600px; margin: 0 auto; background-color: #ffffff">
+      <!-- Header -->
+      <tr>
+        <td
+          class="header"
+          style="padding: 20px; text-align: center; border-bottom: 1px solid #eeeeee">
+          <table
+            role="presentation"
+            width="100%"
+            border="0"
+            cellspacing="0"
+            cellpadding="0">
+            <tr>
+              <td
+                width="70"
+                style="vertical-align: middle">
+                <a
+                  href="https://chelinstrument.ru"
+                  target="_blank">
+                  <img
+                    src="https://chelinstrument.ru/images/logo-mail.png"
+                    alt="Челябинский Инструмент"
+                    width="60"
+                    style="width: 60px; max-width: 100px" />
+                </a>
+              </td>
+              <td style="vertical-align: middle; text-align: center; padding-left: 15px">
+                <a
+                  href="https://chelinstrument.ru"
+                  target="_blank"
+                  style="font-size: 22px; line-height: 1.3; font-weight: bold; color: #6141f0; text-decoration: none">
+                  ООО Торговый Дом<br />"Челябинский Инструмент"
+                </a>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <!-- Main Content -->
+      <tr>
+        <td>
+          <div
+            class="card"
+            style="padding: 25px; border-bottom: 1px solid #eeeeee">
+            <h2 style="font-size: 18px; font-weight: bold; color: #8a2be2; margin: 0 0 15px">Ваш код авторизации</h2>
+            <div
+              style="
+                font-size: 24px;
+                font-weight: bold;
+                color: #6141f0;
+                letter-spacing: 2px;
+                margin: 20px 0;
+                text-align: center;
+              ">
+              {{code}}
+            </div>
+            <p style="color: #555555; margin: 0 0 10px">Ссылка для автоматического входа:</p>
+            <div style="margin-bottom: 15px; text-align: center">
+              <a
+                href="{{loginURL}}"
+                style="color: #6141f0; font-size: 16px; word-break: break-all"
+                >{{loginURL}}</a
+              >
+            </div>
+            <p style="color: #888888; font-size: 13px; margin: 0 0 10px">
+              Если вы не запрашивали вход, просто проигнорируйте это письмо.
+            </p>
+          </div>
+        </td>
+      </tr>
+      <!-- Footer -->
+      <tr>
+        <td
+          class="footer"
+          style="padding: 25px; text-align: center; font-size: 12px; color: #999999">
+          <p>С уважением, команда ООО Торговый Дом "Челябинский Инструмент"</p>
+          <p>г. Челябинск, ул. Болейко, 5 | +7 (351) 790-77-48</p>
+          <p>&copy; {{currentYear}} ООО Торговый Дом "Челябинский Инструмент". Все права защищены.</p>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

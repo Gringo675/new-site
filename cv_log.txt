@@ -1,0 +1,33 @@
+
+
+09:28:13 siteFullOrigin: "http://localhost:3000/test/"
+
+09:28:14 res: {
+  "access_token": "vk1.a.O0etj4yp0qV19ggpyLzr7ypk3bnkxOY46T3BslPplBMQcS5gguCyamHpTRmUs_k4CcvDTDUSUi6EmaAZG4S4E-9BESK8os2C_n7V05S2VO3n_G87JNTul_OfeTDymhx6abg3Ye0XLGK5_Km7GR8NXd-7h_bKzi5B31QhIFnSdzR3Y1I98Cajmj1iMaTQdjs_vzMH6-_EwdjlxyInGkan1w",
+  "expires_in": 86399,
+  "user_id": 82144039,
+  "email": "gringo675@mail.ru"
+}
+
+10:19:17 siteFullOrigin: "http://localhost:3000/test/"
+
+10:19:17 redirect_uri: "http://localhost:3000/test/api/auth/oauth/vk"
+
+10:19:18 res: {
+  "access_token": "vk1.a._xhOYsJaXedB83wpygKr6EATmesIx0XcZ80q1vFB_NGX2efuNZLtOs6h33izVbhy8DZD26vWx568GfCo6yoaXg052fcpOpZ0MMj7UKxR_WShL8DVsR4WGNo675UOxJg2liXdNWLwp4hBs0ZxkwsjnFRmxMU4nKj-xssWx-eUdT9OAkkjPbcstKxKTK_CvgZ3aLawSi0JfsU6_ENFebkERQ",
+  "expires_in": 86400,
+  "user_id": 82144039,
+  "email": "gringo675@mail.ru"
+}
+
+11:29:38 siteFullOrigin: "http://localhost:3000/test/"
+
+11:29:38 redirect_uri: "http://localhost:3000/test/api/auth/oauth/vk"
+
+11:29:39 res: {
+  "access_token": "vk1.a.1F7WitulhcZFkTs7DfjmDzB281L4uHsvdVW9f1gXlERRFKvgosrTT-pQve8aZ3niwD4ew9JdDUX2V8GZNYs6C-LOpBW-CPbZQ9gk3mA8eMZShw4aHH6B3N0OjK4ejDcR5-8XpFBW0PKfCDf-QywvWymwylZuLWwUcHV3OTw9mJRMEZyIs4Z56w8WeRW5_ribk6OJdBd6__yPlK3lyKi2bQ",
+  "expires_in": 86400,
+  "user_id": 82144039,
+  "email": "gringo675@mail.ru"
+}
+

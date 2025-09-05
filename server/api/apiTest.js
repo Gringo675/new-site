@@ -3,10 +3,7 @@
 export default defineEventHandler(async event => {
   const cTime = new Date().toLocaleTimeString()
   console.log(`from apiTest: ${cTime}`)
-  const isServer = import.meta.server // This will be true if the code is running on the server side
-  console.log(`isServer: ${JSON.stringify(isServer, null, 2)}`)
-  cv('just text from apiTest')
-  return 111
+
   // const aaa = getRequestURL(event).toString().match(/(^.+)\/api\//)[1]
   // const ttt = typeof aaa
   // cv({ aaa, ttt })
@@ -27,7 +24,7 @@ export default defineEventHandler(async event => {
 
   // await timer(4)
   // if (Math.random() < 0.3) throw createError({ statusCode: 481, statusMessage: `Random error on ${cTime}` })
-  throw createError({ statusCode: 401, statusMessage: `Some error on ${cTime}` })
+  throw createError({ statusCode: 400, statusMessage: `Some error on ${cTime}` })
   // const body = await readBody(event)
   // console.log(`body: ${JSON.stringify(body, null, 2)}`)
   // const token = getRequestHeader(event, 'sessionToken')

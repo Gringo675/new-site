@@ -24,24 +24,25 @@ const importHandler = async dataType => {
     <div class="flex space-x-4">
       <UButton
         label="Brands"
-        @click="importHandler('brands')"
-      />
+        @click="importHandler('brands')" />
       <UButton
         label="Properties"
-        @click="importHandler('properties')"
-      />
+        @click="importHandler('properties')" />
       <UButton
         label="Categories"
-        @click="importHandler('categories')"
-      />
+        @click="importHandler('categories')" />
       <UButton
         label="Products"
-        @click="importHandler('products')"
-      />
+        @click="importHandler('products')" />
       <UButton
         label="Documentations"
-        @click="importHandler('docs')"
-      />
+        @click="importHandler('docs')" />
+      <UButton
+        label="Users"
+        @click="importHandler('users')" />
+      <UButton
+        label="Set Product Labels"
+        @click="importHandler('setProductLabels')" />
     </div>
   </HelperAdminOnly>
 </template>

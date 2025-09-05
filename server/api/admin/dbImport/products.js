@@ -95,6 +95,8 @@ export default defineEventHandler(async event => {
       prod.description = await prettier.format(prod.description, { parser: 'html' })
       prod.characteristics = await prettier.format(prod.characteristics, { parser: 'html' })
 
+      prod.vendor_stock = Math.round(prod.vendor_stock) // убираем дробную часть
+
       // в документации меняем старый разделитель ; на новый ,
       prod.standart_ids = prod.standart_ids.replace(/;/g, ',')
       prod.reestr_ids = prod.reestr_ids.replace(/;/g, ',')

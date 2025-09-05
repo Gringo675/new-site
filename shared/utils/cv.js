@@ -17,10 +17,12 @@ export default (...args) => {
           ifRef ? arg[key].value : arg[key],
           null,
           2,
-        )}\n`
+        )}
+`
       }
     } else {
-      text += `${arg}\n`
+      text += `${arg}
+`
     }
   }
 

@@ -1,72 +1,44 @@
-// import { h, createApp } from 'vue'
-// import { renderToString } from 'vue/server-renderer'
-// import { compile } from '@vue/compiler-sfc'
-
-// export default defineEventHandler(async event => {
-//   const vueFile = `
-//     <script setup>
-//     const message = 'Hello from Vue!'
-//     </script>
-
-//     <template>
-//       <div class="some-class">{{ message }}</div>
-//     </template>
-
-//     <style scoped>
-//     .some-class {
-//       color: blue;
-//     }
-//     </style>
-//   `
-
-//   // Parse SFC
-//   const { descriptor } = compile(vueFile)
-
-//   // Create component
-//   const component = {
-//     setup() {
-//       // Execute setup script
-//       const setupScript = new Function('vue', descriptor.script.content)
-//       return setupScript({ h })
-//     },
-//     template: descriptor.template.content,
-//   }
-
-//   // Create app instance and mount component
-//   const app = createApp(component)
-//   const vNode = h(component)
-
-//   // Render to HTML string
-//   const html = await renderToString(vNode)
-
-//   // Include scoped styles if present
-//   const styles = descriptor.styles.map(style => style.content).join('\n')
-
-//   return `
-//     <style>${styles}</style>
-//     ${html}
-//   `
-// })
-
-import { h } from 'vue'
-import { renderToString } from 'vue/server-renderer'
-// import Email from '../template/Email.vue'
-
 export default defineEventHandler(async event => {
-  const vueFile = `
-    <script setup>
-    //
-    const name = 'John Doe'
-    </script>
+  const requestURL = getRequestURL(event)
+  let xForwardedProto = getRequestHeader(event, 'x-forwarded-proto')
+  let xForwardedHost = getRequestHeader(event, 'x-forwarded-host')
+  // Берём только первый элемент до запятой (если есть)
+  if (xForwardedProto && xForwardedProto.includes(',')) xForwardedProto = xForwardedProto.split(',')[0].trim()
+  if (xForwardedHost && xForwardedHost.includes(',')) xForwardedHost = xForwardedHost.split(',')[0].trim()
+  const xForwardedPort = getRequestHeader(event, 'x-forwarded-port')
+  const xForwardedSsl = getRequestHeader(event, 'x-forwarded-ssl')
+  const host = getRequestHeader(event, 'host')
 
-    <template>
-      <div class="some-class">Hellooows, {{ name }}!!!</div>
-    </template>
-  `
+  // Вариант 1: стандартный getRequestURL
+  const origin1 = requestURL.origin
 
-  const vNode = h(vueFile)
+  // Вариант 2: ручная сборка из x-forwarded-proto/host
+  let proto = xForwardedProto || (xForwardedSsl === 'on' ? 'https' : requestURL.protocol.replace(':', ''))
+  let hostHeader = xForwardedHost || host
+  let port = xForwardedPort
+  let origin2 = proto && hostHeader ? `${proto}://${hostHeader}${port ? ':' + port : ''}` : null
 
-  const html = await renderToString(vNode)
+  // Вариант 3: только host header
+  let origin3 = host ? `${requestURL.protocol}//${host}` : null
 
-  return html
+  return {
+    requestURL: {
+      href: requestURL.href,
+      origin: requestURL.origin,
+      protocol: requestURL.protocol,
+      host: requestURL.host,
+      hostname: requestURL.hostname,
+      pathname: requestURL.pathname,
+    },
+    headers: {
+      'x-forwarded-proto': xForwardedProto,
+      'x-forwarded-host': xForwardedHost,
+      'x-forwarded-port': xForwardedPort,
+      'x-forwarded-ssl': xForwardedSsl,
+      host,
+    },
+    origin1_getRequestURL: origin1,
+    origin2_xforwarded: origin2,
+    origin3_host: origin3,
+  }
 })

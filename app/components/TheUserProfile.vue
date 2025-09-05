@@ -101,6 +101,13 @@ function onError(event) {
 }
 
 async function saveUserData() {
+  if (shouldVerifyNewMail.value) {
+    // scroll to verifier
+    const element = document.getElementById('mail-verifier')
+    element?.focus()
+    element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    return false
+  }
   const isValid = await userProfileRef.value.validate().catch(() => false) // если есть ошибки, выбрасывает ошибку
   if (!isValid) {
     userProfileRef.value.submit() // для запуска onError
@@ -108,29 +115,27 @@ async function saveUserData() {
   }
 
   try {
-    // для авторизированных пользователей сохраняем изменения на сервере
-    if (user.value.auth) {
-      const dataKeys = ['name', 'mail', 'org', 'inn', 'address', 'phone'] // без почты, для нее отдельный компонент
-      const changedUserData = dataKeys
-        .filter(key => newUser[key].changed)
-        .map(key => {
-          return { field: key, value: newUser[key].val }
-        })
+    const dataKeys = ['name', 'mail', 'org', 'inn', 'address', 'phone'] // без почты, для нее отдельный компонент
+    const changedUserData = dataKeys
+      .filter(key => newUser[key] !== user.value[key])
+      .map(key => {
+        return { field: key, value: newUser[key] }
+      })
 
-      if (changedUserData.length) {
-        const isChangesSaved = await myFetch('/api/user/changeUser', {
-          method: 'post',
-          payload: changedUserData,
-        })
-        if (!isChangesSaved) throw new Error()
-        localStorage.setItem('user-event', Date.now().toString()) // для обновления всех открытых вкладок
-      }
+    if (!changedUserData.length) return false // нет изменений
+    if (user.value.auth) {
+      // для авторизированных пользователей сохраняем изменения на сервере
+      const isChangesSaved = await myFetch('/api/user/changeUser', {
+        method: 'post',
+        payload: changedUserData,
+      })
+      if (!isChangesSaved) throw new Error()
     }
     // перезаписываем все данные в user
     for (const key in newUser) {
       user.value[key] = newUser[key]
     }
-
+    createUserEvent('2') // для обновления всех открытых вкладок
     return true
   } catch (e) {
     showNotice({ title: 'Ошибка при сохранении данных пользователя!', type: 'error' })
@@ -166,6 +171,7 @@ async function saveUserData() {
         class="w-full" />
       <MailVerifier
         v-if="shouldVerifyNewMail"
+        id="mail-verifier"
         :mail="newUser.mail"
         @cancel="newUser.mail = user.mail"
         @verified="shouldVerifyNewMail = false" />

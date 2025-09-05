@@ -12,14 +12,13 @@ export default defineEventHandler(async event => {
         '`name_ru-RU` AS name, ' +
         '`alias_ru-RU` AS alias, ' +
         'category_image AS image, ' +
-        '`short_description_ru-RU` AS short_description, ' +
         '`description_ru-RU` AS description, ' +
         // '`meta_title_ru-RU` AS meta_title, ' +
         // '`meta_description_ru-RU` AS meta_description, ' +
         // '`meta_keyword_ru-RU` AS meta_keywords, ' +
         'category_publish AS published ' +
-        'FROM instr_jshopping_categories' +
-        ' WHERE category_id > 2349' // от призм
+        'FROM instr_jshopping_categories',
+      // ' WHERE category_id > 2349', // от призм
       // убрал meta_ столбцы т.к. их нет в новой таблице
     )
 
@@ -35,7 +34,6 @@ export default defineEventHandler(async event => {
       // делаем красива
       cat.description = await prettier.format(cat.description, { parser: 'html' })
       cat.characteristics = await prettier.format(cat.characteristics, { parser: 'html' })
-      cat.short_description = await prettier.format(cat.short_description, { parser: 'html' })
     }
 
     // собираем запрос
@@ -46,7 +44,7 @@ export default defineEventHandler(async event => {
       .join(', ')
 
     const query = `INSERT INTO i_categories (${fieldsArr.join(
-      ', '
+      ', ',
     )}) VALUES ${catsValues} ON DUPLICATE KEY UPDATE ${fieldsArr
       .map(field => `${field} = VALUES(${field})`)
       .join(', ')}`

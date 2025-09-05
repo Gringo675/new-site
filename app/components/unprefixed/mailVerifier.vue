@@ -93,8 +93,8 @@ const verifyCode = async code => {
         v-else
         class="text-neutral-700">
         <div class="py-2">
-          На адрес <span class="font-bold underline underline-offset-4">{{ props.mail }}</span> было отправлено письмо,
-          содержащее код активации. Пожалуйста, введите его в данное поле.
+          На адрес <span class="text-primary font-bold">{{ props.mail }}</span> было отправлено письмо, содержащее код
+          активации. Пожалуйста, введите его в данное поле.
         </div>
         <div class="flex flex-wrap items-start justify-around gap-4">
           <UForm
