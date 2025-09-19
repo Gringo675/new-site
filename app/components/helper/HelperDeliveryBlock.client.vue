@@ -53,7 +53,7 @@ const deliveryOptions = computed(() => [
 
 function getDescription(option) {
   if (status.value === 'pending') return 'Идет расчет...'
-  if (option.price) return `От ${option.price} ₽, срок от ${option.days} дн.`
+  if (option.price) return `От ${formatPrice(option.price)}, срок от ${option.days} дн.`
   return 'Недоступно'
 }
 

@@ -3,10 +3,8 @@ const props = defineProps({
   prod: Object,
 })
 
-const productImagesDirectory = useRuntimeConfig().public.IMAGES_DIRECTORY + 'img_products/'
-
 const showFullImage = () => {
-  showImageViewer([`${productImagesDirectory}full_${props.prod.image}`], {
+  showImageViewer([`/static/img/products/full_${props.prod.image}`], {
     causerId: 'img_' + props.prod.id,
   })
 }
@@ -35,7 +33,7 @@ const showFullImage = () => {
     <div
       class="col-span-1 row-span-1 flex h-28 w-20 items-center justify-center self-center p-2 @xs:-order-1 @xs:row-span-2 @xs:h-auto">
       <img
-        :src="`${productImagesDirectory}thumb_${prod.image}`"
+        :src="`/static/img/products/thumb_${prod.image}`"
         :alt="prod.name"
         :id="'img_' + prod.id"
         class="h-auto max-h-full w-auto max-w-full cursor-zoom-in rounded-lg"
@@ -46,11 +44,11 @@ const showFullImage = () => {
       class="col-span-2 row-span-1 my-3 mr-2 ml-0 flex flex-col items-center justify-end gap-x-3 self-end @xs:@max-lg:flex-row @lg:col-span-1 @lg:row-span-2 @lg:ml-2 @lg:self-center @2xl:flex-row">
       <div
         class="relative my-3 shrink-0 grow-0 self-end rounded-2xl bg-slate-400 px-3 py-2 text-lg leading-none whitespace-nowrap text-slate-50">
-        <span class=""> {{ prod.price.toLocaleString() + ' ₽' }}</span>
+        <span class=""> {{ formatPrice(prod.price) }}</span>
         <div
           v-if="prod.priceRegular"
           class="absolute -top-4 right-1 rounded-full bg-gradient-to-b from-fuchsia-400 to-fuchsia-300 px-2 py-1 text-xs leading-none line-through">
-          {{ prod.priceRegular.toLocaleString() + ' ₽' }}
+          {{ formatPrice(prod.priceRegular) }}
         </div>
       </div>
       <CatalogCartButton

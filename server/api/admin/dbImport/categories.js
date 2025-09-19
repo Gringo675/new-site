@@ -11,7 +11,7 @@ export default defineEventHandler(async event => {
         'category_parent_id AS parent_id, ' +
         '`name_ru-RU` AS name, ' +
         '`alias_ru-RU` AS alias, ' +
-        'category_image AS image, ' +
+        // 'category_image AS image, ' +
         '`description_ru-RU` AS description, ' +
         // '`meta_title_ru-RU` AS meta_title, ' +
         // '`meta_description_ru-RU` AS meta_description, ' +

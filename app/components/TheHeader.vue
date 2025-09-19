@@ -81,7 +81,7 @@ const menuState = [
       </div>
       <div class="max-xs:hidden col-span-1 flex items-center justify-center">
         <img
-          src="/img/vernie2.png"
+          src="/img/vernie.png"
           alt="vernie"
           class="max-w-24 min-w-0 opacity-90 max-lg:max-w-20" />
       </div>

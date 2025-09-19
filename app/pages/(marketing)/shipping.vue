@@ -45,7 +45,7 @@ useTitle('Доставка - Челябинский Инструмент | Ус�
               <div class="mb-2 flex items-center justify-between gap-2 border-b border-indigo-200 pb-1">
                 <h3 class="text-lg font-bold tracking-tight text-indigo-800">Деловые Линии</h3>
                 <img
-                  src="/img/carriers/dl.svg"
+                  :src="'/static/img/carriers/dl.svg'"
                   alt="Деловые Линии"
                   class="h-8 w-auto" />
               </div>
@@ -96,7 +96,7 @@ useTitle('Доставка - Челябинский Инструмент | Ус�
               <div class="mb-2 flex items-center justify-between gap-2 border-b border-indigo-200 pb-1">
                 <h3 class="text-lg font-bold tracking-tight text-indigo-800">ПЭК</h3>
                 <img
-                  src="/img/carriers/pek.svg"
+                  :src="'/static/img/carriers/pek.svg'"
                   alt="ПЭК"
                   class="h-8 w-auto" />
               </div>
@@ -147,7 +147,7 @@ useTitle('Доставка - Челябинский Инструмент | Ус�
               <div class="mb-2 flex items-center justify-between gap-2 border-b border-indigo-200 pb-1">
                 <h3 class="text-lg font-bold tracking-tight text-indigo-800">ЖелДорЭкспедиция</h3>
                 <img
-                  src="/img/carriers/jde.svg"
+                  :src="'/static/img/carriers/jde.svg'"
                   alt="ЖелДорЭкспедиция"
                   class="h-8 w-auto" />
               </div>
@@ -198,7 +198,7 @@ useTitle('Доставка - Челябинский Инструмент | Ус�
               <div class="mb-2 flex items-center justify-between gap-2 border-b border-indigo-200 pb-1">
                 <h3 class="text-lg font-bold tracking-tight text-indigo-800">ТК КИТ</h3>
                 <img
-                  src="/img/carriers/kit.svg"
+                  :src="'/static/img/carriers/kit.svg'"
                   alt="ТК КИТ"
                   class="h-8 w-auto" />
               </div>

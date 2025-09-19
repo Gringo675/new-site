@@ -12,10 +12,9 @@ useTitle('Как выбрать микрометр')
       <div class="space-y-6">
         <div class="my-4 flex justify-center">
           <img
-            src="https://chelinstrument.ru/images/choose_micrometr.jpg"
+            :src="'/static/img/articles/choose_micrometr.jpg'"
             class="max-w-full rounded-xl shadow"
-            alt=""
-          />
+            alt="" />
         </div>
         <p class="border-b border-gray-300 pb-2 italic">
           <strong>Микрометр</strong> применяется для измерения наружных размеров с высокой точностью. Конструкция
@@ -45,10 +44,9 @@ useTitle('Как выбрать микрометр')
 
         <div class="my-6 flex justify-center">
           <img
-            src="https://chelinstrument.ru/images/articles/mikrometr-shema.jpg"
+            :src="'/static/img/articles/mikrometr-shema.jpg'"
             class="max-w-full rounded-xl shadow"
-            alt="Общее строение микрометра"
-          />
+            alt="Общее строение микрометра" />
         </div>
 
         <p>
@@ -75,15 +73,13 @@ useTitle('Как выбрать микрометр')
                 label="Открыть в каталоге"
                 variant="subtle"
                 target="_blank"
-                class=""
-              />
+                class="" />
             </div>
             <div class="flex justify-center">
               <img
-                src="https://chelinstrument.ru/images/articles/mk-meh.jpg"
+                :src="'/static/img/articles/mk-meh.jpg'"
                 class="max-w-full rounded-xl shadow"
-                alt="Механический микрометр"
-              />
+                alt="Механический микрометр" />
             </div>
           </div>
 
@@ -102,15 +98,13 @@ useTitle('Как выбрать микрометр')
                 label="Открыть в каталоге"
                 variant="subtle"
                 target="_blank"
-                class=""
-              />
+                class="" />
             </div>
             <div class="flex justify-center">
               <img
-                src="https://chelinstrument.ru/images/articles/mk-elektr.jpg"
+                :src="'/static/img/articles/mk-elektr.jpg'"
                 class="max-w-full rounded-xl shadow"
-                alt="Цифровой микрометр"
-              />
+                alt="Цифровой микрометр" />
             </div>
           </div>
 
@@ -127,15 +121,13 @@ useTitle('Как выбрать микрометр')
                 label="Открыть в каталоге"
                 variant="subtle"
                 target="_blank"
-                class=""
-              />
+                class="" />
             </div>
             <div class="flex justify-center">
               <img
-                src="https://chelinstrument.ru/images/articles/mk-strel.jpg"
+                :src="'/static/img/articles/mk-strel.jpg'"
                 class="max-w-full rounded-xl shadow"
-                alt="Микрометр с индикаторным отсчетным устройством"
-              />
+                alt="Микрометр с индикаторным отсчетным устройством" />
             </div>
           </div>
         </div>
@@ -161,15 +153,13 @@ useTitle('Как выбрать микрометр')
                 to="/catalog/mikrometry-mk-gladkie"
                 label="Открыть в каталоге"
                 variant="subtle"
-                target="_blank"
-              />
+                target="_blank" />
             </div>
             <div class="flex justify-center">
               <img
-                src="https://chelinstrument.ru/images/articles/mk-mkc.jpg"
+                :src="'/static/img/articles/mk-mkc.jpg'"
                 class="max-w-full rounded-xl shadow"
-                alt="Микрометры гладкие МК, МКЦ"
-              />
+                alt="Микрометры гладкие МК, МКЦ" />
             </div>
           </div>
 
@@ -187,15 +177,13 @@ useTitle('Как выбрать микрометр')
                 to="/catalog/mikrometry-mr-mri-rychazhnye"
                 label="Открыть в каталоге"
                 variant="subtle"
-                target="_blank"
-              />
+                target="_blank" />
             </div>
             <div class="flex justify-center">
               <img
-                src="https://chelinstrument.ru/images/articles/mr-mri.jpg"
+                :src="'/static/img/articles/mr-mri.jpg'"
                 class="max-w-full rounded-xl shadow"
-                alt="Микрометры рычажные МР, МРИ"
-              />
+                alt="Микрометры рычажные МР, МРИ" />
             </div>
           </div>
 
@@ -213,15 +201,13 @@ useTitle('Как выбрать микрометр')
                 to="/catalog/mikrometry-ml-listovye"
                 label="Открыть в каталоге"
                 variant="subtle"
-                target="_blank"
-              />
+                target="_blank" />
             </div>
             <div class="flex justify-center">
               <img
-                src="https://chelinstrument.ru/images/articles/ml.jpg"
+                :src="'/static/img/articles/ml.jpg'"
                 class="max-w-full rounded-xl shadow"
-                alt="Микрометры листовые МЛ"
-              />
+                alt="Микрометры листовые МЛ" />
             </div>
           </div>
 
@@ -240,15 +226,13 @@ useTitle('Как выбрать микрометр')
                 to="/catalog/mikrometry-mt-trubnye"
                 label="Открыть в каталоге"
                 variant="subtle"
-                target="_blank"
-              />
+                target="_blank" />
             </div>
             <div class="flex justify-center">
               <img
-                src="https://chelinstrument.ru/images/articles/mt.jpg"
+                :src="'/static/img/articles/mt.jpg'"
                 class="max-w-full rounded-xl shadow"
-                alt="Микрометры трубные МТ"
-              />
+                alt="Микрометры трубные МТ" />
             </div>
           </div>
 
@@ -264,15 +248,13 @@ useTitle('Как выбрать микрометр')
                 to="/catalog/mikrometry-mz-zubomernye"
                 label="Открыть в каталоге"
                 variant="subtle"
-                target="_blank"
-              />
+                target="_blank" />
             </div>
             <div class="flex justify-center">
               <img
-                src="https://chelinstrument.ru/images/articles/mz.jpg"
+                :src="'/static/img/articles/mz.jpg'"
                 class="max-w-full rounded-xl shadow"
-                alt="Микрометры зубомерные МЗ"
-              />
+                alt="Микрометры зубомерные МЗ" />
             </div>
           </div>
 
@@ -288,15 +270,13 @@ useTitle('Как выбрать микрометр')
                 to="/catalog/mikrometry-mvm-so-vstavkami"
                 label="Открыть в каталоге"
                 variant="subtle"
-                target="_blank"
-              />
+                target="_blank" />
             </div>
             <div class="flex justify-center">
               <img
-                src="https://chelinstrument.ru/images/articles/mvm.jpg"
+                :src="'/static/img/articles/mvm.jpg'"
                 class="max-w-full rounded-xl shadow"
-                alt="Микрометры со вставками МВМ"
-              />
+                alt="Микрометры со вставками МВМ" />
             </div>
           </div>
 
@@ -317,15 +297,13 @@ useTitle('Как выбрать микрометр')
                 to="/catalog/mikrometry-mti-mpi-msi-prizmaticheskie"
                 label="Открыть в каталоге"
                 variant="subtle"
-                target="_blank"
-              />
+                target="_blank" />
             </div>
             <div class="flex justify-center">
               <img
-                src="https://chelinstrument.ru/images/articles/mp.jpg"
+                :src="'/static/img/articles/mp.jpg'"
                 class="max-w-full rounded-xl shadow"
-                alt="Микрометры призматические"
-              />
+                alt="Микрометры призматические" />
             </div>
           </div>
 
@@ -339,10 +317,9 @@ useTitle('Как выбрать микрометр')
             </div>
             <div class="flex justify-center">
               <img
-                src="https://chelinstrument.ru/images/articles/mk-mp.jpg"
+                :src="'/static/img/articles/mk-mp.jpg'"
                 class="max-w-full rounded-xl shadow"
-                alt="Микрометры с малыми измерительными поверхностями МК-МП, МКЦ-МП"
-              />
+                alt="Микрометры с малыми измерительными поверхностями МК-МП, МКЦ-МП" />
             </div>
           </div>
 
@@ -356,10 +333,9 @@ useTitle('Как выбрать микрометр')
             </div>
             <div class="flex justify-center">
               <img
-                src="https://chelinstrument.ru/images/articles/mk-tp.jpg"
+                :src="'/static/img/articles/mk-tp.jpg'"
                 class="max-w-full rounded-xl shadow"
-                alt="Микрометры точечные МК-ТП"
-              />
+                alt="Микрометры точечные МК-ТП" />
             </div>
           </div>
         </div>
@@ -440,8 +416,7 @@ useTitle('Как выбрать микрометр')
           >, либо задайте вопрос через
           <button
             class="text-indigo-600 underline-offset-4 hover:underline"
-            @click="showFeedback()"
-          >
+            @click="showFeedback()">
             форму обратной связи</button
           >.
         </p>

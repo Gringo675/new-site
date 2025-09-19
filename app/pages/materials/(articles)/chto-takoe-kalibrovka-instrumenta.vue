@@ -11,7 +11,7 @@ useTitle('Что такое калибровка')
       <section class="space-y-6">
         <div class="my-4 flex justify-center">
           <img
-            src="https://chelinstrument.ru/images/kalibrovka.jpg"
+            :src="'/static/img/articles/kalibrovka.jpg'"
             alt="Калибровка измерительного инструмента"
             class="max-w-full rounded-xl shadow" />
         </div>
@@ -153,7 +153,7 @@ useTitle('Что такое калибровка')
           </p>
           <div class="my-6 flex justify-center">
             <img
-              src="https://chelinstrument.ru/images/articles/attestat_kalibrovki.jpg"
+              :src="'/static/img/articles/attestat_kalibrovki.jpg'"
               alt="Образец аттестата акредитации"
               class="max-w-full rounded-xl shadow" />
           </div>
@@ -229,7 +229,7 @@ useTitle('Что такое калибровка')
           </p>
           <div class="my-6 flex justify-center">
             <img
-              src="https://chelinstrument.ru/images/articles/sert_kalibrovka.jpg"
+              :src="'/static/img/articles/sert_kalibrovka.jpg'"
               alt="Образец калибровочного сертификата"
               class="max-w-full rounded-xl shadow" />
           </div>
@@ -276,7 +276,7 @@ useTitle('Что такое калибровка')
           </ul>
           <div class="my-6 flex justify-center">
             <img
-              src="https://chelinstrument.ru/images/articles/kalibrovka-kleyma.jpg"
+              :src="'/static/img/articles/kalibrovka-kleyma.jpg'"
               alt="Расшифровка калибровочного клейма"
               class="max-w-full rounded-xl shadow" />
           </div>

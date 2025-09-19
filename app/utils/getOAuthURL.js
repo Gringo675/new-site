@@ -1,12 +1,12 @@
 export default provider => {
   const config = useRuntimeConfig()
-  const siteFullOrigin = getSiteFullOrigin()
+  const siteOrigin = useRequestURL().origin
 
   const OAuthProvidersData = {
     google: {
       rootURL: 'https://accounts.google.com/o/oauth2/v2/auth',
       options: {
-        redirect_uri: siteFullOrigin + 'api/auth/oauth/google',
+        redirect_uri: siteOrigin + '/api/auth/oauth/google',
         client_id: config.public.GOOGLE_CLIENT_ID,
         access_type: 'offline',
         response_type: 'code',
@@ -20,7 +20,7 @@ export default provider => {
     vk: {
       rootURL: 'https://oauth.vk.com/authorize',
       options: {
-        redirect_uri: siteFullOrigin + 'api/auth/oauth/vk',
+        redirect_uri: siteOrigin + '/api/auth/oauth/vk',
         client_id: config.public.VK_CLIENT_ID,
         display: 'popup',
         response_type: 'code',
@@ -31,7 +31,7 @@ export default provider => {
     mailru: {
       rootURL: 'https://oauth.mail.ru/login',
       options: {
-        redirect_uri: siteFullOrigin + 'api/auth/oauth/mailru',
+        redirect_uri: siteOrigin + '/api/auth/oauth/mailru',
         client_id: config.public.MAILRU_CLIENT_ID,
         response_type: 'code',
         scope: 'userinfo',

@@ -1,7 +1,7 @@
 export default defineNuxtConfig({
   app: {
     // baseURL: process.env.NODE_ENV === 'production' ? '/test/' : '/',
-    baseURL: '/test/',
+    // baseURL: '/test/',
     head: {
       htmlAttrs: {
         lang: 'ru',
@@ -12,13 +12,8 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
   modules: ['@nuxt/ui', '@nuxtjs/sitemap'],
 
-  site: {
-    url: 'https://chelinstrument.ru',
-  },
-
   sitemap: {
-    // не учитывает baseUrl
-    exclude: ['/admin/**', '/test/admin/**', '/user/**', '/test/user/**', '/try/**', '/test/try/**'],
+    exclude: ['/admin/**', '/user/**', '/try/**'],
     sources: ['/api/__sitemap__/urls'],
     xslColumns: [{ label: 'URL', width: '100%' }],
   },
@@ -65,7 +60,6 @@ export default defineNuxtConfig({
   ],
 
   runtimeConfig: {
-    // dbHost: process.env.NODE_ENV === 'production' ? process.env.DB_HOST : process.env.DB_HOST_LOCAL,
     dbHost: process.env.DB_HOST_LOCAL, // работает везде, и на localhost, и удаленно
     dbName: process.env.DB_NAME,
     dbUser: process.env.DB_USER,
@@ -84,11 +78,11 @@ export default defineNuxtConfig({
     MAIL_USER: process.env.MAIL_USER,
     MAIL_PASS: process.env.MAIL_PASS,
     DL_APP_KEY: process.env.DL_APP_KEY,
+    STATIC_ABSOLUTE_PATH: process.env.STATIC_ABSOLUTE_PATH,
     public: {
       GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
       VK_CLIENT_ID: process.env.VK_CLIENT_ID,
       MAILRU_CLIENT_ID: process.env.MAILRU_CLIENT_ID,
-      IMAGES_DIRECTORY: process.env.IMAGES_DIRECTORY,
     },
   },
 

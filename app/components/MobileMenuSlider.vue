@@ -30,7 +30,7 @@ const menuState = [
   },
   {
     label: 'Материалы',
-    to: '/contacts',
+    to: '/materials',
     icon: 'i-heroicons-book-open',
   },
 ]

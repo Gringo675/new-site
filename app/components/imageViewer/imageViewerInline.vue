@@ -8,13 +8,11 @@ const props = defineProps({
   },
 })
 
-const productImagesDirectory = useRuntimeConfig().public.IMAGES_DIRECTORY + 'img_products/'
-
 const images = props.products
   ? props.images.map(img => {
       return {
-        full: productImagesDirectory + img,
-        thumb: productImagesDirectory + 'thumb_' + img,
+        full: '/static/img/products/' + img,
+        thumb: '/static/img/products/thumb_' + img,
       }
     })
   : props.images
@@ -26,8 +24,8 @@ const showFullViewer = () => {
   const fullImages = props.products
     ? props.images.map(img => {
         return {
-          full: productImagesDirectory + 'full_' + img,
-          thumb: productImagesDirectory + 'thumb_' + img,
+          full: '/static/img/products/full_' + img,
+          thumb: '/static/img/products/thumb_' + img,
         }
       })
     : props.images
@@ -38,16 +36,14 @@ const showFullViewer = () => {
 <template>
   <ImageViewerCarousel
     ref="carouselRef"
-    :items="images"
-  >
+    :items="images">
     <template #default="{ item, index }">
       <img
         :src="item.full ?? item"
         :id="'img_' + index"
         class="min-w-0 shrink cursor-zoom-in object-contain"
         draggable="false"
-        @click="showFullViewer"
-      />
+        @click="showFullViewer" />
     </template>
   </ImageViewerCarousel>
 </template>

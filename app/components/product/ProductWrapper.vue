@@ -6,8 +6,6 @@ const { data: product } = defineProps({
 
 useTitle(product.name + ' - цена, фото, характеристики')
 
-const brandImagesDirectory = useRuntimeConfig().public.IMAGES_DIRECTORY + 'img_manufs/'
-
 // формируем вложенные категории, в которых присутствует товар
 const { data: cats } = await useCats()
 const subCats = cats.value
@@ -78,7 +76,7 @@ const priceMultiplier = ref(1)
       <div class="flex items-start gap-2 p-2">
         <img
           class="max-w-32"
-          :src="brandImagesDirectory + product.brand.image" />
+          :src="'/static/img/brands/' + product.brand.image" />
         <div class="grow text-sm leading-tight font-semibold">
           {{ product.brand.shortName }} ({{ product.brand.fullName }})
         </div>
@@ -87,11 +85,11 @@ const priceMultiplier = ref(1)
         <div class="flex flex-wrap items-center justify-center gap-4">
           <div
             class="relative my-5 shrink-0 grow-0 rounded-2xl bg-slate-400 px-4 py-2 text-2xl leading-none whitespace-nowrap text-slate-50">
-            <span class=""> {{ Math.round(product.price * priceMultiplier).toLocaleString() + ' ₽' }}</span>
+            <span class=""> {{ formatPrice(product.price * priceMultiplier) }}</span>
             <div
               v-if="product.priceRegular"
               class="absolute -top-4 right-3 rounded-full bg-gradient-to-b from-fuchsia-400 to-fuchsia-300 px-2 py-1 text-sm leading-none line-through">
-              {{ Math.round(product.priceRegular * priceMultiplier).toLocaleString() + ' ₽' }}
+              {{ formatPrice(product.priceRegular * priceMultiplier) }}
             </div>
           </div>
           <URadioGroup

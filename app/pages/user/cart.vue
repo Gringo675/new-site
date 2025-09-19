@@ -6,14 +6,10 @@ const user = useUser()
 const cart = useCart()
 const cartTotal = computed(() => {
   const summ = cart.reduce((total, item) => total + item.quantity * item.price, 0)
-  const Formatter = new Intl.NumberFormat('ru-RU', {
-    style: 'currency',
-    currency: 'RUB',
-  })
   return {
     items: cart.reduce((acc, item) => acc + item.quantity, 0),
-    total: Formatter.format(summ),
-    totalWithVat: Formatter.format(summ * 1.2),
+    total: formatPrice(summ, true),
+    totalWithVat: formatPrice(summ * 1.2, true),
   }
 })
 const cartWrapper = useTemplateRef('cartWrapperRef')

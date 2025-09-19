@@ -25,7 +25,7 @@ export default defineEventHandler(async event => {
   await dbReq(query)
 
   // собираем ссылку для автоматического входа
-  let loginURL = getSiteFullOrigin(event) + 'user/verification'
+  let loginURL = getSiteFullOrigin(event) + '/user/verification'
   const values = {
     mail,
     code,

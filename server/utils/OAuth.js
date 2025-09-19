@@ -9,7 +9,7 @@ export const getVkUser = async event => {
     code,
     client_id: config.public.VK_CLIENT_ID,
     client_secret: config.VK_CLIENT_SECRET,
-    redirect_uri: siteFullOrigin + 'api/auth/oauth/vk',
+    redirect_uri: siteFullOrigin + '/api/auth/oauth/vk',
   }
   const urlQuery = Object.keys(values)
     .map(key => `${key}=${encodeURI(values[key])}`)
@@ -52,7 +52,7 @@ export const getMailruUser = async event => {
     code,
     client_id: config.public.MAILRU_CLIENT_ID,
     client_secret: config.MAILRU_CLIENT_SECRET,
-    redirect_uri: siteFullOrigin + 'api/auth/oauth/mailru',
+    redirect_uri: siteFullOrigin + '/api/auth/oauth/mailru',
     grant_type: 'authorization_code',
   }
   const body = Object.keys(values)
@@ -78,7 +78,7 @@ export const getGoogleUser = async event => {
     code,
     client_id: config.public.GOOGLE_CLIENT_ID,
     client_secret: config.GOOGLE_CLIENT_SECRET,
-    redirect_uri: siteFullOrigin + 'api/auth/oauth/google',
+    redirect_uri: siteFullOrigin + '/api/auth/oauth/google',
     grant_type: 'authorization_code',
   }
   const body = Object.keys(values)

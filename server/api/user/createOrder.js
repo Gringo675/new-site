@@ -61,7 +61,7 @@ const sendMails = async order => {
   const cartProducts = JSON.parse(order.cart)
   const total = cartProducts.reduce((sum, product) => sum + product.price * product.quantity, 0)
 
-  const imagePath = 'https://chelinstrument.ru/components/com_jshopping/files/img_products/thumb_'
+  const imagePath = `${config.STATIC_ABSOLUTE_PATH}img/products/thumb_`
   const productBaseUrl = 'https://chelinstrument.ru/product/'
   let productRowsHtml = ''
   for (const product of cartProducts) {

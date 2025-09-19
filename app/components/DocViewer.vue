@@ -5,7 +5,7 @@ const props = defineProps({
   url: String,
 })
 
-const fileFolder = 'https://chelinstrument.ru/docs/'
+const fileFolder = '/static/doc/'
 const src = fileFolder + props.url + '#toolbar=0'
 </script>
 
@@ -28,8 +28,7 @@ const src = fileFolder + props.url + '#toolbar=0'
       ui: {
         leadingIcon: 'size-8',
       },
-    }"
-  >
+    }">
     <template #description></template>
     <template #body>
       <iframe

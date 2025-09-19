@@ -1,7 +1,7 @@
 export default defineEventHandler(async () => {
   //
 
-  const query = `SELECT id, parent_id, name, alias, image, ordering 
+  const query = `SELECT id, parent_id, name, alias, ordering 
                    FROM i_categories WHERE published = 1 ORDER by id`
 
   const rawCats = await dbReq(query)

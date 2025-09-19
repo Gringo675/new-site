@@ -12,7 +12,7 @@ useTitle('Что такое поверка')
       <section class="space-y-6">
         <div class="my-4 flex justify-center">
           <img
-            src="https://chelinstrument.ru/images/poverka.jpg"
+            :src="'/static/img/articles/poverka.jpg'"
             alt="Поверка измерительного инструмента"
             class="max-w-full rounded-xl shadow" />
         </div>
@@ -140,7 +140,7 @@ useTitle('Что такое поверка')
           </p>
           <div class="my-6 flex justify-center">
             <img
-              src="https://chelinstrument.ru/images/articles/svidetelstvo.jpg"
+              :src="'/static/img/articles/svidetelstvo.jpg'"
               alt="Образец свидетельства об утверждении типа"
               class="max-w-full rounded-xl shadow" />
           </div>
@@ -181,7 +181,7 @@ useTitle('Что такое поверка')
           </p>
           <div class="my-6 flex justify-center">
             <img
-              src="https://chelinstrument.ru/images/articles/attestat_akkreditacii.jpg"
+              :src="'/static/img/articles/attestat_akkreditacii.jpg'"
               alt="Образец свидетельства об утверждении типа"
               class="max-w-full rounded-xl shadow" />
           </div>
@@ -274,7 +274,7 @@ useTitle('Что такое поверка')
           </p>
           <div class="my-6 flex justify-center">
             <img
-              src="https://chelinstrument.ru/images/articles/svid_poverka.jpg"
+              :src="'/static/img/articles/svid_poverka.jpg'"
               alt="Образец свидетельства об утверждении типа"
               class="max-w-full rounded-xl shadow" />
           </div>
@@ -289,7 +289,7 @@ useTitle('Что такое поверка')
           </p>
           <div class="my-6 flex justify-center">
             <img
-              src="https://chelinstrument.ru/images/articles/pasport_poverka.jpg"
+              :src="'/static/img/articles/pasport_poverka.jpg'"
               alt="Образец свидетельства об утверждении типа"
               class="max-w-full rounded-xl shadow" />
           </div>
@@ -304,7 +304,7 @@ useTitle('Что такое поверка')
           </p>
           <div class="my-6 flex justify-center">
             <img
-              src="https://chelinstrument.ru/images/articles/nakleyka_poverka.jpg"
+              :src="'/static/img/articles/nakleyka_poverka.jpg'"
               alt="Образец свидетельства об утверждении типа"
               class="max-w-full rounded-xl shadow" />
           </div>
@@ -379,7 +379,7 @@ useTitle('Что такое поверка')
           </ul>
           <div class="my-6 flex justify-center">
             <img
-              src="https://chelinstrument.ru/images/articles/poverka-kleyma.jpg"
+              :src="'/static/img/articles/poverka-kleyma.jpg'"
               alt="Образец свидетельства об утверждении типа"
               class="max-w-full rounded-xl shadow" />
           </div>

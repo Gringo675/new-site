@@ -13,7 +13,7 @@ const masterButton = reactive({
     <div class="flex items-center mr-2 shrink-0">
       <img
         class="w-10"
-        src="/img/funnel.svg"
+        src="/img/icons/funnel.svg"
         title="Фильтр"
       />
       <input

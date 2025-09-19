@@ -12,10 +12,9 @@ useTitle('Как выбрать штангенциркуль — Челябин�
       <div class="space-y-6">
         <div class="my-4 flex justify-center">
           <img
-            src="https://chelinstrument.ru/images/choose_caliper.jpg"
+            :src="'/static/img/articles/choose_caliper.jpg'"
             alt="Штангенциркуль"
-            class="max-w-full rounded-xl shadow"
-          />
+            class="max-w-full rounded-xl shadow" />
         </div>
         <p class="border-b border-gray-300 pb-2 italic">
           <strong>Штангенциркуль</strong> — самый универсальный и распространенный измерительный инструмент. Он
@@ -33,10 +32,9 @@ useTitle('Как выбрать штангенциркуль — Челябин�
         </p>
         <div class="my-6 flex justify-center">
           <img
-            src="https://chelinstrument.ru/images/articles/shtangen-shema.jpg"
+            :src="'/static/img/articles/shtangen-shema.jpg'"
             alt="Общее строение штангенциркуля"
-            class="max-w-full rounded-xl shadow"
-          />
+            class="max-w-full rounded-xl shadow" />
         </div>
         <h2 class="mt-8 mb-4 text-2xl font-bold">Типы штангенциркулей по способу снятия показаний</h2>
         <div class="space-y-6">
@@ -56,15 +54,13 @@ useTitle('Как выбрать штангенциркуль — Челябин�
                 label="Открыть в каталоге"
                 variant="subtle"
                 target="_blank"
-                class="mt-4"
-              />
+                class="mt-4" />
             </div>
             <div class="flex justify-center">
               <img
-                src="https://chelinstrument.ru/images/articles/SHC_nonius.jpg"
+                :src="'/static/img/articles/SHC_nonius.jpg'"
                 alt="Нониусные штангенциркули ШЦ"
-                class="max-w-full rounded-xl shadow"
-              />
+                class="max-w-full rounded-xl shadow" />
             </div>
           </div>
           <div class="grid grid-cols-1 items-center gap-4 rounded-lg border-2 border-fuchsia-200 p-4 md:grid-cols-2">
@@ -81,15 +77,13 @@ useTitle('Как выбрать штангенциркуль — Челябин�
                 label="Открыть в каталоге"
                 variant="subtle"
                 target="_blank"
-                class="mt-4"
-              />
+                class="mt-4" />
             </div>
             <div class="flex justify-center">
               <img
-                src="https://chelinstrument.ru/images/articles/SHCC.jpg"
+                :src="'/static/img/articles/SHCC.jpg'"
                 alt="Цифровые электронные штангенциркули ШЦЦ"
-                class="max-w-full rounded-xl shadow"
-              />
+                class="max-w-full rounded-xl shadow" />
             </div>
           </div>
           <div class="grid grid-cols-1 items-center gap-4 rounded-lg border-2 border-fuchsia-200 p-4 md:grid-cols-2">
@@ -106,15 +100,13 @@ useTitle('Как выбрать штангенциркуль — Челябин�
                 label="Открыть в каталоге"
                 variant="subtle"
                 target="_blank"
-                class="mt-4"
-              />
+                class="mt-4" />
             </div>
             <div class="flex justify-center">
               <img
-                src="https://chelinstrument.ru/images/articles/SHCK.jpg"
+                :src="'/static/img/articles/SHCK.jpg'"
                 alt="Стрелочные штангенциркули ШЦС или ШЦК"
-                class="max-w-full rounded-xl shadow"
-              />
+                class="max-w-full rounded-xl shadow" />
             </div>
           </div>
         </div>
@@ -140,15 +132,13 @@ useTitle('Как выбрать штангенциркуль — Челябин�
                 label="Открыть в каталоге"
                 variant="subtle"
                 target="_blank"
-                class="mt-4"
-              />
+                class="mt-4" />
             </div>
             <div class="flex justify-center">
               <img
-                src="https://chelinstrument.ru/images/articles/shc-I.jpg"
+                :src="'/static/img/articles/shc-I.jpg'"
                 alt="Штангенциркуль типа ШЦ-I"
-                class="max-w-full rounded-xl shadow"
-              />
+                class="max-w-full rounded-xl shadow" />
             </div>
           </div>
           <div class="grid grid-cols-1 items-center gap-4 rounded-lg border-2 border-fuchsia-200 p-4 md:grid-cols-2">
@@ -169,15 +159,13 @@ useTitle('Как выбрать штангенциркуль — Челябин�
                 label="Открыть в каталоге"
                 variant="subtle"
                 target="_blank"
-                class="mt-4"
-              />
+                class="mt-4" />
             </div>
             <div class="flex justify-center">
               <img
-                src="https://chelinstrument.ru/images/articles/SHC2.jpg"
+                :src="'/static/img/articles/SHC2.jpg'"
                 alt="Штангенциркули типа ШЦ-II"
-                class="max-w-full rounded-xl shadow"
-              />
+                class="max-w-full rounded-xl shadow" />
             </div>
           </div>
           <div class="grid grid-cols-1 items-center gap-4 rounded-lg border-2 border-fuchsia-200 p-4 md:grid-cols-2">
@@ -195,15 +183,13 @@ useTitle('Как выбрать штангенциркуль — Челябин�
                 label="Открыть в каталоге"
                 variant="subtle"
                 target="_blank"
-                class="mt-4"
-              />
+                class="mt-4" />
             </div>
             <div class="flex justify-center">
               <img
-                src="https://chelinstrument.ru/images/articles/SHC3.jpg"
+                :src="'/static/img/articles/SHC3.jpg'"
                 alt="Штангенциркули типа ШЦ-III"
-                class="max-w-full rounded-xl shadow"
-              />
+                class="max-w-full rounded-xl shadow" />
             </div>
           </div>
         </div>
@@ -223,10 +209,9 @@ useTitle('Как выбрать штангенциркуль — Челябин�
             </div>
             <div class="flex justify-center">
               <img
-                src="https://chelinstrument.ru/images/articles/SHC_razmet.jpg"
+                :src="'/static/img/articles/SHC_razmet.jpg'"
                 alt="Штангенциркули разметочные ШЦР"
-                class="max-w-full rounded-xl shadow"
-              />
+                class="max-w-full rounded-xl shadow" />
             </div>
           </div>
           <div class="grid grid-cols-1 items-center gap-4 rounded-lg border-2 border-fuchsia-200 p-4 md:grid-cols-2">
@@ -240,10 +225,9 @@ useTitle('Как выбрать штангенциркуль — Челябин�
             </div>
             <div class="flex justify-center">
               <img
-                src="https://chelinstrument.ru/images/articles/SHC_kanav.jpg"
+                :src="'/static/img/articles/SHC_kanav.jpg'"
                 alt="Штангенциркули для внутренних/наружных канавок"
-                class="max-w-full rounded-xl shadow"
-              />
+                class="max-w-full rounded-xl shadow" />
             </div>
           </div>
           <div class="grid grid-cols-1 items-center gap-4 rounded-lg border-2 border-fuchsia-200 p-4 md:grid-cols-2">
@@ -256,10 +240,9 @@ useTitle('Как выбрать штангенциркуль — Челябин�
             </div>
             <div class="flex justify-center">
               <img
-                src="https://chelinstrument.ru/images/articles/SHC_trub.jpg"
+                :src="'/static/img/articles/SHC_trub.jpg'"
                 alt="Штангенциркули для стенок труб"
-                class="max-w-full rounded-xl shadow"
-              />
+                class="max-w-full rounded-xl shadow" />
             </div>
           </div>
           <div class="grid grid-cols-1 items-center gap-4 rounded-lg border-2 border-fuchsia-200 p-4 md:grid-cols-2">
@@ -273,10 +256,9 @@ useTitle('Как выбрать штангенциркуль — Челябин�
             </div>
             <div class="flex justify-center">
               <img
-                src="https://chelinstrument.ru/images/articles/SHC_ustup.jpg"
+                :src="'/static/img/articles/SHC_ustup.jpg'"
                 alt="Штангенциркули для уступов"
-                class="max-w-full rounded-xl shadow"
-              />
+                class="max-w-full rounded-xl shadow" />
             </div>
           </div>
           <p>
@@ -332,10 +314,9 @@ useTitle('Как выбрать штангенциркуль — Челябин�
           </div>
           <div class="flex justify-center">
             <img
-              src="https://chelinstrument.ru/images/articles/SHC_udlin.jpg"
+              :src="'/static/img/articles/SHC_udlin.jpg'"
               alt="Штангенциркули с удлинёнными губками"
-              class="max-w-100 rounded-xl shadow"
-            />
+              class="max-w-100 rounded-xl shadow" />
           </div>
         </div>
         <h2 class="mt-8 mb-4 text-2xl font-bold">Материал губок</h2>
@@ -362,15 +343,13 @@ useTitle('Как выбрать штангенциркуль — Челябин�
               label="Открыть в каталоге"
               variant="subtle"
               target="_blank"
-              class=""
-            />
+              class="" />
           </div>
           <div class="flex justify-center">
             <img
-              src="https://chelinstrument.ru/images/articles/SHCT.jpg"
+              :src="'/static/img/articles/SHCT.jpg'"
               alt="Твердосплавные штангенциркули ШЦТ"
-              class="max-w-100 rounded-xl shadow"
-            />
+              class="max-w-100 rounded-xl shadow" />
           </div>
         </div>
         <h2 class="mt-8 mb-4 text-2xl font-bold">Производители штангенциркулей</h2>
@@ -436,8 +415,7 @@ useTitle('Как выбрать штангенциркуль — Челябин�
           >, либо задайте вопрос через
           <button
             class="text-indigo-600 underline-offset-4 hover:underline"
-            @click="showFeedback()"
-          >
+            @click="showFeedback()">
             форму обратной связи</button
           >.
         </p>

@@ -7,14 +7,10 @@ const { order } = defineProps<{
 
 const cartTotal = computed(() => {
   const summ = order.cart.reduce((total, item) => total + item.quantity * item.price, 0)
-  const Formatter = new Intl.NumberFormat('ru-RU', {
-    style: 'currency',
-    currency: 'RUB',
-  })
   return {
     items: order.cart.reduce((acc, item) => acc + item.quantity, 0),
-    total: Formatter.format(summ),
-    totalWithVat: Formatter.format(summ * 1.2),
+    total: formatPrice(summ, true),
+    totalWithVat: formatPrice(summ * 1.2, true),
   }
 })
 </script>
@@ -45,9 +41,9 @@ const cartTotal = computed(() => {
                 >{{ prod.name }}</NuxtLink
               >
             </td>
-            <td class="p-2 text-right whitespace-nowrap">{{ prod.price.toLocaleString() }} ₽</td>
+            <td class="p-2 text-right whitespace-nowrap">{{ formatPrice(prod.price) }}</td>
             <td class="p-2 text-right">{{ prod.quantity }}</td>
-            <td class="p-2 text-right font-semibold">{{ (prod.price * prod.quantity).toLocaleString() }} ₽</td>
+            <td class="p-2 text-right font-semibold">{{ formatPrice(prod.price * prod.quantity) }}</td>
           </tr>
         </tbody>
       </table>

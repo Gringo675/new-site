@@ -127,25 +127,22 @@ const handleOK = async () => {
 <template>
   <HelperModalWrapper>
     <div
-      class="modal-form w-96 max-w-[95%] max-h-[95%] border border-amber-900 rounded-xl overflow-auto flex flex-col justify-start"
-    >
-      <div class="flex flex-row justify-between items-center bg-orange-300 p-2.5">
-        <div class="max-w-full whitespace-nowrap overflow-hidden text-ellipsis size text-xl">
+      class="modal-form flex max-h-[95%] w-96 max-w-[95%] flex-col justify-start overflow-auto rounded-xl border border-amber-900">
+      <div class="flex flex-row items-center justify-between bg-orange-300 p-2.5">
+        <div class="size max-w-full overflow-hidden text-xl text-ellipsis whitespace-nowrap">
           {{ groupNameRU }}
         </div>
 
         <button
           @click="propsEditor.hide"
-          class="inline-flex opacity-70 hover:opacity-100 focus:outline-hidden focus-visible:outline-0"
-        >
+          class="inline-flex opacity-70 hover:opacity-100 focus:outline-hidden focus-visible:outline-0">
           <UIcon
             name="i-heroicons-x-circle"
-            class="h-8 w-8"
-          />
+            class="h-8 w-8" />
         </button>
       </div>
       <div class="bg-lime-200">
-        <div class="m-2 relative">
+        <div class="relative m-2">
           <UInput
             v-model="filter"
             name="filterInput"
@@ -154,8 +151,7 @@ const handleOK = async () => {
             color="white"
             :trailing="false"
             placeholder="Фильтр..."
-            class="m-2"
-          />
+            class="m-2" />
           <UButton
             v-show="filter.length > 0"
             :padded="false"
@@ -163,8 +159,7 @@ const handleOK = async () => {
             variant="link"
             icon="i-heroicons-x-circle"
             @click="filter = ''"
-            class="absolute top-1.5 right-4"
-          />
+            class="absolute top-1.5 right-4" />
         </div>
 
         <div class="m-2">
@@ -173,63 +168,54 @@ const handleOK = async () => {
       </div>
       <div
         ref="propsWrapper"
-        class="p-5 overflow-auto bg-amber-100"
+        class="overflow-auto bg-amber-100 p-5"
         @dragstart="handleDragStart"
         @dragend="handleDragEnd"
         @dragenter="handleDragEnter"
-        @dragover="handleDragOver"
-      >
+        @dragover="handleDragOver">
         <TransitionGroup name="transition-props-editor">
           <template
             v-for="(item, i) in pGroup"
-            :key="item.id"
-          >
+            :key="item.id">
             <div
               v-if="item.filtered"
               :data-index="i"
               :class="{ 'opacity-20': draggableElementIndex === i }"
-              class="float-left flex items-center bg-orange-200 border border-orange-700 rounded-lg p-2 m-2 transition-opacity duration-300"
-            >
+              class="float-left m-2 flex items-center rounded-lg border border-orange-700 bg-orange-200 p-2 transition-opacity duration-300">
               <UCheckbox v-model="item.selected" />
               <input
                 type="text"
                 v-model.lazy="item.name"
-                class="ml-2 px-1 rounded-xs bg-orange-100 outline-hidden w-48"
-              />
+                class="ml-2 w-48 rounded-xs bg-orange-100 px-1 outline-hidden" />
               <img
                 @click="deleteItem(i)"
-                class="inline cursor-pointer select-none ml-2"
-                src="/img/trash.svg"
-              />
+                class="ml-2 inline cursor-pointer select-none"
+                src="/img/icons/trash.svg" />
               <img
                 @click="addItem(i)"
-                class="inline cursor-pointer select-none mx-2"
-                :class="{ 'opacity-40 pointer-events-none': haveHiddenItems }"
-                src="/img/file-plus.svg"
-              />
+                class="mx-2 inline cursor-pointer select-none"
+                :class="{ 'pointer-events-none opacity-40': haveHiddenItems }"
+                src="/img/icons/file-plus.svg" />
               <img
                 class="inline cursor-move select-none"
-                :class="{ 'opacity-40 pointer-events-none': haveHiddenItems }"
-                src="/img/arrows-move.svg"
-                data-draggable
-              />
+                :class="{ 'pointer-events-none opacity-40': haveHiddenItems }"
+                src="/img/icons/arrows-move.svg"
+                data-draggable />
             </div>
           </template>
         </TransitionGroup>
       </div>
-      <div class="p-2.5 bg-orange-200 flex justify-end gap-4">
+      <div class="flex justify-end gap-4 bg-orange-200 p-2.5">
         <UButton
           label="Отмена"
           variant="outline"
           color="secondary"
-          @click="propsEditor.hide()"
-        />
+          @click="propsEditor.hide()" />
         <UButton
           label="Ok"
           color="secondary"
-          class="px-8 mr-4"
-          @click="handleOK"
-        />
+          class="mr-4 px-8"
+          @click="handleOK" />
       </div>
     </div>
   </HelperModalWrapper>

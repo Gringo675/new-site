@@ -1,11 +1,6 @@
 <script setup>
 //
 const orders = await myFetch('/api/user/getOrders')
-
-function getOrderTotal(order) {
-  if (!order?.cart) return 0
-  return order.cart.reduce((sum, prod) => sum + prod.price * prod.quantity, 0)
-}
 </script>
 
 <template>

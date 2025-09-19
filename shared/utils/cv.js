@@ -3,7 +3,7 @@
  * cv({var1, var2, var3})
  * for ref and reactive cv({var1}, {var2}, {var3})
  * cv('just text')
- * cv('some text', var1}
+ * cv('some text', var1)
  */
 
 export default (...args) => {

@@ -2,61 +2,50 @@
 //
 useTitle('Интернет-магазин измерительных инструментов')
 
-const catImgDir = 'https://chelinstrument.ru/components/com_jshopping/files/img_categories/'
+const catImgDir = '/static/img/categories/'
 const favCats = [
   {
-    img: 'shc.jpg',
     title: 'Штангенциркули',
     link: 'shtangentsirkuli',
   },
   {
-    img: 'Mikrometr.jpg',
     title: 'Микрометры',
     link: 'mikrometry',
   },
   {
-    img: 'indikator.jpg',
     title: 'Индикаторы',
     link: 'indikatory',
   },
   {
-    img: 'nutromer.jpg',
     title: 'Нутромеры',
     link: 'nutromery',
   },
   {
-    img: 'skoby.jpg',
     title: 'Скобы',
     link: 'skoby',
   },
   {
-    img: 'tolschinomer.jpg',
     title: 'Стенкомеры, толщиномеры',
     link: 'stenkomery-tolshchinomery',
   },
   {
-    img: 'uglomer.jpg',
     title: 'Угломеры',
     link: 'uglomery',
   },
   {
-    img: 'ugolniki.jpg',
     title: 'Угольники',
     link: 'ugolniki',
   },
   {
-    img: 'lineyki.jpg',
     title: 'Линейки',
     link: 'linejki',
   },
 
   {
-    img: 'Prizmy.jpg',
     title: 'Призмы поверочные',
     link: 'prizmy-poverochnye',
   },
   {
-    img: 'stoyki.jpg',
     title: 'Штативы, стойки',
     link: 'shtativy-stojki',
   },
@@ -97,7 +86,7 @@ const advantages = [
   },
 ]
 
-const artImgDir = 'https://chelinstrument.ru/images/'
+const artImgDir = '/static/img/articles/'
 const articles = [
   {
     img: 'choose_caliper.jpg',
@@ -129,7 +118,7 @@ const articles = [
     <HelperImageLink
       v-for="cat in favCats"
       :key="cat.link"
-      :img-src="`${catImgDir}${cat.img}`"
+      :img-src="`${catImgDir}${cat.link}.jpg`"
       :title="cat.title"
       :link="`/catalog/${cat.link}`"
       class="max-w-100" />

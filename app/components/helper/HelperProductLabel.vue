@@ -23,12 +23,10 @@ const { data: label } = await useAsyncData(`label-${labelId}`, () => $fetch<Labe
   <div
     class="flex min-w-0 shrink origin-left cursor-default items-center"
     :class="!forProduct && '-rotate-2'"
-    :title="label.description"
-  >
+    :title="label.description">
     <img
-      :src="getDynamicAsset('/img/labels/' + label.image)"
-      class="h-6 w-auto"
-    />
+      :src="`/static/img/labels/${label.image}`"
+      class="h-6 w-auto" />
     <div class="min-w-0 shrink rounded-xs bg-fuchsia-400 p-0.5">
       <div class="truncate border border-dashed border-white px-2 text-sm leading-tight text-white">
         {{ label.name }}

@@ -47,7 +47,7 @@ onBeforeRouteLeave(async to => {
         >
           <img
             class="w-12"
-            src="/img/send.svg"
+            src="/img/icons/send.svg"
           />
         </button>
       </div>

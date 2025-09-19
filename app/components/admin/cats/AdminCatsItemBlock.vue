@@ -66,7 +66,7 @@ const onEnter = async (el, done) => {
       el.style.removeProperty('transition')
       done()
     },
-    { once: true }
+    { once: true },
   )
 }
 const onLeave = async (el, done) => {
@@ -82,7 +82,7 @@ const onLeave = async (el, done) => {
       el.style.removeProperty('transition')
       done()
     },
-    { once: true }
+    { once: true },
   )
 }
 
@@ -90,14 +90,14 @@ const onLeave = async (el, done) => {
 const isDraggingCat = computed(
   () =>
     catsG.draggingCatIndexes.length === props.indexes.length &&
-    catsG.draggingCatIndexes.every((item, index) => item === props.indexes[index])
+    catsG.draggingCatIndexes.every((item, index) => item === props.indexes[index]),
 )
 // для выделения группы, куда можно переместить
 const inDraggingGroup = computed(
   () =>
     catsG.draggingCatIndexes.length === props.indexes.length &&
     catsG.draggingCatIndexes.slice(0, -1).every((item, index) => item === props.indexes[index]) &&
-    catsG.draggingCatIndexes[catsG.draggingCatIndexes.length - 1] !== props.indexes[props.indexes.length - 1]
+    catsG.draggingCatIndexes[catsG.draggingCatIndexes.length - 1] !== props.indexes[props.indexes.length - 1],
 )
 </script>
 
@@ -106,39 +106,34 @@ const inDraggingGroup = computed(
   <div class="">
     <!--    cat wrapper-->
     <div
-      class="my-2 p-1 border border-gray-500 rounded-xl flex items-start relative"
+      class="relative my-2 flex items-start rounded-xl border border-gray-500 p-1"
       :class="{
         'bg-sky-200': indexes.length === 1,
         'bg-teal-200': indexes.length === 2,
         'bg-orange-200': indexes.length === 3,
-      }"
-    >
+      }">
       <!--      params wrapper-->
-      <div class="flex items-center flex-wrap gap-x-2 gap-y-1 my-1 mr-9">
+      <div class="my-1 mr-9 flex flex-wrap items-center gap-x-2 gap-y-1">
         <button
           v-if="cat.children?.length"
           @click="showChildren = !showChildren"
-          class="shrink-0 flex items-center border border-gray-200 rounded-lg bg-yellow-100 p-1"
-        >
+          class="flex shrink-0 items-center rounded-lg border border-gray-200 bg-yellow-100 p-1">
           <img
-            src="/img/chevron-down.svg"
+            src="/img/icons/chevron-down.svg"
             class="transition-transform duration-500"
-            :class="{ 'rotate-over': showChildren }"
-          />
+            :class="{ 'rotate-over': showChildren }" />
           <span class=""> +{{ cat.children?.length }} </span>
         </button>
         <template
           v-for="(field, i) in catFields"
-          :key="i"
-        >
+          :key="i">
           <template v-if="field.isActive">
             <UButton
               v-if="field.type === 'text'"
               :title="field.nameRU"
               :variant="cat[field.name]?.length ? 'solid' : 'outline'"
               :label="field.name === 'name' && cat[field.name]?.length ? cat.name : field.nameRU"
-              @click="textEditor.show(indexes, field.name)"
-            />
+              @click="textEditor.show(indexes, field.name)" />
             <UButton
               v-else-if="indexes.length > 1 && field.type === 'multiselect'"
               :title="field.nameRU"
@@ -151,18 +146,15 @@ const inDraggingGroup = computed(
                       .join(', ')
                   : field.nameRU
               "
-              @click="propsEditor.show(indexes, field.name)"
-            />
+              @click="propsEditor.show(indexes, field.name)" />
             <div
               v-else-if="field.type === 'checkbox'"
-              class="m-2 flex"
-            >
+              class="m-2 flex">
               <label>
                 <input
                   type="checkbox"
                   :checked="cat[field.name]"
-                  @change="catsG.handleChanges(cat.id, field.name, $event.target.checked ? 1 : 0)"
-                />
+                  @change="catsG.handleChanges(cat.id, field.name, $event.target.checked ? 1 : 0)" />
                 {{ field.nameRU }}
               </label>
             </div>
@@ -171,76 +163,63 @@ const inDraggingGroup = computed(
         <div>id: {{ cat.id }}</div>
       </div>
       <!--      menu-->
-      <div class="menu-block absolute right-0 m-1 flex border border-blue-300 rounded-lg bg-blue-100">
+      <div class="menu-block absolute right-0 m-1 flex rounded-lg border border-blue-300 bg-blue-100">
         <div
           class="flex items-center overflow-hidden transition-all duration-500"
-          :class="showMenu ? 'max-w-[210px]' : 'max-w-0 opacity-0'"
-        >
+          :class="showMenu ? 'max-w-[210px]' : 'max-w-0 opacity-0'">
           <button
-            class="shrink-0 mx-2"
-            @click="addCat"
-          >
+            class="mx-2 shrink-0"
+            @click="addCat">
             <img
-              :src="getDynamicAsset('/img/plus-circle.svg')"
+              src="/img/icons/plus-circle.svg"
               class="w-7"
-              title="Добавить категорию"
-            />
+              title="Добавить категорию" />
           </button>
           <button
-            class="shrink-0 mx-2"
-            @click="copyCat"
-          >
+            class="mx-2 shrink-0"
+            @click="copyCat">
             <img
-              :src="getDynamicAsset('/img/hdd-stack.svg')"
+              src="/img/icons/hdd-stack.svg"
               class="w-7"
-              title="Скопировать категорию"
-            />
+              title="Скопировать категорию" />
           </button>
           <button
             v-if="indexes.length < 3"
-            class="shrink-0 mx-1"
-            @click="addSubCat"
-          >
+            class="mx-1 shrink-0"
+            @click="addSubCat">
             <img
-              :src="getDynamicAsset('/img/node-plus.svg')"
+              src="/img/icons/node-plus.svg"
               class="w-7 rotate-90"
-              title="Добавить подкатегорию"
-            />
+              title="Добавить подкатегорию" />
           </button>
 
           <button
-            class="shrink-0 mx-2"
-            @click="validateDelete"
-          >
+            class="mx-2 shrink-0"
+            @click="validateDelete">
             <img
-              :src="getDynamicAsset('/img/trash.svg')"
+              src="/img/icons/trash.svg"
               class="w-7"
-              title="Удалить категорию"
-            />
+              title="Удалить категорию" />
           </button>
           <NuxtLink
             :to="'/catalog/' + cat.alias"
             target="_blank"
-            class="shrink-0 mr-2"
-          >
+            class="mr-2 shrink-0">
             <UIcon
               name="i-heroicons-arrow-right-on-rectangle-solid"
-              class="w-7 h-7 block"
-              title="Перейти в категорию"
-            />
+              class="block h-7 w-7"
+              title="Перейти в категорию" />
           </NuxtLink>
         </div>
         <button
           class="rounded-lg bg-blue-200 py-1 transition"
           @click="handleShowMenuClick"
-          :class="{ 'scale-125 border border-blue-300': inDraggingGroup, 'opacity-20': isDraggingCat }"
-        >
+          :class="{ 'scale-125 border border-blue-300': inDraggingGroup, 'opacity-20': isDraggingCat }">
           <img
-            :src="showMenu ? getDynamicAsset('/img/x.svg') : getDynamicAsset('/img/three-dots-vertical.svg')"
+            :src="showMenu ? '/img/icons/x.svg' : '/img/icons/three-dots-vertical.svg'"
             class="w-7 transition-opacity"
             :data-cat-indexes="JSON.stringify(props.indexes)"
-            :data-drag-group="inDraggingGroup ? '1' : undefined"
-          />
+            :data-drag-group="inDraggingGroup ? '1' : undefined" />
         </button>
       </div>
     </div>
@@ -248,17 +227,14 @@ const inDraggingGroup = computed(
     <transition
       :css="false"
       @enter="onEnter"
-      @leave="onLeave"
-    >
+      @leave="onLeave">
       <div
         class="ml-2 overflow-hidden"
-        v-show="showChildren"
-      >
+        v-show="showChildren">
         <TransitionGroup name="transition-draggable-group">
           <div
             v-for="(subCat, index) in cat.children"
-            :key="subCat.id"
-          >
+            :key="subCat.id">
             <AdminCatsItemBlock :indexes="[...indexes, index]" />
           </div>
         </TransitionGroup>
