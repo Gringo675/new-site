@@ -77,7 +77,7 @@ export default defineEventHandler(async event => {
       prod.images = images
         .filter(image => image.product_id === prod.old_id)
         .sort((a, b) => a.ordering - b.ordering)
-        .map(image => image.name)
+        .map(image => image.name.slice(0, -4)) // убираем расширение .jpg
         .join(',')
 
       // даты в строчный вид

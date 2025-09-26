@@ -13,7 +13,8 @@ const { data: cats } = await useCats()
       <template v-for="cat in cats">
         <HelperImageLink
           class="max-w-100"
-          :img-src="'/static/img/categories/' + cat.alias + '.jpg'"
+          :img-name="cat.alias"
+          :img-dir="'/static/img/categories'"
           :title="cat.name"
           :link="'/catalog/' + cat.alias" />
         <ul class="ml-4 list-disc space-y-2 pl-6 md:ml-0">

@@ -4,7 +4,7 @@ const props = defineProps({
 })
 
 const showFullImage = () => {
-  showImageViewer([`/static/img/products/full_${props.prod.image}`], {
+  showImageViewer([props.prod.image], {
     causerId: 'img_' + props.prod.id,
   })
 }
@@ -32,12 +32,37 @@ const showFullImage = () => {
     </div>
     <div
       class="col-span-1 row-span-1 flex h-28 w-20 items-center justify-center self-center p-2 @xs:-order-1 @xs:row-span-2 @xs:h-auto">
-      <img
-        :src="`/static/img/products/thumb_${prod.image}`"
-        :alt="prod.name"
-        :id="'img_' + prod.id"
-        class="h-auto max-h-full w-auto max-w-full cursor-zoom-in rounded-lg"
-        @click="showFullImage" />
+      <picture>
+        <source
+          type="image/avif"
+          :srcset="`
+          /static/img/products/w_64/${prod.image}.avif 64w,
+          /static/img/products/w_128/${prod.image}.avif 128w,
+        `"
+          sizes="64px" />
+        <source
+          type="image/webp"
+          :srcset="`
+          /static/img/products/w_64/${prod.image}.webp 64w,
+          /static/img/products/w_128/${prod.image}.webp 128w,
+        `"
+          sizes="64px" />
+        <img
+          :src="`/static/img/products/w_64/${prod.image}.jpg`"
+          :srcset="`
+          /static/img/products/w_64/${prod.image}.jpg 64w,
+          /static/img/products/w_128/${prod.image}.jpg 128w,
+        `"
+          sizes="64px"
+          :alt="prod.name"
+          loading="lazy"
+          decoding="async"
+          width="64"
+          height="64"
+          :id="'img_' + prod.id"
+          class="h-auto max-h-full w-auto max-w-full cursor-zoom-in rounded-lg"
+          @click="showFullImage" />
+      </picture>
     </div>
 
     <div

@@ -1,6 +1,5 @@
 <script setup>
-// изображения приходят в формате [{full: 'path_to_full_image', thumb: 'path_to_thumb_image'}, ...] или ['path_to_image', ...]
-
+//
 const props = defineProps({
   images: Array,
   activeImgIndex: Number,
@@ -14,16 +13,16 @@ const closeImageViewer = () => {
 
 const carousel = useTemplateRef('carouselRef')
 
-const images = reactive(
-  props.images.map(img => {
-    return {
-      full: img.full || img,
-      thumb: img.thumb || img,
-      load: false,
-      error: false,
-    }
-  }),
-)
+// const images = reactive(
+//   props.images.map(img => {
+//     return {
+//       full: img.full || img,
+//       thumb: img.thumb || img,
+//       load: false,
+//       error: false,
+//     }
+//   }),
+// )
 
 const setAppearDisappearAnimation = () => {
   if (!props.causerId) return
@@ -51,7 +50,7 @@ const setAppearDisappearAnimation = () => {
 setAppearDisappearAnimation()
 
 useViewerKeyPress(carousel)
-useViewerImgLoad(images, props.activeImgIndex, carousel)
+// useViewerImgLoad(images, props.activeImgIndex, carousel)
 
 const activateZoom = useViewerZoom
 
@@ -73,8 +72,7 @@ onMounted(async () => {
       overlay: 'bg-transparent',
       content:
         'bg-gray-900/90 data-[state=closed]:animate-[viewer-out_400ms_linear] data-[state=open]:animate-[viewer-in_400ms_linear] divide-none',
-    }"
-  >
+    }">
     <template #content>
       <UButton
         class="absolute top-3 right-3 z-10 focus-visible:ring-0 focus-visible:outline-none"
@@ -83,32 +81,28 @@ onMounted(async () => {
         :ui="{
           leadingIcon: 'size-8 sm:size-10',
         }"
-        @click="closeImageViewer"
-      />
+        @click="closeImageViewer" />
       <ImageViewerCarousel
         ref="carouselRef"
         :items="images"
-        fullScreen
-      >
-        <template #default="{ item }">
-          <div
-            v-if="item.error"
-            class="max-w-xs rounded-md border border-red-400 p-2 text-center text-gray-100"
-          >
-            При получении изображения произошла ошибка! Попробуйте перезагрузить страницу.
-          </div>
-          <HelperLoader v-else-if="!item.load" />
-          <!-- <div
-            v-else-if="!item.load"
-            class="aspect-square w-1/6 max-w-15 animate-ping rounded-full bg-violet-300"
-          ></div> -->
-          <img
-            v-else
-            @click.stop="activateZoom($event)"
-            :src="item.full"
-            class="max-h-full min-h-0 max-w-full min-w-0 shrink cursor-zoom-in transition-transform duration-500"
-            draggable="false"
-          />
+        fullScreen>
+        <template #default="{ item, index }">
+          <picture class="flex h-full w-full items-center justify-center">
+            <source
+              type="image/avif"
+              :srcset="`/static/img/products/w_max/${item}.avif`" />
+            <source
+              type="image/webp"
+              :srcset="`/static/img/products/w_max/${item}.webp`" />
+            <img
+              :src="`/static/img/products/w_max/${item}.jpg`"
+              alt="Фото товара"
+              :loading="index === activeImgIndex ? 'eager' : 'lazy'"
+              :decoding="index === activeImgIndex ? 'sync' : 'async'"
+              class="h-auto max-h-full min-h-0 w-auto max-w-full min-w-0 shrink cursor-zoom-in transition-transform duration-500"
+              draggable="false"
+              @click.stop="activateZoom($event)" />
+          </picture>
         </template>
       </ImageViewerCarousel>
     </template>

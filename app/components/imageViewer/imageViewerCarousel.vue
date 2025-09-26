@@ -7,8 +7,8 @@
         <div
           v-for="(item, index) in items"
           :key="index"
-          class="flex flex-none basis-full justify-center p-2"
-          :class="[fullScreen && 'items-center']"
+          class="flex h-full flex-none basis-full justify-center"
+          :class="[fullScreen && 'items-center p-2']"
           :role="items.length > 1 ? 'tabpanel' : null">
           <slot
             :item="item"
@@ -49,19 +49,45 @@
       <template
         v-for="page in pages"
         :key="page">
-        <img
-          @click.stop="onClick(page)"
-          :src="items[page - 1].thumb ?? items[page - 1]"
-          class="max-h-full max-w-25 min-w-5 rounded"
-          :class="[
-            page === currentPage
-              ? [
-                  'cursor-default ring-1',
-                  fullScreen ? 'ring-violet-600 brightness-80' : 'ring-violet-600/40 brightness-90',
-                ].join(' ')
-              : 'cursor-pointer',
-          ]"
-          draggable="false" />
+        <picture class="flex h-full items-center">
+          <source
+            type="image/avif"
+            :srcset="`
+          /static/img/products/w_64/${items[page - 1]}.avif 64w,
+          /static/img/products/w_128/${items[page - 1]}.avif 128w,
+        `"
+            sizes="64px" />
+          <source
+            type="image/webp"
+            :srcset="`
+          /static/img/products/w_64/${items[page - 1]}.webp 64w,
+          /static/img/products/w_128/${items[page - 1]}.webp 128w,
+        `"
+            sizes="64px" />
+          <img
+            :src="`/static/img/products/w_64/${items[page - 1]}.jpg`"
+            :srcset="`
+          /static/img/products/w_64/${items[page - 1]}.jpg 64w,
+          /static/img/products/w_128/${items[page - 1]}.jpg 128w,
+        `"
+            sizes="64px"
+            alt="thumb"
+            loading="lazy"
+            decoding="async"
+            width="64"
+            height="64"
+            class="h-auto max-h-full w-auto max-w-25 min-w-5 rounded"
+            :class="[
+              page === currentPage
+                ? [
+                    'cursor-default ring-1',
+                    fullScreen ? 'ring-violet-600 brightness-80' : 'ring-violet-600/40 brightness-90',
+                  ].join(' ')
+                : 'cursor-pointer',
+            ]"
+            draggable="false"
+            @click.stop="onClick(page)" />
+        </picture>
       </template>
     </div>
   </div>

@@ -2,7 +2,6 @@
 //
 useTitle('Интернет-магазин измерительных инструментов')
 
-const catImgDir = '/static/img/categories/'
 const favCats = [
   {
     title: 'Штангенциркули',
@@ -86,25 +85,24 @@ const advantages = [
   },
 ]
 
-const artImgDir = '/static/img/articles/'
 const articles = [
   {
-    img: 'choose_caliper.jpg',
+    img: 'choose_caliper',
     title: 'Как выбрать штангенциркуль?',
     link: '/materials/kak-vybrat-shtangentsirkul',
   },
   {
-    img: 'choose_micrometr.jpg',
+    img: 'choose_micrometr',
     title: 'Как выбрать микрометр?',
     link: '/materials/kak-vybrat-mikrometr',
   },
   {
-    img: 'poverka.jpg',
+    img: 'poverka',
     title: 'Что такое поверка?',
     link: '/materials/chto-takoe-poverka-instrumenta',
   },
   {
-    img: 'kalibrovka.jpg',
+    img: 'kalibrovka',
     title: 'Что такое калибровка?',
     link: '/materials/chto-takoe-kalibrovka-instrumenta',
   },
@@ -118,7 +116,8 @@ const articles = [
     <HelperImageLink
       v-for="cat in favCats"
       :key="cat.link"
-      :img-src="`${catImgDir}${cat.link}.jpg`"
+      :img-name="cat.link"
+      :img-dir="'/static/img/categories'"
       :title="cat.title"
       :link="`/catalog/${cat.link}`"
       class="max-w-100" />
@@ -142,7 +141,8 @@ const articles = [
     <HelperImageLink
       v-for="art in articles"
       :key="art.link"
-      :img-src="`${artImgDir}${art.img}`"
+      :img-name="art.img"
+      :img-dir="'/static/img/articles'"
       :title="art.title"
       :link="art.link" />
   </div>

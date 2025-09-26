@@ -70,7 +70,9 @@ const priceMultiplier = ref(1)
     <div class="my-1 border-b border-gray-200"></div>
     <div class="mb-6 grid grid-cols-3 grid-rows-[auto_1fr] gap-4 max-lg:grid-cols-2 max-sm:grid-cols-1">
       <div class="sm:row-span-2">
-        <imageViewerInline :images="product.images" />
+        <imageViewerProduct
+          :images="product.images"
+          :name="product.name" />
         <!-- <TheTest2 :images="product.images" /> -->
       </div>
       <div class="flex items-start gap-2 p-2">
@@ -128,7 +130,7 @@ const priceMultiplier = ref(1)
           </div>
         </NuxtLink>
       </div>
-      <div class="bl4 max-lg:xs:grid-cols-2 my-4 grid items-start gap-x-4 gap-y-6 p-2 max-lg:sm:col-span-2">
+      <div class="bl4 max-lg:xs:grid-cols-2 my-4 grid content-start gap-x-4 gap-y-6 p-2 max-lg:sm:col-span-2">
         <div
           v-for="prop in product.props"
           class="relative rounded-lg border border-gray-300 bg-gray-200 px-3 py-1.5">
@@ -138,6 +140,15 @@ const priceMultiplier = ref(1)
           </div>
           <div class="relative z-10 leading-tight">{{ prop.val }}</div>
         </div>
+        <!-- <div
+          v-for="prop in product.props"
+          class="relative rounded-lg border border-gray-300 bg-gray-200 px-3 py-1.5">
+          <div
+            class="absolute -top-3 right-8 rounded-full border border-gray-300 bg-gray-200 px-2.5 py-1 text-sm leading-none after:absolute after:-inset-x-px after:top-1/2 after:-bottom-px after:bg-gray-200">
+            <span class="relative -top-0.5 z-10 font-semibold">{{ prop.name }}</span>
+          </div>
+          <div class="relative z-10 leading-tight">{{ prop.val }}</div>
+        </div> -->
       </div>
     </div>
 
