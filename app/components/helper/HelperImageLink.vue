@@ -38,7 +38,7 @@ const props = defineProps({
         loading="lazy"
         decoding="async"
         width="400"
-        height="133"
+        height="135"
         class="h-auto w-full rounded-xl" />
     </picture>
     <div class="group absolute inset-0 flex items-center justify-center rounded-xl bg-black/10 p-4 hover:bg-black/30">

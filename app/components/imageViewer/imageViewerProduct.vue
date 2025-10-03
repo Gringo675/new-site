@@ -5,13 +5,6 @@ const props = defineProps({
   name: String,
 })
 
-// const images = props.images.map(img => {
-//   return {
-//     full: '/static/img/products/full_' + img,
-//     thumb: '/static/img/products/thumb_' + img,
-//   }
-// })
-
 const carousel = useTemplateRef('carouselRef')
 
 const showFullViewer = () => {

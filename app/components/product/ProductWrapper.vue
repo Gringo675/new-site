@@ -5,7 +5,8 @@ const { data: product } = defineProps({
 })
 
 useTitle(product.name + ' - цена, фото, характеристики')
-
+// @ts-ignore
+useProductSchema(product)
 // формируем вложенные категории, в которых присутствует товар
 const { data: cats } = await useCats()
 const subCats = cats.value
@@ -55,7 +56,8 @@ const priceMultiplier = ref(1)
   <div class="">
     <BreadCrumbsWrapper
       :catId="product.category_id"
-      :productCats="subCats" />
+      :productCats="subCats"
+      :productName="product.name" />
     <h1 class="font-accent my-4 text-2xl leading-7 max-xl:text-xl max-xl:leading-6">{{ product.name }}</h1>
     <div class="flex items-center gap-2">
       <UIcon

@@ -10,8 +10,12 @@ useTitle('Что такое калибровка')
     <main class="space-y-10">
       <section class="space-y-6">
         <div class="my-4 flex justify-center">
-          <img
-            :src="'/static/img/articles/kalibrovka.jpg'"
+          <!-- <img
+              :src="'/static/img/articles/kalibrovka.jpg'"
+              alt="Калибровка измерительного инструмента"
+              class="max-w-full rounded-xl shadow" /> -->
+          <HelperArticleImg
+            img-name="kalibrovka"
             alt="Калибровка измерительного инструмента"
             class="max-w-full rounded-xl shadow" />
         </div>
@@ -152,8 +156,8 @@ useTitle('Что такое калибровка')
             <strong>аттестована на право проведения калибровочных работ</strong>.
           </p>
           <div class="my-6 flex justify-center">
-            <img
-              :src="'/static/img/articles/attestat_kalibrovki.jpg'"
+            <HelperArticleImg
+              img-name="attestat_kalibrovki"
               alt="Образец аттестата акредитации"
               class="max-w-full rounded-xl shadow" />
           </div>
@@ -228,8 +232,8 @@ useTitle('Что такое калибровка')
             организации либо её калибровочное клеймо.
           </p>
           <div class="my-6 flex justify-center">
-            <img
-              :src="'/static/img/articles/sert_kalibrovka.jpg'"
+            <HelperArticleImg
+              img-name="sert_kalibrovka"
               alt="Образец калибровочного сертификата"
               class="max-w-full rounded-xl shadow" />
           </div>
@@ -275,8 +279,8 @@ useTitle('Что такое калибровка')
             <li><strong>квадратная</strong> — для средств измерений, находящихся в эксплуатации и после ремонта.</li>
           </ul>
           <div class="my-6 flex justify-center">
-            <img
-              :src="'/static/img/articles/kalibrovka-kleyma.jpg'"
+            <HelperArticleImg
+              img-name="kalibrovka-kleyma"
               alt="Расшифровка калибровочного клейма"
               class="max-w-full rounded-xl shadow" />
           </div>

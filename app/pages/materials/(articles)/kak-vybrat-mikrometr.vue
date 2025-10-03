@@ -11,10 +11,10 @@ useTitle('Как выбрать микрометр')
     <section class="space-y-10">
       <div class="space-y-6">
         <div class="my-4 flex justify-center">
-          <img
-            :src="'/static/img/articles/choose_micrometr.jpg'"
-            class="max-w-full rounded-xl shadow"
-            alt="" />
+          <HelperArticleImg
+            img-name="choose_micrometr"
+            alt=""
+            class="max-w-full rounded-xl shadow" />
         </div>
         <p class="border-b border-gray-300 pb-2 italic">
           <strong>Микрометр</strong> применяется для измерения наружных размеров с высокой точностью. Конструкция
@@ -43,10 +43,10 @@ useTitle('Как выбрать микрометр')
         </p>
 
         <div class="my-6 flex justify-center">
-          <img
-            :src="'/static/img/articles/mikrometr-shema.jpg'"
-            class="max-w-full rounded-xl shadow"
-            alt="Общее строение микрометра" />
+          <HelperArticleImg
+            img-name="mikrometr-shema"
+            alt="Общее строение микрометра"
+            class="max-w-full rounded-xl shadow" />
         </div>
 
         <p>
@@ -76,10 +76,10 @@ useTitle('Как выбрать микрометр')
                 class="" />
             </div>
             <div class="flex justify-center">
-              <img
-                :src="'/static/img/articles/mk-meh.jpg'"
-                class="max-w-full rounded-xl shadow"
-                alt="Механический микрометр" />
+              <HelperArticleImg
+                img-name="mk-meh"
+                alt="Механический микрометр"
+                class="max-w-full rounded-xl shadow" />
             </div>
           </div>
 
@@ -101,10 +101,10 @@ useTitle('Как выбрать микрометр')
                 class="" />
             </div>
             <div class="flex justify-center">
-              <img
-                :src="'/static/img/articles/mk-elektr.jpg'"
-                class="max-w-full rounded-xl shadow"
-                alt="Цифровой микрометр" />
+              <HelperArticleImg
+                img-name="mk-elektr"
+                alt="Цифровой микрометр"
+                class="max-w-full rounded-xl shadow" />
             </div>
           </div>
 
@@ -124,10 +124,10 @@ useTitle('Как выбрать микрометр')
                 class="" />
             </div>
             <div class="flex justify-center">
-              <img
-                :src="'/static/img/articles/mk-strel.jpg'"
-                class="max-w-full rounded-xl shadow"
-                alt="Микрометр с индикаторным отсчетным устройством" />
+              <HelperArticleImg
+                img-name="mk-strel"
+                alt="Микрометр с индикаторным отсчетным устройством"
+                class="max-w-full rounded-xl shadow" />
             </div>
           </div>
         </div>
@@ -156,10 +156,10 @@ useTitle('Как выбрать микрометр')
                 target="_blank" />
             </div>
             <div class="flex justify-center">
-              <img
-                :src="'/static/img/articles/mk-mkc.jpg'"
-                class="max-w-full rounded-xl shadow"
-                alt="Микрометры гладкие МК, МКЦ" />
+              <HelperArticleImg
+                img-name="mk-mkc"
+                alt="Микрометры гладкие МК, МКЦ"
+                class="max-w-full rounded-xl shadow" />
             </div>
           </div>
 
@@ -180,10 +180,10 @@ useTitle('Как выбрать микрометр')
                 target="_blank" />
             </div>
             <div class="flex justify-center">
-              <img
-                :src="'/static/img/articles/mr-mri.jpg'"
-                class="max-w-full rounded-xl shadow"
-                alt="Микрометры рычажные МР, МРИ" />
+              <HelperArticleImg
+                img-name="mr-mri"
+                alt="Микрометры рычажные МР, МРИ"
+                class="max-w-full rounded-xl shadow" />
             </div>
           </div>
 
@@ -204,10 +204,10 @@ useTitle('Как выбрать микрометр')
                 target="_blank" />
             </div>
             <div class="flex justify-center">
-              <img
-                :src="'/static/img/articles/ml.jpg'"
-                class="max-w-full rounded-xl shadow"
-                alt="Микрометры листовые МЛ" />
+              <HelperArticleImg
+                img-name="ml"
+                alt="Микрометры листовые МЛ"
+                class="max-w-full rounded-xl shadow" />
             </div>
           </div>
 
@@ -229,10 +229,10 @@ useTitle('Как выбрать микрометр')
                 target="_blank" />
             </div>
             <div class="flex justify-center">
-              <img
-                :src="'/static/img/articles/mt.jpg'"
-                class="max-w-full rounded-xl shadow"
-                alt="Микрометры трубные МТ" />
+              <HelperArticleImg
+                img-name="mt"
+                alt="Микрометры трубные МТ"
+                class="max-w-full rounded-xl shadow" />
             </div>
           </div>
 
@@ -251,10 +251,10 @@ useTitle('Как выбрать микрометр')
                 target="_blank" />
             </div>
             <div class="flex justify-center">
-              <img
-                :src="'/static/img/articles/mz.jpg'"
-                class="max-w-full rounded-xl shadow"
-                alt="Микрометры зубомерные МЗ" />
+              <HelperArticleImg
+                img-name="mz"
+                alt="Микрометры зубомерные МЗ"
+                class="max-w-full rounded-xl shadow" />
             </div>
           </div>
 
@@ -273,10 +273,10 @@ useTitle('Как выбрать микрометр')
                 target="_blank" />
             </div>
             <div class="flex justify-center">
-              <img
-                :src="'/static/img/articles/mvm.jpg'"
-                class="max-w-full rounded-xl shadow"
-                alt="Микрометры со вставками МВМ" />
+              <HelperArticleImg
+                img-name="mvm"
+                alt="Микрометры со вставками МВМ"
+                class="max-w-full rounded-xl shadow" />
             </div>
           </div>
 
@@ -300,10 +300,10 @@ useTitle('Как выбрать микрометр')
                 target="_blank" />
             </div>
             <div class="flex justify-center">
-              <img
-                :src="'/static/img/articles/mp.jpg'"
-                class="max-w-full rounded-xl shadow"
-                alt="Микрометры призматические" />
+              <HelperArticleImg
+                img-name="mp"
+                alt="Микрометры призматические"
+                class="max-w-full rounded-xl shadow" />
             </div>
           </div>
 
@@ -316,10 +316,10 @@ useTitle('Как выбрать микрометр')
               </p>
             </div>
             <div class="flex justify-center">
-              <img
-                :src="'/static/img/articles/mk-mp.jpg'"
-                class="max-w-full rounded-xl shadow"
-                alt="Микрометры с малыми измерительными поверхностями МК-МП, МКЦ-МП" />
+              <HelperArticleImg
+                img-name="mk-mp"
+                alt="Микрометры с малыми измерительными поверхностями МК-МП, МКЦ-МП"
+                class="max-w-full rounded-xl shadow" />
             </div>
           </div>
 
@@ -332,10 +332,10 @@ useTitle('Как выбрать микрометр')
               </p>
             </div>
             <div class="flex justify-center">
-              <img
-                :src="'/static/img/articles/mk-tp.jpg'"
-                class="max-w-full rounded-xl shadow"
-                alt="Микрометры точечные МК-ТП" />
+              <HelperArticleImg
+                img-name="mk-tp"
+                alt="Микрометры точечные МК-ТП"
+                class="max-w-full rounded-xl shadow" />
             </div>
           </div>
         </div>

@@ -44,7 +44,7 @@ const menuState = [
             src="/img/logo.svg"
             alt="logo"
             class="w-full p-1 max-md:max-w-20"
-            width="100%"
+            width="120"
             height="auto" />
         </ULink>
       </div>
@@ -69,8 +69,10 @@ const menuState = [
       <div class="col-span-1 mr-2 flex items-center justify-end gap-2 max-md:hidden">
         <img
           src="/img/rst.svg"
-          alt=""
-          class="w-20" />
+          alt="rst"
+          class="w-20"
+          width="80"
+          height="auto" />
       </div>
       <div class="col-span-1 flex max-md:justify-center">
         <div
@@ -80,10 +82,26 @@ const menuState = [
         </div>
       </div>
       <div class="max-xs:hidden col-span-1 flex items-center justify-center">
-        <img
-          src="/img/vernie.png"
-          alt="vernie"
-          class="max-w-24 min-w-0 opacity-90 max-lg:max-w-20" />
+        <picture>
+          <source
+            type="image/avif"
+            :srcset="'/static/assets/w96_vernie.avif 960w, /static/assets/w192_vernie.avif 192w'"
+            sizes="96px" />
+          <source
+            type="image/webp"
+            :srcset="'/static/assets/w96_vernie.webp 960w, /static/assets/w192_vernie.webp 192w'"
+            sizes="96px" />
+          <img
+            :src="'/static/assets/w96_vernie.jpg'"
+            :srcset="'/static/assets/w96_vernie.jpg 96w, /static/assets/w192_vernie.jpg 192w'"
+            sizes="96px"
+            alt="ШЦ_лого"
+            loading="lazy"
+            decoding="async"
+            width="96"
+            height="73"
+            class="max-w-24 min-w-0 opacity-90 max-lg:max-w-20" />
+        </picture>
       </div>
       <div class="col-span-2 flex max-md:hidden">
         <div

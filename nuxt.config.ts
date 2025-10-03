@@ -1,3 +1,7 @@
+import { defineOrganization } from 'nuxt-schema-org/schema'
+import useCompany from './app/composables/useCompany.js'
+const company = useCompany()
+
 export default defineNuxtConfig({
   app: {
     // baseURL: process.env.NODE_ENV === 'production' ? '/test/' : '/',
@@ -6,17 +10,21 @@ export default defineNuxtConfig({
       htmlAttrs: {
         lang: 'ru',
       },
-      meta: [{ name: 'robots', content: 'noindex, nofollow' }],
+      meta: [
+        // { name: 'robots', content: 'noindex, nofollow' },
+        { name: 'apple-mobile-web-app-title', content: 'ТД ЧИ' },
+      ],
+      link: [
+        { rel: 'icon', type: 'image/png', href: '/static/assets/favicons/favicon-96x96.png', sizes: '96x96' },
+        { rel: 'icon', type: 'image/svg+xml', href: '/static/assets/favicons/favicon.svg' },
+        { rel: 'shortcut icon', href: '/static/assets/favicons/favicon.ico' },
+        { rel: 'apple-touch-icon', sizes: '180x180', href: '/static/assets/favicons/apple-touch-icon.png' },
+        { rel: 'manifest', href: '/static/assets/favicons/site.webmanifest' },
+      ],
     },
   },
   css: ['~/assets/css/main.css'],
-  modules: ['@nuxt/ui', '@nuxtjs/sitemap'],
-
-  sitemap: {
-    exclude: ['/admin/**', '/user/**', '/try/**'],
-    sources: ['/api/__sitemap__/urls'],
-    xslColumns: [{ label: 'URL', width: '100%' }],
-  },
+  modules: ['@nuxt/ui', '@nuxtjs/sitemap', 'nuxt-schema-org', '@nuxtjs/robots'],
 
   ui: {
     colorMode: false,
@@ -93,6 +101,50 @@ export default defineNuxtConfig({
   },
   experimental: {
     purgeCachedData: false, // nuxt v3.17 breaking change (delete cache when component-initiator is unmounted)
+  },
+  site: {
+    // used in SEO modules
+    title: 'Челябинский Инструмент',
+    url: 'https://chelinstrument.ru',
+    description: 'Интернет-магазин измерительных инструментов. Официальный сайт ООО ТД «Челябинский Инструмент».',
+    name: 'Челябинский Инструмент',
+    indexable: false,
+  },
+  sitemap: {
+    exclude: ['/admin/**', '/user/**', '/try/**'],
+    sources: ['/api/__sitemap__/urls'],
+    xslColumns: [{ label: 'URL', width: '100%' }],
+  },
+  robots: {
+    disallow: ['/admin', '/search', '/user', '/cart', '/try', '/test', '/*?f='],
+  },
+  schemaOrg: {
+    identity: defineOrganization({
+      '@type': ['Organization', 'Store', 'OnlineStore'],
+      name: company.name,
+      logo: '/img/logo.svg',
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: company.address.streetAddress,
+        addressLocality: company.address.addressLocality,
+        postalCode: company.address.postalCode,
+        addressCountry: company.address.addressCountry,
+      },
+      contactPoint: [
+        {
+          '@type': 'ContactPoint',
+          telephone: company.phones[0],
+          contactType: 'customer service',
+          email: company.mails[0],
+        },
+        {
+          '@type': 'ContactPoint',
+          telephone: company.phones[1],
+          contactType: 'technical support',
+          email: company.mails[1],
+        },
+      ],
+    }),
   },
   compatibilityDate: '2025-03-07',
 })

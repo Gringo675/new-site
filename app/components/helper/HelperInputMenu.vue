@@ -90,8 +90,8 @@ const onInputClick = e => {
 const emit = defineEmits(['resolved'])
 
 const resolve = item => {
-  emit('resolved', item)
   clearAll()
+  emit('resolved', item)
 }
 </script>
 

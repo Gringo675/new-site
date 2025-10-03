@@ -11,8 +11,8 @@ useTitle('Как выбрать штангенциркуль — Челябин�
     <section class="space-y-10">
       <div class="space-y-6">
         <div class="my-4 flex justify-center">
-          <img
-            :src="'/static/img/articles/choose_caliper.jpg'"
+          <HelperArticleImg
+            img-name="choose_caliper"
             alt="Штангенциркуль"
             class="max-w-full rounded-xl shadow" />
         </div>
@@ -31,8 +31,8 @@ useTitle('Как выбрать штангенциркуль — Челябин�
           которых и пойдет ниже.
         </p>
         <div class="my-6 flex justify-center">
-          <img
-            :src="'/static/img/articles/shtangen-shema.jpg'"
+          <HelperArticleImg
+            img-name="shtangen-shema"
             alt="Общее строение штангенциркуля"
             class="max-w-full rounded-xl shadow" />
         </div>
@@ -57,8 +57,8 @@ useTitle('Как выбрать штангенциркуль — Челябин�
                 class="mt-4" />
             </div>
             <div class="flex justify-center">
-              <img
-                :src="'/static/img/articles/SHC_nonius.jpg'"
+              <HelperArticleImg
+                img-name="SHC_nonius"
                 alt="Нониусные штангенциркули ШЦ"
                 class="max-w-full rounded-xl shadow" />
             </div>
@@ -80,8 +80,8 @@ useTitle('Как выбрать штангенциркуль — Челябин�
                 class="mt-4" />
             </div>
             <div class="flex justify-center">
-              <img
-                :src="'/static/img/articles/SHCC.jpg'"
+              <HelperArticleImg
+                img-name="SHCC"
                 alt="Цифровые электронные штангенциркули ШЦЦ"
                 class="max-w-full rounded-xl shadow" />
             </div>
@@ -103,8 +103,8 @@ useTitle('Как выбрать штангенциркуль — Челябин�
                 class="mt-4" />
             </div>
             <div class="flex justify-center">
-              <img
-                :src="'/static/img/articles/SHCK.jpg'"
+              <HelperArticleImg
+                img-name="SHCK"
                 alt="Стрелочные штангенциркули ШЦС или ШЦК"
                 class="max-w-full rounded-xl shadow" />
             </div>
@@ -135,8 +135,8 @@ useTitle('Как выбрать штангенциркуль — Челябин�
                 class="mt-4" />
             </div>
             <div class="flex justify-center">
-              <img
-                :src="'/static/img/articles/shc-I.jpg'"
+              <HelperArticleImg
+                img-name="shc-I"
                 alt="Штангенциркуль типа ШЦ-I"
                 class="max-w-full rounded-xl shadow" />
             </div>
@@ -162,8 +162,8 @@ useTitle('Как выбрать штангенциркуль — Челябин�
                 class="mt-4" />
             </div>
             <div class="flex justify-center">
-              <img
-                :src="'/static/img/articles/SHC2.jpg'"
+              <HelperArticleImg
+                img-name="SHC2"
                 alt="Штангенциркули типа ШЦ-II"
                 class="max-w-full rounded-xl shadow" />
             </div>
@@ -186,8 +186,8 @@ useTitle('Как выбрать штангенциркуль — Челябин�
                 class="mt-4" />
             </div>
             <div class="flex justify-center">
-              <img
-                :src="'/static/img/articles/SHC3.jpg'"
+              <HelperArticleImg
+                img-name="SHC3"
                 alt="Штангенциркули типа ШЦ-III"
                 class="max-w-full rounded-xl shadow" />
             </div>
@@ -208,8 +208,8 @@ useTitle('Как выбрать штангенциркуль — Челябин�
               </p>
             </div>
             <div class="flex justify-center">
-              <img
-                :src="'/static/img/articles/SHC_razmet.jpg'"
+              <HelperArticleImg
+                img-name="SHC_razmet"
                 alt="Штангенциркули разметочные ШЦР"
                 class="max-w-full rounded-xl shadow" />
             </div>
@@ -224,8 +224,8 @@ useTitle('Как выбрать штангенциркуль — Челябин�
               </p>
             </div>
             <div class="flex justify-center">
-              <img
-                :src="'/static/img/articles/SHC_kanav.jpg'"
+              <HelperArticleImg
+                img-name="SHC_kanav"
                 alt="Штангенциркули для внутренних/наружных канавок"
                 class="max-w-full rounded-xl shadow" />
             </div>
@@ -239,8 +239,8 @@ useTitle('Как выбрать штангенциркуль — Челябин�
               </p>
             </div>
             <div class="flex justify-center">
-              <img
-                :src="'/static/img/articles/SHC_trub.jpg'"
+              <HelperArticleImg
+                img-name="SHC_trub"
                 alt="Штангенциркули для стенок труб"
                 class="max-w-full rounded-xl shadow" />
             </div>
@@ -255,8 +255,8 @@ useTitle('Как выбрать штангенциркуль — Челябин�
               </p>
             </div>
             <div class="flex justify-center">
-              <img
-                :src="'/static/img/articles/SHC_ustup.jpg'"
+              <HelperArticleImg
+                img-name="SHC_ustup"
                 alt="Штангенциркули для уступов"
                 class="max-w-full rounded-xl shadow" />
             </div>
@@ -313,8 +313,8 @@ useTitle('Как выбрать штангенциркуль — Челябин�
             </p>
           </div>
           <div class="flex justify-center">
-            <img
-              :src="'/static/img/articles/SHC_udlin.jpg'"
+            <HelperArticleImg
+              img-name="SHC_udlin"
               alt="Штангенциркули с удлинёнными губками"
               class="max-w-100 rounded-xl shadow" />
           </div>
@@ -346,8 +346,8 @@ useTitle('Как выбрать штангенциркуль — Челябин�
               class="" />
           </div>
           <div class="flex justify-center">
-            <img
-              :src="'/static/img/articles/SHCT.jpg'"
+            <HelperArticleImg
+              img-name="SHCT"
               alt="Твердосплавные штангенциркули ШЦТ"
               class="max-w-100 rounded-xl shadow" />
           </div>

@@ -11,8 +11,8 @@ useTitle('Что такое поверка')
     <main class="space-y-10">
       <section class="space-y-6">
         <div class="my-4 flex justify-center">
-          <img
-            :src="'/static/img/articles/poverka.jpg'"
+          <HelperArticleImg
+            img-name="poverka"
             alt="Поверка измерительного инструмента"
             class="max-w-full rounded-xl shadow" />
         </div>
@@ -139,8 +139,8 @@ useTitle('Что такое поверка')
             результате чего были утверждены действующие на него стандарты качества и закреплена методика поверки.
           </p>
           <div class="my-6 flex justify-center">
-            <img
-              :src="'/static/img/articles/svidetelstvo.jpg'"
+            <HelperArticleImg
+              img-name="svidetelstvo"
               alt="Образец свидетельства об утверждении типа"
               class="max-w-full rounded-xl shadow" />
           </div>
@@ -180,8 +180,8 @@ useTitle('Что такое поверка')
             большей длины не получится.
           </p>
           <div class="my-6 flex justify-center">
-            <img
-              :src="'/static/img/articles/attestat_akkreditacii.jpg'"
+            <HelperArticleImg
+              img-name="attestat_akkreditacii"
               alt="Образец свидетельства об утверждении типа"
               class="max-w-full rounded-xl shadow" />
           </div>
@@ -273,8 +273,8 @@ useTitle('Что такое поверка')
             буквенных и числовых символов зашифрована дата поверки и информация о поверителе.
           </p>
           <div class="my-6 flex justify-center">
-            <img
-              :src="'/static/img/articles/svid_poverka.jpg'"
+            <HelperArticleImg
+              img-name="svid_poverka"
               alt="Образец свидетельства об утверждении типа"
               class="max-w-full rounded-xl shadow" />
           </div>
@@ -288,8 +288,8 @@ useTitle('Что такое поверка')
             клейма и росписи поверителя.
           </p>
           <div class="my-6 flex justify-center">
-            <img
-              :src="'/static/img/articles/pasport_poverka.jpg'"
+            <HelperArticleImg
+              img-name="pasport_poverka"
               alt="Образец свидетельства об утверждении типа"
               class="max-w-full rounded-xl shadow" />
           </div>
@@ -303,8 +303,8 @@ useTitle('Что такое поверка')
             самостоятельного применения.
           </p>
           <div class="my-6 flex justify-center">
-            <img
-              :src="'/static/img/articles/nakleyka_poverka.jpg'"
+            <HelperArticleImg
+              img-name="nakleyka_poverka"
               alt="Образец свидетельства об утверждении типа"
               class="max-w-full rounded-xl shadow" />
           </div>
@@ -378,8 +378,8 @@ useTitle('Что такое поверка')
             </li>
           </ul>
           <div class="my-6 flex justify-center">
-            <img
-              :src="'/static/img/articles/poverka-kleyma.jpg'"
+            <HelperArticleImg
+              img-name="poverka-kleyma"
               alt="Образец свидетельства об утверждении типа"
               class="max-w-full rounded-xl shadow" />
           </div>

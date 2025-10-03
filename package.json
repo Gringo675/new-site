@@ -21,10 +21,12 @@
     "@iconify-json/mynaui": "^1.2.16",
     "@nuxt/devtools": "latest",
     "@nuxt/ui": "^3.1.1",
+    "@nuxtjs/robots": "^5.5.5",
     "@nuxtjs/sitemap": "^7.4.3",
     "dotenv": "^10.0.0",
     "node-ssh": "^13.0.1",
     "nuxt": "^4.1.0",
+    "nuxt-schema-org": "^5.0.9",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11"
   },
