@@ -1,7 +1,5 @@
 <script setup>
 //
-// await new Promise(r => setTimeout(r, 3000))
-
 const user = useUser()
 
 onMounted(async () => {

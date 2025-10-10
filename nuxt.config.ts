@@ -1,5 +1,7 @@
 import { defineOrganization } from 'nuxt-schema-org/schema'
 import useCompany from './app/composables/useCompany.js'
+import { visualizer } from 'rollup-plugin-visualizer'
+
 const company = useCompany()
 
 export default defineNuxtConfig({
@@ -104,11 +106,13 @@ export default defineNuxtConfig({
   },
   site: {
     // used in SEO modules
-    title: 'Челябинский Инструмент',
+    title:
+      'ТД Челябинский Инструмент: интернет-магазин измерительного инструмента, поверка и калибровка средств измерений.',
+    description:
+      'Интернет-магазин измерительного инструмента и оборудования. Продукция Челябинского инструментального завода (ЧИЗ), Ставропольского инструментального завода (СТИЗ), Кировского инструментального завода (КировИнструмент, ВИНС), GRIFF. Поверка, калибровка средств измерений. Доставка по России, гарантия качества.',
     url: 'https://chelinstrument.ru',
-    description: 'Интернет-магазин измерительных инструментов. Официальный сайт ООО ТД «Челябинский Инструмент».',
-    name: 'Челябинский Инструмент',
-    indexable: false,
+    name: 'ТД Челябинский Инструмент',
+    indexable: process.env.NUXT_BUILD_MODE === 'prod', // allow indexing only for prod build
   },
   sitemap: {
     exclude: ['/admin/**', '/user/**', '/try/**'],
@@ -116,7 +120,7 @@ export default defineNuxtConfig({
     xslColumns: [{ label: 'URL', width: '100%' }],
   },
   robots: {
-    disallow: ['/admin', '/search', '/user', '/cart', '/try', '/test', '/*?f='],
+    disallow: ['/admin', '/search', '/user', '/cart', '/try', '/test', '/*?'],
   },
   schemaOrg: {
     identity: defineOrganization({
@@ -145,6 +149,13 @@ export default defineNuxtConfig({
         },
       ],
     }),
+  },
+  vite: {
+    plugins: [
+      visualizer({
+        open: true,
+      }),
+    ],
   },
   compatibilityDate: '2025-03-07',
 })

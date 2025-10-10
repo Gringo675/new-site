@@ -1,5 +1,8 @@
 <script setup>
 // хелпер для поиска по каталогу и пункта доставки
+defineExpose({
+  clearAll,
+})
 
 const props = defineProps({
   forCatalog: {
@@ -75,7 +78,7 @@ watch(
   () => searchHelper.handleQueryChange(),
 )
 
-const clearAll = () => {
+function clearAll() {
   searchHelper.abortRequest()
   searchState.query = ''
   searchState.showResults = false
@@ -87,11 +90,16 @@ const onInputClick = e => {
   e.stopPropagation() // чтобы не закрывать открытые результаты
 }
 
-const emit = defineEmits(['resolved'])
+const emit = defineEmits(['onEnter'])
 
-const resolve = item => {
-  clearAll()
-  emit('resolved', item)
+// const resolve = () => {
+//   clearAll()
+//   // emit('resolved', item)
+// }
+
+const onEnter = async () => {
+  if (props.forCatalog) emit('onEnter', searchState.query)
+  else if (searchState.result?.length > 0) emit('onEnter', searchState.result[0])
 }
 </script>
 
@@ -115,7 +123,7 @@ const resolve = item => {
         :ui="{
           base: props.forCatalog ? 'bg-violet-100 focus:bg-violet-50' : 'bg-gray-100 focus:bg-white',
         }"
-        @keyup.enter="props.forCatalog && resolve(`/search/${searchState.query}`)"
+        @keyup.enter="onEnter"
         @click="onInputClick">
         <template
           v-if="searchState.query.length"
@@ -132,8 +140,7 @@ const resolve = item => {
     <template #content>
       <slot
         name="result"
-        :searchState="searchState"
-        :resolve="resolve" />
+        :searchState="searchState" />
     </template>
   </HelperPopupMenu>
 </template>

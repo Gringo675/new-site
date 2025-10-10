@@ -1,6 +1,7 @@
+// ...existing code...
 <script setup lang="ts">
 //
-
+const refHelperInputMenu = useTemplateRef('helperInputMenu')
 const city = ref(getCityFromLocalStore())
 
 const { data: dlCalc, status } = await useAsyncData<DlCalc>(
@@ -27,12 +28,17 @@ const { data: dlCalc, status } = await useAsyncData<DlCalc>(
 )
 
 function getCityFromLocalStore() {
-  const cityData = localStorage.getItem('DL_CITY')
-  return cityData ? JSON.parse(cityData) : { name: 'г. Москва', code: '7700000000000000000000000' }
+  const fallback = { name: 'г. Москва', code: '7700000000000000000000000' }
+  try {
+    return JSON.parse(localStorage.getItem('DL_CITY')) || fallback
+  } catch {
+    return fallback
+  }
 }
 
 const changeCity = async newCity => {
   city.value = newCity
+  refHelperInputMenu.value.clearAll()
   localStorage.setItem('DL_CITY', JSON.stringify(city.value))
 }
 
@@ -80,11 +86,13 @@ const SideEffectWatcher = defineComponent({
       icon="i-mdi-package-variant-closed">
       Забрать товар самостоятельно можно
       <NuxtLink
+        no-prefetch
         to="/contacts"
         class="text-indigo-500 underline-offset-4 hover:underline"
         >со склада в Челябинске</NuxtLink
       >, а для
       <NuxtLink
+        no-prefetch
         to="/contacts"
         class="text-indigo-500 underline-offset-4 hover:underline"
         >доставки по России</NuxtLink
@@ -93,9 +101,10 @@ const SideEffectWatcher = defineComponent({
       перевозку по тарифам ТК.
     </HelperAlarm>
     <HelperInputMenu
-      @resolved="changeCity"
+      ref="helperInputMenu"
+      @onEnter="changeCity"
       class="ml-4 max-w-80">
-      <template #result="{ searchState, resolve }">
+      <template #result="{ searchState }">
         <SideEffectWatcher />
         <div
           v-if="searchState.result.length"
@@ -104,7 +113,7 @@ const SideEffectWatcher = defineComponent({
             role="link"
             class="block text-left leading-tight underline-offset-4 hover:underline"
             v-for="city in searchState.result"
-            @click="resolve(city)">
+            @click="changeCity(city)">
             {{ city.name }}
           </button>
         </div>

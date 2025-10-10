@@ -53,6 +53,7 @@ const menuState = [
           <div class="flex rounded-b-md border-2 border-t-0 border-dashed border-orange-100">
             <UButton
               v-for="item in menuState"
+              no-prefetch
               variant="link"
               :label="item.label"
               :to="item.to"
@@ -111,6 +112,7 @@ const menuState = [
               name="i-heroicons-home-modern"
               class="size-5" />
             <NuxtLink
+              no-prefetch
               to="/contacts"
               class="">
               {{ company.address.post }}
@@ -184,28 +186,9 @@ const menuState = [
           class="rounded-full md:hidden"
           @click="showFeedback" />
         <div class="flex justify-center md:grow">
-          <ClientOnly>
-            <TheCart />
-            <template #fallback>
-              <UButton
-                icon="i-heroicons-shopping-cart"
-                size="md"
-                class="rounded-full"
-                label="0" />
-            </template>
-          </ClientOnly>
+          <LazyTheCart hydrate-on-idle />
         </div>
-        <ClientOnly>
-          <TheUser />
-          <template #fallback>
-            <UButton
-              icon="i-heroicons-user"
-              size="md"
-              truncate
-              class="rounded-full"
-              label="Войти" />
-          </template>
-        </ClientOnly>
+        <LazyTheUser hydrate-on-idle />
         <UButton
           icon="i-heroicons-ellipsis-vertical-16-solid"
           size="md"

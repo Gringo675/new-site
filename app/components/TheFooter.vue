@@ -8,11 +8,31 @@ const company = useCompany()
     <div
       class="max-xs:grid-cols-1 footer-links mx-auto grid max-w-screen-xl grid-cols-[2fr_1fr_1fr] gap-6 p-4 text-violet-200 max-lg:grid-cols-2">
       <div class="flex flex-col items-start gap-1.5 max-lg:items-center">
-        <NuxtLink to="/help">Как сделать заказ</NuxtLink>
-        <NuxtLink to="/shipping">Доставка инструмента</NuxtLink>
-        <NuxtLink to="/returns">Возврат товара</NuxtLink>
-        <NuxtLink to="/warranty">Гарантия качества</NuxtLink>
-        <NuxtLink to="/poverka">Поверка инструмента</NuxtLink>
+        <NuxtLink
+          no-prefetch
+          to="/help"
+          >Как сделать заказ</NuxtLink
+        >
+        <NuxtLink
+          no-prefetch
+          to="/shipping"
+          >Доставка инструмента</NuxtLink
+        >
+        <NuxtLink
+          no-prefetch
+          to="/returns"
+          >Возврат товара</NuxtLink
+        >
+        <NuxtLink
+          no-prefetch
+          to="/warranty"
+          >Гарантия качества</NuxtLink
+        >
+        <NuxtLink
+          no-prefetch
+          to="/poverka"
+          >Поверка инструмента</NuxtLink
+        >
       </div>
 
       <div class="flex flex-col gap-1.5 max-lg:items-center">
@@ -37,7 +57,9 @@ const company = useCompany()
           <UIcon
             name="i-heroicons-home-modern"
             class="size-5" />
-          <NuxtLink to="/contacts">
+          <NuxtLink
+            no-prefetch
+            to="/contacts">
             {{ company.address.short }}
           </NuxtLink>
         </div>
@@ -54,8 +76,16 @@ const company = useCompany()
         <p class="text-lg">© ООО ТД "Челябинский Инструмент", 2000–2025</p>
         <p class="">Сайт использует файлы cookie, которые содержат информацию о предыдущих посещениях веб-сайта.</p>
         <p>Если вы не хотите использовать файлы cookie, измените настройки браузера.</p>
-        <NuxtLink to="/not-oferta"> Информация на сайте не является публичной офертой </NuxtLink>
-        <NuxtLink to="/privacy"> Политика конфиденциальности </NuxtLink>
+        <NuxtLink
+          no-prefetch
+          to="/not-oferta">
+          Информация на сайте не является публичной офертой
+        </NuxtLink>
+        <NuxtLink
+          no-prefetch
+          to="/privacy">
+          Политика конфиденциальности
+        </NuxtLink>
       </div>
     </div>
   </div>

@@ -10,6 +10,7 @@ const props = defineProps({
 
 <template>
   <NuxtLink
+    no-prefetch
     :to="link"
     class="relative mx-auto">
     <picture>

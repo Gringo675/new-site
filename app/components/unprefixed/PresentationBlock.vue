@@ -13,23 +13,3 @@
     </ul>
   </div>
 </template>
-
-<style scoped>
-@keyframes gradient {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-.animate-gradient {
-  animation: gradient 8s linear infinite;
-  background-image: linear-gradient(to right, #ffaa40, #9c40ff, #ffaa40);
-  background-size: 300% 100%;
-}
-</style>

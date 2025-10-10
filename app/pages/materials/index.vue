@@ -1,6 +1,10 @@
 <script setup>
 //
 useTitle('Материалы')
+useSeoMeta({
+  description:
+    'Полезные статьи и материалы по выбору, эксплуатации, поверке и калибровке измерительного инструмента. Нормативная документация - ГОСТы, ТУ.',
+})
 </script>
 
 <template>
@@ -10,64 +14,23 @@ useTitle('Материалы')
     </header>
 
     <section class="space-y-10">
-      <ul class="space-y-4">
-        <li>
-          <UButton
-            label="Как выбрать штангенциркуль?"
-            to="/materials/kak-vybrat-shtangentsirkul"
-            variant="outline"
-            class="rounded-full px-6"
-            size="xl"
-          />
-        </li>
-        <li>
-          <UButton
-            label="Как выбрать микрометр?"
-            to="/materials/kak-vybrat-mikrometr"
-            variant="outline"
-            class="rounded-full px-6"
-            size="xl"
-          />
-        </li>
-        <li>
-          <UButton
-            label="Что такое поверка?"
-            to="/materials/chto-takoe-poverka-instrumenta"
-            variant="outline"
-            class="rounded-full px-6"
-            size="xl"
-          />
-        </li>
-        <li>
-          <UButton
-            label="Что такое калибровка?"
-            to="/materials/chto-takoe-kalibrovka-instrumenta"
-            variant="outline"
-            class="rounded-full px-6"
-            size="xl"
-          />
-        </li>
-        <li>
-          <UButton
-            to="/materials/standards"
-            variant="outline"
-            class="rounded-full px-6"
-            size="xl"
-          >
-            Нормативная документация - ГОСТы, ТУ
-          </UButton>
-        </li>
-        <li>
-          <UButton
-            to="/materials/grsi"
-            variant="outline"
-            class="rounded-full px-6"
-            size="xl"
-          >
-            ФГИС ГРСИ: Описания типов и методики поверки
-          </UButton>
-        </li>
-      </ul>
+      <div class="flex flex-wrap justify-around gap-4">
+        <UButton
+          to="/materials/standards"
+          variant="outline"
+          class="rounded-full px-6"
+          size="xl">
+          Нормативная документация - ГОСТы, ТУ
+        </UButton>
+        <UButton
+          to="/materials/grsi"
+          variant="outline"
+          class="rounded-full px-6"
+          size="xl">
+          ФГИС ГРСИ: Описания типов и методики поверки
+        </UButton>
+      </div>
+      <LazyHelperArticlesBlock hydrate-never />
     </section>
   </article>
 </template>

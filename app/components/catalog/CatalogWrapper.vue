@@ -11,11 +11,7 @@ const activeProducts = shallowReactive([])
 const activeProductsIndx = ref([])
 
 useTitle(catData.name + ' - цены, фото, характеристики')
-useServerSeoMeta({
-  description: `Купить ${catData.name}${
-    catData.docs?.stnd?.length ? ' ' + catData.docs.stnd.map(stnd => stnd.number).join(', ') : ''
-  } по ценам производителя с доставкой по России. Весь измерительный инструмент с поверкой и калибровкой в нашем онлайн-каталоге.`,
-})
+useCategoryMetaDescription(catData)
 
 const urlFilter = useRoute().query.f
 if (urlFilter) setFilterFromURL()
@@ -107,27 +103,28 @@ function addFilterToURL() {
 
 <template>
   <div class="">
-    <BreadCrumbsWrapper :catId="catData.id" />
-    <HelperInfoBlock
+    <LazyBreadCrumbsWrapper
+      hydrate-on-idle
+      :catId="catData.id" />
+    <LazyHelperInfoBlock
       :title="catData.name"
       :image="catData.image"
       :description="catData.description"
       :characteristics="catData.characteristics"
-      :documentation="catData.docs"
-    />
+      :documentation="catData.docs" />
     <HelperAsideGrid>
       <template #aside>
-        <CatalogFilter
+        <LazyCatalogFilter
+          hydrate-on-idle
           v-if="filter.length"
           :filter="filter"
           @filterChanged="handleFilter"
-          @resetFilter="initializeFilter(true)"
-        />
+          @resetFilter="initializeFilter(true)" />
       </template>
-      <CatalogProductsWrapper
+      <LazyCatalogProductsWrapper
+        hydrate-on-idle
         :products
-        :activeProductsIndx
-      />
+        :activeProductsIndx />
     </HelperAsideGrid>
   </div>
 </template>

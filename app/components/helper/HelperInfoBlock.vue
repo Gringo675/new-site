@@ -192,12 +192,10 @@ onUnmounted(() => {
           <div
             v-if="item.html"
             v-html="item.html"></div>
-
-          <HelperDocsBlock
+          <LazyHelperDocsBlock
             v-else-if="item.label === 'Документация'"
             :docs="documentation" />
-          <HelperDeliveryBlock v-else-if="item.label === 'Способы получения'" />
-
+          <LazyHelperDeliveryBlock v-else-if="item.label === 'Способы получения'" />
           <div v-else>{{ item.content }}</div>
         </TabsContent>
       </div>

@@ -2,10 +2,12 @@
 //
 const cart = useCart()
 
-await updateCartFromLocalStore()
-window.addEventListener('storage', event => {
-  if (event.storageArea !== localStorage || event.key !== 'CART') return
+onMounted(() => {
   updateCartFromLocalStore()
+  window.addEventListener('storage', event => {
+    if (event.storageArea !== localStorage || event.key !== 'CART') return
+    updateCartFromLocalStore()
+  })
 })
 
 watch(cart, () => {
@@ -22,8 +24,7 @@ const cartQuantity = computed(() => cart.reduce((acc, item) => acc + item.quanti
     icon="i-heroicons-shopping-cart"
     size="md"
     class="rounded-full"
-    to="/user/cart"
-  >
+    to="/user/cart">
     {{ cartQuantity }}
   </UButton>
 </template>

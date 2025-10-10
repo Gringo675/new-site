@@ -6,7 +6,10 @@ const { data: product } = defineProps({
 
 useTitle(product.name + ' - цена, фото, характеристики')
 // @ts-ignore
+useProductMetaDescription(product)
+// @ts-ignore
 useProductSchema(product)
+
 // формируем вложенные категории, в которых присутствует товар
 const { data: cats } = await useCats()
 const subCats = cats.value
@@ -54,7 +57,8 @@ const priceMultiplier = ref(1)
 
 <template>
   <div class="">
-    <BreadCrumbsWrapper
+    <LazyBreadCrumbsWrapper
+      hydrate-on-idle
       :catId="product.category_id"
       :productCats="subCats"
       :productName="product.name" />
@@ -72,10 +76,10 @@ const priceMultiplier = ref(1)
     <div class="my-1 border-b border-gray-200"></div>
     <div class="mb-6 grid grid-cols-3 grid-rows-[auto_1fr] gap-4 max-lg:grid-cols-2 max-sm:grid-cols-1">
       <div class="sm:row-span-2">
-        <imageViewerProduct
+        <LazyimageViewerProduct
+          hydrate-on-idle
           :images="product.images"
           :name="product.name" />
-        <!-- <TheTest2 :images="product.images" /> -->
       </div>
       <div class="flex items-start gap-2 p-2">
         <img
@@ -101,7 +105,9 @@ const priceMultiplier = ref(1)
             :items="priceOptions" />
 
           <div class="buttons flex w-70 flex-col gap-5">
-            <ProductCartButton :prod="product" />
+            <LazyProductCartButton
+              hydrate-on-idle
+              :prod="product" />
             <UButton
               label="Быстрый заказ"
               variant="outline"
@@ -119,6 +125,7 @@ const priceMultiplier = ref(1)
           </div>
         </div>
         <NuxtLink
+          no-prefetch
           to="/contacts"
           class="my-5 block rounded-lg border border-indigo-300 bg-indigo-50 p-3">
           <div class="flex flex-wrap justify-end gap-x-2">
@@ -142,25 +149,15 @@ const priceMultiplier = ref(1)
           </div>
           <div class="relative z-10 leading-tight">{{ prop.val }}</div>
         </div>
-        <!-- <div
-          v-for="prop in product.props"
-          class="relative rounded-lg border border-gray-300 bg-gray-200 px-3 py-1.5">
-          <div
-            class="absolute -top-3 right-8 rounded-full border border-gray-300 bg-gray-200 px-2.5 py-1 text-sm leading-none after:absolute after:-inset-x-px after:top-1/2 after:-bottom-px after:bg-gray-200">
-            <span class="relative -top-0.5 z-10 font-semibold">{{ prop.name }}</span>
-          </div>
-          <div class="relative z-10 leading-tight">{{ prop.val }}</div>
-        </div> -->
       </div>
     </div>
-
-    <HelperInfoBlock
+    <LazyHelperInfoBlock
+      hydrate-on-idle
       :description="product.description"
       :characteristics="product.characteristics"
       :documentation="product.docs"
       showDelivery />
-
-    <HelperAlarm>
+    <LazyHelperAlarm hydrate-never>
       <template #title>
         Уважаемые покупатели, представленный ассортимент и стоимость продукции не являются окончательными!
       </template>
@@ -169,8 +166,9 @@ const priceMultiplier = ref(1)
         и комплектация заказа под Ваши задачи.
       </p>
       <p>Сотрудничая с нами, Вы получаете гарантию качества и точность исполнения заказа!</p>
-    </HelperAlarm>
-    <ProductsSlider
+    </LazyHelperAlarm>
+    <LazyProductsSlider
+      hydrate-on-visible
       v-if="product.relatedProds.length"
       :products="product.relatedProds"
       label="Похожие товары" />

@@ -1,10 +1,9 @@
-<template>
-  <GradientText
-    text="Точность измерений - фундамент Вашего успеха."
-    :colors="['#ffaa40', '#9c40ff', '#ffaa40']"
-    :animation-speed="8"
-    :show-border="true"
-    class-name="text-3xl font-accent  p-6" />
-</template>
+<script setup>
+//
+</script>
 
-<script setup lang="ts"></script>
+<template>
+  <div class="">
+    <h2>Тестовый компонент</h2>
+  </div>
+</template>

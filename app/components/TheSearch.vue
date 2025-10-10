@@ -1,17 +1,29 @@
 <script setup>
 //
-const onResolved = link => {
-  if (link) navigateTo(link)
+const refHelperInputMenu = useTemplateRef('helperInputMenu')
+
+const clearAll = () => {
   hideCatsMenu() // для модуля поиска в боковом меню
+  refHelperInputMenu.value.clearAll()
+}
+const onInputEnter = query => {
+  clearAll()
+  navigateTo(`/search/${query}`)
+}
+
+const showAllResults = query => {
+  clearAll()
+  navigateTo(`/search/${query}`)
 }
 </script>
 
 <template>
   <HelperInputMenu
+    ref="helperInputMenu"
     forCatalog
-    @resolved="onResolved"
+    @onEnter="onInputEnter"
     class="w-112">
-    <template #result="{ searchState, resolve }">
+    <template #result="{ searchState }">
       <div
         v-if="searchState.result.products.length > 0"
         class="">
@@ -22,7 +34,7 @@ const onResolved = link => {
             <NuxtLink
               v-for="subCat in cat.children"
               :to="`/catalog/${subCat.alias}`"
-              @click="resolve"
+              @click="clearAll"
               class="text-sm leading-tight underline-offset-4 hover:underline">
               {{ subCat.name }}
             </NuxtLink>
@@ -34,7 +46,7 @@ const onResolved = link => {
           <NuxtLink
             v-for="product in searchState.result.products"
             :to="`/product/${product.alias}`"
-            @click="resolve"
+            @click="clearAll"
             class="text-sm leading-tight underline-offset-4 hover:underline">
             {{ product.name }}
           </NuxtLink>
@@ -44,7 +56,7 @@ const onResolved = link => {
             variant="ghost"
             color="tertiary"
             label="Все результаты"
-            @click="resolve(`/search/${searchState.query}`)" />
+            @click="showAllResults(searchState.query)" />
           <UButton
             color="neutral"
             variant="link"

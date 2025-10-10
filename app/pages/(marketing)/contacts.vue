@@ -175,12 +175,10 @@ function init() {
           <div
             class="flex items-center gap-2"
             v-for="(phone, idx) in company.phones"
-            :key="phone"
-          >
+            :key="phone">
             <Icon
               name="i-lucide-phone"
-              class="text-primary size-5"
-            />
+              class="text-primary size-5" />
             <a
               :href="`tel:${phone.replace(/\D/g, '')}`"
               class="font-medium text-indigo-600 underline-offset-4 hover:underline"
@@ -200,12 +198,10 @@ function init() {
           <div
             class="flex items-center gap-2"
             v-for="(mail, idx) in company.mails"
-            :key="mail"
-          >
+            :key="mail">
             <Icon
               name="i-lucide-mail"
-              class="text-primary size-5"
-            />
+              class="text-primary size-5" />
             <a
               :href="`mailto:${mail}`"
               class="font-medium text-indigo-600 underline-offset-4 hover:underline"
@@ -217,8 +213,7 @@ function init() {
           <div class="flex items-start gap-2">
             <Icon
               name="i-lucide-map-pin"
-              class="text-primary mt-1 size-5"
-            />
+              class="text-primary mt-1 size-5" />
             <div>
               <span class="font-semibold">Офис и склад:</span> {{ company.address.short }}<br />
               <span class="text-xs text-gray-500"
@@ -229,15 +224,13 @@ function init() {
           <div class="flex items-center gap-2">
             <Icon
               name="i-lucide-mailbox"
-              class="text-primary size-5"
-            />
+              class="text-primary size-5" />
             <div><span class="font-semibold">Почтовый адрес:</span> {{ company.address.post }}</div>
           </div>
           <div class="flex items-start gap-2">
             <Icon
               name="i-lucide-file-text"
-              class="text-primary size-5"
-            />
+              class="text-primary size-5" />
             <div><span class="font-semibold">Юридический адрес:</span> {{ company.address.official }}</div>
           </div>
         </div>
@@ -246,8 +239,7 @@ function init() {
           <div class="flex items-start gap-2">
             <Icon
               name="i-lucide-file-text"
-              class="text-primary size-5"
-            />
+              class="text-primary size-5" />
             <div class="font-semibold">Реквизиты:</div>
           </div>
           <ul class="ml-6 list-disc space-y-2">
@@ -287,8 +279,9 @@ function init() {
     <div class="my-6">
       <div
         id="map"
-        style="width: 100%; height: 300px"
-      ></div>
+        class="flex h-75 w-full items-center justify-center">
+        <div class="aspect-square w-10 animate-ping rounded-full bg-violet-300"></div>
+      </div>
       <p class="m-2 text-sm italic md:hidden">* Для навигации по карте используйте жест двумя пальцами</p>
     </div>
     <HelperAlarm>
@@ -308,8 +301,7 @@ function init() {
         >, либо
         <button
           class="text-indigo-600 underline-offset-4 hover:underline"
-          @click="showFeedback()"
-        >
+          @click="showFeedback()">
           задайте вопрос через форму обратной связи.
         </button>
       </p>
