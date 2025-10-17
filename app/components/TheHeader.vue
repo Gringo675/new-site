@@ -44,8 +44,8 @@ const menuState = [
             src="/img/logo.svg"
             alt="logo"
             class="w-full p-1 max-md:max-w-20"
-            width="120"
-            height="auto" />
+            width="112"
+            height="112" />
         </ULink>
       </div>
       <div class="col-span-3 flex max-md:hidden">
@@ -71,9 +71,9 @@ const menuState = [
         <img
           src="/img/rst.svg"
           alt="rst"
-          class="w-20"
+          class="h-auto w-20"
           width="80"
-          height="auto" />
+          height="30" />
       </div>
       <div class="col-span-1 flex max-md:justify-center">
         <div
@@ -179,12 +179,14 @@ const menuState = [
           icon="i-heroicons-magnifying-glass"
           size="md"
           class="rounded-full md:hidden"
-          @click="showCatsMenu" />
+          @click="showCatsMenu"
+          aria-label="Каталог" />
         <UButton
           icon="i-heroicons-pencil-square"
           size="md"
           class="rounded-full md:hidden"
-          @click="showFeedback" />
+          @click="showFeedback"
+          aria-label="Обратная связь" />
         <div class="flex justify-center md:grow">
           <LazyTheCart hydrate-on-idle />
         </div>
@@ -193,7 +195,8 @@ const menuState = [
           icon="i-heroicons-ellipsis-vertical-16-solid"
           size="md"
           class="rounded-full md:hidden"
-          @click="showMobileMenu" />
+          @click="showMobileMenu"
+          aria-label="Меню" />
       </div>
     </div>
   </div>

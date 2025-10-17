@@ -1,5 +1,7 @@
 <template>
-  <div class="flex h-full w-full flex-col select-none">
+  <div
+    class="flex w-full flex-col select-none"
+    :class="fullScreen && 'h-full'">
     <div class="relative grow overflow-hidden">
       <div
         ref="carouselRef"
@@ -8,7 +10,7 @@
           v-for="(item, index) in items"
           :key="index"
           class="flex h-full flex-none basis-full justify-center"
-          :class="[fullScreen && 'items-center p-2']"
+          :class="fullScreen && 'items-center p-2'"
           :role="items.length > 1 ? 'tabpanel' : null">
           <slot
             :item="item"
@@ -22,8 +24,9 @@
           type="button"
           :disabled="isFirst"
           @click.stop="onClickPrev"
+          aria-label="Предыдущее"
           class="group absolute top-1/2 flex -translate-y-1/2 rounded-full bg-violet-100 p-2 text-violet-400 opacity-60 hover:opacity-90 focus:outline-none focus-visible:outline-none disabled:opacity-20"
-          :class="[fullScreen ? 'left-3' : 'left-1']">
+          :class="fullScreen ? 'left-3' : 'left-1'">
           <UIcon
             name="i-heroicons-chevron-left"
             class="size-8 transition-transform group-hover:group-not-disabled:-translate-x-2" />
@@ -32,6 +35,7 @@
           type="button"
           :disabled="isLast"
           @click.stop="onClickNext"
+          aria-label="Следующее"
           class="group absolute top-1/2 flex -translate-y-1/2 rounded-full bg-violet-100 p-2 text-violet-400 opacity-60 hover:opacity-90 focus:outline-none focus-visible:outline-none disabled:opacity-20"
           :class="[fullScreen ? 'right-3' : 'right-1']">
           <UIcon
@@ -45,11 +49,13 @@
       v-if="items.length > 1"
       role="tablist"
       class="flex items-center justify-center gap-3 overflow-auto p-2"
-      :class="[fullScreen && 'max-xs:hidden max-h-[20vh] min-h-15']">
+      :class="fullScreen && 'max-xs:hidden max-h-[20vh] min-h-15'">
       <template
         v-for="page in pages"
         :key="page">
-        <picture class="flex h-full items-center">
+        <picture
+          class="flex h-full items-center"
+          role="tab">
           <source
             type="image/avif"
             :srcset="`
@@ -75,7 +81,7 @@
             loading="lazy"
             decoding="async"
             width="64"
-            height="64"
+            height="96"
             class="h-auto max-h-full w-auto max-w-25 min-w-5 rounded"
             :class="[
               page === currentPage

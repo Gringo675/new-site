@@ -1,6 +1,5 @@
 import { defineOrganization } from 'nuxt-schema-org/schema'
 import useCompany from './app/composables/useCompany.js'
-import { visualizer } from 'rollup-plugin-visualizer'
 
 const company = useCompany()
 
@@ -150,12 +149,6 @@ export default defineNuxtConfig({
       ],
     }),
   },
-  vite: {
-    plugins: [
-      visualizer({
-        open: true,
-      }),
-    ],
-  },
+
   compatibilityDate: '2025-03-07',
 })

@@ -28,7 +28,8 @@ const productCartIndex = computed(() => cart.findIndex(cartItem => cartItem.id =
           :icon="cart[productCartIndex].quantity === 1 ? 'i-heroicons-trash' : 'i-heroicons-minus-small-solid'"
           size="xl"
           @click="--cart[productCartIndex].quantity"
-          variant="outline" />
+          variant="outline"
+          aria-label="Убавить" />
         <UInput
           color="secondary"
           highlight
@@ -44,7 +45,8 @@ const productCartIndex = computed(() => cart.findIndex(cartItem => cartItem.id =
           icon="i-heroicons-plus-small-solid"
           size="xl"
           @click="++cart[productCartIndex].quantity"
-          variant="outline" />
+          variant="outline"
+          aria-label="Добавить" />
         <UButton
           class="grow flex-col items-center gap-0 py-0.5"
           to="/user/cart">

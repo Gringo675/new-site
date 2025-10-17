@@ -76,15 +76,17 @@ const priceMultiplier = ref(1)
     <div class="my-1 border-b border-gray-200"></div>
     <div class="mb-6 grid grid-cols-3 grid-rows-[auto_1fr] gap-4 max-lg:grid-cols-2 max-sm:grid-cols-1">
       <div class="sm:row-span-2">
-        <LazyimageViewerProduct
+        <LazyImageViewerProduct
           hydrate-on-idle
           :images="product.images"
           :name="product.name" />
       </div>
       <div class="flex items-start gap-2 p-2">
         <img
-          class="max-w-32"
-          :src="'/static/img/brands/' + product.brand.image" />
+          :src="'/static/img/brands/' + product.brand.image"
+          width="80"
+          height="40"
+          alt="brand" />
         <div class="grow text-sm leading-tight font-semibold">
           {{ product.brand.shortName }} ({{ product.brand.fullName }})
         </div>

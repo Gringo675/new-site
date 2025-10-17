@@ -12,7 +12,7 @@ export default defineEventHandler(async event => {
   const workDir = path.resolve(process.cwd(), 'img_optimisation')
   const proceedDir = path.join(workDir, 'proceed')
   const sourceDir = path.join(workDir, 'source')
-  const widths = [64, 128, 400]
+  const widths = [64, 128, 300]
 
   try {
     // Ensure all directories exist before starting

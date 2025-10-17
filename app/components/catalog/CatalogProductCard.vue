@@ -58,7 +58,7 @@ const showFullImage = () => {
           loading="lazy"
           decoding="async"
           width="64"
-          height="64"
+          height="96"
           :id="'img_' + prod.id"
           class="h-auto max-h-full w-auto max-w-full cursor-zoom-in rounded-lg"
           @click="showFullImage" />
