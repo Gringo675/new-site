@@ -4,6 +4,7 @@ useSeoMeta({
   description:
     'Поверка — это процесс подтверждения соответствия измерительного инструмента установленным стандартам и требованиям. В статье рассматриваются ключевые аспекты поверки, включая ее цели, методы и важность для обеспечения точности измерений.',
 })
+const company = useCompany()
 </script>
 
 <template>
@@ -513,14 +514,14 @@ useSeoMeta({
             <p>
               Позвоните нашим менеджерам по телефону
               <a
-                href="tel:+73517907748"
+                :href="'tel:' + company.phones[0]"
                 class="text-indigo-600 underline-offset-4 hover:underline"
-                >+7 (351) 790-77-48</a
+                >{{ company.phones[0] }}</a
               >, напишите на e-mail
               <a
-                href="mailto:info@chelinstrument.ru"
+                :href="'mailto:' + company.mails[0]"
                 class="text-indigo-600 underline-offset-4 hover:underline"
-                >info@chelinstrument.ru</a
+                >{{ company.mails[0] }}</a
               >, либо воспользуйтесь
               <button
                 class="text-indigo-600 underline-offset-4 hover:underline"

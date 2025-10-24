@@ -1,5 +1,6 @@
 <script setup>
 useTitle('Доставка - Челябинский Инструмент | Условия и способы доставки')
+const company = useCompany()
 </script>
 
 <template>
@@ -276,16 +277,16 @@ useTitle('Доставка - Челябинский Инструмент | Ус�
         <template #title>Нужна консультация по доставке?</template>
         <p>
           Свяжитесь с нашими менеджерами по телефону
-          <NuxtLink
-            to="tel:+73517907748"
+          <a
+            :href="'tel:' + company.phones[0]"
             title="Позвонить"
             class="text-indigo-600 underline-offset-4 hover:underline"
-            >+7 (351) 790-77-48</NuxtLink
+            >{{ company.phones[0] }}</a
           >, электронной почте
-          <NuxtLink
-            to="mailto:info@chelinstrument.ru"
+          <a
+            :href="'mailto:' + company.mails[0]"
             class="text-indigo-600 underline-offset-4 hover:underline"
-            >info@chelinstrument.ru</NuxtLink
+            >{{ company.mails[0] }}</a
           >, либо
           <button
             class="text-indigo-600 underline-offset-4 hover:underline"

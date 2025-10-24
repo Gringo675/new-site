@@ -4,6 +4,7 @@ useSeoMeta({
   description:
     'Штангенциркуль — это универсальный измерительный инструмент, используемый для точного измерения линейных размеров, глубины и внутренних диаметров. В статье рассмотрены основные типы штангенциркулей, их конструктивные особенности, а также даны рекомендации по выбору подходящей модели в зависимости от задач и условий эксплуатации.',
 })
+const company = useCompany()
 </script>
 
 <template>
@@ -408,19 +409,19 @@ useSeoMeta({
         <p>
           Позвоните нашим менеджерам по телефону
           <a
-            href="tel:+73517907748"
+            :href="'tel:' + company.phones[0]"
             class="text-indigo-600 underline-offset-4 hover:underline"
-            >+7 (351) 790-77-48</a
+            >{{ company.phones[0] }}</a
           >, напишите на e-mail
           <a
-            href="mailto:info@chelinstrument.ru"
+            :href="'mailto:' + company.mails[0]"
             class="text-indigo-600 underline-offset-4 hover:underline"
-            >info@chelinstrument.ru</a
+            >{{ company.mails[0] }}</a
           >, либо задайте вопрос через
           <button
             class="text-indigo-600 underline-offset-4 hover:underline"
             @click="showFeedback()">
-            форму обратной связи</button
+            формой обратной связи</button
           >.
         </p>
       </HelperAlarm>

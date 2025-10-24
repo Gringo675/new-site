@@ -12,11 +12,13 @@ const props = defineProps({
 <template>
   <div class="flex items-center gap-x-2">
     <HelperPopupMenu v-if="crumb.siblings">
-      <template #trigger="{ show }">
+      <template #trigger="{ show, open }">
         <UButton
           icon="i-heroicons-chevron-down"
           class="p-1"
+          :class="{ 'rotate-over': open }"
           variant="outline"
+          aria-label="Развернуть"
           @click="show" />
       </template>
       <template #content>

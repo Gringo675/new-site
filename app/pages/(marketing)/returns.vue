@@ -1,5 +1,6 @@
 <script setup>
 useTitle('Возврат и обмен товара - Челябинский Инструмент | Условия и порядок')
+const company = useCompany()
 </script>
 
 <template>
@@ -59,14 +60,14 @@ useTitle('Возврат и обмен товара - Челябинский И�
         <p>
           Получите консультацию у наших специалистов по телефону
           <a
-            href="tel:+73517907748"
+            :href="'tel:' + company.phones[0]"
             class="text-indigo-600 underline-offset-4 hover:underline"
-            >+7 (351) 790-77-48</a
+            >{{ company.phones[0] }}</a
           >, по электронной почте
           <a
-            href="mailto:info@chelinstrument.ru"
+            :href="'mailto:' + company.mails[0]"
             class="text-indigo-600 underline-offset-4 hover:underline"
-            >info@chelinstrument.ru</a
+            >{{ company.mails[0] }}</a
           >
           или
           <button

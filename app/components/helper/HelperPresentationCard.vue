@@ -13,7 +13,7 @@ defineProps({
       :name="item.icon"
       class="size-12 flex-none text-violet-500" />
     <div class="">
-      <h4 class="font-accent mb-2 border-b border-violet-500 pb-2 text-2xl text-violet-500">{{ item.title }}</h4>
+      <div class="font-accent mb-2 border-b border-violet-500 pb-2 text-2xl text-violet-500">{{ item.title }}</div>
       <div>
         <div class="font-semibold text-orange-900">{{ item.description }}</div>
       </div>

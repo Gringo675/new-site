@@ -35,7 +35,7 @@ const props = defineProps({
           ${imgDir}/w_800/${imgName}.jpg 800w,
         `"
         sizes="400px"
-        :alt="title"
+        alt=""
         loading="lazy"
         decoding="async"
         width="400"

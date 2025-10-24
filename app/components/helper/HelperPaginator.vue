@@ -74,8 +74,7 @@ const showMoreButton = computed(() => {
 <template>
   <div
     v-show="pageProps.totalPages > 1"
-    class="my-4 flex flex-col items-center"
-  >
+    class="my-4 flex flex-col items-center">
     <UButton
       v-if="showMoreButton"
       label="Показать еще"
@@ -83,8 +82,7 @@ const showMoreButton = computed(() => {
       color="tertiary"
       size="lg"
       class="px-6"
-      @click="handlePaginator('more')"
-    />
+      @click="handlePaginator('more')" />
     <div class="mt-4 flex items-end justify-center gap-2">
       <UButton
         v-if="paginator.length > 1 && !paginator[0].isActive"
@@ -93,7 +91,7 @@ const showMoreButton = computed(() => {
         variant="outline"
         class="max-xs:p-1 rounded-full"
         @click="handlePaginator('prev')"
-      />
+        aria-label="Предыдущая" />
       <template v-for="link in paginator">
         <div v-if="link.isDecor">…</div>
         <UButton
@@ -102,8 +100,7 @@ const showMoreButton = computed(() => {
           :variant="link.isActive ? 'solid' : 'outline'"
           class="max-xs:p-1 max-xs:min-w-7 min-w-10 justify-center"
           color="tertiary"
-          @click="handlePaginator(link.val)"
-        />
+          @click="handlePaginator(link.val)" />
       </template>
       <UButton
         v-if="paginator.length > 1 && !paginator[paginator.length - 1].isActive"
@@ -112,7 +109,7 @@ const showMoreButton = computed(() => {
         variant="outline"
         class="max-xs:p-1 rounded-full"
         @click="handlePaginator('next')"
-      />
+        aria-label="Следующая" />
     </div>
   </div>
 </template>

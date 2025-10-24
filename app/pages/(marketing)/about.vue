@@ -1,5 +1,6 @@
 <script setup>
 useTitle('О компании - Челябинский Инструмент | Поставщик измерительного инструмента')
+const company = useCompany()
 </script>
 
 <template>
@@ -54,7 +55,7 @@ useTitle('О компании - Челябинский Инструмент | П
         </div>
 
         <div class="flex flex-col gap-4 md:w-1/3">
-          <h3 class="mb-2 text-xl font-semibold">Отзывы клиентов</h3>
+          <h2 class="mb-2 text-xl font-semibold">Отзывы клиентов</h2>
           <div class="space-y-8">
             <div class="relative">
               <div class="font-fancy relative rounded-2xl bg-violet-100 p-4 font-semibold text-gray-500 shadow">
@@ -107,15 +108,15 @@ useTitle('О компании - Челябинский Инструмент | П
         <p class="">
           Получите профессиональную консультацию и сделайте заказ у наших менеджеров по телефону
           <a
-            href="tel:+73517907748"
+            :href="'tel:' + company.phones[0]"
             title="Позвонить"
             class="text-indigo-600 underline-offset-4 hover:underline"
-            >+7 (351) 790-77-48</a
+            >{{ company.phones[0] }}</a
           >, электронной почте
           <a
-            href="mailto:info@chelinstrument.ru"
+            :href="'mailto:' + company.mails[0]"
             class="text-indigo-600 underline-offset-4 hover:underline"
-            >info@chelinstrument.ru</a
+            >{{ company.mails[0] }}</a
           >, либо
           <button
             class="text-indigo-600 underline-offset-4 hover:underline"

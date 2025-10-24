@@ -286,25 +286,24 @@ function init() {
     </div>
     <HelperAlarm>
       <template #title>Остались вопросы?</template>
-      <p>
-        Свяжитесь с нашими менеджерами по телефону
-        <NuxtLink
-          to="tel:+73517907748"
-          title="Позвонить"
-          class="text-indigo-600 underline-offset-4 hover:underline"
-          >+7 (351) 790-77-48</NuxtLink
-        >, электронной почте
-        <NuxtLink
-          to="mailto:info@chelinstrument.ru"
-          class="text-indigo-600 underline-offset-4 hover:underline"
-          >info@chelinstrument.ru</NuxtLink
-        >, либо
-        <button
-          class="text-indigo-600 underline-offset-4 hover:underline"
-          @click="showFeedback()">
-          задайте вопрос через форму обратной связи.
-        </button>
-      </p>
-    </HelperAlarm>
+              <p>
+                Свяжитесь с нашими менеджерами по телефону
+                <a
+                  :href="'tel:' + company.phones[0]"
+                  title="Позвонить"
+                  class="text-indigo-600 underline-offset-4 hover:underline"
+                  >{{ company.phones[0] }}</a
+                >, электронной почте
+                <a
+                  :href="'mailto:' + company.mails[0]"
+                  class="text-indigo-600 underline-offset-4 hover:underline"
+                  >{{ company.mails[0] }}</a
+                >, либо
+                <button
+                  class="text-indigo-600 underline-offset-4 hover:underline"
+                  @click="showFeedback()">
+                  задайте вопрос через форму обратной связи.
+                </button>
+              </p>    </HelperAlarm>
   </article>
 </template>

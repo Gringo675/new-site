@@ -161,6 +161,7 @@ const menuState = [
             icon="i-heroicons-pencil-square"
             size="md"
             class="font-fancy rounded-full font-bold"
+            aria-label="Быстрый заказ"
             @click="
               showFeedback({
                 title: 'Быстрый заказ',

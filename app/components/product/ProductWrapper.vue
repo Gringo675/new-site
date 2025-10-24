@@ -94,11 +94,11 @@ const priceMultiplier = ref(1)
       <div class="lg:row-span-2">
         <div class="flex flex-wrap items-center justify-center gap-4">
           <div
-            class="relative my-5 shrink-0 grow-0 rounded-2xl bg-slate-400 px-4 py-2 text-2xl leading-none whitespace-nowrap text-slate-50">
+            class="text-primary relative my-5 shrink-0 grow-0 rounded-2xl bg-slate-200 px-4 py-2 text-2xl leading-none whitespace-nowrap">
             <span class=""> {{ formatPrice(product.price * priceMultiplier) }}</span>
             <div
               v-if="product.priceRegular"
-              class="absolute -top-4 right-3 rounded-full bg-gradient-to-b from-fuchsia-400 to-fuchsia-300 px-2 py-1 text-sm leading-none line-through">
+              class="text-primary-700 absolute -top-4 right-3 rounded-full bg-gradient-to-b from-fuchsia-300 to-fuchsia-200 px-2 py-1 text-sm leading-none line-through">
               {{ formatPrice(product.priceRegular * priceMultiplier) }}
             </div>
           </div>
@@ -132,12 +132,12 @@ const priceMultiplier = ref(1)
           class="my-5 block rounded-lg border border-indigo-300 bg-indigo-50 p-3">
           <div class="flex flex-wrap justify-end gap-x-2">
             <span>Самовывоз со склада в</span>
-            <span class="text-indigo-500 underline underline-offset-4">г. Челябинск.</span>
+            <span class="text-tertiary underline underline-offset-4">г. Челябинск.</span>
           </div>
           <div class="flex flex-wrap justify-end gap-x-2">
             <span>Доставка по России</span>
 
-            <span class="text-indigo-500 underline underline-offset-4">транспортными компаниями.</span>
+            <span class="text-tertiary underline underline-offset-4">транспортными компаниями.</span>
           </div>
         </NuxtLink>
       </div>

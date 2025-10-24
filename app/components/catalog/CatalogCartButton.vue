@@ -34,6 +34,7 @@ const productCartIndex = computed(() => cart.findIndex(cartItem => cartItem.id =
         v-model.lazy="cart[productCartIndex].quantity"
         type="number"
         min="1"
+        placeholder="Количество"
         :ui="{
           base: 'text-center bg-indigo-50 focus:bg-gray-50',
         }" />

@@ -50,12 +50,22 @@
       role="tablist"
       class="flex items-center justify-center gap-3 overflow-auto p-2"
       :class="fullScreen && 'max-xs:hidden max-h-[20vh] min-h-15'">
-      <template
+      <button
         v-for="page in pages"
-        :key="page">
-        <picture
-          class="flex h-full items-center"
-          role="tab">
+        :key="page"
+        type="button"
+        role="tab"
+        class="overflow-hidden rounded"
+        :class="[
+          page === currentPage
+            ? [
+                'cursor-default ring-1',
+                fullScreen ? 'ring-violet-600 brightness-80' : 'ring-violet-600/40 brightness-90',
+              ].join(' ')
+            : 'cursor-pointer hover:brightness-95',
+        ]"
+        @click.stop="onClick(page)">
+        <picture class="flex h-full items-center">
           <source
             type="image/avif"
             :srcset="`
@@ -82,19 +92,10 @@
             decoding="async"
             width="64"
             height="96"
-            class="h-auto max-h-full w-auto max-w-25 min-w-5 rounded"
-            :class="[
-              page === currentPage
-                ? [
-                    'cursor-default ring-1',
-                    fullScreen ? 'ring-violet-600 brightness-80' : 'ring-violet-600/40 brightness-90',
-                  ].join(' ')
-                : 'cursor-pointer',
-            ]"
-            draggable="false"
-            @click.stop="onClick(page)" />
+            class="h-auto max-h-full w-auto max-w-25 min-w-5"
+            draggable="false" />
         </picture>
-      </template>
+      </button>
     </div>
   </div>
 </template>

@@ -35,23 +35,56 @@ export default defineNuxtConfig({
     fonts: true,
   },
   routeRules: {
+    '/admin': { ssr: false },
     '/admin/**': { ssr: false },
     '/user/**': { ssr: false },
     '/search/**': { ssr: false },
-    // '/test1': {
-    //   cache: {
-    //     swr: true,
-    //     maxAge: 10,
-    //     staleMaxAge: 15,
-    //   },
-    // },
-    // '/api/apiTest': {
-    //   cache: {
-    //     swr: true,
-    //     maxAge: 10,
-    //     staleMaxAge: 15,
-    //   },
-    // },
+    '/': { prerender: true },
+    // '/(marketing)/**': { prerender: true }, do not work
+    '/about': { prerender: true },
+    '/contacts': { prerender: true },
+    '/help': { prerender: true },
+    '/not-oferta': { prerender: true },
+    '/poverka': { prerender: true },
+    '/privacy': { prerender: true },
+    '/returns': { prerender: true },
+    '/shipping': { prerender: true },
+    '/warranty': { prerender: true },
+    '/materials': { prerender: true },
+    '/materials/**': { prerender: true },
+    '/catalog': { prerender: true },
+    '/catalog/**': {
+      swr: 2 * 60 * 60, // 2 hours
+      // cache: {
+      //   swr: true,
+      //   maxAge: 2 * 60 * 60, // 2 hours
+      //   staleMaxAge: 12 * 60 * 60, // 12 hours do not work
+      // },
+    },
+    '/product/**': {
+      swr: 2 * 60 * 60, // 2 hours
+      // cache: {
+      //   swr: true,
+      //   maxAge: 2 * 60 * 60, // 2 hours
+      //   staleMaxAge: 12 * 60 * 60, // 12 hours do not work
+      // },
+    },
+    '/try/1': {
+      // swr: 10,
+      // cache: {
+      //   swr: true,
+      //   maxAge: 20,
+      //   staleMaxAge: 10,
+      // },
+    },
+    '/api/apiTest': {
+      // swr: 10,
+      // cache: {
+      //   swr: false,
+      //   maxAge: 10,
+      //   staleMaxAge: 15,
+      // },
+    },
   },
 
   imports: {

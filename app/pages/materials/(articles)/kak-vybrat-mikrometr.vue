@@ -4,6 +4,7 @@ useSeoMeta({
   description:
     'Микрометр — это высокоточный измерительный инструмент, используемый для измерения малых размеров с высокой точностью. В статье рассмотрены основные типы микрометров, их конструктивные особенности, а также даны рекомендации по выбору подходящей модели в зависимости от задач и условий эксплуатации.',
 })
+const company = useCompany()
 </script>
 
 <template>
@@ -409,14 +410,14 @@ useSeoMeta({
           Если у вас остались вопросы по выбору микрометра, наши специалисты с радостью помогут вам подобрать
           оптимальный вариант с учетом ваших задач и бюджета. Позвоните нашим менеджерам по телефону
           <a
-            href="tel:+73517907748"
+            :href="'tel:' + company.phones[0]"
             class="text-indigo-600 underline-offset-4 hover:underline"
-            >+7 (351) 790-77-48</a
+            >{{ company.phones[0] }}</a
           >, напишите на e-mail
           <a
-            href="mailto:info@chelinstrument.ru"
+            :href="'mailto:' + company.mails[0]"
             class="text-indigo-600 underline-offset-4 hover:underline"
-            >info@chelinstrument.ru</a
+            >{{ company.mails[0] }}</a
           >, либо задайте вопрос через
           <button
             class="text-indigo-600 underline-offset-4 hover:underline"

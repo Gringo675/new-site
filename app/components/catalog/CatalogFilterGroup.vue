@@ -22,6 +22,7 @@ const inactivateVal = val => {
         <UButton
           icon="i-heroicons-chevron-down"
           class="my-1 p-1 transition-transform duration-500"
+          aria-label="Развернуть"
           @click="showValues = !showValues"
           :class="{ 'rotate-over': showValues }" />
       </div>
@@ -37,7 +38,7 @@ const inactivateVal = val => {
               type="checkbox"
               v-model="value.active"
               :disabled="value.disabled"
-              class="peer"
+              class="peer h-4 w-4"
               @change="emit('filterChanged')" />
             <span class="leading-[15px] peer-disabled:opacity-40">{{ value.name }}</span>
           </label>
@@ -57,7 +58,8 @@ const inactivateVal = val => {
             </span>
             <button
               class="cursor-pointer rounded-xs bg-violet-400"
-              @click="inactivateVal(item.val)">
+              @click="inactivateVal(item.val)"
+              aria-label="Отменить">
               <UIcon
                 name="i-heroicons-x-mark"
                 class="block size-4 text-violet-50" />

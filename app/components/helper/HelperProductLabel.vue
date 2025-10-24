@@ -30,7 +30,7 @@ const { data: label } = await useAsyncData(`label-${labelId}`, () => $fetch<Labe
       width="24"
       height="24"
       alt="label" />
-    <div class="min-w-0 shrink rounded-xs bg-fuchsia-400 p-0.5">
+    <div class="min-w-0 shrink rounded-xs bg-fuchsia-600 p-0.5">
       <div class="truncate border border-dashed border-white px-2 text-sm leading-tight text-white">
         {{ label.name }}
       </div>

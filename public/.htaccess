@@ -1,0 +1,41 @@
+## REDIRECTS
+
+# RewriteEngine workrs only in public_html folder (i.e. public folder in Nuxt) (don't know why).
+# In root's .htaccess may use RedirectMatch command.
+
+RewriteEngine On
+
+##### From old site #####
+
+# Catalog's redirection (old structure: /katalog/{categoryName}/{subCategoryName}/{productName})
+RewriteRule ^katalog/[^/]+/[^/]+/([^/]+)/?$ /product/$1 [R=301,L,QSD]
+RewriteRule ^katalog/(?:[^/]+/)?([^/]+)/?$ /catalog/$1 [R=301,L,QSD]
+
+# Doc's redirection
+RedirectMatch 301 ^/docs/(.\*)$ /static/doc/$1
+
+# Img's redirection
+RedirectMatch 301 ^/components/com_jshopping/files/img_products/(._)$ /static/img/products/legacy/$1
+RedirectMatch 301 ^/components/com_jshopping/files/img_categories/(._)$ /static/img/categories/legacy/$1
+
+# Static pages redirection
+Redirect 301 /katalog /catalog
+Redirect 301 /dostavka /shipping
+Redirect 301 /politika-konfidentsialnosti /privacy
+Redirect 301 /materials/blog/62-kak-vybrat-shtangentsirkul /materials/kak-vybrat-shtangentsirkul
+Redirect 301 /materials/blog/63-kak-vybrat-mikrometr /materials/kak-vybrat-mikrometr
+Redirect 301 /materials/blog/64-chto-takoe-poverka-instrumenta /materials/chto-takoe-poverka-instrumenta
+Redirect 301 /materials/blog/65-chto-takoe-kalibrovka-instrumenta /materials/chto-takoe-kalibrovka-instrumenta
+
+# Redirect from all index.php to root
+RewriteRule ^index\.php / [R=301,L,QSD]
+
+##### Common #####
+
+# Redirect from www
+RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+RewriteRule ^(.*)$ http://%1/$1 [R=301,L]
+
+# Removing trailing slash '.../'  ->  '...'
+RewriteCond %{REQUEST_URI} ^(.+)/+$ 
+RewriteRule ^ %1 [R=301,L]

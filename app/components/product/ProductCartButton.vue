@@ -37,6 +37,7 @@ const productCartIndex = computed(() => cart.findIndex(cartItem => cartItem.id =
           size="xl"
           type="number"
           min="1"
+          placeholder="Количество"
           :ui="{
             base: 'text-center w-15 bg-gray-50',
           }" />

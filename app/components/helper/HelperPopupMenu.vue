@@ -39,7 +39,8 @@ const removeCloseListener = () => {
   <div class="relative">
     <slot
       name="trigger"
-      :show="show" />
+      :show="show"
+      :open="open" />
     <Transition
       name="transition-below"
       @enter="handleContentSize"

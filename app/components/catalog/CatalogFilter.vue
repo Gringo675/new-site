@@ -53,7 +53,7 @@ const toggleShowFilterOnMobile = () => {
             name="i-heroicons-chat-bubble-oval-left-ellipsis"
             class="col-span-1 row-span-1 h-full w-6 text-indigo-500 @[16.5rem]:row-span-2 @[16.5rem]:w-16 @md:row-span-1 @md:w-11" />
 
-          <div class="col-span-2 ml-auto text-indigo-500 italic @[16.5rem]:text-lg @md:col-span-1 @md:mx-auto">
+          <div class="text-tertiary col-span-2 ml-auto italic @[16.5rem]:text-lg @md:col-span-1 @md:mx-auto">
             Нужна консультация?
           </div>
           <UButton

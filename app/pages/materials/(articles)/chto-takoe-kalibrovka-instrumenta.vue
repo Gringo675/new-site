@@ -4,6 +4,7 @@ useSeoMeta({
   description:
     'Калибровка — это определение истинных метрологических параметров какого-либо изделия. В статье рассмотрены отличия калибровки от поверки, а также даны рекомендации, когда лучше заказывать калибровку инструмента, а когда его поверку.',
 })
+const company = useCompany()
 </script>
 
 <template>
@@ -382,14 +383,14 @@ useSeoMeta({
             <p>
               Позвоните нашим менеджерам по телефону
               <a
-                href="tel:+73517907748"
+                :href="'tel:' + company.phones[0]"
                 class="text-indigo-600 underline-offset-4 hover:underline"
-                >+7 (351) 790-77-48</a
+                >{{ company.phones[0] }}</a
               >, напишите на e-mail
               <a
-                href="mailto:info@chelinstrument.ru"
+                :href="'mailto:' + company.mails[0]"
                 class="text-indigo-600 underline-offset-4 hover:underline"
-                >info@chelinstrument.ru</a
+                >{{ company.mails[0] }}</a
               >, либо воспользуйтесь
               <button
                 class="text-indigo-600 underline-offset-4 hover:underline"

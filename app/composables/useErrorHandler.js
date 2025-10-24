@@ -51,6 +51,7 @@ export default () => {
       userAgent: import.meta.client ? navigator.userAgent : 'N/A',
     }
     try {
+      console.log(`writing error...`)
       await $fetch('/api/log/setError', {
         method: 'POST',
         body: errorForLog,

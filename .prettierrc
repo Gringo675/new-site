@@ -12,6 +12,12 @@
       "options": {
         "parser": "none"
       }
+    },
+    {
+      "files": ".htaccess",
+      "options": {
+        "parser": "none"
+      }
     }
   ]
 }

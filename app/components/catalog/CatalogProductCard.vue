@@ -68,11 +68,11 @@ const showFullImage = () => {
     <div
       class="col-span-2 row-span-1 my-3 mr-2 ml-0 flex flex-col items-center justify-end gap-x-3 self-end @xs:@max-lg:flex-row @lg:col-span-1 @lg:row-span-2 @lg:ml-2 @lg:self-center @2xl:flex-row">
       <div
-        class="relative my-3 shrink-0 grow-0 self-end rounded-2xl bg-slate-400 px-3 py-2 text-lg leading-none whitespace-nowrap text-slate-50">
+        class="text-primary relative my-3 shrink-0 grow-0 self-end rounded-2xl bg-slate-200 px-3 py-2 text-lg leading-none whitespace-nowrap">
         <span class=""> {{ formatPrice(prod.price) }}</span>
         <div
           v-if="prod.priceRegular"
-          class="absolute -top-4 right-1 rounded-full bg-gradient-to-b from-fuchsia-400 to-fuchsia-300 px-2 py-1 text-xs leading-none line-through">
+          class="text-primary-700 absolute -top-4 right-1 rounded-full bg-gradient-to-b from-fuchsia-300 to-fuchsia-200 px-2 py-1 text-xs leading-none line-through">
           {{ formatPrice(prod.priceRegular) }}
         </div>
       </div>

@@ -78,11 +78,13 @@ const company = useCompany()
         <p>Если вы не хотите использовать файлы cookie, измените настройки браузера.</p>
         <NuxtLink
           no-prefetch
+          class="mt-1 text-base"
           to="/not-oferta">
           Информация на сайте не является публичной офертой
         </NuxtLink>
         <NuxtLink
           no-prefetch
+          class="mt-1 text-base"
           to="/privacy">
           Политика конфиденциальности
         </NuxtLink>

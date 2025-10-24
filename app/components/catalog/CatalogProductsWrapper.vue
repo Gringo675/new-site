@@ -164,7 +164,7 @@ watch(pageSetup, () => changesHandler({ fromPageSetup: true }), { deep: true })
       highlight
       class="w-48"
       trailingIcon="i-heroicons-arrows-up-down-20-solid"
-    />
+      aria-label="Сортировка" />
     <USelect
       placeholder="На странице:"
       v-model="pageSetup.prodsOnPage"
@@ -186,26 +186,22 @@ watch(pageSetup, () => changesHandler({ fromPageSetup: true }), { deep: true })
       highlight
       class="w-24"
       trailingIcon="i-heroicons-arrows-up-down-20-solid"
-    />
+      aria-label="Количество на странице" />
   </div>
   <!--  products-->
   <div
     class="overflow-x-hidden"
-    id="pageProducts"
-  >
+    id="pageProducts">
     <div
       class="productsWrapperTransition overflow-hidden"
-      ref="productsWrapper"
-    >
+      ref="productsWrapper">
       <div
         class="@container flex flex-col gap-y-2 py-2"
-        ref="productsWrapperHelper"
-      >
+        ref="productsWrapperHelper">
         <template v-if="visibleProductsIndx.length">
           <CatalogProductCard
             v-for="indx in visibleProductsIndx"
-            :prod="products[indx]"
-          />
+            :prod="products[indx]" />
         </template>
         <div v-else>Подходящих товаров не найдено!</div>
       </div>
@@ -213,7 +209,6 @@ watch(pageSetup, () => changesHandler({ fromPageSetup: true }), { deep: true })
     <HelperPaginator
       :pageProps="pagination"
       @turnPage="changesHandler"
-      @showMore="changesHandler"
-    />
+      @showMore="changesHandler" />
   </div>
 </template>

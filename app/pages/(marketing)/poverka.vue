@@ -1,6 +1,7 @@
 <!-- script setup removed: NuxtUI auto-imports Icon component -->
 <script setup>
 useTitle('Поверка и калибровка инструмента')
+const company = useCompany()
 </script>
 
 <template>
@@ -84,20 +85,19 @@ useTitle('Поверка и калибровка инструмента')
         <p>
           Получите консультацию и оформите заказ у наших менеджеров по телефону
           <a
-            href="tel:+73517907748"
+            :href="'tel:' + company.phones[0]"
             title="Позвонить"
             class="text-indigo-600 underline-offset-4 hover:underline"
-            >+7 (351) 790-77-48</a
+            >{{ company.phones[0] }}</a
           >, электронной почте
           <a
-            href="mailto:info@chelinstrument.ru"
+            :href="'mailto:' + company.mails[0]"
             class="text-indigo-600 underline-offset-4 hover:underline"
-            >info@chelinstrument.ru</a
+            >{{ company.mails[0] }}</a
           >, либо
           <button
             class="text-indigo-600 underline-offset-4 hover:underline"
-            @click="showFeedback()"
-          >
+            @click="showFeedback()">
             задайте вопрос через форму обратной связи.
           </button>
         </p>

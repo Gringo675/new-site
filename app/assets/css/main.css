@@ -26,6 +26,10 @@
 
 @layer base {
   :root {
+    /* defaults has not enough contrast ratio */
+    --ui-primary: var(--ui-color-primary-600);
+    --ui-secondary: var(--ui-color-secondary-600);
+    --ui-tertiary: var(--ui-color-tertiary-600);
     /* scrollbar-gutter: stable; */
     /* scrollbar-color: #c4b5fd #fee2e2;
     scrollbar-width: thin; */

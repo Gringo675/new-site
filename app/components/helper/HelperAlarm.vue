@@ -26,10 +26,10 @@ const slots = useSlots()
     <div class="grow">
       <div
         v-if="slots.title"
-        class="mb-1 leading-tight font-bold">
+        class="mb-1 text-lg font-bold">
         <slot name="title"></slot>
       </div>
-      <div class="leading-tight"><slot></slot></div>
+      <div class=""><slot></slot></div>
     </div>
   </div>
 </template>

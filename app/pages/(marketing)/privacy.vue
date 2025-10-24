@@ -442,11 +442,10 @@ const company = useCompany()
           <p>
             6. Настоящее согласие может быть отозвано письменным заявлением на e-mail
             <a
-              href="mailto:info@chelinstrument.ru"
-              class="text-indigo-600 underline-offset-4 hover:underline"
-              >info@chelinstrument.ru</a
-            >.
-          </p>
+                          href="'mailto:' + company.mails[0]"
+                          class="text-indigo-600 underline-offset-4 hover:underline"
+                          >{{ company.mails[0] }}</a
+                        >.          </p>
         </div>
       </div>
     </section>
