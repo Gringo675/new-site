@@ -67,13 +67,22 @@ const menuState = [
           </div>
         </div>
       </div>
-      <div class="col-span-1 mr-2 flex items-center justify-end gap-2 max-md:hidden">
-        <img
+      <div class="col-span-1 mr-2 flex items-center justify-end max-md:hidden">
+        <!-- <img
           src="/img/rst.svg"
           alt="rst"
           class="h-auto w-20"
           width="80"
-          height="30" />
+          height="30" /> -->
+        <UButton
+          label="К старой версии сайта"
+          variant="outline"
+          class="rounded-full max-lg:w-[15vw] max-lg:text-sm"
+          trailing-icon="i-heroicons-arrow-right"
+          color="secondary"
+          to="https://old.chelinstrument.ru/"
+          target="_blank"
+          rel="noopener noreferrer nofollow" />
       </div>
       <div class="col-span-1 flex max-md:justify-center">
         <div

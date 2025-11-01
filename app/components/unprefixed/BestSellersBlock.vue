@@ -1,9 +1,6 @@
 <script setup lang="ts">
 //
-const { data: bestSellers } = await useFetch('/api/getProducts', {
-  method: 'post',
-  body: { labelId: 5 },
-})
+const { data: bestSellers } = await useFetch('/api/getData/products?lId=5')
 </script>
 
 <template>

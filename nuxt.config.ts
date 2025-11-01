@@ -53,21 +53,16 @@ export default defineNuxtConfig({
     '/materials': { prerender: true },
     '/materials/**': { prerender: true },
     '/catalog': { prerender: true },
-    '/catalog/**': {
+    //this caches full request of the pages
+    '/catalog/**': process.env.NODE_ENV === 'production' && {
       swr: 2 * 60 * 60, // 2 hours
-      // cache: {
-      //   swr: true,
-      //   maxAge: 2 * 60 * 60, // 2 hours
-      //   staleMaxAge: 12 * 60 * 60, // 12 hours do not work
-      // },
     },
-    '/product/**': {
+    '/product/**': process.env.NODE_ENV === 'production' && {
       swr: 2 * 60 * 60, // 2 hours
-      // cache: {
-      //   swr: true,
-      //   maxAge: 2 * 60 * 60, // 2 hours
-      //   staleMaxAge: 12 * 60 * 60, // 12 hours do not work
-      // },
+    },
+    // this caches api requests, what is critical for SPA phase of the app
+    '/api/getData/**': process.env.NODE_ENV === 'production' && {
+      swr: 2 * 60 * 60, // 2 hours
     },
     '/try/1': {
       // swr: 10,

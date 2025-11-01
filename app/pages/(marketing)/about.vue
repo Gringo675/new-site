@@ -1,4 +1,5 @@
 <script setup>
+//
 useTitle('О компании - Челябинский Инструмент | Поставщик измерительного инструмента')
 const company = useCompany()
 </script>

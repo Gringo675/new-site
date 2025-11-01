@@ -1,7 +1,7 @@
 ## REDIRECTS
 
-# RewriteEngine workrs only in public_html folder (i.e. public folder in Nuxt) (don't know why).
-# In root's .htaccess may use RedirectMatch command.
+# RewriteEngine (mod_rewrite) works only in public_html folder (i.e. public folder in Nuxt) (don't know why).
+# In root's .htaccess may use Redirect, RedirectMatch commands (mod_alias).
 
 RewriteEngine On
 
@@ -31,6 +31,8 @@ Redirect 301 /materials/blog/65-chto-takoe-kalibrovka-instrumenta /materials/cht
 RewriteRule ^index\.php / [R=301,L,QSD]
 
 ##### Common #####
+
+# No need redirect to https, that Beget's duty
 
 # Redirect from www
 RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]

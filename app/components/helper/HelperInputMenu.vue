@@ -16,7 +16,7 @@ const props = defineProps({
 })
 
 const options = {
-  searchAPI: props.forCatalog ? '/api/getSearch?f=1&q=' : '/api/dellin/getCities?q=',
+  searchAPI: props.forCatalog ? '/api/getData/search?f=1&q=' : '/api/dellin/getCities?q=',
   placeHolder: props.forCatalog ? 'Поиск по каталогу' : 'Укажите пункт назначения',
 }
 

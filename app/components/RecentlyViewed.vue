@@ -43,9 +43,7 @@ async function updateViewed() {
   const missingIds = localViewed.filter(id => !helper.cache.some(p => p.id === id))
   if (missingIds.length) {
     helper.inProgress = true
-    const missingProds = await myFetch('/api/getProducts', {
-      method: 'post',
-      payload: { productIds: missingIds },
+    const missingProds = await myFetch(`/api/getData/products?pIds=${missingIds.join(',')}`, {
       silent: true,
     })
     helper.inProgress = false

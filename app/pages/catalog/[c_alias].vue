@@ -1,13 +1,14 @@
 <script setup>
+//
 const route = useRoute()
-const url = `/api/getCategory/${route.params.c_alias}`
+
+const url = `/api/getData/category/${route.params.c_alias}`
 </script>
 
 <template>
   <HelperDataFetch
     :url="url"
-    v-slot="{ data }"
-  >
+    v-slot="{ data }">
     <CatalogWrapper :data />
   </HelperDataFetch>
 </template>

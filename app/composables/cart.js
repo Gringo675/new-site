@@ -51,9 +51,7 @@ const updateCartFromLocalStoreHelper = {
     const addedProducts = storCart.filter(storCartItem => !cart.some(cartItem => cartItem.id === storCartItem.id))
     if (!addedProducts.length) return
     const addedProductIds = addedProducts.map(item => item.id)
-    const newProducts = await myFetch('/api/getProducts', {
-      method: 'post',
-      payload: { productIds: addedProductIds },
+    const newProducts = await myFetch(`/api/getData/products?pIds=${addedProductIds.join(',')}`, {
       silent: true,
     })
     newProducts.forEach(newProduct => {

@@ -7,6 +7,7 @@ export default defineEventHandler(async event => {
   // await new Promise(resolve => setTimeout(resolve, 3000))
 
   const { q, f } = getQuery(event)
+
   if (typeof q !== 'string' || q.length < 3) throw createError({ statusCode: 505, statusMessage: `Incorrect request!` })
   const fastSearch = f === '1'
   // экранируем и меняем пробел на паттерн % - любая строка любой длины

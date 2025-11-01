@@ -1,4 +1,5 @@
 <script setup>
+//
 useTitle('Как купить - Челябинский Инструмент | Условия покупки и оплаты')
 const company = useCompany()
 

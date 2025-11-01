@@ -2,7 +2,7 @@
 //
 useTitle('ФГИС ГРСИ: Описания типов и методики поверки')
 
-const url = `/api/getGrsi`
+const url = `/api/getData/grsi`
 </script>
 
 <template>

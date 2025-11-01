@@ -1,7 +1,7 @@
 export default defineEventHandler(async event => {
   // const start = performance.now()
-
   const alias = getRouterParam(event, 'c_alias')
+
   if (!alias.length) throw createError({ statusCode: 500, statusMessage: 'Incorrect URI!' })
 
   // получаем категорию

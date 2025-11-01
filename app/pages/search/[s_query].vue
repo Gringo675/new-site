@@ -2,7 +2,7 @@
 //
 useTitle('Результаты поиска')
 const searchQuery = useRoute().params.s_query
-const searchData = searchQuery.length > 2 ? await myFetch(`/api/getSearch?q=${searchQuery}`) : null
+const searchData = searchQuery.length > 2 ? await myFetch(`/api/getData/search?q=${searchQuery}`) : null
 </script>
 
 <template>
@@ -12,16 +12,14 @@ const searchData = searchQuery.length > 2 ? await myFetch(`/api/getSearch?q=${se
   <HelperAlarm
     v-if="searchQuery.length < 3"
     type="error"
-    class="max-w-screen-xs mx-auto"
-  >
+    class="max-w-screen-xs mx-auto">
     <template #title>Минимальная длина поискового запроса - 3 символа.</template>
     Пожалуйста, уточните запрос.
   </HelperAlarm>
   <HelperAlarm
     v-else-if="!searchData.products?.length"
     type="error"
-    class="max-w-screen-xs mx-auto"
-  >
+    class="max-w-screen-xs mx-auto">
     <template #title>Ничего не найдено!</template>
     Попробуйте изменить запрос.
   </HelperAlarm>

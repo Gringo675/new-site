@@ -51,6 +51,7 @@ const onMouseEnter = index => {
               :class="{ 'md:bg-gray-200': menuState.activeCatIndex === i }"
               @mouseenter="onMouseEnter(i)">
               <NuxtLink
+                no-prefetch
                 class="text-center text-lg font-medium underline-offset-8 hover:underline max-md:block max-md:w-full max-md:rounded-full max-md:border max-md:border-gray-500 max-md:px-3 max-md:py-2 max-md:text-sm"
                 :to="`/catalog/${cat.alias}`"
                 @click="emit('close')">
@@ -67,6 +68,7 @@ const onMouseEnter = index => {
                 class="flex flex-col">
                 <div class="py-4">
                   <NuxtLink
+                    no-prefetch
                     class="font-medium hover:underline"
                     :to="`/catalog/${subCat.alias}`"
                     @click="emit('close')">
@@ -85,6 +87,7 @@ const onMouseEnter = index => {
                       class="mt-1 h-6 w-6" />
                     <div>
                       <NuxtLink
+                        no-prefetch
                         class="hover:underline"
                         :to="'/catalog/' + subSubCat.alias"
                         @click="emit('close')">

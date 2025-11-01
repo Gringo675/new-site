@@ -1,28 +1,50 @@
 <script setup>
+//
 const props = defineProps({
   error: Object,
 })
-console.error(props.error)
-
+const router = useRouter()
+const nuxtApp = useNuxtApp()
 const user = useUser()
 
 useOverlay().closeAll()
+useTitle('Ошибка ' + (props.error.statusCode || ''))
 
+props.error.url = props.error.url || router.currentRoute.value.fullPath // useRoute returns incorrect res.
+
+if (!nuxtApp.isHydrating) setErrorToLog(props.error)
+async function setErrorToLog(e) {
+  try {
+    const logError = await $fetch('/api/log/setError', {
+      method: 'POST',
+      body: {
+        statusCode: e.statusCode || e.data?.statusCode || 0,
+        statusMessage: e.statusMessage || e.data?.statusMessage || 'No message',
+        url: e.url || 'No url',
+        onServer: import.meta.server,
+        stack: e.data?.stack || e.stack || 'No stack',
+      },
+    })
+  } catch (logError) {
+    console.error(`Can't write error to the log: ${logError.message}`)
+  }
+}
+
+// console.error(props.error)
 const onLogin = async () => {
   await showLogin()
   if (user.value.auth) refreshPage()
 }
 
 const refreshPage = () => {
-  clearError({ redirect: props.error.data?.path ?? '/' })
+  clearError({ redirect: props.error.url || '/' })
 }
 
 const toMainPage = () => {
   clearError({ redirect: '/' })
 }
 
-// Error messages based on status code
-const errorMessages = {
+const displayError = {
   400: {
     title: 'Некорректная ссылка активации',
     description:
@@ -50,17 +72,11 @@ const errorMessages = {
     description: 'Ведутся технические работы. Пожалуйста, попробуйте позже.',
     icon: 'i-lucide-wrench',
   },
+}[props.error.statusCode] || {
+  title: 'Произошла ошибка',
+  description: 'Возникла непредвиденная ошибка. Пожалуйста, попробуйте позже.',
+  icon: 'i-lucide-alert-triangle',
 }
-
-const currentError = computed(() => {
-  return (
-    errorMessages[props.error.statusCode] || {
-      title: 'Произошла ошибка',
-      description: 'Возникла непредвиденная ошибка. Пожалуйста, попробуйте позже.',
-      icon: 'i-lucide-alert-triangle',
-    }
-  )
-})
 </script>
 
 <template>
@@ -68,13 +84,13 @@ const currentError = computed(() => {
     <div
       class="mx-auto my-6 flex w-full max-w-xl flex-col items-center justify-center gap-6 rounded-xl bg-gray-200 p-6 shadow-lg md:my-12">
       <UIcon
-        :name="currentError.icon"
+        :name="displayError.icon"
         class="text-error size-20" />
       <div class="text-error text-4xl font-bold">{{ error.statusCode }}</div>
-      <h2 class="mb-2 text-center text-2xl font-bold">{{ currentError.title }}</h2>
+      <h2 class="mb-2 text-center text-2xl font-bold">{{ displayError.title }}</h2>
 
       <p class="mb-4 text-center">
-        {{ currentError.description }}
+        {{ displayError.description }}
       </p>
 
       <div class="flex flex-wrap justify-center gap-4">

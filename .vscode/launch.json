@@ -14,8 +14,12 @@
       "type": "node",
       "request": "launch",
       "name": "server: nuxt",
-      "program": "${workspaceFolder}/node_modules/nuxi/bin/nuxi.mjs",
-      "args": ["dev"]
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
+      "console": "integratedTerminal"
     }
   ],
   "compounds": [

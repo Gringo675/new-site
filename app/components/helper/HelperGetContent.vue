@@ -3,14 +3,13 @@
 //todo: title
 
 const route = useRoute()
-const url = `/api/getContent/${String(route.name)}`
+const url = `/api/getData/content/${String(route.name)}`
 </script>
 
 <template>
   <HelperDataFetch
     :url="url"
-    v-slot="{ data }"
-  >
+    v-slot="{ data }">
     <article v-html="data"></article>
   </HelperDataFetch>
 </template>

@@ -12,11 +12,15 @@ const { labelId } = defineProps({
   forProduct: { type: Boolean, default: false }, // todo: delete?
 })
 
-const { data: label } = await useAsyncData(`label-${labelId}`, () => $fetch<Label>('/api/getLabel?id=' + labelId), {
-  dedupe: 'defer',
-  getCachedData: key => useNuxtData(key).data?.value,
-  deep: false,
-})
+const { data: label } = await useAsyncData(
+  `label-${labelId}`,
+  () => $fetch<Label>('/api/getData/label?id=' + labelId),
+  {
+    dedupe: 'defer',
+    getCachedData: key => useNuxtData(key).data?.value,
+    deep: false,
+  },
+)
 </script>
 
 <template>

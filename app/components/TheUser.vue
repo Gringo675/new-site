@@ -14,16 +14,20 @@ onMounted(async () => {
     } else if (event.newValue === '2') getUser({ force: true })
   })
 
-  setTimeout(processUser, 1000)
+  setTimeout(processUser, 2000)
 })
 
 const processUser = () => {
   const consent = localStorage.getItem('COOKIE_CONSENT')
 
-  if (consent === 'accepted') loadAnalytics()
-  else showCookieBanner()
+  // if (consent === 'accepted') loadAnalytics()
+  // else showCookieBanner()
+  if (consent !== 'accepted') setTimeout(showCookieBanner, 5000)
+  loadAnalytics()
 
   getUser({ hidden: true })
+
+  showNewSiteBanner()
 }
 
 const showCookieBanner = () => {
@@ -55,18 +59,54 @@ const showCookieBanner = () => {
         class: 'px-10 mx-auto',
         onClick: () => {
           localStorage.setItem('COOKIE_CONSENT', 'accepted')
-          loadAnalytics()
+          // loadAnalytics()
         },
       },
     ],
   })
 }
+
+const showNewSiteBanner = () => {
+  useToast().add({
+    title: 'Запустили новый сайт!',
+    description: 'Мы полностью обновили дизайн и улучшили функциональность. Надеемся, вам понравится!',
+    icon: 'i-heroicons-rocket-launch',
+    duration: 20 * 1000,
+    actions: [
+      {
+        icon: 'i-heroicons-bug-ant',
+        label: 'Сообщить о проблеме',
+        ui: { label: 'whitespace-normal' },
+        variant: 'subtle',
+        size: 'xs',
+        onClick: () => {
+          showFeedback({
+            title: 'Сообщить о проблеме на сайте',
+            description:
+              'Опишите, пожалуйста, с какой проблемой вы столкнулись. Мы постараемся её оперативно исправить.',
+          })
+        },
+      },
+      {
+        icon: 'i-heroicons-arrow-top-right-on-square',
+        label: 'Перейти на старый сайт',
+        ui: { label: 'whitespace-normal' },
+        variant: 'subtle',
+        size: 'xs',
+        onClick: () => {
+          window.open('https://old.chelinstrument.ru/', '_blank')
+        },
+      },
+    ],
+  })
+}
+
 const loadAnalytics = async () => {
   // @ts-ignore
   if (window.__analyticsLoaded) return
+  console.log(`Loading analytics...`)
   // @ts-ignore
   window.__analyticsLoaded = true
-  console.log(`Loading analytics...`)
 }
 </script>
 
