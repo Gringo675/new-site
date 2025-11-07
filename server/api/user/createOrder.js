@@ -42,7 +42,7 @@ const saveOrder = async (event, order) => {
   return Number((await dbReq(query)).insertId)
 }
 
-const sendMails = async order => {
+const sendMails = async (order, event) => {
   // 1. Загрузка шаблонов с кэшированием
   if (process.env.NODE_ENV === 'development' || !cachedClientTemplate || !cachedSellerTemplate || !cachedRowTemplate) {
     const storage = useStorage('assets:server')
@@ -60,13 +60,13 @@ const sendMails = async order => {
   // 2. Сборка общего контента для обоих писем
   const cartProducts = JSON.parse(order.cart)
   const total = cartProducts.reduce((sum, product) => sum + product.price * product.quantity, 0)
-
-  const imagePath = `${config.STATIC_ABSOLUTE_PATH}img/products/thumb_`
+  const config = useRuntimeConfig(event)
+  const imagePath = `${config.STATIC_ABSOLUTE_PATH}img/products/w_64/`
   const productBaseUrl = 'https://chelinstrument.ru/product/'
   let productRowsHtml = ''
   for (const product of cartProducts) {
     const rowHtml = cachedRowTemplate
-      .replace(/{{productImageUrl}}/g, imagePath + product.image)
+      .replace(/{{productImageUrl}}/g, imagePath + product.image + '.jpg')
       .replace(/{{productName}}/g, product.name)
       .replace(/{{productId}}/g, product.id)
       .replace(/{{productUrl}}/g, productBaseUrl + product.alias)

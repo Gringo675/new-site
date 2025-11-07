@@ -27,7 +27,7 @@ const processUser = () => {
 
   getUser({ hidden: true })
 
-  showNewSiteBanner()
+  if (!import.meta.dev) showNewSiteBanner()
 }
 
 const showCookieBanner = () => {
@@ -71,7 +71,7 @@ const showNewSiteBanner = () => {
     title: 'Запустили новый сайт!',
     description: 'Мы полностью обновили дизайн и улучшили функциональность. Надеемся, вам понравится!',
     icon: 'i-heroicons-rocket-launch',
-    duration: 20 * 1000,
+    duration: 15 * 1000,
     actions: [
       {
         icon: 'i-heroicons-bug-ant',

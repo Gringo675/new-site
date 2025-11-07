@@ -52,7 +52,7 @@ export default defineNuxtConfig({
     '/warranty': { prerender: true },
     '/materials': { prerender: true },
     '/materials/**': { prerender: true },
-    '/catalog': { prerender: true },
+    // '/catalog': { prerender: true },
     //this caches full request of the pages
     '/catalog/**': process.env.NODE_ENV === 'production' && {
       swr: 2 * 60 * 60, // 2 hours
@@ -122,15 +122,20 @@ export default defineNuxtConfig({
       MAILRU_CLIENT_ID: process.env.MAILRU_CLIENT_ID,
     },
   },
-
-  devtools: {
-    timeline: {
-      enabled: true,
-    },
-  },
   experimental: {
     purgeCachedData: false, // nuxt v3.17 breaking change (delete cache when component-initiator is unmounted)
   },
+  // devtools: {
+  //   timeline: {
+  //     enabled: true,
+  //   },
+  // },
+  // enable to see hydration mismatch details on production (didn't check it yet)
+  // vite: {
+  //   define: {
+  //     __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: 'true',
+  //   },
+  // },
   site: {
     // used in SEO modules
     title:
