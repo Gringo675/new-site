@@ -13,6 +13,8 @@ const buttonHandler = async () => {
 </script>
 
 <template>
+  <h1 class="font-accent border-b border-gray-300 pb-2 text-3xl">Профиль</h1>
+
   <div
     v-if="user.auth"
     class="mx-auto flex max-w-md flex-col p-4">

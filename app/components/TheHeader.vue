@@ -1,5 +1,9 @@
 <script setup>
 //
+const isHydrated = ref(false)
+onMounted(() => {
+  isHydrated.value = true
+})
 
 const company = useCompany()
 const menuState = [
@@ -160,6 +164,7 @@ const menuState = [
     <div class="mx-auto grid max-w-(--breakpoint-xl) grid-cols-[1fr_auto_1fr] gap-1 px-2 py-3">
       <div class="col-span-1 flex items-center gap-3 max-md:hidden">
         <UButton
+          :disabled="!isHydrated"
           icon="i-carbon-catalog"
           size="md"
           @click="showCatsMenu"
@@ -167,6 +172,7 @@ const menuState = [
           class="rounded-full font-bold" />
         <div class="flex grow justify-center">
           <UButton
+            :disabled="!isHydrated"
             icon="i-heroicons-pencil-square"
             size="md"
             class="font-fancy rounded-full font-bold"
@@ -186,12 +192,14 @@ const menuState = [
       </div>
       <div class="col-span-1 flex items-center justify-end gap-3 max-md:col-span-3 max-md:justify-between">
         <UButton
+          :disabled="!isHydrated"
           icon="i-heroicons-magnifying-glass"
           size="md"
           class="rounded-full md:hidden"
           @click="showCatsMenu"
           aria-label="Каталог" />
         <UButton
+          :disabled="!isHydrated"
           icon="i-heroicons-pencil-square"
           size="md"
           class="rounded-full md:hidden"
@@ -200,8 +208,9 @@ const menuState = [
         <div class="flex justify-center md:grow">
           <LazyTheCart hydrate-on-idle />
         </div>
-        <LazyTheUser hydrate-on-idle />
+        <LazyTheUser :hydrate-after="2000" />
         <UButton
+          :disabled="!isHydrated"
           icon="i-heroicons-ellipsis-vertical-16-solid"
           size="md"
           class="rounded-full md:hidden"

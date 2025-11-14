@@ -1,5 +1,5 @@
 /**
- * Получает formData c полями: user, message, files, subject = 'Сообщение с сайта - Обратная связь'
+ * Получает formData c полями: user, message, files, subject
  */
 
 export default defineEventHandler(async event => {

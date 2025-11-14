@@ -1,19 +1,17 @@
 <script setup>
 //
-const aaa = 123
-onMounted(() => {
-  console.log(`here`)
-  setTimeout(() => {
-    preloadComponents(['CatsMenuSlider'])
-  }, 5000)
-  // import('~/components/TheTest.vue')
-})
+const userForm = useTemplateRef('userFormRef')
+
+const submitForm = async () => {
+  const formData = await userForm.value.getUserFormData()
+  // console.log(`formData: ${JSON.stringify(formData, null, 2)}`)
+}
 </script>
 
 <template>
+  <TheUserForm ref="userFormRef" />
+
   <div>
-    <h1>Try page 1</h1>
-    <div class="h-200 w-100 bg-red-500"></div>
-    <LazyTheTest hydrate-on-visible />
+    <UButton @click="submitForm">OK</UButton>
   </div>
 </template>

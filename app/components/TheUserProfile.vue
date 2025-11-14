@@ -108,8 +108,9 @@ async function saveUserData() {
     element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
     return false
   }
-  const isValid = await userProfileRef.value.validate().catch(() => false) // если есть ошибки, выбрасывает ошибку
-  if (!isValid) {
+  // validate({}) - при отсутствии ошибок возвращает объект со значениями полей, при ошибках - выбрасывает ошибку
+  const validationResult = await userProfileRef.value.validate({}).catch(() => false)
+  if (validationResult === false) {
     userProfileRef.value.submit() // для запуска onError
     return false
   }
@@ -122,7 +123,7 @@ async function saveUserData() {
         return { field: key, value: newUser[key] }
       })
 
-    if (!changedUserData.length) return false // нет изменений
+    if (!changedUserData.length) return true // нет изменений
     if (user.value.auth) {
       // для авторизированных пользователей сохраняем изменения на сервере
       const isChangesSaved = await myFetch('/api/user/changeUser', {

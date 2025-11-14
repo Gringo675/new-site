@@ -12,6 +12,7 @@ const showFullImage = () => {
 
 <template>
   <div
+    data-testid="product-card"
     class="grid grid-cols-[auto_minmax(0,1fr)_auto] grid-rows-[auto_min-content] overflow-hidden rounded-lg border border-slate-400 bg-slate-100">
     <div
       class="col-span-3 row-span-1 flex flex-col items-start border-b border-slate-300 bg-gradient-to-r from-slate-100 via-slate-200 via-20% to-slate-100 px-2 py-3 @xs:col-span-2 @lg:col-span-1 @lg:row-span-2 @lg:border-b-0">

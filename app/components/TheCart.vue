@@ -20,11 +20,23 @@ const cartQuantity = computed(() => cart.reduce((acc, item) => acc + item.quanti
 </script>
 
 <template>
-  <UButton
-    icon="i-heroicons-shopping-cart"
-    size="md"
-    class="rounded-full"
-    to="/user/cart">
-    {{ cartQuantity }}
-  </UButton>
+  <ClientOnly>
+    <UButton
+      icon="i-heroicons-shopping-cart"
+      size="md"
+      class="rounded-full"
+      to="/user/cart">
+      {{ cartQuantity }}
+    </UButton>
+    <template #fallback>
+      <UButton
+        icon="i-heroicons-shopping-cart"
+        size="md"
+        class="rounded-full"
+        to="/user/cart"
+        disabled>
+        0
+      </UButton>
+    </template>
+  </ClientOnly>
 </template>

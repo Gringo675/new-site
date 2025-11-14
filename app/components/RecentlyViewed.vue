@@ -69,6 +69,7 @@ async function updateViewed() {
 <template>
   <ProductsSlider
     v-if="viewed.length"
+    data-testid="recently-viewed-block"
     :products="viewed"
     label="Просмотренные товары" />
 </template>

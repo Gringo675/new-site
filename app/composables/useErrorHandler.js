@@ -1,5 +1,3 @@
-// import { CatsMenuSlider } from '#components'
-
 export default async () => {
   //
   onErrorCaptured(e => {

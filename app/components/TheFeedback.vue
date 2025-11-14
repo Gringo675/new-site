@@ -13,10 +13,12 @@ const userForm = useTemplateRef('userFormRef')
 const submitForm = async () => {
   const formData = await userForm.value.getUserFormData()
   if (!formData) return
+
   const isUserSaved = await userProfile.value.saveUserData()
   if (!isUserSaved) return
 
   const user = useUser().value
+  formData.append('subject', 'Сообщение с сайта - ' + props.title)
   formData.append(
     'user',
     JSON.stringify({
@@ -49,16 +51,14 @@ const submitForm = async () => {
     :ui="{
       content: 'max-w-2xl',
       header: 'min-h-auto',
-    }"
-  >
+    }">
     <template #body>
       <div class="grid gap-x-6 gap-y-4 md:grid-cols-2">
         <!-- first col -->
         <div class="">
           <TheUserForm
             ref="userFormRef"
-            :message="message"
-          />
+            :message="message" />
         </div>
         <!-- second col -->
         <div class="">
@@ -72,15 +72,13 @@ const submitForm = async () => {
           label="Отмена"
           variant="outline"
           color="neutral"
-          @click="emit('close')"
-        />
+          @click="emit('close')" />
         <UButton
           label="Ok"
           @click="submitForm"
           variant="subtle"
           color="neutral"
-          class="px-8"
-        />
+          class="px-8" />
       </div>
     </template>
   </UModal>

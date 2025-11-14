@@ -81,6 +81,7 @@ onMounted(async () => {
         :ui="{
           leadingIcon: 'size-8 sm:size-10',
         }"
+        aria-label="Закрыть"
         @click="closeImageViewer" />
       <ImageViewerCarousel
         ref="carouselRef"

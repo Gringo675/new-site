@@ -14,7 +14,7 @@ onMounted(async () => {
     } else if (event.newValue === '2') getUser({ force: true })
   })
 
-  setTimeout(processUser, 2000)
+  processUser()
 })
 
 const processUser = () => {
@@ -111,53 +111,65 @@ const loadAnalytics = async () => {
 </script>
 
 <template>
-  <div class="relative max-w-40">
-    <UButton
-      v-if="!user.auth"
-      icon="i-heroicons-user"
-      size="md"
-      truncate
-      class="rounded-full"
-      @click="showLogin"
-      label="Войти" />
-    <HelperPopupMenu
-      v-else
-      contentClass="right-0">
-      <template #trigger="{ show }">
+  <ClientOnly>
+    <div class="relative max-w-40">
+      <UButton
+        v-if="!user.auth"
+        icon="i-heroicons-user"
+        size="md"
+        truncate
+        class="rounded-full"
+        @click="showLogin"
+        label="Войти" />
+      <HelperPopupMenu
+        v-else
+        contentClass="right-0">
+        <template #trigger="{ show }">
+          <UButton
+            icon="i-heroicons-user"
+            size="md"
+            truncate
+            class="rounded-full"
+            @click="show"
+            :label="user.name" />
+        </template>
+        <template #content>
+          <div class="flex flex-col items-end gap-2">
+            <UButton
+              v-if="user.admin"
+              icon="i-material-symbols-admin-panel-settings-rounded"
+              to="/admin"
+              label="Админка"
+              variant="outline" />
+            <UButton
+              icon="i-material-symbols-settings-account-box-outline-rounded"
+              to="/user/profile"
+              label="Профиль"
+              variant="ghost" />
+            <UButton
+              icon="i-material-symbols-work-history-outline-rounded"
+              to="/user/orders"
+              label="Заказы"
+              variant="ghost" />
+            <UButton
+              icon="i-iconamoon-exit"
+              to="/"
+              label="Выход"
+              variant="ghost"
+              @click="logoutUser" />
+          </div>
+        </template>
+      </HelperPopupMenu>
+    </div>
+    <template #fallback>
+      <div class="relative max-w-40">
         <UButton
           icon="i-heroicons-user"
           size="md"
-          truncate
           class="rounded-full"
-          @click="show"
-          :label="user.name" />
-      </template>
-      <template #content>
-        <div class="flex flex-col items-end gap-2">
-          <UButton
-            v-if="user.admin"
-            icon="i-material-symbols-admin-panel-settings-rounded"
-            to="/admin"
-            label="Админка"
-            variant="outline" />
-          <UButton
-            icon="i-material-symbols-settings-account-box-outline-rounded"
-            to="/user/profile"
-            label="Профиль"
-            variant="ghost" />
-          <UButton
-            icon="i-material-symbols-work-history-outline-rounded"
-            to="/user/orders"
-            label="Заказы"
-            variant="ghost" />
-          <UButton
-            icon="i-iconamoon-exit"
-            to="/"
-            label="Выход"
-            variant="ghost"
-            @click="logoutUser" />
-        </div>
-      </template>
-    </HelperPopupMenu>
-  </div>
+          disabled
+          label="Войти" />
+      </div>
+    </template>
+  </ClientOnly>
 </template>

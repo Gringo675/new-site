@@ -4,13 +4,18 @@ defineExpose({
   clearAll,
 })
 
+const isMounted = ref(false)
+onMounted(() => {
+  isMounted.value = true
+})
+
 const props = defineProps({
   forCatalog: {
     type: Boolean,
     default: false,
   },
   // forDelivery: {
-  //   type: Boolean,
+  //   type : Boolean,
   //   default: false,
   // },
 })
@@ -124,7 +129,8 @@ const onEnter = async () => {
           base: props.forCatalog ? 'bg-violet-100 focus:bg-violet-50' : 'bg-gray-100 focus:bg-white',
         }"
         @keyup.enter="onEnter"
-        @click="onInputClick">
+        @click="onInputClick"
+        :disabled="!isMounted">
         <template
           v-if="searchState.query.length"
           #trailing>

@@ -30,7 +30,13 @@ const fieldErrors = {
 const validateField = (field, value) => {
   switch (field) {
     case 'message':
-      fieldErrors.message = value.length > 3000 ? 'Слишком длинное сообщение!' : ''
+      fieldErrors.message =
+        !props.forCart && value.length < 5
+          ? 'Напишите сообщение!'
+          : value.length > 3000
+            ? 'Слишком длинное сообщение!'
+            : ''
+      // fieldErrors.message = value.length > 3000 ? 'Слишком длинное сообщение!' : ''
       break
     case 'files':
       fieldErrors.files = checkFormFiles(value)
@@ -63,8 +69,9 @@ function onError(event) {
 }
 
 async function getUserFormData() {
-  const isValid = await userFormRef.value.validate().catch(() => false) // если есть ошибки, выбрасывает ошибку
-  if (!isValid) {
+  // validate({}) - при отсутствии ошибок возвращает объект со значениями полей, при ошибках - выбрасывает ошибку
+  const validationResult = await userFormRef.value.validate({}).catch(() => false)
+  if (validationResult === false) {
     userFormRef.value.submit() // для запуска onError
     return false
   }
@@ -86,14 +93,13 @@ async function getUserFormData() {
     :validate="formValidate"
     ref="userFormRef"
     @error="onError"
-    class="flex w-full flex-wrap gap-6"
-  >
+    class="flex w-full flex-wrap gap-6">
     <UFormField
       name="message"
       :label="forCart ? 'Комментарий к заказу' : 'Сообщение'"
+      :required="!forCart"
       class="w-full"
-      :class="forCart && 'max-w-100'"
-    >
+      :class="forCart && 'max-w-100'">
       <UTextarea
         v-model="formState.message"
         :placeholder="
@@ -104,21 +110,18 @@ async function getUserFormData() {
         resize
         :rows="forCart ? 3 : 9"
         class="w-full"
-        :size="forCart ? 'xl' : 'md'"
-      />
+        :size="forCart ? 'xl' : 'md'" />
     </UFormField>
     <UFormField
       name="files"
       label="Прикрепить файл(-ы)"
       :description="'Например, реквизиты организации' + (forCart ? '' : ' или заявку')"
       :class="forCart && 'max-w-75'"
-      :size="forCart ? 'xl' : 'md'"
-    >
+      :size="forCart ? 'xl' : 'md'">
       <UInput
         type="file"
         multiple
-        @change="formState.files = $event.target.files"
-      />
+        @change="formState.files = $event.target.files" />
     </UFormField>
   </UForm>
 </template>

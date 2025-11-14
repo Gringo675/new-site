@@ -48,8 +48,11 @@ const onLogout = () => {
   closeMobileMenu()
   goTo('/')
 }
-const onFeedback = () => {
-  showFeedback()
+const onFastOrder = () => {
+  showFeedback({
+    title: 'Быстрый заказ',
+    description: 'Напишите, какие позиции Вас интересуют, или прикрепите файл с заявкой.',
+  })
   closeMobileMenu()
 }
 </script>
@@ -75,7 +78,7 @@ const onFeedback = () => {
           block
           label="Быстрый заказ"
           icon="i-heroicons-pencil-square"
-          @click="onFeedback"
+          @click="onFastOrder"
           class="mt-2" />
         <UButton
           v-for="item in menuState"

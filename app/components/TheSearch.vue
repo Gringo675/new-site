@@ -41,7 +41,9 @@ const showAllResults = query => {
           </template>
         </div>
         <!-- products -->
-        <div class="flex flex-col items-start gap-y-1 rounded-lg bg-violet-50 p-2 pt-1">
+        <div
+          data-testid="product-links-block"
+          class="flex flex-col items-start gap-y-1 rounded-lg bg-violet-50 p-2 pt-1">
           <div class="-mb-1 self-end text-sm font-semibold">Товары</div>
           <NuxtLink
             v-for="product in searchState.result.products"

@@ -62,16 +62,16 @@ const verifyCode = async code => {
     },
   })
   if (verified) {
+    await getUser()
     showNotice({
       title: 'Авторизация пройдена!',
       description: user.value.name.length ? `${user.value.name}, с возвращением!` : '',
       type: 'success',
     })
-    await getUser()
     closeLogin()
   } else {
     fieldErrors.code = 'Неверный код!'
-    formRef.value.validate().catch(() => false) // to trigger validation (show error)
+    formRef.value.validate({}).catch(() => false) // to trigger validation (show error)
   }
 }
 
