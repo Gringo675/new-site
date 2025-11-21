@@ -5,15 +5,15 @@ const { docs } = defineProps({
 })
 
 const items = []
-for (const stnd of docs.stnd ?? []) {
+for (const stn of docs.stnd ?? []) {
   const item = {
-    title: `${stnd.number} ${stnd.name}`,
+    title: `${stn.number} ${stn.name}`,
     buttons: [],
   }
-  if (stnd.file) {
+  if (stn.file) {
     item.buttons.push({
-      label: `Открыть ${stnd.number}`,
-      url: `stnd/${stnd.file}`,
+      label: `Открыть ${stn.number}`,
+      url: `stnd/${stn.file}`,
     })
   }
   items.push(item)
@@ -64,7 +64,6 @@ for (const pasp of docs.pasp ?? []) {
   <div class="flex flex-col gap-2">
     <HelperDocsBlockItem
       v-for="item in items"
-      :item="item"
-    />
+      :item="item" />
   </div>
 </template>

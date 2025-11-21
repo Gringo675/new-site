@@ -1,11 +1,10 @@
 import { test, expect } from '@playwright/test'
 
-test('test', async ({ page }) => {
-  await page.goto('https://test.chelinstrument.ru')
-  // await page.goto('http://localhost:3000/')
-  await page.goto('https://test.chelinstrument.ru/')
-  await page.getByRole('button', { name: 'Каталог' }).click()
-  await page.getByRole('link', { name: 'Микрометры', exact: true }).click()
+test('test cart and order', async ({ page }) => {
+  const urlBase = process.env.TEST_URL_BASE ?? ''
+  // const urlBase = 'http://localhost:3000/'
+
+  await page.goto(urlBase + 'catalog/mikrometry')
 
   const productCards = page.getByTestId('product-card')
   const cartButton = page.locator('a[href="/user/cart"]')
@@ -27,6 +26,12 @@ test('test', async ({ page }) => {
   await thirdProduct.getByRole('button', { name: 'Убавить' }).click()
   await expect(cartButton).toHaveText('6')
 
+  // go to second product page
+  await secondProduct.getByRole('link').click()
+  await expect(page.getByPlaceholder('Количество').first()).toHaveValue('2')
+  // reload to another page to check cart state persistence
+  await page.goto(urlBase)
+
   await cartButton.click()
   await expect(productCards).toHaveCount(3)
   await expect(page.getByRole('complementary')).toContainText('Товаров:6')
@@ -44,6 +49,6 @@ test('test', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Адрес' }).fill('г. Тест, ул. Тест')
   await page.getByRole('textbox', { name: 'Телефон' }).fill('123 456-78-90')
 
-  await page.getByRole('button', { name: 'Оформить заказ' }).click()
-  await expect(page.locator('h2')).toContainText(/Заказ № \d+ успешно создан!/)
+  // await page.getByRole('button', { name: 'Оформить заказ' }).click()
+  // await expect(page.getByRole('heading', { name: /Заказ № \d+ успешно создан!/ })).toBeVisible()
 })

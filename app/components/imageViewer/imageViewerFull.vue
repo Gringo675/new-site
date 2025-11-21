@@ -75,13 +75,13 @@ onMounted(async () => {
     }">
     <template #content>
       <UButton
+        aria-label="Закрыть"
         class="absolute top-3 right-3 z-10 focus-visible:ring-0 focus-visible:outline-none"
         icon="i-heroicons-x-circle"
         variant="link"
         :ui="{
           leadingIcon: 'size-8 sm:size-10',
         }"
-        aria-label="Закрыть"
         @click="closeImageViewer" />
       <ImageViewerCarousel
         ref="carouselRef"

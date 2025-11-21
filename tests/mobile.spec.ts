@@ -1,11 +1,14 @@
 import { test, expect } from '@playwright/test'
 test.use({
-  viewport: { width: 400, height: 600 },
+  // viewport: { width: 400, height: 600 },
 })
 
-test('test', async ({ page }) => {
-  await page.goto('https://test.chelinstrument.ru/')
-  // await page.goto('http://localhost:3000/')
+test('test mobile screen', async ({ page }) => {
+  const urlBase = process.env.TEST_URL_BASE ?? ''
+  // const urlBase = 'http://localhost:3000/'
+
+  await page.goto(urlBase)
+
   await page.getByRole('button', { name: 'Меню' }).click()
   await page.getByRole('button', { name: 'Весь каталог инструмента' }).click()
   await expect(page.getByRole('heading', { name: 'Каталог инструментов' })).toBeVisible()

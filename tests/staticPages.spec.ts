@@ -1,7 +1,10 @@
 import { test, expect } from '@playwright/test'
 
 test('test static pages', async ({ page }) => {
-  await page.goto('https://test.chelinstrument.ru/')
+  const urlBase = process.env.TEST_URL_BASE ?? ''
+  // const urlBase = 'http://localhost:3000/'
+
+  await page.goto(urlBase)
 
   await expect(page.getByText('Лидеры продаж')).toBeVisible()
   await expect(page.getByText('Всегда для вас')).toBeVisible()
@@ -25,4 +28,14 @@ test('test static pages', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Микрометры' })).toBeVisible()
 
   await page.getByRole('button', { name: 'Принять' }).click() // cookie banner
+
+  const checkDirectLinks = [
+    { link: 'privacy', heading: 'Политика конфиденциальности' },
+    { link: 'help', heading: 'Как купить' },
+    { link: 'materials/chto-takoe-poverka-instrumenta', heading: 'Что такое поверка?' },
+  ] // replace with real links and headings
+  for (const item of checkDirectLinks) {
+    await page.goto(new URL(item.link, urlBase).toString())
+    await expect(page.getByRole('heading', { name: item.heading })).toBeVisible()
+  }
 })

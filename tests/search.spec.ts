@@ -1,8 +1,11 @@
 import { test, expect } from '@playwright/test'
 
-test('test', async ({ page }) => {
-  // await page.goto('https://test.chelinstrument.ru/')
-  await page.goto('http://localhost:3000/')
+test('test search functionality', async ({ page }) => {
+  const urlBase = process.env.TEST_URL_BASE ?? ''
+  // const urlBase = 'http://localhost:3000/'
+
+  await page.goto(urlBase)
+
   const searchBox = page.getByRole('textbox', { name: 'Поиск по каталогу' })
   await searchBox.fill('250')
 

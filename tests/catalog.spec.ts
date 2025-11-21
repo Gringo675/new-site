@@ -1,8 +1,20 @@
 import { test, expect } from '@playwright/test'
 
-test('test', async ({ page }) => {
-  await page.goto('https://test.chelinstrument.ru')
-  // await page.goto('http://localhost:3000/')
+test('test catalog (category page)', async ({ page }) => {
+  const urlBase = process.env.TEST_URL_BASE ?? ''
+  // const urlBase = 'http://localhost:3000/'
+
+  await page.goto(urlBase + 'catalog')
+  await expect(page.getByText('Каталог инструментов')).toBeVisible()
+  await page.getByRole('link', { name: 'Индикаторы', exact: true }).click()
+  await expect(page.getByRole('heading', { name: 'Индикаторы' })).toBeVisible()
+  await page.getByRole('link', { name: 'Индикаторы ИЧ часового типа' }).click()
+  await expect(page.getByRole('heading', { name: 'Индикаторы ИЧ часового типа' })).toBeVisible()
+
+  // try direct link to category
+  await page.goto(urlBase + 'catalog/prizmy-poverochnye')
+  await expect(page.getByRole('heading', { name: 'Призмы поверочные' })).toBeVisible()
+
   await page.getByRole('button', { name: 'Каталог' }).click()
   await page.getByRole('link', { name: 'Штангенциркули', exact: true }).click()
   await expect(page.getByText('Подкатегории')).toBeVisible()
@@ -12,6 +24,8 @@ test('test', async ({ page }) => {
 
   const productCards = page.getByTestId('product-card')
   const priceLocator = '.text-primary.relative span'
+
+  await page.getByRole('button', { name: 'Принять' }).click() // cookie banner may overlap sorting menu
 
   // test sorting by name and price
   await page.getByRole('combobox', { name: 'Сортировка' }).click()
@@ -39,15 +53,17 @@ test('test', async ({ page }) => {
 
   // filter test
   await page.getByText('с глубиномером', { exact: true }).click()
+  await page.waitForTimeout(200)
   await page.getByRole('checkbox', { name: 'нониусный', exact: true }).check()
+  await page.waitForTimeout(200)
   await page.getByText('0-150 мм', { exact: true }).click()
+  await page.waitForTimeout(200)
   await page.getByRole('button', { name: 'Развернуть' }).nth(5).click()
   await page.getByText('0,05 мм', { exact: true }).click()
+  await page.waitForTimeout(200)
 
   await expect(async () => {
     const filteredProducts = await productCards.count()
-    console.log(`filteredProducts: ${JSON.stringify(filteredProducts, null, 2)}`)
-
     expect(filteredProducts).toBeGreaterThan(2)
     expect(filteredProducts).toBeLessThan(10)
   }).toPass()

@@ -162,7 +162,7 @@ ${order.files && order.files.length > 0 ? order.files.map(f => f.filename).join(
 
   // 5. Подготовка и отправка писем
   const sellerMail = {
-    to: 'gringo675@mail.ru', // Адрес менеджера
+    to: 'admin@chelinstrument.ru', // Адрес менеджера
     subject: order.user.auth ? 'Сайт - Быстрый заказ' : `Сайт - Новый заказ №${order.id}`,
     attachments: order.files,
     html: sellerHtml,

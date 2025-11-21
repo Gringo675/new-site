@@ -8,10 +8,9 @@
 -- Mobile ✔️
 -- Каталог + фильтр ✔️
 -- Корзина + заказ ✔️
--- Product page + просмотренные товары
---- images + viewer
---- description
---- props
+-- Product page ✔️
+-- просмотренные товары ✔️
+
 
 
 
@@ -26,7 +25,9 @@
 ## chords
 - site attacks
 - Firefox: arrows on number field
-- deploy timeline?
+- deploy timeline? (saves)
+- deprecated browser warning
+- не забыть переименовать лейблы
 
 # stage 1
 

@@ -1,0 +1,19 @@
+{
+  // --- Explicitly enable variables and snippets (templates) ---
+  "editor.suggest.showVariables": true,
+  "editor.suggest.showSnippets": true,
+
+  // --- Ensure quick suggestions are on for strings to get Tailwind class suggestions ---
+  "editor.quickSuggestions": {
+    "strings": "on"
+  },
+
+  // --- Also turn off any other categories that might still be active ---
+  "editor.suggest.showColors": false,
+  "editor.suggest.showConstants": false,
+  "editor.suggest.showFunctions": false,
+  "editor.suggest.showKeywords": false,
+  "editor.suggest.showMethods": false,
+  "editor.suggest.showProperties": false,
+  "editor.suggest.showValues": false
+}
