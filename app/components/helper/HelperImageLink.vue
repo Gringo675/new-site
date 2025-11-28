@@ -43,8 +43,12 @@ const props = defineProps({
         class="h-auto w-full rounded-xl" />
     </picture>
     <div class="group absolute inset-0 flex items-center justify-center rounded-xl bg-black/10 p-4 hover:bg-black/30">
-      <span
+      <!-- <span
         class="rounded-lg bg-black/70 px-4 py-2 text-center text-2xl font-bold text-white shadow-lg group-hover:bg-black/80">
+        {{ title }}
+      </span> -->
+      <span
+        class="rounded-lg bg-fuchsia-200/90 px-4 py-2 text-center text-2xl font-bold text-indigo-500 shadow-lg group-hover:bg-fuchsia-300/90">
         {{ title }}
       </span>
     </div>

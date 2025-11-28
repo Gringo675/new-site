@@ -105,11 +105,11 @@
   /* hide arrows more/less in numbered input */
   input::-webkit-outer-spin-button,
   input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
+    -webkit-appearance: none !important;
     margin: 0;
   }
   input[type='number'] {
-    -moz-appearance: textfield;
+    -moz-appearance: textfield !important;
   }
 
   button {

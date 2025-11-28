@@ -116,6 +116,8 @@ export default defineNuxtConfig({
     MAIL_PASS: process.env.MAIL_PASS,
     DL_APP_KEY: process.env.DL_APP_KEY,
     STATIC_ABSOLUTE_PATH: process.env.STATIC_ABSOLUTE_PATH,
+    FAST_LOGIN_MAIL: process.env.FAST_LOGIN_MAIL,
+    FAST_LOGIN_CODE: process.env.FAST_LOGIN_CODE,
     public: {
       GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
       VK_CLIENT_ID: process.env.VK_CLIENT_ID,

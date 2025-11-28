@@ -13,7 +13,7 @@ import nodemailer from 'nodemailer'
 
 export default async mail => {
   // defaults
-  mail.from = mail.from ?? '"ТД Челябинский Инструмент" <admin@chelinstrument.ru>'
+  mail.from = mail.from ?? '"ТД Челябинский Инструмент" <info@chelinstrument.ru>'
   mail.subject = mail.subject ?? 'Сообщение с сайта chelinstrument.ru'
   mail.attachments = mail.attachments ?? []
   mail.text = mail.text ?? 'This app can not read the message. Try another program.'

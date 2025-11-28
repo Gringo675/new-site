@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test'
 
-test('test login, user pages and feedback', async ({ page }) => {
+test('test login, user pages and feedback', async ({ page, browserName }) => {
   // test.slow()
 
   const urlBase = process.env.TEST_URL_BASE ?? ''
-  // const urlBase = 'http://localhost:3000/'
+  // const urlBase = 'https://test.chelinstrument.ru/'
 
   await page.goto(urlBase)
 
@@ -49,11 +49,16 @@ test('test login, user pages and feedback', async ({ page }) => {
 
   await page.getByRole('button', { name: 'Принять' }).click() // cookie banner overlaps feedback's submit button
 
-  // await page.getByRole('button', { name: 'Быстрый заказ' }).click()
-  // await expect(page.getByRole('textbox', { name: 'Почта*' })).toHaveValue(process.env.TEST_USER_EMAIL ?? '')
-  // await page.getByRole('textbox', { name: 'Сообщение' }).fill('Тестовое сообщение')
-  // await page.getByRole('button', { name: 'Ok' }).click()
-  // await expect(page.getByText('Сообщение отправлено!', { exact: true })).toBeVisible()
+  const currentDate = new Date().toLocaleDateString('ru-RU')
+
+  // send email only in chromium to avoid spamming
+  if (browserName === 'chromium') {
+    await page.getByRole('button', { name: 'Быстрый заказ' }).click()
+    await expect(page.getByRole('textbox', { name: 'Почта*' })).toHaveValue(process.env.TEST_USER_EMAIL ?? '')
+    await page.getByRole('textbox', { name: 'Сообщение' }).fill(`Тестовое сообщение от ${currentDate}`)
+    await page.getByRole('button', { name: 'Ok' }).click()
+    await expect(page.getByText('Сообщение отправлено!', { exact: true })).toBeVisible()
+  }
 
   await userButton.click()
   await page.getByRole('link', { name: 'Выход' }).click()

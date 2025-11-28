@@ -1,4 +1,5 @@
 import crypto from 'node:crypto'
+const config = useRuntimeConfig()
 // Для загрузки шаблона
 let cachedVerifyMailTemplate = null
 
@@ -8,7 +9,7 @@ export default defineEventHandler(async event => {
   if (!validateMail(mail)) throw createError({ statusCode: 400, statusMessage: `Incorrect mail format!` })
 
   // const code = getRandomCode()
-  const code = mail === 'gringo675g@gmail.com' ? 11111 : getRandomCode()
+  const code = mail === config.FAST_LOGIN_MAIL ? config.FAST_LOGIN_CODE : getRandomCode()
 
   const salt = crypto.randomBytes(3).toString('hex') // 6 symbols
   const hashCode = crypto.createHmac('SHA256', salt).update(`${code}`).digest('base64') + `.${salt}`
@@ -69,8 +70,8 @@ export default defineEventHandler(async event => {
     html,
     text,
   }
-  // await sendMail(mailData)
-  if (mail !== 'gringo675g@gmail.com') await sendMail(mailData)
+
+  if (mail !== config.FAST_LOGIN_MAIL) await sendMail(mailData)
 
   return true
 })

@@ -15,9 +15,9 @@ const buffer = {
       time: new Date().toLocaleTimeString(),
       text,
     }
-    // записываем в текстовый файл (beget: /chelinstrument.ru/public_html/test/cv_log.txt)
-    // putty: tail -f chelinstrument.ru/public_html/test/cv_log.txt
-    const logPath = path.resolve(process.cwd(), 'cv_log.txt')
+    // записываем в текстовый файл (beget: /chelinstrument.ru/public_html/test/cv.log)
+    // putty: tail -f chelinstrument.ru/public_html/test/cv.log
+    const logPath = path.resolve(process.cwd(), 'cv.log')
     fs.appendFileSync(logPath, newData.time + ' ' + newData.text + '\n')
     if (!listener.isActive) return
     this.isReady = false

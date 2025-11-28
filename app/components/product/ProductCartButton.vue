@@ -39,7 +39,7 @@ const productCartIndex = computed(() => cart.findIndex(cartItem => cartItem.id =
           min="1"
           placeholder="Количество"
           :ui="{
-            base: 'text-center w-15 bg-gray-50',
+            base: 'text-center w-15 bg-gray-50 appearance-auto',
           }" />
         <UButton
           color="secondary"

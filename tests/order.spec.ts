@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-test('test cart and order', async ({ page }) => {
+test('test cart and order', async ({ page, browserName }) => {
   const urlBase = process.env.TEST_URL_BASE ?? ''
   // const urlBase = 'http://localhost:3000/'
 
@@ -33,11 +33,12 @@ test('test cart and order', async ({ page }) => {
   await page.goto(urlBase)
 
   await cartButton.click()
+  const currentDate = new Date().toLocaleDateString('ru-RU')
   await expect(productCards).toHaveCount(3)
   await expect(page.getByRole('complementary')).toContainText('Товаров:6')
   await expect(page.getByRole('button', { name: 'Очистить корзину' })).toBeVisible()
   await page.getByRole('textbox', { name: 'Комментарий к заказу' }).click()
-  await page.getByRole('textbox', { name: 'Комментарий к заказу' }).fill('Тестовый заказ')
+  await page.getByRole('textbox', { name: 'Комментарий к заказу' }).fill(`Тестовый заказ от ${currentDate}`)
   await page.getByRole('button', { name: 'Оформить заказ' }).click()
   await expect(page.getByRole('button', { name: 'Войти/зарегистрироваться' })).toBeVisible()
   await expect(page.getByRole('button', { name: 'Назад в корзину' })).toBeVisible()
@@ -49,6 +50,9 @@ test('test cart and order', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Адрес' }).fill('г. Тест, ул. Тест')
   await page.getByRole('textbox', { name: 'Телефон' }).fill('123 456-78-90')
 
-  // await page.getByRole('button', { name: 'Оформить заказ' }).click()
-  // await expect(page.getByRole('heading', { name: /Заказ № \d+ успешно создан!/ })).toBeVisible()
+  // send email only in chromium to avoid spamming
+  if (browserName === 'chromium') {
+    await page.getByRole('button', { name: 'Оформить заказ' }).click()
+    await expect(page.getByRole('heading', { name: /Заказ № \d+ успешно создан!/ })).toBeVisible()
+  }
 })

@@ -18,16 +18,23 @@ onMounted(async () => {
 })
 
 const processUser = () => {
-  const consent = localStorage.getItem('COOKIE_CONSENT')
-
-  // if (consent === 'accepted') loadAnalytics()
-  // else showCookieBanner()
-  if (consent !== 'accepted') setTimeout(showCookieBanner, 5000)
-  loadAnalytics()
-
   getUser({ hidden: true })
 
-  if (!import.meta.dev) showNewSiteBanner()
+  // @ts-ignore
+  if (!window.__appInitialized) {
+    // to avoid multiple executions from error.vue
+    const consent = localStorage.getItem('COOKIE_CONSENT')
+
+    // if (consent === 'accepted') loadAnalytics()
+    // else showCookieBanner()
+    if (consent !== 'accepted') setTimeout(showCookieBanner, 5000)
+    if (!import.meta.dev) showNewSiteBanner()
+
+    loadAnalytics()
+
+    // @ts-ignore
+    window.__appInitialized = true
+  }
 }
 
 const showCookieBanner = () => {
@@ -102,11 +109,8 @@ const showNewSiteBanner = () => {
 }
 
 const loadAnalytics = async () => {
-  // @ts-ignore
-  if (window.__analyticsLoaded) return
   console.log(`Loading analytics...`)
   // @ts-ignore
-  window.__analyticsLoaded = true
 }
 </script>
 

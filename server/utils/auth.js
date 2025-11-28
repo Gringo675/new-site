@@ -4,6 +4,19 @@ const config = useRuntimeConfig()
 const tokenKey = config.JWT_TOKEN_KEY
 const tokenLifeTime = Number(config.JWT_TOKEN_LIFETIME)
 
+const getBaseCookieOptions = () => {
+  const options = {
+    path: '/',
+    httpOnly: true,
+    sameSite: 'lax',
+  }
+
+  if (process.env.NODE_ENV === 'production') {
+    options.secure = true
+  }
+  return options
+}
+
 export const createToken = (user, event) => {
   const tokenExp = new Date(Date.now() + tokenLifeTime)
   const tokenHead = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'jwt' })).toString('base64')
@@ -12,17 +25,16 @@ export const createToken = (user, event) => {
       id: user.id,
       admin: !!user.admin,
       expires: tokenExp,
-    })
+    }),
   ).toString('base64')
   const tokenSignature = crypto.createHmac('SHA256', tokenKey).update(`${tokenHead}.${tokenPayload}`).digest('base64')
 
-  setCookie(event, 'token', `${tokenHead}.${tokenPayload}.${tokenSignature}`, {
-    path: '/',
+  const cookieOptions = {
+    ...getBaseCookieOptions(),
     expires: tokenExp,
-    httpOnly: true,
-    secure: true,
-    sameSite: 'strict',
-  })
+  }
+
+  setCookie(event, 'token', `${tokenHead}.${tokenPayload}.${tokenSignature}`, cookieOptions)
 
   // записываем в базу время обновления
   const query = `UPDATE i_users
@@ -32,13 +44,12 @@ export const createToken = (user, event) => {
 }
 
 export const deleteToken = event => {
-  setCookie(event, 'token', '', {
-    path: '/',
+  const cookieOptions = {
+    ...getBaseCookieOptions(),
     expires: new Date('Thu, 01 Jan 1970 00:00:00 GMT'),
-    httpOnly: true,
-    secure: true,
-    sameSite: 'strict',
-  })
+  }
+
+  setCookie(event, 'token', '', cookieOptions)
 }
 
 export const refreshToken = async (tokenUser, event) => {
@@ -55,11 +66,12 @@ export const checkToken = async (event, options = {}) => {
   options.adminOnly = options.adminOnly ?? false
 
   const token = getCookie(event, 'token')
-  if (!token || token === 'undefined')
+  if (!token || token === 'undefined') {
     throw createError({
       statusCode: 401,
       statusMessage: `Authentication Required!`,
     })
+  }
 
   const [header, payload, signature] = token.split('.')
 

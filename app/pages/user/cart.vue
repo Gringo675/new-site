@@ -1,5 +1,6 @@
 <script setup>
 //
+
 useTitle('Корзина')
 const user = useUser()
 

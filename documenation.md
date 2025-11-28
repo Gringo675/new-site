@@ -1,21 +1,5 @@
 # stage 0
 
-## tests
-- Функциональные тесты
--- Статические страницы ✔️
--- Вход/регистрация + провайдеры + обратная связь ✔️
--- Поиск ✔️
--- Mobile ✔️
--- Каталог + фильтр ✔️
--- Корзина + заказ ✔️
--- Product page ✔️
--- просмотренные товары ✔️
-
-
-
-
-- Визуальные тесты
-
 ## seo && performance 
 - insert Yandex && Google scripts
 
@@ -24,9 +8,7 @@
 
 ## chords
 - site attacks
-- Firefox: arrows on number field
 - deploy timeline? (saves)
-- deprecated browser warning
 - не забыть переименовать лейблы
 
 # stage 1
@@ -189,7 +171,7 @@ upd 07.11.25 Наверно дело не в островах, смотри ко
  * for ref and reactive cv({var1}, {var2}, {var3})
  * cv('just text')
  * cv('some text', var1)
-Результаты смотреть либо на странице /admin/console (если залогинин как админ), либо в текстовом файле cv_log.txt.
-Локально лежит в корне проекта (D:\pr_gt\projects\site\cv_log.txt)
-Удаленно на Бегете в /chelinstrument.ru/public_html/test/cv_log.txt . Для слежения удобно использовать putty: tail -f chelinstrument.ru/public_html/test/cv_log.txt
+Результаты смотреть либо на странице /admin/console (если залогинин как админ), либо в текстовом файле cv.log.
+Локально лежит в корне проекта (D:\pr_gt\projects\site\cv.log)
+Удаленно на Бегете в /chelinstrument.ru/public_html/test/cv.log . Для слежения удобно использовать putty: tail -f chelinstrument.ru/public_html/test/cv.log // путь неверный, изменить
 
