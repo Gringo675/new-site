@@ -1,15 +1,5 @@
 <script setup>
 //
-const siteStatus = ref(await myFetch('/api/admin/system/siteStatus', { method: 'post', payload: {} }))
-const changeSiteStatus = async () => {
-  const newStatus = siteStatus.value === '0' ? '1' : '0'
-  siteStatus.value = await myFetch('/api/admin/system/siteStatus', {
-    method: 'post',
-    payload: {
-      setStatus: newStatus,
-    },
-  })
-}
 
 const clearCache = async () => {
   const res = await myFetch('/api/admin/system/clearCache')
@@ -27,9 +17,6 @@ const clearCache = async () => {
       <UButton
         label="Очистить кэш"
         @click="clearCache" />
-      <UButton
-        :label="Number(siteStatus) ? 'Открыть сайт' : 'Закрыть сайт'"
-        @click="changeSiteStatus" />
     </div>
   </HelperAdminOnly>
 </template>

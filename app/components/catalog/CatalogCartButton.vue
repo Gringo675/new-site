@@ -13,6 +13,7 @@ const productCartIndex = computed(() => cart.findIndex(cartItem => cartItem.id =
   <ClientOnly>
     <UButton
       v-if="productCartIndex === -1"
+      class="w-28 @lg:@max-2xl:w-30"
       label="В корзину"
       color="tertiary"
       variant="outline"
@@ -21,7 +22,7 @@ const productCartIndex = computed(() => cart.findIndex(cartItem => cartItem.id =
       block />
     <div
       v-else
-      class="flex items-center justify-center gap-1">
+      class="flex w-28 items-center justify-center gap-1 @lg:@max-2xl:w-30">
       <UButton
         color="secondary"
         :icon="cart[productCartIndex].quantity === 1 ? 'i-heroicons-trash' : 'i-heroicons-minus-small-solid'"
@@ -47,11 +48,11 @@ const productCartIndex = computed(() => cart.findIndex(cartItem => cartItem.id =
     </div>
     <template #fallback>
       <UButton
+        class="w-28 @lg:@max-2xl:w-30"
         label="В корзину"
         color="tertiary"
         variant="outline"
         icon="i-heroicons-shopping-cart"
-        block
         disabled />
     </template>
   </ClientOnly>

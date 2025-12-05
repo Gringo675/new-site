@@ -5,6 +5,7 @@ nuxt.d.ts
 .output
 .env
 img_optimisation/
+archived_builds/
 
 # Playwright
 tests/**/*.png

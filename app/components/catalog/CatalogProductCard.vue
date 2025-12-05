@@ -77,9 +77,7 @@ const showFullImage = () => {
           {{ formatPrice(prod.priceRegular) }}
         </div>
       </div>
-      <CatalogCartButton
-        :prod="prod"
-        class="w-28 @lg:@max-2xl:w-30" />
+      <CatalogCartButton :prod="prod" />
     </div>
   </div>
 </template>

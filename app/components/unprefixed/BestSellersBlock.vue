@@ -1,6 +1,6 @@
 <script setup lang="ts">
 //
-const { data: bestSellers } = await useFetch('/api/getData/products?lId=5')
+const { data: bestSellers } = await useFetch('/api/getData/products?lId=1')
 </script>
 
 <template>

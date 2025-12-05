@@ -9,6 +9,7 @@
     "dev --host": "npm run dev -- --host",
     "build": "nuxt build",
     "deploy": "node deploy.js",
+    "redeploy": "node deploy.js --redeploy",
     "serv": "npm run build && npm run deploy",
     "generate": "nuxt generate",
     "preview": "nuxt preview",

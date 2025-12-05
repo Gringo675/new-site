@@ -37,13 +37,9 @@ export default async (url, options = {}) => {
       else if (e.statusCode === 401 || e.statusCode === 403) {
         hideLoader()
         throw createError(e)
-      } else if (e.statusCode === 423) {
-        // site closed
-        showError(e)
-        break
       } else {
         const repeat = confirm(
-          `Ошибка при обращении к ${url}!\nError ${e.statusCode}: ${e.statusMessage}\nПовторить запрос?`
+          `Ошибка при обращении к ${url}!\nError ${e.statusCode}: ${e.statusMessage}\nПовторить запрос?`,
         )
         if (!repeat) break
       }

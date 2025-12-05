@@ -27,10 +27,10 @@ test('test login, user pages and feedback', async ({ page, browserName }) => {
   await expect(mailruPage.getByText('Sign in to the account')).toBeVisible({ timeout: 15000 })
   await mailruPage.close()
 
-  await page.getByRole('textbox', { name: 'Ваша почта' }).fill(process.env.TEST_USER_EMAIL ?? '')
+  await page.getByRole('textbox', { name: 'Ваша почта' }).fill(process.env.FAST_LOGIN_MAIL ?? '')
 
   await page.getByRole('button', { name: 'Получить код авторизации' }).click()
-  const userCode = process.env.TEST_USER_CODE ?? ''
+  const userCode = process.env.FAST_LOGIN_CODE ?? ''
   await page.getByRole('textbox', { name: 'pin input 1 of' }).fill(userCode[0] ?? '')
   await page.getByRole('textbox', { name: 'pin input 2 of' }).fill(userCode[1] ?? '')
   await page.getByRole('textbox', { name: 'pin input 3 of' }).fill(userCode[2] ?? '')
@@ -54,7 +54,7 @@ test('test login, user pages and feedback', async ({ page, browserName }) => {
   // send email only in chromium to avoid spamming
   if (browserName === 'chromium') {
     await page.getByRole('button', { name: 'Быстрый заказ' }).click()
-    await expect(page.getByRole('textbox', { name: 'Почта*' })).toHaveValue(process.env.TEST_USER_EMAIL ?? '')
+    await expect(page.getByRole('textbox', { name: 'Почта*' })).toHaveValue(process.env.FAST_LOGIN_MAIL ?? '')
     await page.getByRole('textbox', { name: 'Сообщение' }).fill(`Тестовое сообщение от ${currentDate}`)
     await page.getByRole('button', { name: 'Ok' }).click()
     await expect(page.getByText('Сообщение отправлено!', { exact: true })).toBeVisible()
