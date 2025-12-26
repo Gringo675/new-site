@@ -7,24 +7,25 @@
     <div class="flex space-x-4">
       <UButton
         label="Менеджер категорий"
-        to="/admin/categories"
-      />
+        to="/admin/categories" />
       <UButton
         label="Менеджер товаров"
-        to="/admin/products"
-      />
+        to="/admin/products" />
       <UButton
         label="Options"
-        to="/admin/options"
-      />
+        to="/admin/options" />
       <UButton
         label="Console"
-        to="/admin/console"
-      />
+        to="/admin/console" />
       <UButton
         label="Импорт данных"
-        to="/admin/dbImport"
-      />
+        to="/admin/dbImport" />
+      <UButton
+        label="Log"
+        to="/admin/log" />
+      <UButton
+        label="Products Prices"
+        to="/admin/prices" />
     </div>
   </HelperAdminOnly>
 </template>

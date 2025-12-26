@@ -44,7 +44,7 @@ test('test cart and order', async ({ page, browserName }) => {
   await expect(page.getByRole('button', { name: 'Назад в корзину' })).toBeVisible()
   await page.getByRole('button', { name: 'Продолжить без авторизации' }).click()
   await page.getByRole('textbox', { name: 'Имя*' }).fill('Тест')
-  await page.getByRole('textbox', { name: 'Почта*' }).fill(process.env.TEST_USER_EMAIL ?? '')
+  await page.getByRole('textbox', { name: 'Почта*' }).fill(process.env.FAST_LOGIN_MAIL ?? '')
   await page.getByRole('textbox', { name: 'Организация' }).fill('АО "Тест"')
   await page.getByRole('textbox', { name: 'ИНН' }).fill('1234567890')
   await page.getByRole('textbox', { name: 'Адрес' }).fill('г. Тест, ул. Тест')

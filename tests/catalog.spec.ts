@@ -53,14 +53,14 @@ test('test catalog (category page)', async ({ page }) => {
 
   // filter test
   await page.getByText('с глубиномером', { exact: true }).click()
-  await page.waitForTimeout(200)
+  await page.waitForTimeout(400)
   await page.getByRole('checkbox', { name: 'нониусный', exact: true }).check()
-  await page.waitForTimeout(200)
+  await page.waitForTimeout(400)
   await page.getByText('0-150 мм', { exact: true }).click()
-  await page.waitForTimeout(200)
+  await page.waitForTimeout(400)
   await page.getByRole('button', { name: 'Развернуть' }).nth(5).click()
   await page.getByText('0,05 мм', { exact: true }).click()
-  await page.waitForTimeout(200)
+  await page.waitForTimeout(400)
 
   await expect(async () => {
     const filteredProducts = await productCards.count()

@@ -15,7 +15,7 @@ props.error.url = props.error.url || router.currentRoute.value.fullPath // useRo
 if (!nuxtApp.isHydrating) setErrorToLog(props.error)
 async function setErrorToLog(e) {
   try {
-    const logError = await $fetch('/api/log/setError', {
+    await $fetch('/api/log/setError', {
       method: 'POST',
       body: {
         statusCode: e.statusCode || e.data?.statusCode || 0,
@@ -25,8 +25,8 @@ async function setErrorToLog(e) {
         stack: e.data?.stack || e.stack || 'No stack',
       },
     })
-  } catch (logError) {
-    console.error(`Can't write error to the log: ${logError.message}`)
+  } catch (e) {
+    console.error(`Can't write error to the log: ${e.message}`)
   }
 }
 

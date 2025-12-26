@@ -33,6 +33,16 @@ const menuState = [
     icon: 'i-heroicons-book-open',
   },
 ]
+
+const toOldSite = () => {
+  $fetch('/api/log/setText', {
+    method: 'POST',
+    body: {
+      text: 'toOldSite button clicked',
+    },
+  })
+  window.open('https://old.chelinstrument.ru/', '_blank', 'noopener,noreferrer')
+}
 </script>
 
 <template>
@@ -84,9 +94,7 @@ const menuState = [
           class="rounded-full max-lg:w-[15vw] max-lg:text-sm"
           trailing-icon="i-heroicons-arrow-right"
           color="tertiary"
-          to="https://old.chelinstrument.ru/"
-          target="_blank"
-          rel="noopener noreferrer nofollow" />
+          @click="toOldSite" />
       </div>
       <div class="col-span-1 flex max-md:justify-center">
         <div

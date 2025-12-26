@@ -21,6 +21,11 @@ export default defineNuxtConfig({
         { rel: 'shortcut icon', href: '/static/assets/favicons/favicon.ico' },
         { rel: 'apple-touch-icon', sizes: '180x180', href: '/static/assets/favicons/apple-touch-icon.png' },
         { rel: 'manifest', href: '/static/assets/favicons/site.webmanifest' },
+        // --- Added preconnect links for analytics scripts ---
+        { rel: 'preconnect', href: 'https://mc.yandex.ru' },
+        { rel: 'preconnect', href: 'https://www.googletagmanager.com' },
+        { rel: 'dns-prefetch', href: 'https://www.google-analytics.com' },
+        // --- End of preconnect links ---
       ],
     },
   },
@@ -119,9 +124,12 @@ export default defineNuxtConfig({
     FAST_LOGIN_MAIL: process.env.FAST_LOGIN_MAIL,
     FAST_LOGIN_CODE: process.env.FAST_LOGIN_CODE,
     public: {
+      PROD_MODE: process.env.NUXT_BUILD_MODE === 'prod',
       GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
       VK_CLIENT_ID: process.env.VK_CLIENT_ID,
       MAILRU_CLIENT_ID: process.env.MAILRU_CLIENT_ID,
+      GOOGLE_ANALYTICS_ID: process.env.GOOGLE_ANALYTICS_ID,
+      YANDEX_METRIKA_ID: process.env.YANDEX_METRIKA_ID,
     },
   },
   experimental: {
