@@ -15,8 +15,8 @@ RewriteRule ^katalog/(?:[^/]+/)?([^/]+)/?$ /catalog/$1 [R=301,L,QSD]
 RedirectMatch 301 ^/docs/(.\*)$ /static/doc/$1
 
 # Img's redirection
-RedirectMatch 301 ^/components/com_jshopping/files/img_products/(._)$ /static/img/products/legacy/$1
-RedirectMatch 301 ^/components/com_jshopping/files/img_categories/(._)$ /static/img/categories/legacy/$1
+RedirectMatch 301 ^/components/com_jshopping/files/img_products/(.*)$ /static/img/products/legacy/$1
+RedirectMatch 301 ^/components/com_jshopping/files/img_categories/(.*)$ /static/img/categories/legacy/$1
 
 # Static pages redirection
 Redirect 301 /katalog /catalog
