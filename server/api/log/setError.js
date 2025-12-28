@@ -10,8 +10,9 @@ export default defineEventHandler(async event => {
     throw createError({ statusCode: 462, statusMessage: `Incorrect error format!` })
 
   const cTime = new Date().toISOString()
+  const dbLogTable = getLogTableName()
 
-  const query = `INSERT INTO i_log SET created = '${cTime}', error = 1, text = '${prepareString(
+  const query = `INSERT INTO ${dbLogTable} SET created = '${cTime}', error = 1, text = '${prepareString(
     JSON.stringify(error),
   )}'`
   await dbReq(query)

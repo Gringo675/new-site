@@ -44,5 +44,9 @@ const importHandler = async dataType => {
         label="Set Product Labels"
         @click="importHandler('setProductLabels')" />
     </div>
+    <HelperAlarm>
+      WARNING: похоже юзеров больше нельзя переносить со старой базы. При переносе может поменяться ид у существующего
+      юзера, и при следующей авторизации он залогиниться под чужим аккаунтом.
+    </HelperAlarm>
   </HelperAdminOnly>
 </template>

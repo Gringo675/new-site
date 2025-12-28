@@ -22,7 +22,7 @@ async function setErrorToLog(e) {
         statusMessage: e.statusMessage || e.data?.statusMessage || 'No message',
         url: e.url || 'No url',
         onServer: import.meta.server,
-        userAgent: !import.meta.server ? navigator.userAgent : '-',
+        userAgent: import.meta.client ? navigator.userAgent : useRequestHeader('user-agent'),
         stack: e.data?.stack || e.stack || 'No stack',
       },
     })
