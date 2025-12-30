@@ -140,11 +140,11 @@ test('test product page', async ({ page }) => {
 
   // Delivery info tab
   await page.getByRole('tab', { name: 'Способы получения' }).click()
+  // Wait for the initial load request for the default city to complete
+  await page.waitForResponse(resp => resp.url().includes('/api/dellin/getCalc'))
   await expect(page.getByRole('heading', { name: 'Доставка заказа' })).toBeVisible()
   await expect(page.getByText('Самовывоз с ПВЗ', { exact: true })).toBeVisible()
   await expect(page.getByText('Доставка до дверей', { exact: true })).toBeVisible()
-  // Wait for the initial load request for the default city to complete
-  await page.waitForResponse(resp => resp.url().includes('/api/dellin/getCalc'))
   await page.getByRole('textbox', { name: 'Укажите пункт назначения' }).fill('рязань')
   // Now, start waiting for the specific request triggered by the city change
   const responsePromise = page.waitForResponse(resp => resp.url().includes('/api/dellin/getCalc'))

@@ -15,16 +15,30 @@ props.error.url = props.error.url || router.currentRoute.value.fullPath // useRo
 if (!nuxtApp.isHydrating) setErrorToLog(props.error)
 async function setErrorToLog(e) {
   try {
+    const userAgent = import.meta.client ? navigator.userAgent : useRequestHeader('user-agent')
+    const isBot = useBotDetector(userAgent)
+    const richError = {
+      statusCode: e.statusCode || e.data?.statusCode || 0,
+      statusMessage: e.statusMessage || e.data?.statusMessage || 'No message',
+      url: e.url || 'No url',
+      onServer: import.meta.server,
+      userAgent,
+      isBot,
+      stack: e.data?.stack || e.stack || 'No stack',
+    }
+
+    if (
+      isBot &&
+      richError.statusCode === 500 &&
+      richError.stack.startsWith('TypeError: Failed to fetch dynamically imported module')
+    ) {
+      // Don't log bot dynamic import errors
+      return
+    }
+
     await $fetch('/api/log/setError', {
       method: 'POST',
-      body: {
-        statusCode: e.statusCode || e.data?.statusCode || 0,
-        statusMessage: e.statusMessage || e.data?.statusMessage || 'No message',
-        url: e.url || 'No url',
-        onServer: import.meta.server,
-        userAgent: import.meta.client ? navigator.userAgent : useRequestHeader('user-agent'),
-        stack: e.data?.stack || e.stack || 'No stack',
-      },
+      body: richError,
     })
   } catch (e) {
     console.error(`Can't write error to the log: ${e.message}`)

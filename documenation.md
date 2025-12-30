@@ -1,23 +1,11 @@
-# stage 0
+# stage 0.5
+- clear cache after deploy
+- disable log from blocker middleware for test.
+- disable log for 500 bot's error
 
-## seo && performance 
-
-
-## optimization
-- final tests
 
 ## chords
 - check/change e-mails
-- separate (add flag) for prod adn test log ??
-
-## v2 launch
-- rename current public_html
-- create symlink public_html to /build/public
-- activate .htaccess
-- maybe touch restart.txt
-- change sitemap url
-- run tests
-- monitor log 
 
 ## cms
 prices:

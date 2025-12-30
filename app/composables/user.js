@@ -44,8 +44,10 @@ export const getUser = async (options = {}) => {
       createUserEvent('1') // для обновления всех открытых вкладок
     }
   } catch (e) {
-    console.error(`Can't get user!`)
-    throw createError(e)
+    if (!options.hidden) {
+      console.error(`Can't get user!`);
+      throw createError(e)
+    }
   }
 }
 

@@ -21,11 +21,11 @@
         label="Импорт данных"
         to="/admin/dbImport" />
       <UButton
-        label="Log"
-        to="/admin/log" />
-      <UButton
         label="Products Prices"
         to="/admin/prices" />
+      <UButton
+        label="Log"
+        to="/admin/log" />
     </div>
   </HelperAdminOnly>
 </template>
