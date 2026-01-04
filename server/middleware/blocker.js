@@ -75,15 +75,14 @@ export default defineEventHandler(event => {
   const url = originalUrl.toLowerCase()
 
   if (PRE_COMPILED_BLOCKED_PATTERN_REGEX.test(url)) {
-    // The specific matched substring is no longer logged for performance.
     console.warn(`Blocked request to ${originalUrl} - matched a blocked pattern`)
     // temporarily
-    $fetch('/api/log/setText', {
-      method: 'POST',
-      body: {
-        text: `${originalUrl} - blocked by middleware`,
-      },
-    })
+    // $fetch('/api/log/setText', {
+    //   method: 'POST',
+    //   body: {
+    //     text: `${originalUrl} - blocked by middleware`,
+    //   },
+    // })
     setResponseStatus(event, 404)
     return 'Not Found'
   }

@@ -28,7 +28,7 @@ async function setErrorToLog(e) {
     }
 
     if (
-      isBot &&
+      richError.isBot &&
       richError.statusCode === 500 &&
       richError.stack.startsWith('TypeError: Failed to fetch dynamically imported module')
     ) {
