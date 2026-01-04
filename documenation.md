@@ -1,7 +1,8 @@
-# stage 0.5
-- clear cache after deploy
-- disable log from blocker middleware for test.
-- disable log for 500 bot's error
+# search
+- If you are using MySQL, you could use MATCH(name) AGAINST('query' IN NATURAL LANGUAGE MODE).
+- [Meilisearch](https://www.meilisearch.com/)
+- [Typesense](https://typesense.org/)
+
 
 
 ## chords

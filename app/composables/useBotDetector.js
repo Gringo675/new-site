@@ -4,6 +4,6 @@ export default (userAgent) => {
   }
   // This regex checks for common bot keywords in a case-insensitive manner.
   // It includes specific bots like YandexBot and Googlebot.
-  const botRegex = /bot|crawl|spider|yandex|googlebot|headless/i
+  const botRegex = /bot|crawl|spider|yandex|googlebot|googleother|headless|go-http-client/i
   return botRegex.test(userAgent)
 }
