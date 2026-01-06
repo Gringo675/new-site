@@ -174,6 +174,15 @@ export default defineEventHandler(async event => {
       }),
     }
   })
+
+  // log the search request
+  $fetch('/api/log/setText', {
+    method: 'POST',
+    body: {
+      text: `Search request: q='${q}', f='${f}', results=${products.length}`,
+    },
+  })
+
   return {
     products,
     cats,

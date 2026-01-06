@@ -10,7 +10,7 @@ const cartTotal = computed(() => {
   return {
     items: order.cart.reduce((acc, item) => acc + item.quantity, 0),
     total: formatPrice(summ, true),
-    totalWithVat: formatPrice(summ * 1.2, true),
+    totalWithVat: formatPrice(summ * 1.22, true),
   }
 })
 </script>

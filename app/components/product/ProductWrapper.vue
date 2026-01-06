@@ -48,7 +48,7 @@ const priceOptions = [
     label: 'без НДС',
   },
   {
-    value: 1.2,
+    value: 1.22,
     label: 'с НДС',
   },
 ]

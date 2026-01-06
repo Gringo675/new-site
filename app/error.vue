@@ -3,39 +3,43 @@
 const props = defineProps({
   error: Object,
 })
+
 const router = useRouter()
 const nuxtApp = useNuxtApp()
 const user = useUser()
 
+const userAgent = import.meta.client ? navigator.userAgent : useRequestHeader('user-agent')
+const richError = {
+  statusCode: props.error.statusCode || props.error.code || props.error.data?.statusCode || props.error.data?.code || 0,
+  statusMessage:
+    props.error.statusMessage ||
+    props.error.message ||
+    props.error.data?.statusMessage ||
+    props.error.data?.message ||
+    'No message',
+  url: props.error.url || router.currentRoute.value.fullPath, // useRoute returns incorrect res.
+  onServer: import.meta.server,
+  userAgent,
+  isBot: useBotDetector(userAgent),
+  stack: props.error.stack || props.error.data?.stack || 'No stack',
+}
+
+if (
+  richError.isBot &&
+  richError.statusCode === 500 &&
+  richError.stack.startsWith('TypeError: Failed to fetch dynamically imported module')
+) {
+  // Ignore bot errors due to dynamic import failure
+  richError.suppressed = true
+  clearError({ redirect: richError.url })
+}
+
 useOverlay().closeAll()
-useTitle('Ошибка ' + (props.error.statusCode || ''))
+if (!richError.suppressed) useTitle('Ошибка ' + richError.statusCode)
 
-props.error.url = props.error.url || router.currentRoute.value.fullPath // useRoute returns incorrect res.
-
-if (!nuxtApp.isHydrating) setErrorToLog(props.error)
-async function setErrorToLog(e) {
+if (!nuxtApp.isHydrating) setErrorToLog(richError)
+async function setErrorToLog(richError) {
   try {
-    const userAgent = import.meta.client ? navigator.userAgent : useRequestHeader('user-agent')
-    const isBot = useBotDetector(userAgent)
-    const richError = {
-      statusCode: e.statusCode || e.data?.statusCode || 0,
-      statusMessage: e.statusMessage || e.data?.statusMessage || 'No message',
-      url: e.url || 'No url',
-      onServer: import.meta.server,
-      userAgent,
-      isBot,
-      stack: e.data?.stack || e.stack || 'No stack',
-    }
-
-    if (
-      richError.isBot &&
-      richError.statusCode === 500 &&
-      richError.stack.startsWith('TypeError: Failed to fetch dynamically imported module')
-    ) {
-      // Don't log bot dynamic import errors
-      return
-    }
-
     await $fetch('/api/log/setError', {
       method: 'POST',
       body: richError,
@@ -45,14 +49,13 @@ async function setErrorToLog(e) {
   }
 }
 
-// console.error(props.error)
 const onLogin = async () => {
   await showLogin()
   if (user.value.auth) refreshPage()
 }
 
 const refreshPage = () => {
-  clearError({ redirect: props.error.url || '/' })
+  clearError({ redirect: richError.url || '/' })
 }
 
 const toMainPage = () => {
@@ -82,7 +85,7 @@ const displayError = {
       'Запрашиваемая страница не существует или была перемещена. Воспользуйтесь нашим каталогом или поиском для выбора подходящей модели.',
     icon: 'i-lucide-file-question',
   },
-}[props.error.statusCode] || {
+}[richError.statusCode] || {
   title: 'Произошла ошибка',
   description: 'Возникла непредвиденная ошибка. Пожалуйста, попробуйте позже.',
   icon: 'i-lucide-alert-triangle',
@@ -90,13 +93,13 @@ const displayError = {
 </script>
 
 <template>
-  <HelperApp>
+  <HelperApp v-if="!richError.suppressed">
     <div
       class="mx-auto my-6 flex w-full max-w-xl flex-col items-center justify-center gap-6 rounded-xl bg-gray-200 p-6 shadow-lg md:my-12">
       <UIcon
         :name="displayError.icon"
         class="text-error size-20" />
-      <div class="text-error text-4xl font-bold">{{ error.statusCode }}</div>
+      <div class="text-error text-4xl font-bold">{{ richError.statusCode }}</div>
       <h2 class="mb-2 text-center text-2xl font-bold">{{ displayError.title }}</h2>
 
       <p class="mb-4 text-center">
@@ -106,21 +109,21 @@ const displayError = {
       <div class="flex flex-wrap justify-center gap-4">
         <!-- Always show Login for 401 -->
         <UButton
-          v-if="error.statusCode === 401"
+          v-if="richError.statusCode === 401"
           icon="i-lucide-log-in"
           color="secondary"
           label="Войти"
           @click="onLogin" />
         <!-- Admin Login for 403 -->
         <UButton
-          v-else-if="error.statusCode === 403"
+          v-else-if="richError.statusCode === 403"
           icon="i-lucide-log-in"
           color="secondary"
           label="Вход для администраторов"
           @click="onLogin" />
         <!-- Refresh for unknown errors -->
         <UButton
-          v-else-if="error.statusCode !== 404"
+          v-else-if="richError.statusCode !== 404"
           icon="i-lucide-refresh-cw"
           color="secondary"
           label="Обновить страницу"
