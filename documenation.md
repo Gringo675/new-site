@@ -1,11 +1,16 @@
 # search
-- If you are using MySQL, you could use MATCH(name) AGAINST('query' IN NATURAL LANGUAGE MODE).
-- [Meilisearch](https://www.meilisearch.com/)
-- [Typesense](https://typesense.org/)
+- If you are using MySQL, you could use MATCH(name) AGAINST('query' IN NATURAL LANGUAGE MODE). MySQL FULLTEXT
+- SQLite FTS5
+- MiniSearch (Node.js)
 
 
 
 ## chords
+- НДС
+- add search requests to log
+- /product/glubinomer-mikrometricheskij-gm-100-0-01-chiz
+Канонический адрес не указан
+30.12.2025	Ошибка 500 - ТД ЧИ
 - check/change e-mails
 
 ## cms

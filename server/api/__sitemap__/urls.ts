@@ -6,7 +6,7 @@ export default defineSitemapEventHandler(async (): Promise<SitemapUrl[]> => {
   const prods = (await dbReq(`SELECT alias FROM i_products WHERE published = 1`)) as { alias: string }[]
 
   const urls = [
-    ...cats.map(cat => ({ loc: `/category/${cat.alias}` })),
+    ...cats.map(cat => ({ loc: `/catalog/${cat.alias}` })),
     ...prods.map(prod => ({ loc: `/product/${prod.alias}` })),
   ]
 
