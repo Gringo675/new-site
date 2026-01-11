@@ -6,10 +6,6 @@
 
 
 ## chords
-- canonical url
-- /product/glubinomer-mikrometricheskij-gm-100-0-01-chiz
-Канонический адрес не указан
-30.12.2025	Ошибка 500 - ТД ЧИ
 - check/change e-mails
 
 ## cms

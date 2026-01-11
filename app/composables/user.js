@@ -52,8 +52,12 @@ export const getUser = async (options = {}) => {
 }
 
 export const createUserEvent = value => {
-  localStorage.setItem('user-event', value)
-  setTimeout(() => {
-    localStorage.removeItem('user-event')
-  }, 3000)
+  try {
+    localStorage.setItem('user-event', value)
+    setTimeout(() => {
+      localStorage.removeItem('user-event')
+    }, 3000)
+  } catch (e) {
+    console.error('Failed to handle user-event in localStorage:', e)
+  }
 }

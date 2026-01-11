@@ -147,7 +147,7 @@ export default defineNuxtConfig({
   //   },
   // },
   site: {
-    // used in SEO modules
+    // used in SEO modules + useCanonical composable
     title:
       'ТД Челябинский Инструмент: интернет-магазин измерительного инструмента, поверка и калибровка средств измерений.',
     description:

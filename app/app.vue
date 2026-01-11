@@ -1,5 +1,6 @@
 <script setup>
 //
+useCanonical()
 useErrorHandler()
 useDefaultMetaTags()
 

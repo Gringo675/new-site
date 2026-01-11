@@ -27,17 +27,18 @@ const richError = {
 if (
   richError.isBot &&
   richError.statusCode === 500 &&
-  richError.stack.startsWith('TypeError: Failed to fetch dynamically imported module')
+  richError.statusMessage.startsWith('Failed to fetch dynamically imported module')
 ) {
   // Ignore bot errors due to dynamic import failure
   richError.suppressed = true
   clearError({ redirect: richError.url })
+  // maybe better use full refresh window.location.reload()
 }
 
 useOverlay().closeAll()
 if (!richError.suppressed) useTitle('Ошибка ' + richError.statusCode)
 
-if (!nuxtApp.isHydrating) setErrorToLog(richError)
+if (!nuxtApp.isHydrating && !richError.isBot) setErrorToLog(richError)
 async function setErrorToLog(richError) {
   try {
     await $fetch('/api/log/setError', {

@@ -33,7 +33,14 @@ const updateCartFromLocalStoreHelper = {
     }
   },
   async update() {
-    const storCart = JSON.parse(localStorage.getItem('CART'))
+    let storCart
+    try {
+      storCart = JSON.parse(localStorage.getItem('CART'))
+    } catch (e) {
+      console.error('Failed to get CART from localStorage:', e)
+      return
+    }
+
     if (!storCart?.length) {
       cart.length = 0
       return
@@ -66,7 +73,11 @@ export const setCartToLocalStore = () => {
   const cartMapped = cart.map(product => {
     return { id: product.id, quantity: product.quantity }
   })
-  localStorage.setItem('CART', JSON.stringify(cartMapped))
+  try {
+    localStorage.setItem('CART', JSON.stringify(cartMapped))
+  } catch (e) {
+    console.error('Failed to set CART in localStorage:', e)
+  }
 }
 
 // export const clearCart = async () => {

@@ -20,13 +20,23 @@ onMounted(() => {
 })
 
 async function updateLocal(newProduct) {
-  const newViewed = JSON.parse(localStorage.getItem('VIEWED')) ?? [] // обрабатывать нужно localStore, т.к. в него можно внести изменения с других вкладок
+  let newViewed = []
+  try {
+    newViewed = JSON.parse(localStorage.getItem('VIEWED')) ?? [] // обрабатывать нужно localStore, т.к. в него можно внести изменения с других вкладок
+  } catch (e) {
+    console.error('Failed to get VIEWED from localStorage:', e)
+    return // Exit if localStorage is not accessible
+  }
   helper.cache.push(newProduct)
   const existingIndex = newViewed.indexOf(newProduct.id) // если товар уже есть в просмотренных
   if (existingIndex !== -1) newViewed.splice(existingIndex, 1)
   newViewed.unshift(newProduct.id)
   if (newViewed.length > 7) newViewed.length = 7 // на 1 больше, чем нужно, т.к. будем удалять текущий на странице товара
-  localStorage.setItem('VIEWED', JSON.stringify(newViewed))
+  try {
+    localStorage.setItem('VIEWED', JSON.stringify(newViewed))
+  } catch (e) {
+    console.error('Failed to set VIEWED in localStorage:', e)
+  }
 }
 
 async function updateViewed() {
@@ -37,7 +47,14 @@ async function updateViewed() {
     return
   }
 
-  const localViewed = JSON.parse(localStorage.getItem('VIEWED')) ?? []
+  let localViewed = []
+  try {
+    localViewed = JSON.parse(localStorage.getItem('VIEWED')) ?? []
+  } catch (e) {
+    console.error('Failed to get VIEWED from localStorage:', e)
+    return // Exit if localStorage is not accessible
+  }
+
   if (localViewed === viewed.value.map(p => p.id)) return
 
   const missingIds = localViewed.filter(id => !helper.cache.some(p => p.id === id))

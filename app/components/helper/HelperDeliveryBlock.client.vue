@@ -39,7 +39,11 @@ function getCityFromLocalStore() {
 const changeCity = async newCity => {
   city.value = newCity
   refHelperInputMenu.value.clearAll()
-  localStorage.setItem('DL_CITY', JSON.stringify(city.value))
+  try {
+    localStorage.setItem('DL_CITY', JSON.stringify(city.value))
+  } catch (e) {
+    console.error('Failed to set DL_CITY in localStorage:', e)
+  }
 }
 
 const deliveryOptions = computed(() => [

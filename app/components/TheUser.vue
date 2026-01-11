@@ -24,7 +24,12 @@ const processUser = () => {
   // @ts-ignore
   if (!window.__appInitialized) {
     // to avoid multiple executions from error.vue
-    const consent = localStorage.getItem('COOKIE_CONSENT')
+    let consent = null
+    try {
+      consent = localStorage.getItem('COOKIE_CONSENT')
+    } catch (e) {
+      console.error('Failed to get COOKIE_CONSENT from localStorage:', e)
+    }
 
     // if (consent === 'accepted') loadAnalytics()
     // else showCookieBanner()
@@ -70,7 +75,11 @@ const showCookieBanner = () => {
         size: 'lg',
         class: 'px-10 mx-auto',
         onClick: () => {
-          localStorage.setItem('COOKIE_CONSENT', 'accepted')
+          try {
+            localStorage.setItem('COOKIE_CONSENT', 'accepted')
+          } catch (e) {
+            console.error('Failed to set COOKIE_CONSENT in localStorage:', e)
+          }
           // loadAnalytics()
         },
       },
