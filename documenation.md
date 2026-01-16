@@ -1,7 +1,54 @@
+# 500 error
+{
+  "statusCode": 500,
+  "statusMessage": "No message",
+  "url": "/product/mikrometr-listovoj-ml-10-kirovinstrument",
+  "onServer": false,
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "isBot": false,
+  "stack": "TypeError: Failed to fetch dynamically imported module: https://chelinstrument.ru/_nuxt/h6gY2Cqz.js"
+}
+{
+  "statusCode": 500,
+  "statusMessage": "Failed to fetch dynamically imported module: https://chelinstrument.ru/_nuxt/Cn1TSIWD.js",
+  "url": "/product/shtangencirkul-shc-iii-400-01-griff",
+  "onServer": false,
+  "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.7499.169 Safari/537.36",
+  "isBot": false,
+  "stack": "TypeError: Failed to fetch dynamically imported module: https://chelinstrument.ru/_nuxt/Cn1TSIWD.js"
+}
+{
+  "statusCode": 500,
+  "statusMessage": "No message",
+  "url": "/product/uglomer-3uri-m-po-tu-kirovinstrument",
+  "onServer": false,
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "bot": false,
+  "stack": "TypeError: Failed to fetch dynamically imported module: https://chelinstrument.ru/_nuxt/C02FjL_e.js"
+}
+{
+  "statusCode": 500,
+  "statusMessage": "Failed to fetch dynamically imported module: https://chelinstrument.ru/_nuxt/Dxz_b78l.js",
+  "url": "/contacts",
+  "onServer": false,
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 OPR/125.0.0.0 (Edition Yx 08)",
+  "isBot": false,
+  "stack": "TypeError: Failed to fetch dynamically imported module: https://chelinstrument.ru/_nuxt/Dxz_b78l.js"
+}
+
 # search
 - If you are using MySQL, you could use MATCH(name) AGAINST('query' IN NATURAL LANGUAGE MODE). MySQL FULLTEXT
 - SQLite FTS5
 - MiniSearch (Node.js)
+Products:
+- поля поиска
+-- добавить очищенный description
+-- добавить пропсы (в наименование)
+-- сформировать облако синонимов для каждой позиции
+Categories:
+- отдавать только главные
+- отдавать все (рассчитывать подкатегории для каждой единицы продукции в момент генерации индекса)
+- отдавать только крайние
 
 
 

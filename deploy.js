@@ -70,10 +70,12 @@ async function deploy(archivePath, deployDir) {
   }
 
   await ssh.execCommand('exit')
-  console.log(`Deploying finished. Now make sure to clear the cache in admin panel!`)
+
+  console.log(`Deploying finished. Now you can check it in browser!`)
 
   try {
-    child_process.execSync(`start chrome "https://${deployDir}/admin/options"`)
+    // For warming up the server
+    child_process.execSync(`start chrome "https://${deployDir}"`)
   } catch (e) {
     console.log(`Couldn't open Chrome: ${e.message}`)
   }

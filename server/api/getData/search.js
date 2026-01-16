@@ -183,6 +183,7 @@ export default defineEventHandler(async event => {
     },
   })
 
+  console.log(`cats: ${JSON.stringify(cats, null, 2)}`)
   return {
     products,
     cats,

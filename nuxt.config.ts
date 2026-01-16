@@ -162,7 +162,7 @@ export default defineNuxtConfig({
     xslColumns: [{ label: 'URL', width: '100%' }],
   },
   robots: {
-    disallow: ['/admin', '/search', '/user', '/cart', '/try', '/test', '/*?'],
+    disallow: ['/api', '/admin', '/search', '/user', '/cart', '/try', '/test', '/*?'],
   },
   schemaOrg: {
     identity: defineOrganization({

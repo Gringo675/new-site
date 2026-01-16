@@ -17,6 +17,7 @@ const buffer = {
     }
     // записываем в текстовый файл (beget: /chelinstrument.ru/public_html/test/cv.log)
     // putty: tail -f chelinstrument.ru/public_html/test/cv.log
+    // when run on the server: ../test.chelinstrument.ru/build/server/cv.log
     const logPath = path.resolve(process.cwd(), 'cv.log')
     fs.appendFileSync(logPath, newData.time + ' ' + newData.text + '\n')
     if (!listener.isActive) return
