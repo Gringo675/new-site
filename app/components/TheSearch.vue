@@ -30,15 +30,13 @@ const showAllResults = query => {
         <!-- categories -->
         <div class="flex flex-col items-start gap-y-1 p-2 pt-1">
           <div class="-mb-2 self-end text-sm font-semibold">Категории</div>
-          <template v-for="cat in searchState.result.cats">
-            <NuxtLink
-              v-for="subCat in cat.children"
-              :to="`/catalog/${subCat.alias}`"
-              @click="clearAll"
-              class="text-sm leading-tight underline-offset-4 hover:underline">
-              {{ subCat.name }}
-            </NuxtLink>
-          </template>
+          <NuxtLink
+            v-for="cat in searchState.result.cats"
+            :to="`/catalog/${cat.alias}`"
+            @click="clearAll"
+            class="text-sm leading-tight underline-offset-4 hover:underline">
+            {{ cat.name }}
+          </NuxtLink>
         </div>
         <!-- products -->
         <div
@@ -57,8 +55,9 @@ const showAllResults = query => {
           <UButton
             variant="ghost"
             color="tertiary"
-            label="Все результаты"
-            @click="showAllResults(searchState.query)" />
+            @click="showAllResults(searchState.query)">
+            Все результаты ({{ searchState.result.total > 100 ? '100+' : searchState.result.total }})
+          </UButton>
           <UButton
             color="neutral"
             variant="link"

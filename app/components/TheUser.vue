@@ -34,7 +34,6 @@ const processUser = () => {
     // if (consent === 'accepted') loadAnalytics()
     // else showCookieBanner()
     if (consent !== 'accepted') setTimeout(showCookieBanner, 5000)
-    if (!import.meta.dev) showNewSiteBanner()
 
     if (config.public.PROD_MODE) {
       loadAnalytics()
@@ -81,47 +80,6 @@ const showCookieBanner = () => {
             console.error('Failed to set COOKIE_CONSENT in localStorage:', e)
           }
           // loadAnalytics()
-        },
-      },
-    ],
-  })
-}
-
-const showNewSiteBanner = () => {
-  useToast().add({
-    title: 'Запустили новый сайт!',
-    description: 'Мы полностью обновили дизайн и улучшили функциональность. Надеемся, вам понравится!',
-    icon: 'i-heroicons-rocket-launch',
-    duration: 15 * 1000,
-    actions: [
-      {
-        icon: 'i-heroicons-bug-ant',
-        label: 'Сообщить о проблеме',
-        ui: { label: 'whitespace-normal' },
-        variant: 'subtle',
-        size: 'xs',
-        onClick: () => {
-          showFeedback({
-            title: 'Сообщить о проблеме на сайте',
-            description:
-              'Опишите, пожалуйста, с какой проблемой вы столкнулись. Мы постараемся её оперативно исправить.',
-          })
-        },
-      },
-      {
-        icon: 'i-heroicons-arrow-top-right-on-square',
-        label: 'Перейти на старый сайт',
-        ui: { label: 'whitespace-normal' },
-        variant: 'subtle',
-        size: 'xs',
-        onClick: () => {
-          $fetch('/api/log/setText', {
-            method: 'POST',
-            body: {
-              text: 'toOldSite button clicked',
-            },
-          })
-          window.open('https://old.chelinstrument.ru/', '_blank', 'noopener,noreferrer')
         },
       },
     ],

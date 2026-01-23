@@ -1,6 +1,15 @@
 # 500 error
 {
   "statusCode": 500,
+  "statusMessage": "Failed to fetch dynamically imported module: https://chelinstrument.ru/_nuxt/BSZN6x_S.js",
+  "url": "/product/shtangentsirkul-shts-iii-400-0-1-kl-1-stiz?srsltid=AfmBOoqXlaIl4u9sdq2si3UySLJptxXi3q5bRQwR4gV0ahR8TRdqrmjl",
+  "onServer": false,
+  "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Mobile Safari/537.36",
+  "isBot": false,
+  "stack": "TypeError: Failed to fetch dynamically imported module: https://chelinstrument.ru/_nuxt/BSZN6x_S.js"
+}
+{
+  "statusCode": 500,
   "statusMessage": "No message",
   "url": "/product/mikrometr-listovoj-ml-10-kirovinstrument",
   "onServer": false,
@@ -36,24 +45,11 @@
   "stack": "TypeError: Failed to fetch dynamically imported module: https://chelinstrument.ru/_nuxt/Dxz_b78l.js"
 }
 
-# search
-- If you are using MySQL, you could use MATCH(name) AGAINST('query' IN NATURAL LANGUAGE MODE). MySQL FULLTEXT
-- SQLite FTS5
-- MiniSearch (Node.js)
-Products:
-- поля поиска
--- добавить очищенный description
--- добавить пропсы (в наименование)
--- сформировать облако синонимов для каждой позиции
-Categories:
-- отдавать только главные
-- отдавать все (рассчитывать подкатегории для каждой единицы продукции в момент генерации индекса)
-- отдавать только крайние
-
-
 
 ## chords
+- eans
 - check/change e-mails
+- enrich error (Вебвизор?)
 
 ## cms
 prices:
@@ -66,7 +62,7 @@ prices:
 - активно мониторить 404 ошибки в логе и др. инструментах, возможно потребуется добавить редиректы
 - redesign: добавить воздуха
 - gmail warning: Будьте осторожны! Это письмо не аутентифицировано и отправитель не подтвержден. Лучше не нажимать на ссылки в этом письме, не скачивать прикрепленные файлы и не сообщать отправителю свои личные данные. (Возможно, перейти с admin на info (не забыть сменить MAIL_USER && MAIL_PASS)) https://uptimebot.ru/online/dkim-msg-check/  
-- подумать над алгоритмом поиска: ич-1 0-1 дает нерелевантный результат в быстром поиске
+- попытаться улучшить алгоритм поиска
 - не смог изменить цвет текста у активного пункта в верхнем меню. active-class не хочет принимать соответствующий класс (text-orange-300). Проверить поведение в следующих релизах.
 - создать единый кеш для товаров, получаемых от getProducts.js (= /getData/products) (на данный момент используется в компонентах корзины и просмотренных товаров). Также изменить логику корзины - хранить в useCart только id и количество, а сами товары брать из кеша/сервера.
 - ProductsSlider: добавить кнопки прокрутки

@@ -194,4 +194,13 @@ export default defineNuxtConfig({
   },
 
   compatibilityDate: '2025-03-07',
+
+  nitro: {
+    storage: {
+      data: {
+        driver: 'fs',
+        base: './.data/db',
+      },
+    },
+  },
 })

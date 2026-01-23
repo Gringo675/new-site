@@ -1,9 +1,17 @@
 import MiniSearch from 'minisearch'
+const storage = useStorage('data')
 
 export default defineEventHandler(async event => {
   //
-  const searchIndex = getSearchIndex()
-  return searchIndex.documentCount
+  const prev = await storage.getItem('test.json')
+  
+  const rnd = Math.floor(Math.random() * 1000)
+
+  await storage.setItem('test.json', { rnd })
+  const cached = await storage.getItem('test.json')
+  return { prev, rnd, cached }
+  // const searchIndex = getSearchIndex()
+  // return searchIndex.documentCount
 
   // A collection of documents for our examples
   // const documents = [
@@ -11,8 +19,9 @@ export default defineEventHandler(async event => {
   //   { id: 2, title: 'Пиньях' },
   // ]
   // const options = {
-  //   fields: ['title'], // fields to index for full-text search
+  //   fields: ['id', 'title'], // fields to index for full-text search
   //   storeFields: ['id', 'title'], // fields to return with search results
+  //   searchOptions: { prefix: true, fuzzy: 0.2 },
   // }
   // let miniSearch = new MiniSearch(options)
   // // Index all documents
@@ -26,6 +35,6 @@ export default defineEventHandler(async event => {
   // miniSearch = MiniSearch.loadJSON(cachedIndex, options)
   // const count = miniSearch.documentCount
   // console.log(`There are ${count} documents in the index.`)
-  // let results = miniSearch.search('Hobbit').length
+  // let results = miniSearch.search('2')
   // return results
 })

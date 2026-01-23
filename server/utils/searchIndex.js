@@ -2,23 +2,39 @@ import MiniSearch from 'minisearch'
 const storage = useStorage('assets:server')
 
 const miniSearchOptions = {
+  tokenize: text => text.split(/[^\p{L}\p{N}-]+/gu).filter(Boolean), // exclude hyphen (-) from separators
+  processTerm: term => {
+    if (term.includes('-')) {
+      // add variants for terms with hyphen: aa-11 -> ['aa-11', 'aa', '11', 'aa11']
+      return [term.toLowerCase(), ...term.split('-').map(t => t.toLowerCase()), term.replace(/-/g, '')].map(t =>
+        t.toLowerCase(),
+      )
+    }
+    return term.toLowerCase() // default normalization
+  },
   fields: ['id', 'index'], // fields to index for full-text search
-  storeFields: ['name'], // fields to return with search results
-  searchOptions: { prefix: true, fuzzy: 0.2 },
+  storeFields: ['id', 'name', 'alias', 'price', 'priceRegular', 'image', 'label', 'matchedCats'], // fields to return with search results
+  searchOptions: {
+    prefix: true,
+    fuzzy: 0.2, // Note: 0.1 allows 1 typo for every 10 characters
+    combineWith: 'AND',
+    processTerm: term => term.toLowerCase(), // default normalization during search
+  },
 }
 
-let searchIndex = new MiniSearch(miniSearchOptions)
+const searchIndex = new MiniSearch(miniSearchOptions)
 
-export const getSearchIndex = () => {
+export const useSearchIndex = () => {
   return searchIndex
 }
 
 export const activateSearchIndex = async () => {
-  // load index from /server/assets/searchIndex.json
-  const indexJSON = (await storage.getItemRaw('searchIndex.json')).toString()
+  // load docs from /server/assets/searchIndexDocs.json
+  const docs = await storage.getItem('searchIndexDocs.json')
 
   searchIndex.removeAll()
-  searchIndex = MiniSearch.loadJSON(indexJSON, miniSearchOptions)
+  searchIndex.addAll(docs)
+
   // console.log(`There are ${searchIndex.documentCount} documents in the index.`)
 
   return searchIndex.documentCount
@@ -26,6 +42,13 @@ export const activateSearchIndex = async () => {
 
 export const refreshSearchIndex = async () => {
   //
+  await createSearchIndexDocsJSON()
+  await activateSearchIndex()
+
+  return searchIndex.documentCount
+}
+
+const createSearchIndexDocsJSON = async () => {
   const propsGroups = usePropsGroups()
 
   const prodsQuery = `SELECT
@@ -33,6 +56,7 @@ export const refreshSearchIndex = async () => {
     p.name,
     p.alias,
     p.category_id,
+    p.price, p.special_price, p.images, p.label,
     ${propsGroups.map(group => 'p.' + group).join(', ')},
     prop1.name AS p1_name,
     prop2.name AS p2_name,
@@ -45,8 +69,8 @@ export const refreshSearchIndex = async () => {
   LEFT JOIN i_properties AS prop2 ON p.p2_counting_system = prop2.id
   LEFT JOIN i_properties AS prop3 ON p.p7_feature = prop3.id
   WHERE
-      p.published = 1`
-  // p.category_id = 29 AND p.published = 1`
+      p.category_id = 34 AND p.published = 1`
+  // p.category_id = 16 AND p.published = 1`
   const prods = await dbReq(prodsQuery)
 
   // Fetch all sub-categories (in search we use only second level categories)
@@ -84,15 +108,13 @@ export const refreshSearchIndex = async () => {
     name: prod.name,
     alias: prod.alias,
     index: prod.index,
+    price: prod.special_price > 0 ? prod.special_price : prod.price,
+    priceRegular: prod.special_price > 0 ? prod.price : undefined,
+    image: prod.images.match(/^[^,]+/)[0], // берем только первое изображение
+    label: prod.label,
     matchedCats: prod.matchedCats,
   }))
 
-  searchIndex.removeAll()
-  searchIndex.addAll(docs)
-  // console.log(`There are ${searchIndex.documentCount} documents in the index.`)
-
-  //save index to /server/assets/searchIndex.json
-  await storage.setItem('searchIndex.json', searchIndex)
-
-  return searchIndex.documentCount
+  //save docs to /server/assets/searchIndexDocs.json
+  await storage.setItem('searchIndexDocs.json', docs)
 }

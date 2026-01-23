@@ -20,8 +20,8 @@ const richError = {
   url: props.error.url || router.currentRoute.value.fullPath, // useRoute returns incorrect res.
   onServer: import.meta.server,
   userAgent,
-  isBot: useBotDetector(userAgent),
   stack: props.error.stack || props.error.data?.stack || 'No stack',
+  isBot: useBotDetector(userAgent),
 }
 
 if (
