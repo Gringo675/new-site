@@ -199,7 +199,7 @@ export default defineNuxtConfig({
     storage: {
       data: {
         driver: 'fs',
-        base: './.data/db',
+        base: process.env.NODE_ENV === 'production' ? '../../public_html/static/nitro-storage/' : './.nitro-storage',
       },
     },
   },

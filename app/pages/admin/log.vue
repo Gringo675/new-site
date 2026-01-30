@@ -34,6 +34,7 @@ const columns = [
   {
     accessorKey: 'created',
     cell: ({ row }) => {
+      console.log('Original created value:', row.getValue('created'))
       return new Date(row.getValue('created')).toLocaleString('ru-RU', {
         day: 'numeric',
         month: 'short',

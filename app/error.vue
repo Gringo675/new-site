@@ -38,7 +38,7 @@ if (
 useOverlay().closeAll()
 if (!richError.suppressed) useTitle('Ошибка ' + richError.statusCode)
 
-if (!nuxtApp.isHydrating && !richError.isBot) setErrorToLog(richError)
+if (!nuxtApp.isHydrating && richError.statusCode !== 404) setErrorToLog(richError)
 async function setErrorToLog(richError) {
   try {
     await $fetch('/api/log/setError', {

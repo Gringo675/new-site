@@ -1,5 +1,5 @@
 import MiniSearch from 'minisearch'
-const storage = useStorage('assets:server')
+const storage = useStorage('data')
 
 const miniSearchOptions = {
   tokenize: text => text.split(/[^\p{L}\p{N}-]+/gu).filter(Boolean), // exclude hyphen (-) from separators
@@ -30,7 +30,15 @@ export const useSearchIndex = () => {
 
 export const activateSearchIndex = async () => {
   // load docs from /server/assets/searchIndexDocs.json
-  const docs = await storage.getItem('searchIndexDocs.json')
+  let docs = await storage.getItem('searchIndexDocs.json')
+  // check if file exists
+  if (!docs) {
+    await createSearchIndexDocsJSON()
+    docs = await storage.getItem('searchIndexDocs.json')
+    if (!docs) {
+      throw new Error('Search index file could not be created or is empty.')
+    }
+  }
 
   searchIndex.removeAll()
   searchIndex.addAll(docs)
@@ -43,9 +51,7 @@ export const activateSearchIndex = async () => {
 export const refreshSearchIndex = async () => {
   //
   await createSearchIndexDocsJSON()
-  await activateSearchIndex()
-
-  return searchIndex.documentCount
+  return await activateSearchIndex()
 }
 
 const createSearchIndexDocsJSON = async () => {
@@ -69,7 +75,7 @@ const createSearchIndexDocsJSON = async () => {
   LEFT JOIN i_properties AS prop2 ON p.p2_counting_system = prop2.id
   LEFT JOIN i_properties AS prop3 ON p.p7_feature = prop3.id
   WHERE
-      p.category_id = 34 AND p.published = 1`
+      p.published = 1`
   // p.category_id = 16 AND p.published = 1`
   const prods = await dbReq(prodsQuery)
 

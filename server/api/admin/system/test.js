@@ -3,13 +3,29 @@ const storage = useStorage('data')
 
 export default defineEventHandler(async event => {
   //
-  const prev = await storage.getItem('test.json')
-  
-  const rnd = Math.floor(Math.random() * 1000)
 
-  await storage.setItem('test.json', { rnd })
-  const cached = await storage.getItem('test.json')
-  return { prev, rnd, cached }
+  const products = await dbReq(`SELECT images FROM i_products `)
+
+  const imgsSet = new Set()
+  for (const product of products) {
+    const imgs = product.images.split(',')
+    imgs.forEach(img => {
+      if (img && img.trim() !== '') {
+        imgsSet.add(img.trim())
+      }
+    })
+  }
+
+  const imgsArray = Array.from(imgsSet)
+  await storage.setItem('imgs.json', imgsArray)
+
+  // const prev = await storage.getItem('test.json')
+
+  // const rnd = Math.floor(Math.random() * 1000)
+
+  // await storage.setItem('test.json', { rnd })
+  // const cached = await storage.getItem('test.json')
+  // return { prev, rnd, cached }
   // const searchIndex = getSearchIndex()
   // return searchIndex.documentCount
 
