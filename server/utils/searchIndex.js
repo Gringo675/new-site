@@ -29,7 +29,7 @@ export const useSearchIndex = () => {
 }
 
 export const activateSearchIndex = async () => {
-  // load docs from /server/assets/searchIndexDocs.json
+  // load docs from /static/nitro-storage/searchIndexDocs.json
   let docs = await storage.getItem('searchIndexDocs.json')
   // check if file exists
   if (!docs) {

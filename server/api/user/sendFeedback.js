@@ -13,19 +13,32 @@ export default defineEventHandler(async event => {
 })
 
 const sendFb = async fbData => {
+  //
   const mailData = {
     to: 'admin@chelinstrument.ru',
     subject: fbData.subject,
     attachments: fbData.files,
   }
+
+  mailData.text = `Контактные данные:
+Имя: ${fbData.user.name}
+Почта: ${fbData.user.mail}
+Организация: ${fbData.user.org || '-'}
+ИНН: ${fbData.user.inn || '-'}
+Адрес: ${fbData.user.address || '-'}
+Телефон: ${fbData.user.phone}
+
+Сообщение:
+${fbData.message}`
+
   mailData.html = `
   <h2>Контактные данные:</h2>
   <div>
-  <p>Имя - ${fbData.user.name}</p>
+    <p>Имя - ${fbData.user.name}</p>
     <p>Почта - ${fbData.user.mail}</p>
-    <p>Имя - ${fbData.user.org}</p>
-    <p>ИНН - ${fbData.user.inn}</p>
-    <p>Адрес - ${fbData.user.address}</p>
+    <p>Организация - ${fbData.user.org || '-'}</p>
+    <p>ИНН - ${fbData.user.inn || '-'}</p>
+    <p>Адрес - ${fbData.user.address || '-'}</p>
     <p>Телефон - ${fbData.user.phone}</p>
   </div>
   <h2>Сообщение:</h2>

@@ -16,7 +16,7 @@ export default defineEventHandler(async event => {
     const prod = (await dbReq(query))[0]
 
     // reverse array
-    return prod.stnd_numbers.concat(prod.rstr_numbers.map(num => `ГРСИ №${num}`)).reverse()
+    return (prod.stnd_numbers ?? []).concat((prod.rstr_numbers ?? []).map(num => `ГРСИ №${num}`)).reverse()
   } catch (e) {
     console.error(e)
     return []

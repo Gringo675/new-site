@@ -23,21 +23,38 @@ const richError = {
   stack: props.error.stack || props.error.data?.stack || 'No stack',
   isBot: useBotDetector(userAgent),
 }
+richError.isChunkError =
+  !richError.onServer &&
+  (richError.statusMessage.toLowerCase().includes('failed to fetch dynamically imported module') ||
+    richError.statusMessage.toLowerCase().includes('error loading dynamically imported module') ||
+    richError.statusMessage.toLowerCase().includes('importing a module script failed'))
 
-if (
-  richError.isBot &&
-  richError.statusCode === 500 &&
-  richError.statusMessage.startsWith('Failed to fetch dynamically imported module')
-) {
-  // Ignore bot errors due to dynamic import failure
-  richError.suppressed = true
-  clearError({ redirect: richError.url })
-  // maybe better use full refresh window.location.reload()
+if (richError.isChunkError) {
+  if (richError.isBot) {
+    // Ignore bot errors due to dynamic import failure
+    richError.suppressed = true
+    clearError({ redirect: richError.url })
+  } else {
+    // For users, try to recover by full page reload
+    reloadNuxtApp({ ttl: 20000 }) // 20 sec to avoid reload loop
+  }
 }
+
+// if (
+//   richError.isBot &&
+//   richError.statusCode === 500 &&
+//   richError.statusMessage.startsWith('Failed to fetch dynamically imported module')
+// ) {
+//   // Ignore bot errors due to dynamic import failure
+//   richError.suppressed = true
+//   clearError({ redirect: richError.url })
+//   // maybe better use full refresh window.location.reload()
+// }
 
 useOverlay().closeAll()
 if (!richError.suppressed) useTitle('Ошибка ' + richError.statusCode)
 
+// don't log errors during hydration('cause we already get it from server render) and 404 errors
 if (!nuxtApp.isHydrating && richError.statusCode !== 404) setErrorToLog(richError)
 async function setErrorToLog(richError) {
   try {

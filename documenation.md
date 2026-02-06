@@ -1,9 +1,7 @@
 ## chord
-- привести время в логе к челябинскому
-- 500 error
-- eans
-- check/change e-mails
-- enrich error (Вебвизор?)
+- indexSearch: eans -> full match
+- add product's banner to category page (or better some static-text ad banner)
+- footer links hydration mismatch 'cause url changed before footer resolve
 
 ## cms
 prices:
@@ -11,18 +9,58 @@ prices:
 - no consistency: quantity, notice (and no online access to .xls file). Solution - export .xls to mysql. Or better replace with online editor. (+ quantity case...). Another solution: Google Sheets.
 - 1C interaction
 
+## design
+2. Create a Stronger Call-to-Action (CTA): The "В корзину" (Add to Cart) buttons are the most important CTAs on the page. They should stand out. I recommend    
+      changing their color from the current blue to a high-contrast color like a vibrant orange, as suggested by the design system. This will draw the user's eye  
+      and make the next step clear.
+
+
+   3. Adopt a Professional Font Pairing: The current fonts are generic. Switching to the recommended pairing of JetBrains Mono for headings and IBM Plex Sans for  
+      body text will give the site a more technical, precise, and polished feel that aligns with the brand.
+
+
+   4. Increase Whitespace: The page is very dense. Increasing the spacing around elements—between the filter sidebar and the products, between each product in the 
+      grid, and within the header—will make the content easier to read and give the entire site a cleaner, more modern look.
+
+
+  ┌────────────────┬─────────────────┬─────────┬───────────────────────────────────────────────────────────────┐
+  │ Role           │ Color           │ Hex     │ Purpose                                                       │
+  ├────────────────┼─────────────────┼─────────┼───────────────────────────────────────────────────────────────┤
+  │ Background     │ Light Grey      │ #F8FAFC │ A clean, neutral base that's easy on the eyes.                │
+  │ Text           │ Dark Grey       │ #334155 │ Ensures high readability without the harshness of pure black. │
+  │ Secondary      │ Muted Blue/Grey │ #64748B │ For secondary elements, borders, or non-critical icons.       │
+  │ Call-to-Action │ Vibrant Orange  │ #F97316 │ Exclusively for primary actions.                              │
+  └────────────────┴─────────────────┴─────────┴───────────────────────────────────────────────────────────────┘
+
+   1. Clear User Guidance: By using a vibrant, high-contrast color like Safety Orange only for primary actions (like "В корзину", "Быстрый заказ", "Спросить у     
+      технолога"), you create an unmissable visual cue. Users will instinctively learn that "orange means go," which makes the purchasing journey much smoother.   
+
+
+   2. Professional & Thematic: The combination of cool, industrial greys with a functional, high-visibility accent color feels professional and is thematically    
+      appropriate for a company selling tools and industrial equipment.
+
+   3. Improved Hierarchy: It establishes a clear visual hierarchy where the most important buttons pop, while secondary elements and text remain readable but don't
+      compete for attention.
+
+Main page: The entire section is very text-heavy. It lacks a strong visual anchor to draw the user in and give the page a professional, modern feel.
+  Instead of just plain text, I recommend transforming this area into a proper "hero" section.
+   * What to do:
+       1. Add a High-Quality Background Image: Use a professional, relevant image as the background for this section. This could be a clean shot of a high-tech    
+          measuring instrument, a well-lit workshop, or an abstract image that evokes precision and technology.
+       2. Overlay the Text: Place your excellent tagline and the three main service links over this image. Ensure the text has enough contrast to be easily        
+          readable (e.g., by using a semi-transparent dark overlay on the image).
+       3. Make the Links Buttons: Turn the three service links into clear, clickable buttons. This makes them more identifiable as primary actions.
+
 # stage 1
 
 - активно мониторить 404 ошибки в логе и др. инструментах, возможно потребуется добавить редиректы
 - redesign: добавить воздуха
-- gmail warning: Будьте осторожны! Это письмо не аутентифицировано и отправитель не подтвержден. Лучше не нажимать на ссылки в этом письме, не скачивать прикрепленные файлы и не сообщать отправителю свои личные данные. (Возможно, перейти с admin на info (не забыть сменить MAIL_USER && MAIL_PASS)) https://uptimebot.ru/online/dkim-msg-check/  
+- ProductsSlider: добавить кнопки прокрутки
 - попытаться улучшить алгоритм поиска
 - не смог изменить цвет текста у активного пункта в верхнем меню. active-class не хочет принимать соответствующий класс (text-orange-300). Проверить поведение в следующих релизах.
 - создать единый кеш для товаров, получаемых от getProducts.js (= /getData/products) (на данный момент используется в компонентах корзины и просмотренных товаров). Также изменить логику корзины - хранить в useCart только id и количество, а сами товары брать из кеша/сервера.
-- ProductsSlider: добавить кнопки прокрутки
 - Подумать про сохранение быстрых заказов (сейчас не сохраняются в базе)
 - сохранять дату обновления страницы товара/категории и вставлять эту информацию в sitemap (lastmod). P.S. в базе у товаров уже есть поля date_modified и date_price_changed, правда пока не понятно, как будет обновляться date_modified.
-- (Yandex Maps JS API): Invalid API key
 - Изображения в каталоге: привести все к 1:1 ratio и попробовать ai upscaling (хотя бы до 800px)
 - https://github.com/danielroe/beasties - inline critical css. Do not work with Nuxt dynamic pages now (as I understand, only with static html files). Maybe will be in future.
 - install Nuxt Web Vitals and connect it to Google Analytics.

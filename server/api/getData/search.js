@@ -43,6 +43,14 @@ export default defineEventHandler(async event => {
     })
   })
 
+  // log the search request
+  $fetch('/api/log/setText', {
+    method: 'POST',
+    body: {
+      text: `Search request: q='${q}', total=${total}, ${fastSearch ? 'fast' : 'full'}`,
+    },
+  })
+
   return {
     products,
     cats: Array.from(cats.values()),
@@ -53,8 +61,7 @@ export default defineEventHandler(async event => {
 const initSearchIndex = async () => {
   // Init search index on server startup
   try {
-    // refresh index for main site 'cause after deploy there may be stale json file
-    const count = useRuntimeConfig().public.PROD_MODE ? await refreshSearchIndex() : await activateSearchIndex()
+    const count = await activateSearchIndex()
     if (count > 0) console.log(`Search index activated with ${count} documents.`)
     else throw new Error('Search index activated, but has no documents!')
   } catch (e) {

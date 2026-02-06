@@ -7,6 +7,7 @@ export default async query => {
     user: config.dbOldUser,
     database: config.dbOldName,
     password: config.dbOldPassword,
+    timezone: 'Z',
   })
 
   const [rows] = await connection.execute(query)

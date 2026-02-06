@@ -1,7 +1,6 @@
 /**
  * скрипт для отправки почты через beget
  * @param {*} mail
- * from: от кого, должно быть привязано к Бегету
  * to: кому (должна валидироваться заранее!)
  * subject: тема
  * html: тело письма
@@ -12,13 +11,15 @@
 import nodemailer from 'nodemailer'
 
 export default async mail => {
+  //
+  if (!mail.to.length || !mail.html.length) throw new Error('Incorrect data provided!')
+  // can't change 'from' without changing auth user/pass
+  mail.from = '"ТД Челябинский Инструмент" <info@chelinstrument.ru>'
   // defaults
-  mail.from = mail.from ?? '"ТД Челябинский Инструмент" <info@chelinstrument.ru>'
   mail.subject = mail.subject ?? 'Сообщение с сайта chelinstrument.ru'
   mail.attachments = mail.attachments ?? []
-  mail.text = mail.text ?? 'This app can not read the message. Try another program.'
+  mail.text = mail.text ?? 'Для просмотра этого письма необходимо использовать почтовый клиент с поддержкой HTML.'
 
-  if (!mail.to.length || !mail.html.length) throw new Error('Incorrect data provided!')
   const config = useRuntimeConfig()
 
   const transporter = nodemailer.createTransport({

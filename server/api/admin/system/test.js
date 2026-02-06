@@ -4,31 +4,35 @@ const storage = useStorage('data')
 export default defineEventHandler(async event => {
   //
 
-  const products = await dbReq(`SELECT images FROM i_products `)
-
-  const imgsSet = new Set()
-  for (const product of products) {
-    const imgs = product.images.split(',')
-    imgs.forEach(img => {
-      if (img && img.trim() !== '') {
-        imgsSet.add(img.trim())
-      }
-    })
+  const mail = {
+    to: 'test-728ycyras@srv1.mail-tester.com',
+    // from: '"Admin" <admin@chelinstrument.ru>',
+    subject: 'Sайт - Тестовое письмо',
+    html: '<h1>Это тестовое письмо</h1><p>Проверка работы отправки почты через nodemailer на Beget</p>',
+    text: 'Это тестовое письмо. Проверка работы отправки почты через nodemailer на Beget',
   }
 
-  const imgsArray = Array.from(imgsSet)
-  await storage.setItem('imgs.json', imgsArray)
+  return await sendMail(mail)
 
+  // const products = await dbReq(`SELECT images FROM i_products `)
+  // const imgsSet = new Set()
+  // for (const product of products) {
+  //   const imgs = product.images.split(',')
+  //   imgs.forEach(img => {
+  //     if (img && img.trim() !== '') {
+  //       imgsSet.add(img.trim())
+  //     }
+  //   })
+  // }
+  // const imgsArray = Array.from(imgsSet)
+  // await storage.setItem('imgs.json', imgsArray)
   // const prev = await storage.getItem('test.json')
-
   // const rnd = Math.floor(Math.random() * 1000)
-
   // await storage.setItem('test.json', { rnd })
   // const cached = await storage.getItem('test.json')
   // return { prev, rnd, cached }
   // const searchIndex = getSearchIndex()
   // return searchIndex.documentCount
-
   // A collection of documents for our examples
   // const documents = [
   //   { id: 1, title: 'Война и мирss' },

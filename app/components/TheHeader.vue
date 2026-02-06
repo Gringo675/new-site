@@ -127,8 +127,8 @@ const toOldSite = () => {
       </div>
       <div class="col-span-2 flex max-md:hidden">
         <div
-          class="mr-2 flex w-full flex-col items-end justify-center text-slate-900 italic max-xl:items-center max-lg:text-sm">
-          <div class="flex items-center gap-2">
+          class="mr-2 flex w-full flex-col items-end justify-center text-lg text-slate-900 italic max-lg:items-center">
+          <div class="flex items-center gap-2 hover:text-orange-800 max-lg:hidden">
             <UIcon
               name="i-heroicons-home-modern"
               class="size-5" />
@@ -139,28 +139,27 @@ const toOldSite = () => {
               {{ company.address.post }}
             </NuxtLink>
           </div>
-
-          <div class="flex items-center gap-2">
-            <UIcon
-              name="i-heroicons-envelope"
-              class="size-5" />
-            <NuxtLink
-              v-for="mail in company.mails"
-              :to="'mailto:' + mail"
-              class="">
-              {{ mail }}
-            </NuxtLink>
-          </div>
-          <div class="flex items-center gap-2">
-            <UIcon
-              name="i-heroicons-phone"
-              class="size-5" />
-            <NuxtLink
-              v-for="phone in company.phones"
-              :to="'tel:' + phone"
-              class="">
-              {{ phone }}
-            </NuxtLink>
+          <div class="flex items-center gap-0.5 max-lg:flex-col lg:gap-4">
+            <div class="flex items-center gap-2 hover:text-orange-800">
+              <UIcon
+                name="i-heroicons-phone"
+                class="size-5" />
+              <NuxtLink
+                :to="'tel:' + company.phones[0]"
+                class="">
+                {{ company.phones[0] }}
+              </NuxtLink>
+            </div>
+            <div class="flex items-center gap-2 hover:text-orange-800">
+              <UIcon
+                name="i-heroicons-envelope"
+                class="size-5" />
+              <NuxtLink
+                :to="'mailto:' + company.mails[0]"
+                class="">
+                {{ company.mails[0] }}
+              </NuxtLink>
+            </div>
           </div>
         </div>
       </div>

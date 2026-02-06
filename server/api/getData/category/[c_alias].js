@@ -58,48 +58,51 @@ export default defineEventHandler(async event => {
       else allProps.push(id)
     }
   }
-  if (!allProps.length) return { catData, products } // нет фильтра
 
-  // получаем пропсы
-  query = `SELECT id, name, ordering
+  let filter = [] // дефолтное значение для категорий, у которых нет товаров с пропсами
+
+  if (allProps.length) {
+    // получаем пропсы
+    query = `SELECT id, name, ordering
                 FROM i_properties 
                 WHERE id IN (${allProps.join(',')})`
-  const propsArr = await dbReq(query)
-  const props = {} // для удобства создаем объект из всех пропсов
-  propsArr.forEach(prop => {
-    props[prop.id] = { name: prop.name, order: prop.ordering }
-  })
+    const propsArr = await dbReq(query)
+    const props = {} // для удобства создаем объект из всех пропсов
+    propsArr.forEach(prop => {
+      props[prop.id] = { name: prop.name, order: prop.ordering }
+    })
 
-  // создаем фильтр: отбираем группы в которых есть пропсы, сортируем группы
-  const filter = Object.values(filterGroups)
-    .filter(fGroup => !fGroup.disabled && Object.keys(fGroup.ids).length > 0)
-    .sort((a, b) => a.ordering - b.ordering)
-  filter.forEach(fGroup => {
-    fGroup.values = []
-    for (const id in fGroup.ids) {
-      fGroup.values.push({
-        val: Number(id),
-        name: props[id].name,
-      })
-    }
-    fGroup.values.sort((a, b) => props[a.val].order - props[b.val].order)
-    // удаляем ненужное
-    delete fGroup.ordering
-    delete fGroup.ids
-  })
-
-  // упорядочиваем товары по фильтру
-  products.sort((a, b) => {
-    for (const fGroup of filter) {
-      for (const prop of fGroup.values) {
-        const isA = a.props.includes(prop.val)
-        const isB = b.props.includes(prop.val)
-        if (isA && !isB) return -1
-        if (!isA && isB) return 1
+    // создаем фильтр: отбираем группы в которых есть пропсы, сортируем группы
+    filter = Object.values(filterGroups)
+      .filter(fGroup => !fGroup.disabled && Object.keys(fGroup.ids).length > 0)
+      .sort((a, b) => a.ordering - b.ordering)
+    filter.forEach(fGroup => {
+      fGroup.values = []
+      for (const id in fGroup.ids) {
+        fGroup.values.push({
+          val: Number(id),
+          name: props[id].name,
+        })
       }
-    }
-    return 0
-  })
+      fGroup.values.sort((a, b) => props[a.val].order - props[b.val].order)
+      // удаляем ненужное
+      delete fGroup.ordering
+      delete fGroup.ids
+    })
+
+    // упорядочиваем товары по фильтру
+    products.sort((a, b) => {
+      for (const fGroup of filter) {
+        for (const prop of fGroup.values) {
+          const isA = a.props.includes(prop.val)
+          const isB = b.props.includes(prop.val)
+          if (isA && !isB) return -1
+          if (!isA && isB) return 1
+        }
+      }
+      return 0
+    })
+  }
 
   const stnds = new Set()
   const rstrs = new Set()
@@ -107,6 +110,7 @@ export default defineEventHandler(async event => {
   for (const [i, product] of products.entries()) {
     product.order = i
     product.image = product.images.match(/^[^,]+/)[0] // берем только первое изображение
+
     // проверяем, есть ли на продукт спец. цена
     if (product.special_price > 0) {
       product.priceRegular = product.price

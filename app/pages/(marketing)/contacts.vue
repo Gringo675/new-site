@@ -11,7 +11,7 @@ onMounted(() => {
   }
 
   const script = document.createElement('script')
-  script.src = 'https://api-maps.yandex.ru/2.1/?lang=ru_RU'
+  script.src = 'https://api-maps.yandex.ru/2.1?apikey=1f8c4ab8-cc6a-4006-b837-1f9192ad2857&lang=ru_RU'
   script.type = 'text/javascript'
   script.onload = () => {
     ymaps.ready(init)
@@ -286,24 +286,25 @@ function init() {
     </div>
     <HelperAlarm>
       <template #title>Остались вопросы?</template>
-              <p>
-                Свяжитесь с нашими менеджерами по телефону
-                <a
-                  :href="'tel:' + company.phones[0]"
-                  title="Позвонить"
-                  class="text-indigo-600 underline-offset-4 hover:underline"
-                  >{{ company.phones[0] }}</a
-                >, электронной почте
-                <a
-                  :href="'mailto:' + company.mails[0]"
-                  class="text-indigo-600 underline-offset-4 hover:underline"
-                  >{{ company.mails[0] }}</a
-                >, либо
-                <button
-                  class="text-indigo-600 underline-offset-4 hover:underline"
-                  @click="showFeedback()">
-                  задайте вопрос через форму обратной связи.
-                </button>
-              </p>    </HelperAlarm>
+      <p>
+        Свяжитесь с нашими менеджерами по телефону
+        <a
+          :href="'tel:' + company.phones[0]"
+          title="Позвонить"
+          class="text-indigo-600 underline-offset-4 hover:underline"
+          >{{ company.phones[0] }}</a
+        >, электронной почте
+        <a
+          :href="'mailto:' + company.mails[0]"
+          class="text-indigo-600 underline-offset-4 hover:underline"
+          >{{ company.mails[0] }}</a
+        >, либо
+        <button
+          class="text-indigo-600 underline-offset-4 hover:underline"
+          @click="showFeedback()">
+          задайте вопрос через форму обратной связи.
+        </button>
+      </p>
+    </HelperAlarm>
   </article>
 </template>
