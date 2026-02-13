@@ -120,6 +120,9 @@ function addFilterToURL() {
           :filter="filter"
           @filterChanged="handleFilter"
           @resetFilter="initializeFilter(true)" />
+        <LazyCatalogBanner
+          hydrate-on-visible
+          class="max-md:hidden" />
       </template>
       <LazyCatalogProductsWrapper
         hydrate-on-idle

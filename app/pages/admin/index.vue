@@ -12,6 +12,9 @@
         label="Менеджер товаров"
         to="/admin/products" />
       <UButton
+        label="Менеджер документации"
+        to="/admin/documentation" />
+      <UButton
         label="Options"
         to="/admin/options" />
       <UButton

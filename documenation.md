@@ -1,6 +1,4 @@
 ## chord
-- indexSearch: eans -> full match
-- add product's banner to category page (or better some static-text ad banner)
 - footer links hydration mismatch 'cause url changed before footer resolve
 
 ## cms
@@ -9,7 +7,20 @@ prices:
 - no consistency: quantity, notice (and no online access to .xls file). Solution - export .xls to mysql. Or better replace with online editor. (+ quantity case...). Another solution: Google Sheets.
 - 1C interaction
 
+
+# stage 1
+- cms
+- ProductsSlider: добавить кнопки прокрутки
+- попытаться улучшить алгоритм поиска (indexSearch: eans -> full match)
+- не смог изменить цвет текста у активного пункта в верхнем меню. active-class не хочет принимать соответствующий класс (text-orange-300). Проверить поведение в следующих релизах.
+- создать единый кеш для товаров, получаемых от getProducts.js (= /getData/products) (на данный момент используется в компонентах корзины и просмотренных товаров). Также изменить логику корзины - хранить в useCart только id и количество, а сами товары брать из кеша/сервера.
+- Подумать про сохранение быстрых заказов (сейчас не сохраняются в базе)
+- сохранять дату обновления страницы товара/категории и вставлять эту информацию в sitemap (lastmod). P.S. в базе у товаров уже есть поля date_modified и date_price_changed, правда пока не понятно, как будет обновляться date_modified.
+- redesign
+- Изображения в каталоге: привести все к 1:1 ratio и попробовать ai upscaling (хотя бы до 800px)
+
 ## design
+добавить воздуха
 2. Create a Stronger Call-to-Action (CTA): The "В корзину" (Add to Cart) buttons are the most important CTAs on the page. They should stand out. I recommend    
       changing their color from the current blue to a high-contrast color like a vibrant orange, as suggested by the design system. This will draw the user's eye  
       and make the next step clear.
@@ -51,19 +62,6 @@ Main page: The entire section is very text-heavy. It lacks a strong visual ancho
           readable (e.g., by using a semi-transparent dark overlay on the image).
        3. Make the Links Buttons: Turn the three service links into clear, clickable buttons. This makes them more identifiable as primary actions.
 
-# stage 1
-
-- активно мониторить 404 ошибки в логе и др. инструментах, возможно потребуется добавить редиректы
-- redesign: добавить воздуха
-- ProductsSlider: добавить кнопки прокрутки
-- попытаться улучшить алгоритм поиска
-- не смог изменить цвет текста у активного пункта в верхнем меню. active-class не хочет принимать соответствующий класс (text-orange-300). Проверить поведение в следующих релизах.
-- создать единый кеш для товаров, получаемых от getProducts.js (= /getData/products) (на данный момент используется в компонентах корзины и просмотренных товаров). Также изменить логику корзины - хранить в useCart только id и количество, а сами товары брать из кеша/сервера.
-- Подумать про сохранение быстрых заказов (сейчас не сохраняются в базе)
-- сохранять дату обновления страницы товара/категории и вставлять эту информацию в sitemap (lastmod). P.S. в базе у товаров уже есть поля date_modified и date_price_changed, правда пока не понятно, как будет обновляться date_modified.
-- Изображения в каталоге: привести все к 1:1 ratio и попробовать ai upscaling (хотя бы до 800px)
-- https://github.com/danielroe/beasties - inline critical css. Do not work with Nuxt dynamic pages now (as I understand, only with static html files). Maybe will be in future.
-- install Nuxt Web Vitals and connect it to Google Analytics.
 
 # Copilots:
 - Gringo675 - 25
