@@ -2,6 +2,10 @@
 - footer links hydration mismatch 'cause url changed before footer resolve
 
 ## cms
+documentation:
+FGIS
+- button +
+- new record: send file?
 prices:
 - column's width
 - no consistency: quantity, notice (and no online access to .xls file). Solution - export .xls to mysql. Or better replace with online editor. (+ quantity case...). Another solution: Google Sheets.
@@ -12,7 +16,6 @@ prices:
 - cms
 - ProductsSlider: добавить кнопки прокрутки
 - попытаться улучшить алгоритм поиска (indexSearch: eans -> full match)
-- не смог изменить цвет текста у активного пункта в верхнем меню. active-class не хочет принимать соответствующий класс (text-orange-300). Проверить поведение в следующих релизах.
 - создать единый кеш для товаров, получаемых от getProducts.js (= /getData/products) (на данный момент используется в компонентах корзины и просмотренных товаров). Также изменить логику корзины - хранить в useCart только id и количество, а сами товары брать из кеша/сервера.
 - Подумать про сохранение быстрых заказов (сейчас не сохраняются в базе)
 - сохранять дату обновления страницы товара/категории и вставлять эту информацию в sitemap (lastmod). P.S. в базе у товаров уже есть поля date_modified и date_price_changed, правда пока не понятно, как будет обновляться date_modified.

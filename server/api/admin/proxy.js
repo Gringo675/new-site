@@ -27,6 +27,7 @@ export default defineEventHandler(async event => {
   assertMethod(event, 'POST')
 
   const { url, body } = await readBody(event)
+  // console.log(`url: ${JSON.stringify(url, null, 2)}`)
 
   if (!url) {
     throw createError({ statusCode: 400, statusMessage: 'Target URL is required in the request body' })

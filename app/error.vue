@@ -7,6 +7,7 @@ const props = defineProps({
 const router = useRouter()
 const nuxtApp = useNuxtApp()
 const user = useUser()
+const config = useRuntimeConfig()
 
 const userAgent = import.meta.client ? navigator.userAgent : useRequestHeader('user-agent')
 const richError = {
@@ -57,6 +58,7 @@ if (!richError.suppressed) useTitle('Ошибка ' + richError.statusCode)
 // don't log errors during hydration('cause we already get it from server render) and 404 errors
 if (!nuxtApp.isHydrating && richError.statusCode !== 404) setErrorToLog(richError)
 async function setErrorToLog(richError) {
+  richError.build = config.public.BUILD
   try {
     await $fetch('/api/log/setError', {
       method: 'POST',

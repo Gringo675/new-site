@@ -69,15 +69,16 @@ const toOldSite = () => {
               v-for="item in menuState"
               no-prefetch
               variant="link"
+              color="secondary"
               :label="item.label"
               :to="item.to"
               :icon="item.icon"
               :ui="{
                 leadingIcon: 'max-lg:size-4',
-                label: 'leading-[19px]',
+                label: 'leading-4.75',
               }"
-              class="p-1.5 text-orange-200 hover:text-orange-100 max-lg:text-xs"
-              active-class="cursor-default underline underline-offset-4 decoration-orange-300" />
+              class="p-1.5 text-orange-200 hover:text-orange-100 active:text-orange-50 max-lg:text-xs"
+              active-class="cursor-default underline underline-offset-4 decoration-orange-300 text-orange-300!" />
           </div>
         </div>
       </div>

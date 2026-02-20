@@ -40,8 +40,8 @@ export default defineNuxtConfig({
     fonts: true,
   },
   routeRules: {
-    '/admin': { ssr: false },
-    '/admin/**': { ssr: false },
+    '/admin': { ssr: false, appLayout: 'admin' },
+    '/admin/**': { ssr: false, appLayout: 'admin' },
     '/user/**': { ssr: false },
     '/search/**': { ssr: false },
     '/': { prerender: true },
@@ -125,6 +125,7 @@ export default defineNuxtConfig({
     FAST_LOGIN_CODE: process.env.FAST_LOGIN_CODE,
     public: {
       PROD_MODE: process.env.NUXT_BUILD_MODE === 'prod',
+      BUILD: new Date().toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' }),
       GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
       VK_CLIENT_ID: process.env.VK_CLIENT_ID,
       MAILRU_CLIENT_ID: process.env.MAILRU_CLIENT_ID,

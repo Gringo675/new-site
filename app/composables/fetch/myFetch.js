@@ -9,11 +9,11 @@ options {
  */
 
 export default async (url, options = {}) => {
-  if (process.server)
+  if (import.meta.server)
     throw createError({ statusCode: 511, statusMessage: `myFetch should be used only on client side!` })
 
   // defaults
-  options.method = options.method ?? 'get'
+  options.method = (options.method ?? 'get').toLowerCase()
   options.payload = options.payload ?? ''
   options.silent = options.silent ?? false
 

@@ -1,82 +1,74 @@
 <script setup>
-import { reactive } from 'vue'
 //
-const grDocs = ref(null)
-
-const filterState = reactive({
-  number: '',
-  title: '',
-  notation: '',
-  manufacturers: '',
+const state = reactive({
+  dbGR: [],
+  fgisGR: [],
+  getDbGR: async () => {
+    state.dbGR = await $fetch('/api/admin/cms/documentation/getGrsi')
+  },
 })
-
-const onFilterSubmit = async () => {
-  const grsiUrl = 'https://fgis.gost.ru/fundmetrology/cm/xcdb/mit24/get'
-  const queryParts = []
-
-  for (const key in filterState) {
-    if (filterState[key]) {
-      queryParts.push(`${key}:*${filterState[key]}*`)
-    }
-  }
-
-  let queryString = ''
-  if (queryParts.length > 0) {
-    const qValue = queryParts.join(' AND ') // Join with AND
-    queryString = `q=${encodeURIComponent(qValue)}`
-  }
-
-  const targetUrl = `${grsiUrl}?${queryString}`
-  console.log(`targetUrl: ${JSON.stringify(targetUrl, null, 2)}`)
-
-  try {
-    const data = await $fetch('/api/admin/proxy', {
-      method: 'POST',
-      body: {
-        url: targetUrl,
-      },
-    })
-    grDocs.value = data
-  } catch (error) {
-    console.error('Error fetching through proxy:', error)
-    grDocs.value = { error: 'Failed to fetch data' }
-  }
-}
+const tabs = [
+  {
+    label: 'Товары',
+    value: 'products',
+  },
+  {
+    label: 'Стандарты',
+    value: 'standards',
+  },
+  {
+    label: 'Паспорта',
+    value: 'passports',
+  },
+  {
+    label: 'ГРСИ',
+    value: 'grsi',
+  },
+  {
+    label: 'ФГИС',
+    value: 'fgis',
+  },
+]
+const activeTab = ref('passports')
 </script>
 
 <template>
-  <h1 class="mb-4 text-2xl font-bold">Документация</h1>
-  <h2 class="">ГРСИ</h2>
-  <UForm
-    :state="filterState"
-    @submit="onFilterSubmit">
-    <div class="flex items-end gap-4">
-      <UFormField
-        label="Номер"
-        name="number"
-        class="w-full">
-        <UInput v-model="filterState.number" />
-      </UFormField>
-      <UFormField
-        label="Наименование"
-        name="title"
-        class="w-full">
-        <UInput v-model="filterState.title" />
-      </UFormField>
-      <UFormField
-        label="Обозначение"
-        name="notation"
-        class="w-full">
-        <UInput v-model="filterState.notation" />
-      </UFormField>
-      <UFormField
-        label="Производитель"
-        name="manufacturers"
-        class="w-full">
-        <UInput v-model="filterState.manufacturers" />
-      </UFormField>
-      <UButton type="submit"> Применить </UButton>
-    </div>
-  </UForm>
-  <div class="">grDocs {{ grDocs }}</div>
+  <!-- content -->
+  <div class="mb-8">
+    <AdminDocumentationRSTR
+      v-show="activeTab === 'grsi'"
+      :state="state" />
+    <AdminDocumentationFGIS
+      v-show="activeTab === 'fgis'"
+      :state="state" />
+  </div>
+  <!-- tabs -->
+  <div class="fixed right-0 bottom-0 left-0 z-20 border-t border-gray-300 bg-gray-200">
+    <UTabs
+      v-model="activeTab"
+      :content="false"
+      :items="tabs"
+      color="neutral"
+      variant="link"
+      size="xs"
+      class="" />
+  </div>
+
+  <!-- <div>
+    <UTabs
+      :items="tabs"
+      :default-value="'2'"
+      class="w-full"
+      :unmount-on-hide="false"
+      :ui="{
+        list: 'bg-indigo-100',
+      }">
+      <template #fgis>
+        <AdminDocumentationFGIS :state="state" />
+      </template>
+      <template #grsi>
+        <AdminDocumentationRSTR :state="state" />
+      </template>
+    </UTabs>
+  </div> -->
 </template>
