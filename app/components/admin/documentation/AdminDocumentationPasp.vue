@@ -1,0 +1,247 @@
+<script setup>
+const emit = defineEmits(['updatePasp'])
+
+const { pasp } = defineProps({
+  pasp: {
+    type: Array,
+    default: () => [],
+  },
+})
+
+const columns = [
+  {
+    accessorKey: 'name',
+    header: 'Наименование',
+  },
+  {
+    accessorKey: 'file',
+    header: 'Файл',
+  },
+  {
+    accessorKey: 'actions',
+    header: '',
+  },
+]
+
+const formState = reactive({
+  isOpen: false,
+  id: undefined,
+  name: '',
+  file: undefined,
+})
+
+const validate = state => {
+  const errors = []
+  if (!state.name?.trim()) {
+    errors.push({ name: 'name', message: 'Введите наименование' })
+  }
+  return errors
+}
+
+const openForm = row => {
+  formState.isOpen = true
+  formState.id = row.id
+  formState.name = row.name
+  formState.file = undefined
+}
+
+const closeForm = () => {
+  formState.isOpen = false
+  formState.id = undefined
+  formState.name = ''
+  formState.file = undefined
+}
+
+const submitForm = async () => {
+  const formData = new FormData()
+  formData.append('id', formState.id)
+  formData.append('name', formState.name)
+  if (process.env.NODE_ENV === 'development' && formState.file) {
+    const proceed = await showMessage({
+      title: 'Вы работаете на локальном сервере!',
+      description: `Файлы документа будут сохранены в локальную папку '.static'. В дальнейшем потребуется вручную скопировать их в папку 'static' на сервере. Продолжаем?`,
+      isDialog: true,
+    })
+    if (!proceed) return
+
+    formData.append('files', formState.file)
+  }
+
+  const success = await myFetch('/api/admin/cms/documentation/setPasp', {
+    method: 'post',
+    payload: formData,
+  })
+
+  if (success) {
+    showNotice({
+      title: 'Данные сохранены',
+      type: 'success',
+    })
+    closeForm()
+    emit('updatePasp')
+  } else {
+    showNotice({
+      title: 'Ошибка при сохранении!',
+      type: 'error',
+    })
+  }
+}
+
+const deleteItem = async item => {
+  const proceed = await showMessage({
+    title: 'Подтвердите удаление',
+    description: `Документ "${item.name}" будет удален. Продолжить?`,
+    isDialog: true,
+  })
+  if (!proceed) return
+  if (process.env.NODE_ENV === 'development' && item.file) {
+    const proceed = await showMessage({
+      title: 'Вы работаете на локальном сервере!',
+      description: `Файл документа не будет удален на продакшене. Продолжаем?`,
+      isDialog: true,
+    })
+    if (!proceed) return
+  }
+
+  const formData = new FormData()
+  formData.append('id', item.id)
+  formData.append('fileName', item.file)
+  formData.append('delete', true)
+  const success = await myFetch('/api/admin/cms/documentation/setPasp', {
+    method: 'post',
+    payload: formData,
+  })
+  if (success) {
+    showNotice({ title: 'Документ удален', type: 'success' })
+    emit('updatePasp')
+  } else {
+    showNotice({ title: 'Ошибка при удалении!', type: 'error' })
+  }
+}
+
+const getActionsItems = row => [
+  [
+    {
+      label: 'Редактировать',
+      icon: 'i-heroicons-pencil',
+      onClick: () => openForm(row),
+    },
+  ],
+  [
+    {
+      label: 'Удалить',
+      color: 'error',
+      icon: 'i-heroicons-trash',
+      onClick: () => deleteItem(row),
+    },
+  ],
+]
+</script>
+
+<template>
+  <div>
+    <div class="flex items-center gap-4">
+      <UButton
+        label="Добавить паспорт"
+        @click="openForm({ id: null, name: '' })" />
+      <div
+        v-if="pasp"
+        class="text-sm text-gray-600">
+        Всего: {{ pasp.length }} документов
+      </div>
+    </div>
+
+    <UTable
+      :data="pasp"
+      :columns="columns"
+      :ui="{
+        th: 'text-center bg-gray-100',
+        td: 'p-2',
+        tr: 'hover:bg-gray-200',
+      }">
+      <template #name-cell="{ row }">
+        <div class="wrap-break-word whitespace-normal">
+          {{ row.original.name }}
+        </div>
+      </template>
+      <template #file-cell="{ row }">
+        <div class="wrap-break-word whitespace-normal">
+          <a
+            :href="`/static/doc/pasp/${encodeURIComponent(row.original.file)}`"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-blue-600 hover:underline">
+            {{ row.original.file }}
+          </a>
+        </div>
+      </template>
+      <template #actions-cell="{ row }">
+        <UDropdownMenu
+          :items="getActionsItems(row.original)"
+          :ui="{ content: 'w-48' }">
+          <UButton
+            color="neutral"
+            variant="ghost"
+            size="sm"
+            icon="i-heroicons-ellipsis-vertical" />
+        </UDropdownMenu>
+      </template>
+    </UTable>
+
+    <UModal
+      v-model:open="formState.isOpen"
+      title="Редактирование"
+      :dismissible="false"
+      :ui="{
+        content: 'max-w-xl',
+      }">
+      <template #body>
+        <UForm
+          :validate="validate"
+          :state="formState"
+          @submit="submitForm">
+          <div class="space-y-4">
+            <UFormField
+              label="Наименование"
+              name="name">
+              <UInput
+                v-model="formState.name"
+                placeholder="Введите наименование"
+                class="w-full" />
+            </UFormField>
+
+            <UFormField label="Файл (только для замены существующего)">
+              <UFileUpload
+                position="inside"
+                layout="list"
+                label="Click or drop the file here"
+                description="Only PDF allowed"
+                accept=".pdf"
+                v-model="formState.file"
+                color="neutral"
+                highlight
+                class="w-full"
+                :ui="{
+                  base: 'min-h-32',
+                }" />
+            </UFormField>
+
+            <div class="flex justify-end gap-x-4">
+              <UButton
+                label="Отмена"
+                variant="outline"
+                color="neutral"
+                @click="closeForm" />
+              <UButton
+                label="Сохранить"
+                type="submit"
+                variant="subtle"
+                color="neutral"
+                class="px-8" />
+            </div>
+          </div>
+        </UForm>
+      </template>
+    </UModal>
+  </div>
+</template>

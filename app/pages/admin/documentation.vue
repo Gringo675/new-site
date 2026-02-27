@@ -1,12 +1,29 @@
 <script setup>
 //
 const state = reactive({
-  dbGR: [],
-  fgisGR: [],
-  getDbGR: async () => {
-    state.dbGR = await $fetch('/api/admin/cms/documentation/getGrsi')
-  },
+  // prods: [],
+  stnd: [],
+  pasp: [],
+  rstr: [],
+  // dbGR: [],
+  // fgisGR: [],
+  // getDbGR: async () => {
+  //   state.dbGR = await $fetch('/api/admin/cms/documentation/getGrsi')
+  // },
 })
+
+const updatePasp = async () => {
+  state.pasp = await myFetch('/api/admin/cms/documentation/getPasp')
+}
+const updateRstr = async () => {
+  state.rstr = await myFetch('/api/admin/cms/documentation/getRstr')
+}
+
+onMounted(async () => {
+  await updatePasp()
+  await updateRstr()
+})
+
 const tabs = [
   {
     label: 'Товары',
@@ -21,8 +38,8 @@ const tabs = [
     value: 'passports',
   },
   {
-    label: 'ГРСИ',
-    value: 'grsi',
+    label: 'Реестры',
+    value: 'rstr',
   },
   {
     label: 'ФГИС',
@@ -35,12 +52,18 @@ const activeTab = ref('passports')
 <template>
   <!-- content -->
   <div class="mb-8">
+    <AdminDocumentationPasp
+      v-show="activeTab === 'passports'"
+      :pasp="state.pasp"
+      @updatePasp="updatePasp" />
     <AdminDocumentationRSTR
-      v-show="activeTab === 'grsi'"
-      :state="state" />
+      v-show="activeTab === 'rstr'"
+      :rstr="state.rstr"
+      @updateRstr="updateRstr" />
     <AdminDocumentationFGIS
       v-show="activeTab === 'fgis'"
-      :state="state" />
+      :dbRstr="state.rstr"
+      @updateRstr="updateRstr" />
   </div>
   <!-- tabs -->
   <div class="fixed right-0 bottom-0 left-0 z-20 border-t border-gray-300 bg-gray-200">

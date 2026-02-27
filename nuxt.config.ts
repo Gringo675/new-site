@@ -196,12 +196,12 @@ export default defineNuxtConfig({
 
   compatibilityDate: '2025-03-07',
 
-  nitro: {
-    storage: {
-      data: {
-        driver: 'fs',
-        base: process.env.NODE_ENV === 'production' ? '../../public_html/static/nitro-storage/' : './.nitro-storage',
-      },
-    },
-  },
+  // nitro: {
+  //   storage: {
+  //     static: {
+  //       driver: 'fs',
+  //       base: process.env.NODE_ENV === 'production' ? '../../public_html/static/' : './.static',
+  //     },
+  //   },
+  // },
 })

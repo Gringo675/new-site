@@ -209,3 +209,10 @@ upd 07.11.25 Наверно дело не в островах, смотри ко
 Локально лежит в корне проекта (D:\pr_gt\projects\site\cv.log)
 Удаленно на Бегете в /chelinstrument.ru/public_html/test/cv.log . Для слежения удобно использовать putty: tail -f chelinstrument.ru/public_html/test/cv.log // путь неверный, изменить
 
+# Miscellaneous
+
+## How to copy table in mySql (for testing)
+-- First, copy the structure
+CREATE TABLE new_table LIKE old_table;
+-- Then, copy the data
+INSERT INTO new_table SELECT * FROM old_table;

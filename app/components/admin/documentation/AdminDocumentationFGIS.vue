@@ -1,10 +1,9 @@
 <script setup>
 //
-const { state } = defineProps({
-  state: Object,
+const emit = defineEmits(['updateRstr'])
+const { dbRstr } = defineProps({
+  dbRstr: Array,
 })
-const currentPage = ref(1)
-const itemsPerPage = ref(20)
 
 const filterState = reactive({
   number: '',
@@ -44,26 +43,24 @@ const columns = [
   },
 ]
 
+const fgis = reactive([])
 const activeDocs = computed(() => {
-  if (!state.fgisGR.length) return []
+  if (!fgis.length) return []
   const startIdx = (currentPage.value - 1) * itemsPerPage.value
   const endIdx = startIdx + itemsPerPage.value
-  return state.fgisGR.slice(startIdx, endIdx)
+  return fgis.slice(startIdx, endIdx).map(doc => ({
+    ...doc,
+    inDB: dbRstr.some(dbDoc => dbDoc.number === doc.number),
+  }))
 })
 
+const currentPage = ref(1)
+const itemsPerPage = ref(20)
 const docsContainer = ref(null)
-
-onMounted(async () => {
-  if (!state.dbGR.length) await state.getDbGR()
-})
-
 watch(currentPage, () => {
   // Scroll to top of docs list
-  if (docsContainer.value) {
-    docsContainer.value.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }
+  docsContainer.value.scrollIntoView({ behavior: 'smooth', block: 'start' })
 })
-
 watch(itemsPerPage, () => {
   // Reset to page 1 when items per page changes
   currentPage.value = 1
@@ -96,7 +93,7 @@ const onFilterSubmit = async () => {
   }
   const queryString = `q=${encodeURIComponent(qValue)}`
   const targetUrl = `${grsiUrl}?${queryString}&rows=1000`
-  console.log(`targetUrl: ${JSON.stringify(targetUrl, null, 2)}`)
+  // console.log(`targetUrl: ${JSON.stringify(targetUrl, null, 2)}`)
 
   let responseData
   try {
@@ -120,7 +117,7 @@ const onFilterSubmit = async () => {
     return
   }
 
-  state.fgisGR.length = 0 // Clear previous results
+  fgis.length = 0 // Clear previous results
   currentPage.value = 1
   for (const doc of responseData.response.docs) {
     const newDoc = {}
@@ -157,9 +154,6 @@ const onFilterSubmit = async () => {
           }))
         : []
       newDoc.file_mp = methods.length > 0 ? methods[0] : undefined
-
-      // Check if document already exists in our DB by number
-      newDoc.inDB = state.dbGR.some(dbDoc => dbDoc.number === newDoc.number)
     } catch (e) {
       console.error('Error processing document fields:', e)
       // Log all raw JSON fields for debugging
@@ -177,9 +171,9 @@ const onFilterSubmit = async () => {
       })
     }
 
-    state.fgisGR.push(newDoc)
+    fgis.push(newDoc)
   }
-  if (state.fgisGR.length === 1000) {
+  if (fgis.length === 1000) {
     showNotice({
       title: 'Найдено более 1000 документов!',
       description: 'Пожалуйста, уточните параметры поиска.',
@@ -240,6 +234,22 @@ const downloadFile = async uuid => {
 }
 
 const addDocToDB = async doc => {
+  let proceed = await showMessage({
+    title: 'Добавить документ в базу данных?',
+    description: `Добавляем документ "${doc.number + ' ' + doc.name}". Продолжаем?`,
+    isDialog: true,
+  })
+  if (!proceed) return
+
+  if (process.env.NODE_ENV === 'development' && (doc.file_ot?.uuid || doc.file_mp?.uuid || doc.file_svid?.uuid)) {
+    proceed = await showMessage({
+      title: 'Вы работаете на локальном сервере!',
+      description: `Файлы документа будут сохранены в локальную папку '.static'. В дальнейшем потребуется вручную скопировать их в папку 'static' на сервере. Продолжаем?`,
+      isDialog: true,
+    })
+    if (!proceed) return
+  }
+
   try {
     // Download files if present
     let fileOtBlob = null
@@ -260,46 +270,28 @@ const addDocToDB = async doc => {
     formData.append('brand', doc.brand)
     formData.append('date', doc.date)
 
-    // Append all files under 'files' field name
+    // Append all files with temp filenames
     if (fileOtBlob) {
-      formData.append('files', fileOtBlob.blob, fileOtBlob.filename)
+      formData.append('files', fileOtBlob.blob, 'otFile.pdf')
     }
     if (fileMpBlob) {
-      formData.append('files', fileMpBlob.blob, fileMpBlob.filename)
+      formData.append('files', fileMpBlob.blob, 'mpFile.pdf')
     }
 
-    const response = await myFetch('/api/admin/cms/documentation/setGrsi', {
+    const response = await myFetch('/api/admin/cms/documentation/setRstr', {
       method: 'POST',
       payload: formData,
     })
 
-    if (response && response.success) {
+    if (response) {
       showNotice({
         title: 'Документ добавлен в БД',
         description: `Документ ${doc.number} успешно добавлен в базу данных.`,
         type: 'success',
       })
-      // Update the inDB flag for this document
-      const index = state.fgisGR.findIndex(d => d.number === doc.number)
-      if (index !== -1) {
-        state.fgisGR[index].inDB = true
-      }
-      // Add the new document to dbGR list
-      state.dbGR.push({
-        number: doc.number,
-        name: doc.name,
-        type_si: doc.type_si,
-        brand: doc.brand,
-        date: doc.date,
-        file_ot: doc.file_ot,
-        file_mp: doc.file_mp,
-      })
+      emit('updateRstr')
     } else {
-      showNotice({
-        title: 'Ошибка добавления документа',
-        description: response?.message || 'Не удалось добавить документ в базу данных.',
-        type: 'error',
-      })
+      throw new Error('Failed to add document to database')
     }
   } catch (error) {
     console.error('Error adding document to DB:', error)
@@ -356,9 +348,9 @@ const addDocToDB = async doc => {
       ref="docsContainer"
       class="mb-4 flex items-center justify-end gap-4">
       <div
-        v-if="state.fgisGR.length"
+        v-if="fgis.length"
         class="text-sm text-gray-600">
-        Всего: {{ state.fgisGR.length }} документов
+        Всего: {{ fgis.length }} документов
       </div>
       <USelect
         v-model="itemsPerPage"
@@ -426,12 +418,12 @@ const addDocToDB = async doc => {
       </template>
     </UTable>
     <div
-      v-if="state.fgisGR.length > itemsPerPage"
+      v-if="fgis.length > itemsPerPage"
       class="mt-6 flex justify-center">
       <UPagination
         v-model:page="currentPage"
         :items-per-page="itemsPerPage"
-        :total="state.fgisGR.length"
+        :total="fgis.length"
         show-edges />
     </div>
   </div>

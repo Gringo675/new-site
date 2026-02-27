@@ -1,5 +1,5 @@
 import MiniSearch from 'minisearch'
-const storage = useStorage('data')
+const { saveJSON, getJSON } = useStaticStorage()
 
 const miniSearchOptions = {
   tokenize: text => text.split(/[^\p{L}\p{N}-]+/gu).filter(Boolean), // exclude hyphen (-) from separators
@@ -22,6 +22,7 @@ const miniSearchOptions = {
   },
 }
 
+const pathToIndexDocs = '/search/searchIndexDocs.json'
 const searchIndex = new MiniSearch(miniSearchOptions)
 
 export const useSearchIndex = () => {
@@ -29,12 +30,13 @@ export const useSearchIndex = () => {
 }
 
 export const activateSearchIndex = async () => {
-  // load docs from /static/nitro-storage/searchIndexDocs.json
-  let docs = await storage.getItem('searchIndexDocs.json')
+  // load docs from /static/search/searchIndexDocs.json
+  let docs = await getJSON(pathToIndexDocs)
+
   // check if file exists
   if (!docs) {
     await createSearchIndexDocsJSON()
-    docs = await storage.getItem('searchIndexDocs.json')
+    docs = await getJSON(pathToIndexDocs)
     if (!docs) {
       throw new Error('Search index file could not be created or is empty.')
     }
@@ -42,8 +44,6 @@ export const activateSearchIndex = async () => {
 
   searchIndex.removeAll()
   searchIndex.addAll(docs)
-
-  // console.log(`There are ${searchIndex.documentCount} documents in the index.`)
 
   return searchIndex.documentCount
 }
@@ -121,6 +121,6 @@ const createSearchIndexDocsJSON = async () => {
     matchedCats: prod.matchedCats,
   }))
 
-  //save docs to /server/assets/searchIndexDocs.json
-  await storage.setItem('searchIndexDocs.json', docs)
+  //save docs to /static/search/searchIndexDocs.json
+  await saveJSON(pathToIndexDocs, docs)
 }

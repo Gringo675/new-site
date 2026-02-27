@@ -1,7 +1,7 @@
 node_modules
 *.log
 .nuxt
-.nitro-storage
+.static
 nuxt.d.ts
 .output
 .env

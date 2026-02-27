@@ -1,6 +1,20 @@
 // import useTtest from '../utils/auth/useTtest'
 
 export default defineEventHandler(async event => {
+  const test = 'мышь'
+  const chars = [...test]
+  chars.forEach((c, i) => {
+    console.log(`char ${i}: '${c}' = U+${c.codePointAt(0).toString(16)}`)
+  })
+
+  // Also check the map
+  const mapSoftSign = 'ь'
+  console.log(`map soft sign: U+${mapSoftSign.codePointAt(0).toString(16)}`)
+  console.log(`input soft sign: U+${test[3].codePointAt(0).toString(16)}`)
+  console.log(`Are they equal? ${mapSoftSign === test[3]}`)
+  console.log(`transliterate('мышь'): ${JSON.stringify(transliterate('мышь'), null, 2)}`)
+  return
+
   await new Promise(resolve => setTimeout(resolve, 2000))
   const cTime = new Date().toLocaleTimeString()
   console.log(`from apiTest: ${cTime}`)
