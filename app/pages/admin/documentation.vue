@@ -1,26 +1,28 @@
 <script setup>
 //
-const state = reactive({
-  // prods: [],
+const docState = reactive({
   stnd: [],
   pasp: [],
   rstr: [],
-  // dbGR: [],
-  // fgisGR: [],
-  // getDbGR: async () => {
-  //   state.dbGR = await $fetch('/api/admin/cms/documentation/getGrsi')
-  // },
 })
 
+// const updateProds = async () => {
+//   state.prods = await myFetch('/api/admin/cms/documentation/getProds')
+// }
 const updatePasp = async () => {
-  state.pasp = await myFetch('/api/admin/cms/documentation/getPasp')
+  docState.pasp = await myFetch('/api/admin/cms/documentation/getPasp')
+}
+const updateStnd = async () => {
+  docState.stnd = await myFetch('/api/admin/cms/documentation/getStnd')
 }
 const updateRstr = async () => {
-  state.rstr = await myFetch('/api/admin/cms/documentation/getRstr')
+  docState.rstr = await myFetch('/api/admin/cms/documentation/getRstr')
 }
 
 onMounted(async () => {
+  // await updateProds()
   await updatePasp()
+  await updateStnd()
   await updateRstr()
 })
 
@@ -46,23 +48,30 @@ const tabs = [
     value: 'fgis',
   },
 ]
-const activeTab = ref('passports')
+const activeTab = ref('products')
 </script>
 
 <template>
   <!-- content -->
   <div class="mb-8">
+    <AdminDocumentationProd
+      v-show="activeTab === 'products'"
+      :doc-state="docState" />
+    <AdminDocumentationStnd
+      v-show="activeTab === 'standards'"
+      :stnd="docState.stnd"
+      @updateStnd="updateStnd" />
     <AdminDocumentationPasp
       v-show="activeTab === 'passports'"
-      :pasp="state.pasp"
+      :pasp="docState.pasp"
       @updatePasp="updatePasp" />
     <AdminDocumentationRSTR
       v-show="activeTab === 'rstr'"
-      :rstr="state.rstr"
+      :rstr="docState.rstr"
       @updateRstr="updateRstr" />
     <AdminDocumentationFGIS
       v-show="activeTab === 'fgis'"
-      :dbRstr="state.rstr"
+      :dbRstr="docState.rstr"
       @updateRstr="updateRstr" />
   </div>
   <!-- tabs -->
@@ -76,22 +85,4 @@ const activeTab = ref('passports')
       size="xs"
       class="" />
   </div>
-
-  <!-- <div>
-    <UTabs
-      :items="tabs"
-      :default-value="'2'"
-      class="w-full"
-      :unmount-on-hide="false"
-      :ui="{
-        list: 'bg-indigo-100',
-      }">
-      <template #fgis>
-        <AdminDocumentationFGIS :state="state" />
-      </template>
-      <template #grsi>
-        <AdminDocumentationRSTR :state="state" />
-      </template>
-    </UTabs>
-  </div> -->
 </template>

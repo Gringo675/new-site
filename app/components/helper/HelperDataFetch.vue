@@ -38,14 +38,6 @@ watch(status, statusValue => {
     name="page"
     mode="out-in">
     <HelperLoader v-if="status !== 'success'" />
-    <!-- <div
-      v-if="status !== 'success'"
-      class="flex cursor-progress flex-col items-center justify-center py-3"
-    >
-      <div
-        class="h-32 w-32 animate-[spin_2s_linear_infinite] rounded-full border-[16px] border-t-[#2578FBFF] border-r-[#42ecc8] border-b-[#f7ef72] border-l-[#f34a5f]"
-      ></div>
-    </div> -->
     <div v-else>
       <slot :data="data">some fallback</slot>
     </div>

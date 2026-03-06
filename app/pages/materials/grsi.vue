@@ -1,6 +1,9 @@
 <script setup>
 //
 useTitle('ФГИС ГРСИ: Описания типов и методики поверки')
+useSeoMeta({
+  robots: 'noindex, follow',
+})
 
 const url = `/api/getData/grsi`
 </script>

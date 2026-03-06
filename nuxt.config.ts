@@ -158,12 +158,19 @@ export default defineNuxtConfig({
     indexable: process.env.NUXT_BUILD_MODE === 'prod', // allow indexing only for prod build
   },
   sitemap: {
-    exclude: ['/admin/**', '/user/**', '/try/**'],
+    exclude: ['/admin/**', '/user/**', '/try/**', '/materials/grsi', '/materials/standards'],
     sources: ['/api/__sitemap__/urls'],
-    xslColumns: [{ label: 'URL', width: '100%' }],
+    xslColumns: [
+      { label: 'URL', width: '70%' },
+      {
+        label: 'Last Updated',
+        width: '30%',
+        select: 'sitemap:lastmod',
+      },
+    ],
   },
   robots: {
-    disallow: ['/api', '/admin', '/search', '/user', '/cart', '/try', '/test', '/*?'],
+    disallow: ['/admin', '/search', '/user', '/cart', '/try', '/test', '/catalog/*?f=*'],
   },
   schemaOrg: {
     identity: defineOrganization({

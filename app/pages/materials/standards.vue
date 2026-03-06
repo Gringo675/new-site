@@ -1,6 +1,9 @@
 <script setup>
 //
 useTitle('Нормативная документация - ГОСТы, ТУ')
+useSeoMeta({
+  robots: 'noindex, follow',
+})
 
 const url = `/api/getData/standards`
 </script>

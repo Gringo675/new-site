@@ -28,7 +28,8 @@ richError.isChunkError =
   !richError.onServer &&
   (richError.statusMessage.toLowerCase().includes('failed to fetch dynamically imported module') ||
     richError.statusMessage.toLowerCase().includes('error loading dynamically imported module') ||
-    richError.statusMessage.toLowerCase().includes('importing a module script failed'))
+    richError.statusMessage.toLowerCase().includes('importing a module script failed') ||
+    richError.statusMessage.startsWith(`Failed to execute 'insertBefore' on 'Node'`))
 
 if (richError.isChunkError) {
   if (richError.isBot) {

@@ -195,25 +195,6 @@ const getActionsItems = row => [
     },
   ],
 ]
-
-const refreshExistingDocs = async () => {
-  const proceed = await showMessage({
-    title: 'Подтвердите обновление',
-    description: `Все существующие записи будут обновлены данными из ФГИС. Если в ФГИС нет данных по некоторым записям, они будут удалены из базы. Продолжить?`,
-    isDialog: true,
-  })
-  if (!proceed) return
-
-  const success = await myFetch('/api/admin/cms/documentation/refreshRstr', {
-    method: 'post',
-  })
-  if (success) {
-    showNotice({ title: 'Данные обновлены', type: 'success' })
-    emit('updateRstr')
-  } else {
-    showNotice({ title: 'Ошибка при обновлении!', type: 'error' })
-  }
-}
 </script>
 
 <template>
@@ -227,10 +208,10 @@ const refreshExistingDocs = async () => {
         class="text-sm text-gray-600">
         Всего: {{ rstr.length }} документов
       </div>
-      <div class="grow flex justify-end">
-<UButton
-        label="Обновить данные"
-        @click="refreshExistingDocs" />
+      <div class="flex grow justify-end">
+        <UButton
+          label="Обновить данные"
+          @click="" />
       </div>
     </div>
 

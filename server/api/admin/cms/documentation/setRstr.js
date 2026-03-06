@@ -68,7 +68,7 @@ export default defineEventHandler(async event => {
         VALUES ('${rstr.number}', '${rstr.name}', '${rstr.type_si}', '${rstr.brand}', '${rstr.date || null}', '${rstr.fileName_ot}', '${rstr.fileName_mp}', '${rstr.fileName_svid}')`
     }
   }
-  console.log(`query: ${JSON.stringify(query, null, 2)}`)
+  // console.log(`query: ${JSON.stringify(query, null, 2)}`)
   await dbReq(query)
 
   return true

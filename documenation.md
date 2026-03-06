@@ -216,3 +216,7 @@ upd 07.11.25 Наверно дело не в островах, смотри ко
 CREATE TABLE new_table LIKE old_table;
 -- Then, copy the data
 INSERT INTO new_table SELECT * FROM old_table;
+
+-- If need to clear the table, and then re-fill it:
+TRUNCATE TABLE new_table;
+INSERT INTO new_table SELECT * FROM old_table;
