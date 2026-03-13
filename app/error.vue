@@ -54,7 +54,10 @@ if (richError.isChunkError) {
 // }
 
 useOverlay().closeAll()
-if (!richError.suppressed) useTitle('Ошибка ' + richError.statusCode)
+if (!richError.suppressed) {
+  useTitle('Ошибка ' + richError.statusCode)
+  console.error('Captured error:', props.error)
+}
 
 // don't log errors during hydration('cause we already get it from server render) and 404 errors
 if (!nuxtApp.isHydrating && richError.statusCode !== 404) setErrorToLog(richError)

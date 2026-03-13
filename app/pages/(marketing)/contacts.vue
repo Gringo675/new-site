@@ -221,12 +221,12 @@ function init() {
               >
             </div>
           </div>
-          <div class="flex items-center gap-2">
+          <!-- <div class="flex items-center gap-2">
             <Icon
               name="i-lucide-mailbox"
               class="text-primary size-5" />
             <div><span class="font-semibold">Почтовый адрес:</span> {{ company.address.post }}</div>
-          </div>
+          </div> -->
           <div class="flex items-start gap-2">
             <Icon
               name="i-lucide-file-text"

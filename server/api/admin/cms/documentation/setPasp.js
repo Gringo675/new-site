@@ -2,7 +2,7 @@ const { saveFile, deleteFile, fileExists } = useStaticStorage()
 
 export default defineEventHandler(async event => {
   //
-  const dbTable = 'i_docs_pasp2'
+  const dbTable = 'i_docs_pasp'
   const pasp = await getFormData(event)
   let query
 
@@ -17,6 +17,7 @@ export default defineEventHandler(async event => {
     if (pasp.files?.length) {
       // can contain only one file
       pasp.fileName = `${transliterate(pasp.name.toLowerCase())} [chelinstrument.ru].pdf`
+
       const path = `/doc/pasp/${pasp.fileName}`
       await saveFile(path, pasp.files[0].content)
     }

@@ -1,12 +1,25 @@
 <script setup>
-const emit = defineEmits(['updateRstr'])
+const emit = defineEmits(['updateRstr', 'refreshDB'])
 
-const { rstr } = defineProps({
+const props = defineProps({
   rstr: {
     type: Array,
     default: () => [],
   },
+  search: {
+    type: String,
+    default: '',
+  },
 })
+
+const globalFilter = ref('')
+
+watch(
+  () => props.search,
+  newSearch => {
+    globalFilter.value = newSearch
+  },
+)
 
 const columns = [
   {
@@ -112,16 +125,16 @@ const submitForm = async () => {
       isDialog: true,
     })
     if (!proceed) return
+  }
 
-    if (formState.file_ot) {
-      formData.append('files', formState.file_ot, 'otFile.pdf')
-    }
-    if (formState.file_mp) {
-      formData.append('files', formState.file_mp, 'mpFile.pdf')
-    }
-    if (formState.file_svid) {
-      formData.append('files', formState.file_svid, 'svFile.pdf')
-    }
+  if (formState.file_ot) {
+    formData.append('files', formState.file_ot, 'otFile.pdf')
+  }
+  if (formState.file_mp) {
+    formData.append('files', formState.file_mp, 'mpFile.pdf')
+  }
+  if (formState.file_svid) {
+    formData.append('files', formState.file_svid, 'svFile.pdf')
   }
 
   const success = await myFetch('/api/admin/cms/documentation/setRstr', {
@@ -206,18 +219,26 @@ const getActionsItems = row => [
       <div
         v-if="rstr"
         class="text-sm text-gray-600">
-        Всего: {{ rstr.length }} документов
+        Всего документов: {{ rstr.length }}
       </div>
-      <div class="flex grow justify-end">
+      <UInput
+        v-model="globalFilter"
+        :placeholder="'Filter...'"
+        :icon="'i-lucide-filter'"
+        type="search"
+        class="w-64" />
+      <div class="flex grow justify-end gap-4">
         <UButton
           label="Обновить данные"
-          @click="" />
+          @click="emit('refreshDB')" />
       </div>
     </div>
 
     <UTable
       :data="rstr"
       :columns="columns"
+      v-model:global-filter="globalFilter"
+      class="my-4"
       :ui="{
         th: 'text-center bg-gray-100',
         td: 'p-2',

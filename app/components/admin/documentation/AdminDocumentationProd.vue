@@ -1,13 +1,17 @@
 <script setup>
+import { form } from '#build/ui'
 import { h, resolveComponent } from 'vue'
 
 const UCheckbox = resolveComponent('UCheckbox')
 
-const state = reactive({
+const emit = defineEmits(['navigateToDoc'])
+
+const state = shallowReactive({
   cats: [],
   prods: [],
   activeCatId: null,
   rowSelection: {},
+  globalFilter: '',
 })
 
 const { docState } = defineProps({
@@ -16,20 +20,60 @@ const { docState } = defineProps({
   },
 })
 
+const goToDocument = (docType, doc) => {
+  // Get the search text based on document type
+  const searchText = docType === 'passports' ? doc.name : doc.number
+  emit('navigateToDoc', { type: docType, searchText })
+}
+
 onMounted(async () => {
   //
   state.cats = await myFetch('/api/admin/cms/documentation/getMainCats')
 })
 
 const updateProds = async () => {
+  //
   if (!state.activeCatId) return
-  state.prods = await myFetch('/api/admin/cms/documentation/getProds?cat_id=' + state.activeCatId)
+  const prods = await myFetch('/api/admin/cms/documentation/getProds?cat_id=' + state.activeCatId)
+  state.prods = prods.map(p => {
+    const standarts = p.standart_ids
+      ? p.standart_ids.split(',').map(id => docState.stnd.find(s => s.id === Number(id)) || { id, error: true })
+      : []
+    const reestrs = p.reestr_ids
+      ? p.reestr_ids.split(',').map(id => docState.rstr.find(r => r.id === Number(id)) || { id, error: true })
+      : []
+    const pasports = p.pasport_ids
+      ? p.pasport_ids.split(',').map(id => docState.pasp.find(pa => pa.id === Number(id)) || { id, error: true })
+      : []
+    return {
+      id: p.id,
+      name: p.name,
+      alias: p.alias,
+      standarts,
+      reestrs,
+      pasports,
+      _standart_search: standarts.map(s => s.number || '').join(' '),
+      _reestr_search: reestrs.map(r => r.number || '').join(' '),
+      _pasp_search: pasports.map(pa => pa.name || '').join(' '),
+    }
+  })
+  state.rowSelection = {}
+  state.globalFilter = ''
 }
+
 watch(
   () => state.activeCatId,
   async newVal => {
     if (newVal) {
       await updateProds()
+    }
+  },
+)
+watch(
+  () => [docState.stnd, docState.rstr, docState.pasp],
+  () => {
+    if (state.activeCatId) {
+      updateProds()
     }
   },
 )
@@ -40,19 +84,20 @@ const columns = [
     header: ({ table }) =>
       h(UCheckbox, {
         modelValue: table.getIsSomePageRowsSelected() ? 'indeterminate' : table.getIsAllPageRowsSelected(),
-        'onUpdate:modelValue': (value) => table.toggleAllPageRowsSelected(!!value),
+        'onUpdate:modelValue': value => table.toggleAllPageRowsSelected(!!value),
         'aria-label': 'Select all',
       }),
     cell: ({ row }) =>
       h(UCheckbox, {
         modelValue: row.getIsSelected(),
-        'onUpdate:modelValue': (value) => row.toggleSelected(!!value),
+        'onUpdate:modelValue': value => row.toggleSelected(!!value),
         'aria-label': 'Select row',
       }),
+    enableGlobalFilter: false,
   },
   {
     accessorKey: 'id',
-    header: '№',
+    header: 'Код',
   },
   {
     accessorKey: 'name',
@@ -61,116 +106,73 @@ const columns = [
   {
     accessorKey: 'standarts',
     header: 'Стандарты',
+    accessorFn: row => row._standart_search,
   },
   {
-    accessorKey: 'grsi',
+    accessorKey: 'reestrs',
     header: 'ГРСИ',
+    accessorFn: row => row._reestr_search,
   },
   {
-    accessorKey: 'pasp',
+    accessorKey: 'pasports',
     header: 'Паспорта',
+    accessorFn: row => row._pasp_search,
   },
   {
     accessorKey: 'actions',
     header: '',
+    enableGlobalFilter: false,
   },
 ]
 
 const formState = reactive({
   isOpen: false,
-  id: undefined,
-  name: '',
-  standart_ids: [],
-  reestr_ids: [],
-  pasport_ids: [],
-  isMassEdit: false,
-  selectedIds: [],
+  prods: [],
+  standarts: [],
+  reestrs: [],
+  pasports: [],
 })
-
-const validate = state => {
-  const errors = []
-  return errors
-}
-
-const openForm = row => {
-  formState.isOpen = true
-  formState.id = row.id
-  formState.name = row.name || ''
-  formState.standart_ids = row.standart_ids ? row.standart_ids.split(',').filter(Boolean).map(Number) : []
-  formState.reestr_ids = row.reestr_ids ? row.reestr_ids.split(',').filter(Boolean).map(Number) : []
-  formState.pasport_ids = row.pasport_ids ? row.pasport_ids.split(',').filter(Boolean).map(Number) : []
-}
 
 const closeForm = () => {
   formState.isOpen = false
-  formState.id = undefined
-  formState.name = ''
-  formState.standart_ids = []
-  formState.reestr_ids = []
-  formState.pasport_ids = []
-  formState.isMassEdit = false
-  formState.selectedIds = []
-  state.rowSelection = {}
+  formState.prods = []
+  formState.standarts = []
+  formState.reestrs = []
+  formState.pasports = []
 }
 
-const findCommonDocuments = () => {
-  const selectedProds = state.prods.filter(p => formState.selectedIds.includes(p.id))
-  if (!selectedProds.length) return { standart_ids: [], reestr_ids: [], pasport_ids: [], allIdentical: true }
-
-  const firstProd = selectedProds[0]
-  const firstStandartIds = firstProd.standart_ids ? firstProd.standart_ids.split(',').filter(Boolean).map(Number) : []
-  const firstReestrIds = firstProd.reestr_ids ? firstProd.reestr_ids.split(',').filter(Boolean).map(Number) : []
-  const firstPasportIds = firstProd.pasport_ids ? firstProd.pasport_ids.split(',').filter(Boolean).map(Number) : []
-
-  // Check if all products have identical docs
-  const allIdentical = selectedProds.every(p => {
-    const standartIds = p.standart_ids ? p.standart_ids.split(',').filter(Boolean).map(Number) : []
-    const reestrIds = p.reestr_ids ? p.reestr_ids.split(',').filter(Boolean).map(Number) : []
-    const pasportIds = p.pasport_ids ? p.pasport_ids.split(',').filter(Boolean).map(Number) : []
-    return JSON.stringify(standartIds) === JSON.stringify(firstStandartIds) &&
-      JSON.stringify(reestrIds) === JSON.stringify(firstReestrIds) &&
-      JSON.stringify(pasportIds) === JSON.stringify(firstPasportIds)
-  })
-
-  // Find intersection of all document IDs
-  const commonStandartIds = firstStandartIds.filter(id =>
-    selectedProds.every(p => {
-      const ids = p.standart_ids ? p.standart_ids.split(',').filter(Boolean).map(Number) : []
-      return ids.includes(id)
-    })
-  )
-
-  const commonReestrIds = firstReestrIds.filter(id =>
-    selectedProds.every(p => {
-      const ids = p.reestr_ids ? p.reestr_ids.split(',').filter(Boolean).map(Number) : []
-      return ids.includes(id)
-    })
-  )
-
-  const commonPasportIds = firstPasportIds.filter(id =>
-    selectedProds.every(p => {
-      const ids = p.pasport_ids ? p.pasport_ids.split(',').filter(Boolean).map(Number) : []
-      return ids.includes(id)
-    })
-  )
-
-  return { standart_ids: commonStandartIds, reestr_ids: commonReestrIds, pasport_ids: commonPasportIds, allIdentical }
+const editProd = prod => {
+  formState.isOpen = true
+  formState.prods = [prod]
+  formState.standarts = prod.standarts
+  formState.reestrs = prod.reestrs
+  formState.pasports = prod.pasports
 }
 
-const openMassEdit = async () => {
+const editMassProds = async () => {
+  //
   const selectedIndices = Object.keys(state.rowSelection).map(Number)
-  formState.selectedIds = selectedIndices.map(index => state.prods[index].id)
-  formState.isMassEdit = true
+  if (!selectedIndices.length) return
 
-  const { standart_ids, reestr_ids, pasport_ids, allIdentical } = findCommonDocuments()
-  formState.standart_ids = standart_ids
-  formState.reestr_ids = reestr_ids
-  formState.pasport_ids = pasport_ids
+  formState.prods = selectedIndices.map(index => state.prods[index])
+
+  const firstProd = formState.prods[0]
+
+  // Check if all products have identical docs (compare arrays using cached IDs)
+  const allIdentical = formState.prods.every(
+    p =>
+      p.standarts.length === firstProd.standarts.length &&
+      p.standarts.every(s => firstProd.standarts.includes(s)) &&
+      p.reestrs.length === firstProd.reestrs.length &&
+      p.reestrs.every(r => firstProd.reestrs.includes(r)) &&
+      p.pasports.length === firstProd.pasports.length &&
+      p.pasports.every(pa => firstProd.pasports.includes(pa)),
+  )
 
   if (!allIdentical) {
     const proceed = await showMessage({
-      title: 'Документы у выбранных товаров отличаются!',
-      description: 'Будут оставлены только общие для всех документы. Продолжаем?',
+      title: 'Документы у выбранных товаров отличаются (или присутствуют некорректные документы)!',
+      description: 'Будут оставлены только общие для всех действующие документы. Продолжаем?',
       isDialog: true,
     })
     if (!proceed) {
@@ -179,33 +181,53 @@ const openMassEdit = async () => {
     }
   }
 
+  if (allIdentical) {
+    formState.standarts = firstProd.standarts
+    formState.reestrs = firstProd.reestrs
+    formState.pasports = firstProd.pasports
+  } else {
+    // error documents will be excluded
+    const commonStandarts = formState.prods.reduce((common, prod) => {
+      return common.filter(s => prod.standarts.some(ps => ps === s))
+    }, formState.prods[0].standarts)
+
+    const commonReestrs = formState.prods.reduce((common, prod) => {
+      return common.filter(r => prod.reestrs.some(pr => pr === r))
+    }, formState.prods[0].reestrs)
+
+    const commonPasports = formState.prods.reduce((common, prod) => {
+      return common.filter(pa => prod.pasports.some(pp => pp === pa))
+    }, formState.prods[0].pasports)
+
+    formState.standarts = commonStandarts
+    formState.reestrs = commonReestrs
+    formState.pasports = commonPasports
+  }
+
   formState.isOpen = true
 }
 
-const submitForm = async () => {
-  const currentStandartIds = formState.standart_ids.join(',')
-  const currentReestrIds = formState.reestr_ids.join(',')
-  const currentPasportIds = formState.pasport_ids.join(',')
+const saveProds = async () => {
+  // check for errors first
+  if (
+    formState.standarts.some(s => s.error) ||
+    formState.reestrs.some(r => r.error) ||
+    formState.pasports.some(p => p.error)
+  ) {
+    await showMessage({
+      title: 'Ошибка в документах',
+      description: 'Проверьте, что все выбранные документы корректны.',
+      type: 'error',
+    })
+    return
+  }
 
-  const productIds = formState.isMassEdit ? formState.selectedIds : [formState.id]
-
-  for (const prodId of productIds) {
-    const originalProduct = state.prods.find(p => p.id === prodId)
-    if (!originalProduct) continue
-
-    // Check if data has changed for this product
-    const hasChanges =
-      currentStandartIds !== (originalProduct.standart_ids || '') ||
-      currentReestrIds !== (originalProduct.reestr_ids || '') ||
-      currentPasportIds !== (originalProduct.pasport_ids || '')
-
-    if (!hasChanges) continue
-
+  for (const prod of formState.prods) {
     const formData = new FormData()
-    formData.append('id', prodId)
-    formData.append('standart_ids', currentStandartIds)
-    formData.append('reestr_ids', currentReestrIds)
-    formData.append('pasport_ids', currentPasportIds)
+    formData.append('id', prod.id)
+    formData.append('standart_ids', formState.standarts.map(s => s.id).join(','))
+    formData.append('reestr_ids', formState.reestrs.map(r => r.id).join(','))
+    formData.append('pasport_ids', formState.pasports.map(p => p.id).join(','))
 
     await myFetch('/api/admin/cms/documentation/setProd', {
       method: 'post',
@@ -221,37 +243,31 @@ const submitForm = async () => {
   await updateProds()
 }
 
-const getDocNames = (ids, docs) => {
-  if (!ids) return []
-  const idArray = ids.split(',').filter(Boolean).map(Number)
-  return idArray.map(id => ({ id, doc: docs.find(d => d.id === id) }))
+const onTest = () => {
+  console.log('Test function called')
+  state.prods[0].name = 'Updated Name ' + new Date().toLocaleTimeString()
 }
-
-const getDocById = (id, docs) => {
-  return docs.find(d => d.id === id)
-}
-
-const getStandartOptions = computed(() => {
-  return docState.stnd.map(s => ({ label: `${s.number} - ${s.name}`, value: s.id }))
-})
-
-const getRstrOptions = computed(() => {
-  return docState.rstr.map(r => ({ label: `№${r.number} - ${r.name}`, value: r.id }))
-})
-
-const getPaspOptions = computed(() => {
-  return docState.pasp.map(p => ({ label: p.name, value: p.id }))
-})
 </script>
 
 <template>
   <div>
     <div class="flex items-center gap-4">
+      <UButton
+        label="Группа"
+        title="Редактировать выбранные товары"
+        icon="i-heroicons-pencil-square"
+        :disabled="!Object.keys(state.rowSelection).length"
+        variant="outline"
+        @click="editMassProds" />
       <USelectMenu
         v-model="state.activeCatId"
         :items="state.cats"
         value-key="value"
-        searchable
+        :search-input="{
+          placeholder: 'Filter...',
+          icon: 'i-lucide-filter',
+          type: 'search',
+        }"
         placeholder="Выберите категорию"
         class="w-96" />
       <div
@@ -259,25 +275,26 @@ const getPaspOptions = computed(() => {
         class="text-sm text-gray-600">
         Всего: {{ state.prods.length }} товаров
       </div>
-      <UButton
-        v-if="Object.keys(state.rowSelection).length"
-        label="Изменить выбранные"
-        color="neutral"
-        @click="openMassEdit" />
+
+      <UInput
+        v-model="state.globalFilter"
+        placeholder="Filter..."
+        icon="i-lucide-filter"
+        class="w-64"
+        type="search" />
     </div>
-    <!-- <pre
-      >{{ state.prods }}
-    </pre> -->
 
     <UTable
       v-model:row-selection="state.rowSelection"
+      v-model:global-filter="state.globalFilter"
       :data="state.prods"
       :columns="columns"
       :ui="{
-        th: 'text-center bg-gray-100',
+        th: 'text-center bg-gray-100 px-2',
         td: 'p-2',
-        tr: 'hover:bg-gray-200',
-      }">
+        tr: 'hover:bg-gray-200 data-[selected=true]:bg-violet-100/50',
+      }"
+      class="my-4">
       <template #id-cell="{ row }">
         <div class="wrap-break-word whitespace-normal">
           {{ row.original.id }}
@@ -290,198 +307,183 @@ const getPaspOptions = computed(() => {
       </template>
       <template #standarts-cell="{ row }">
         <div class="wrap-break-word whitespace-normal">
-          <template v-if="row.original.standart_ids">
-            <template
-              v-for="item in getDocNames(row.original.standart_ids, docState.stnd)"
-              :key="item.id">
-              <a
-                v-if="item.doc"
-                :href="`/static/doc/stnd/${encodeURIComponent(item.doc.file)}`"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="block text-blue-600 hover:underline">
-                {{ item.doc.number }}
-              </a>
-              <span
-                v-else
-                class="block text-red-600">
-                Не найден (ID: {{ item.id }})
-              </span>
-            </template>
-          </template>
-          <span
-            v-else
-            class="text-gray-400"
-            >—</span
-          >
+          <div
+            v-for="stnd in row.original.standarts"
+            class="">
+            <span
+              v-if="stnd.error"
+              class="block text-red-600">
+              Не найден (ID: {{ stnd.id }})
+            </span>
+            <span
+              v-else
+              :title="stnd.name"
+              class="cursor-pointer text-blue-600 hover:underline"
+              @click="goToDocument('standards', stnd)">
+              {{ stnd.number }}
+            </span>
+          </div>
         </div>
       </template>
-      <template #grsi-cell="{ row }">
+      <template #reestrs-cell="{ row }">
         <div class="wrap-break-word whitespace-normal">
-          <template v-if="row.original.reestr_ids">
-            <template
-              v-for="item in getDocNames(row.original.reestr_ids, docState.rstr)"
-              :key="item.id">
-              <a
-                v-if="item.doc"
-                :href="`/static/doc/rstr/${encodeURIComponent(item.doc.file_ot || item.doc.file_mp || item.doc.file_svid)}`"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="block text-blue-600 hover:underline">
-                №{{ item.doc.number }}
-              </a>
-              <span
-                v-else
-                class="block text-red-600">
-                Не найден (ID: {{ item.id }})
-              </span>
-            </template>
-          </template>
-          <span
-            v-else
-            class="text-gray-400"
-            >—</span
-          >
+          <div
+            v-for="rstr in row.original.reestrs"
+            class="">
+            <span
+              v-if="rstr.error"
+              class="block text-red-600">
+              Не найден (ID: {{ rstr.id }})
+            </span>
+            <span
+              v-else
+              :title="rstr.name"
+              class="cursor-pointer text-blue-600 hover:underline"
+              @click="goToDocument('rstr', rstr)">
+              {{ rstr.number }}
+            </span>
+          </div>
         </div>
       </template>
-      <template #pasp-cell="{ row }">
+      <template #pasports-cell="{ row }">
         <div class="wrap-break-word whitespace-normal">
-          <template v-if="row.original.pasport_ids">
-            <template
-              v-for="item in getDocNames(row.original.pasport_ids, docState.pasp)"
-              :key="item.id">
-              <a
-                v-if="item.doc"
-                :href="`/static/doc/pasp/${encodeURIComponent(item.doc.file)}`"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="block text-blue-600 hover:underline">
-                {{ item.doc.name }}
-              </a>
-              <span
-                v-else
-                class="block text-red-600">
-                Не найден (ID: {{ item.id }})
-              </span>
-            </template>
-          </template>
-          <span
-            v-else
-            class="text-gray-400"
-            >—</span
-          >
+          <div
+            v-for="pasp in row.original.pasports"
+            class="">
+            <span
+              v-if="pasp.error"
+              class="block text-red-600">
+              Не найден (ID: {{ pasp.id }})
+            </span>
+            <span
+              v-else
+              :title="pasp.name"
+              class="cursor-pointer text-blue-600 hover:underline"
+              @click="goToDocument('passports', pasp)">
+              {{ pasp.name }}
+            </span>
+          </div>
         </div>
       </template>
       <template #actions-cell="{ row }">
         <UButton
-          color="neutral"
           variant="ghost"
           size="sm"
           icon="i-heroicons-pencil"
-          @click="openForm(row.original)" />
+          @click="editProd(row.original)" />
       </template>
     </UTable>
 
     <UModal
       v-model:open="formState.isOpen"
-      :title="formState.isMassEdit ? `Редактирование (${formState.selectedIds.length} товаров)` : 'Редактирование'"
+      :title="formState.prods.length > 1 ? `Редактирование (${formState.prods.length} товаров)` : 'Редактирование'"
       :dismissible="false"
       :ui="{
         content: 'max-w-xl',
       }">
       <template #body>
         <UForm
-          :validate="validate"
           :state="formState"
-          @submit="submitForm">
+          @submit="saveProds">
           <div class="space-y-4">
-            <div v-if="!formState.isMassEdit">
-              <div class="mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">Наименование</div>
-              <div class="text-gray-900 dark:text-gray-100">
-                {{ formState.name }}
+            <div class="max-h-30 space-y-1 overflow-y-auto text-sm font-bold">
+              <div
+                v-for="prod in formState.prods"
+                :key="prod.id">
+                {{ prod.name }}
               </div>
             </div>
 
             <UFormField label="Стандарты">
               <div class="mb-2 flex flex-wrap gap-2">
                 <UBadge
-                  v-for="id in formState.standart_ids"
-                  :key="id"
-                  :color="docState.stnd.find(s => s.id === id) ? 'neutral' : 'error'"
+                  v-for="stnd in formState.standarts"
+                  :key="stnd.id"
+                  :color="stnd.error ? 'error' : 'neutral'"
                   variant="subtle"
                   class="flex items-center gap-1">
-                  {{ docState.stnd.find(s => s.id === id)?.number || 'Не найден' }}
+                  {{ stnd.error ? `Не найден (ID: ${stnd.id})` : stnd.number }}
                   <UButton
                     color="neutral"
                     variant="link"
                     size="xs"
                     icon="i-heroicons-x-mark"
                     class="p-0"
-                    @click="formState.standart_ids = formState.standart_ids.filter(i => i !== id)" />
+                    @click="formState.standarts = formState.standarts.filter(i => i.id !== stnd.id)" />
                 </UBadge>
               </div>
               <USelectMenu
-                v-model="formState.standart_ids"
-                :items="getStandartOptions"
+                v-model="formState.standarts"
+                :items="docState.stnd.map(s => ({ label: `${s.number} - ${s.name}`, value: s }))"
                 value-key="value"
                 multiple
-                searchable
+                :search-input="{
+                  placeholder: 'Filter...',
+                  icon: 'i-lucide-filter',
+                  type: 'search',
+                }"
                 placeholder="Добавить стандарты"
                 class="w-full" />
             </UFormField>
-
             <UFormField label="ГРСИ (Реестры)">
               <div class="mb-2 flex flex-wrap gap-2">
                 <UBadge
-                  v-for="id in formState.reestr_ids"
-                  :key="id"
-                  :color="docState.rstr.find(r => r.id === id) ? 'neutral' : 'error'"
+                  v-for="rstr in formState.reestrs"
+                  :key="rstr.id"
+                  :color="rstr.error ? 'error' : 'neutral'"
                   variant="subtle"
                   class="flex items-center gap-1">
-                  {{ docState.rstr.find(r => r.id === id)?.number || 'Не найден' }}
+                  {{ rstr.error ? `Не найден (ID: ${rstr.id})` : `№${rstr.number}` }}
                   <UButton
                     color="neutral"
                     variant="link"
                     size="xs"
                     icon="i-heroicons-x-mark"
                     class="p-0"
-                    @click="formState.reestr_ids = formState.reestr_ids.filter(i => i !== id)" />
+                    @click="formState.reestrs = formState.reestrs.filter(i => i.id !== rstr.id)" />
                 </UBadge>
               </div>
               <USelectMenu
-                v-model="formState.reestr_ids"
-                :items="getRstrOptions"
+                v-model="formState.reestrs"
+                :items="docState.rstr.map(r => ({ label: `№${r.number} - ${r.name}`, value: r }))"
                 value-key="value"
                 multiple
-                searchable
+                :search-input="{
+                  placeholder: 'Filter...',
+                  icon: 'i-lucide-filter',
+                  type: 'search',
+                }"
                 placeholder="Добавить ГРСИ"
                 class="w-full" />
             </UFormField>
-
             <UFormField label="Паспорта">
               <div class="mb-2 flex flex-wrap gap-2">
                 <UBadge
-                  v-for="id in formState.pasport_ids"
-                  :key="id"
-                  :color="docState.pasp.find(p => p.id === id) ? 'neutral' : 'error'"
+                  v-for="pasp in formState.pasports"
+                  :key="pasp.id"
+                  :color="pasp.error ? 'error' : 'neutral'"
                   variant="subtle"
                   class="flex items-center gap-1">
-                  {{ docState.pasp.find(p => p.id === id)?.name || 'Не найден' }}
+                  {{ pasp.error ? `Не найден (ID: ${pasp.id})` : pasp.name }}
                   <UButton
                     color="neutral"
                     variant="link"
                     size="xs"
                     icon="i-heroicons-x-mark"
                     class="p-0"
-                    @click="formState.pasport_ids = formState.pasport_ids.filter(i => i !== id)" />
+                    @click="formState.pasports = formState.pasports.filter(i => i.id !== pasp.id)" />
                 </UBadge>
               </div>
               <USelectMenu
-                v-model="formState.pasport_ids"
-                :items="getPaspOptions"
+                v-model="formState.pasports"
+                :items="docState.pasp.map(p => ({ label: p.name, value: p }))"
                 value-key="value"
                 multiple
-                searchable
+                :search-input="{
+                  placeholder: 'Filter...',
+                  icon: 'i-lucide-filter',
+                  type: 'search',
+                }"
                 placeholder="Добавить паспорта"
                 class="w-full" />
             </UFormField>

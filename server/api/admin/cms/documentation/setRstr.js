@@ -2,7 +2,7 @@ const { saveFile, deleteFile, fileExists } = useStaticStorage()
 
 export default defineEventHandler(async event => {
   //
-  const dbTable = 'i_docs_rstr2'
+  const dbTable = 'i_docs_rstr'
   const rstr = await getFormData(event)
   let query
 

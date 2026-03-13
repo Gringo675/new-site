@@ -1,5 +1,5 @@
 export default defineEventHandler(async event => {
   //
 
-  return await dbReq(`SELECT * FROM i_docs_stnd2`)
+  return await dbReq(`SELECT * FROM i_docs_stnd`)
 })

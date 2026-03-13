@@ -170,6 +170,7 @@ export default defineNuxtConfig({
     ],
   },
   robots: {
+    // botDetection: false,
     disallow: ['/admin', '/search', '/user', '/cart', '/try', '/test', '/catalog/*?f=*'],
   },
   schemaOrg: {

@@ -1,8 +1,8 @@
 export default defineEventHandler(async event => {
   //
-  const dbTable = 'i_products2'
+  const dbTable = 'i_products'
   const prod = await getFormData(event)
-  console.log(`prod: ${JSON.stringify(prod, null, 2)}`)
+  // console.log(`prod: ${JSON.stringify(prod, null, 2)}`)
 
   // IDs already come as comma-separated strings
   const standart_ids = prod.standart_ids || ''
@@ -15,8 +15,8 @@ export default defineEventHandler(async event => {
     pasport_ids = '${pasport_ids}'
     WHERE id = ${prod.id}`
 
-  console.log(`query: ${JSON.stringify(query, null, 2)}`)
-  // await dbReq(query)
+  // console.log(`query: ${JSON.stringify(query, null, 2)}`)
+  await dbReq(query)
 
   return true
 })

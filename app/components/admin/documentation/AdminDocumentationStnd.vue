@@ -1,12 +1,25 @@
 <script setup>
 const emit = defineEmits(['updateStnd'])
 
-const { stnd } = defineProps({
+const props = defineProps({
   stnd: {
     type: Array,
     default: () => [],
   },
+  search: {
+    type: String,
+    default: '',
+  },
 })
+
+const globalFilter = ref('')
+
+watch(
+  () => props.search,
+  newSearch => {
+    globalFilter.value = newSearch
+  },
+)
 
 const columns = [
   {
@@ -74,7 +87,9 @@ const submitForm = async () => {
       isDialog: true,
     })
     if (!proceed) return
+  }
 
+  if (formState.file) {
     formData.append('files', formState.file)
   }
 
@@ -158,13 +173,21 @@ const getActionsItems = row => [
       <div
         v-if="stnd"
         class="text-sm text-gray-600">
-        Всего: {{ stnd.length }} документов
+        Всего документов: {{ stnd.length }}
       </div>
+      <UInput
+        v-model="globalFilter"
+        :placeholder="'Filter...'"
+        :icon="'i-lucide-filter'"
+        type="search"
+        class="w-64" />
     </div>
 
     <UTable
       :data="stnd"
       :columns="columns"
+      v-model:global-filter="globalFilter"
+      class="my-4"
       :ui="{
         th: 'text-center bg-gray-100',
         td: 'p-2',

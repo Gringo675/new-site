@@ -1,12 +1,25 @@
 <script setup>
 const emit = defineEmits(['updatePasp'])
 
-const { pasp } = defineProps({
+const props = defineProps({
   pasp: {
     type: Array,
     default: () => [],
   },
+  search: {
+    type: String,
+    default: '',
+  },
 })
+
+const globalFilter = ref('')
+
+watch(
+  () => props.search,
+  newSearch => {
+    globalFilter.value = newSearch
+  },
+)
 
 const columns = [
   {
@@ -63,7 +76,9 @@ const submitForm = async () => {
       isDialog: true,
     })
     if (!proceed) return
+  }
 
+  if (formState.file) {
     formData.append('files', formState.file)
   }
 
@@ -147,13 +162,21 @@ const getActionsItems = row => [
       <div
         v-if="pasp"
         class="text-sm text-gray-600">
-        Всего: {{ pasp.length }} документов
+        Всего документов: {{ pasp.length }}
       </div>
+      <UInput
+        v-model="globalFilter"
+        :placeholder="'Filter...'"
+        :icon="'i-lucide-filter'"
+        type="search"
+        class="w-64" />
     </div>
 
     <UTable
       :data="pasp"
       :columns="columns"
+      v-model:global-filter="globalFilter"
+      class="my-4"
       :ui="{
         th: 'text-center bg-gray-100',
         td: 'p-2',

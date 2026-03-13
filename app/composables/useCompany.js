@@ -11,7 +11,7 @@ const company = {
     postalCode: '454084',
     addressCountry: 'RU',
   },
-  phones: ['+7 (351) 790-77-48', '+7 (351) 735-99-21'],
+  phones: ['+7 (351) 790-77-48', '+7 (351) 235-99-21'],
   mails: ['info@chelinstrument.ru', 'meritel@mail.ru'],
   requisites: {
     inn: '7448078612',

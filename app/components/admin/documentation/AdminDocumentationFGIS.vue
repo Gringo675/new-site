@@ -1,6 +1,7 @@
 <script setup>
 //
 const emit = defineEmits(['updateRstr'])
+
 const { dbRstr } = defineProps({
   dbRstr: Array,
 })
@@ -508,6 +509,7 @@ const refreshDBDocs = async () => {
   let summaryMessage = `Обновлено: ${updatedCount}`
   if (skippedCount > 0) summaryMessage += `, пропущено: ${skippedCount}`
   if (errorCount > 0) summaryMessage += `, ошибок: ${errorCount}`
+  summaryMessage += '. Подробности в консоли.'
 
   showNotice({
     title: 'Обновление завершено',
@@ -519,124 +521,133 @@ const refreshDBDocs = async () => {
     emit('updateRstr')
   }
 }
+
+defineExpose({
+  refreshDBDocs,
+})
 </script>
 
 <template>
   <div>
-    <UForm
-      :state="filterState"
-      @submit="onFilterSubmit"
-      class="mb-4 flex items-end gap-4">
-      <UFormField
-        label="Номер"
-        name="number"
-        class="w-full">
-        <UInput
-          v-model="filterState.number"
-          type="search" />
-      </UFormField>
-      <UFormField
-        label="Наименование"
-        name="title"
-        class="w-full">
-        <UInput
-          v-model="filterState.title"
-          type="search" />
-      </UFormField>
-      <UFormField
-        label="Обозначение"
-        name="notation"
-        class="w-full">
-        <UInput
-          v-model="filterState.notation"
-          type="search" />
-      </UFormField>
-      <UFormField
-        label="Производитель"
-        name="manufacturers"
-        class="w-full">
-        <UInput
-          v-model="filterState.manufacturers"
-          type="search" />
-      </UFormField>
-      <UButton type="submit"> Применить </UButton>
-    </UForm>
-    <div
-      ref="docsContainer"
-      class="mb-4 flex items-center justify-end gap-4">
-      <UButton
-        label="Обновить документы в базе данных"
-        @click="refreshDBDocs" />
-      <div
-        v-if="fgis.length"
-        class="text-sm text-gray-600">
-        Всего: {{ fgis.length }} документов
+    <div class="flex justify-between">
+      <UForm
+        :state="filterState"
+        @submit="onFilterSubmit"
+        class="flex items-end gap-4">
+        <UFormField
+          label="Номер"
+          name="number"
+          class="w-full">
+          <UInput
+            v-model="filterState.number"
+            type="search" />
+        </UFormField>
+        <UFormField
+          label="Наименование"
+          name="title"
+          class="w-full">
+          <UInput
+            v-model="filterState.title"
+            type="search" />
+        </UFormField>
+        <UFormField
+          label="Обозначение"
+          name="notation"
+          class="w-full">
+          <UInput
+            v-model="filterState.notation"
+            type="search" />
+        </UFormField>
+        <UFormField
+          label="Производитель"
+          name="manufacturers"
+          class="w-full">
+          <UInput
+            v-model="filterState.manufacturers"
+            type="search" />
+        </UFormField>
+        <UButton
+          icon="i-lucide-search"
+          label="Поиск"
+          type="submit" />
+      </UForm>
+      <div class="flex items-end justify-end gap-4">
+        <div
+          v-if="fgis.length"
+          class="text-sm text-gray-600">
+          Найдено записей: {{ fgis.length }}
+        </div>
+        <USelect
+          v-model="itemsPerPage"
+          :items="[20, 50, 100, 500]"
+          variant="outline"
+          class="w-20" />
       </div>
-      <USelect
-        v-model="itemsPerPage"
-        :items="[20, 50, 100, 500]"
-        color="primary"
-        variant="outline"
-        class="w-20" />
     </div>
-    <UTable
-      :data="activeDocs"
-      :columns="columns"
-      :meta="{
-        class: {
-          tr: row => (row.original.inDB ? 'bg-green-100 hover:bg-green-200' : 'hover:bg-gray-200'),
-        },
-      }"
-      :ui="{
-        th: 'text-center bg-gray-100',
-        td: 'p-2',
-      }"
-      class="">
-      <template #number-cell="{ row }">
-        <div class="flex items-center gap-2">
-          <button
-            v-if="!row.original.inDB"
-            class="rounded-full border-green-200 bg-green-50 p-0.5 text-lg text-green-600 hover:text-green-800"
-            @click="addDocToDB(row.original)">
-            +
-          </button>
-          <span>{{ row.original.number }}</span>
-        </div>
-      </template>
-      <template #name-cell="{ row }">
-        <div class="max-w-xs wrap-break-word whitespace-normal">
-          {{ row.original.name }}
-        </div>
-      </template>
-      <template #type_si-cell="{ row }">
-        <div class="max-w-xs wrap-break-word whitespace-normal">
-          {{ row.original.type_si }}
-        </div>
-      </template>
-      <template #brand-cell="{ row }">
-        <div class="max-w-xs wrap-break-word whitespace-normal">
-          {{ row.original.brand }}
-        </div>
-      </template>
-      <template #file_ot-cell="{ row }">
-        <a
-          v-if="row.original.file_ot"
-          href="#"
-          @click.prevent="downloadFile(row.original.file_ot.uuid)"
-          class="text-blue-600 underline hover:text-blue-800">
-          {{ row.original.file_ot.title }}
-        </a>
-      </template>
-      <template #file_mp-cell="{ row }">
-        <a
-          v-if="row.original.file_mp"
-          href="#"
-          @click.prevent="downloadFile(row.original.file_mp.uuid)"
-          class="text-blue-600 underline hover:text-blue-800">
-          {{ row.original.file_mp.title }}
-        </a>
-      </template>
-    </UTable>
+
+    <div ref="docsContainer">
+      <UTable
+        :data="activeDocs"
+        :columns="columns"
+        :meta="{
+          class: {
+            tr: row => (row.original.inDB ? 'bg-green-100 hover:bg-green-200' : 'hover:bg-gray-200'),
+          },
+        }"
+        :ui="{
+          th: 'text-center bg-gray-100',
+          td: 'p-2',
+        }"
+        class="py-4">
+        <template #number-cell="{ row }">
+          <div class="flex items-center gap-2">
+            <UButton
+              v-if="!row.original.inDB"
+              icon="i-heroicons-plus"
+              title="Добавить в базу данных"
+              variant="outline"
+              size="xs"
+              class="rounded-full p-0"
+              @click="addDocToDB(row.original)" />
+            <span>{{ row.original.number }}</span>
+          </div>
+        </template>
+        <template #name-cell="{ row }">
+          <div class="max-w-xs wrap-break-word whitespace-normal">
+            {{ row.original.name }}
+          </div>
+        </template>
+        <template #type_si-cell="{ row }">
+          <div class="max-w-xs wrap-break-word whitespace-normal">
+            {{ row.original.type_si }}
+          </div>
+        </template>
+        <template #brand-cell="{ row }">
+          <div class="max-w-xs wrap-break-word whitespace-normal">
+            {{ row.original.brand }}
+          </div>
+        </template>
+        <template #file_ot-cell="{ row }">
+          <a
+            v-if="row.original.file_ot"
+            href="#"
+            @click.prevent="downloadFile(row.original.file_ot.uuid)"
+            class="text-blue-600 underline hover:text-blue-800">
+            {{ row.original.file_ot.title }}
+          </a>
+        </template>
+        <template #file_mp-cell="{ row }">
+          <a
+            v-if="row.original.file_mp"
+            href="#"
+            @click.prevent="downloadFile(row.original.file_mp.uuid)"
+            class="text-blue-600 underline hover:text-blue-800">
+            {{ row.original.file_mp.title }}
+          </a>
+        </template>
+      </UTable>
+    </div>
+
     <div
       v-if="fgis.length > itemsPerPage"
       class="mt-6 flex justify-center">

@@ -115,8 +115,8 @@ const toOldSite = () => {
             :srcset="'/static/assets/w96_vernie.webp 960w, /static/assets/w192_vernie.webp 192w'"
             sizes="96px" />
           <img
-            :src="'/static/assets/w96_vernie.jpg'"
-            :srcset="'/static/assets/w96_vernie.jpg 96w, /static/assets/w192_vernie.jpg 192w'"
+            :src="'/static/assets/w96_vernie.png'"
+            :srcset="'/static/assets/w96_vernie.png 96w, /static/assets/w192_vernie.png 192w'"
             sizes="96px"
             alt="ШЦ_лого"
             loading="lazy"
