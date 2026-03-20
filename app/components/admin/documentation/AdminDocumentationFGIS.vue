@@ -1,5 +1,11 @@
 <script setup>
 //
+import { getPaginationRowModel } from '@tanstack/vue-table'
+import { h } from 'vue'
+import { UButton } from '#components'
+
+const table = useTemplateRef('table')
+
 const emit = defineEmits(['updateRstr'])
 
 const { dbRstr } = defineProps({
@@ -16,23 +22,102 @@ const filterState = reactive({
 const columns = [
   {
     accessorKey: 'number',
-    header: 'Номер',
+    header: ({ column }) => {
+      const isSorted = column.getIsSorted()
+
+      return h(UButton, {
+        color: 'neutral',
+        variant: 'ghost',
+        label: 'Номер',
+        icon: isSorted
+          ? isSorted === 'asc'
+            ? 'i-lucide-arrow-up-narrow-wide'
+            : 'i-lucide-arrow-down-wide-narrow'
+          : 'i-lucide-arrow-up-down',
+        class: '-mx-2.5',
+        onClick: () => column.toggleSorting(),
+      })
+    },
   },
   {
     accessorKey: 'name',
-    header: 'Наименование',
+    header: ({ column }) => {
+      const isSorted = column.getIsSorted()
+
+      return h(UButton, {
+        color: 'neutral',
+        variant: 'ghost',
+        label: 'Наименование',
+        icon: isSorted
+          ? isSorted === 'asc'
+            ? 'i-lucide-arrow-up-narrow-wide'
+            : 'i-lucide-arrow-down-wide-narrow'
+          : 'i-lucide-arrow-up-down',
+        class: '-mx-2.5',
+        onClick: () => column.toggleSorting(),
+      })
+    },
   },
   {
     accessorKey: 'type_si',
-    header: 'Обозначение',
+    header: ({ column }) => {
+      const isSorted = column.getIsSorted()
+
+      return h(UButton, {
+        color: 'neutral',
+        variant: 'ghost',
+        label: 'Обозначение',
+        icon: isSorted
+          ? isSorted === 'asc'
+            ? 'i-lucide-arrow-up-narrow-wide'
+            : 'i-lucide-arrow-down-wide-narrow'
+          : 'i-lucide-arrow-up-down',
+        class: '-mx-2.5',
+        onClick: () => column.toggleSorting(),
+      })
+    },
   },
   {
     accessorKey: 'brand',
-    header: 'Производитель',
+    header: ({ column }) => {
+      const isSorted = column.getIsSorted()
+
+      return h(UButton, {
+        color: 'neutral',
+        variant: 'ghost',
+        label: 'Производитель',
+        icon: isSorted
+          ? isSorted === 'asc'
+            ? 'i-lucide-arrow-up-narrow-wide'
+            : 'i-lucide-arrow-down-wide-narrow'
+          : 'i-lucide-arrow-up-down',
+        class: '-mx-2.5',
+        onClick: () => column.toggleSorting(),
+      })
+    },
   },
   {
     accessorKey: 'date',
-    header: 'Срок до',
+    header: ({ column }) => {
+      const isSorted = column.getIsSorted()
+
+      return h(UButton, {
+        color: 'neutral',
+        variant: 'ghost',
+        label: 'Срок до',
+        icon: isSorted
+          ? isSorted === 'asc'
+            ? 'i-lucide-arrow-up-narrow-wide'
+            : 'i-lucide-arrow-down-wide-narrow'
+          : 'i-lucide-arrow-up-down',
+        class: '-mx-2.5',
+        onClick: () => column.toggleSorting(),
+      })
+    },
+    cell: ({ row }) => {
+      const date = row.getValue('date')
+      return date ? new Date(date).toLocaleDateString('ru-RU') : ''
+    },
   },
   {
     accessorKey: 'file_ot',
@@ -44,31 +129,20 @@ const columns = [
   },
 ]
 
-const fgis = reactive([])
-const activeDocs = computed(() => {
-  if (!fgis.length) return []
-  const startIdx = (currentPage.value - 1) * itemsPerPage.value
-  const endIdx = startIdx + itemsPerPage.value
-  return fgis.slice(startIdx, endIdx).map(doc => ({
-    ...doc,
-    inDB: dbRstr.some(dbDoc => dbDoc.number === doc.number),
-  }))
+const pagination = ref({
+  pageIndex: 0,
+  pageSize: 20,
 })
+function onPageSizeChange(size) {
+  pagination.value.pageSize = size
+  pagination.value.pageIndex = 0
+  table.value?.tableApi?.setPageSize(size)
+}
 
-const currentPage = ref(1)
-const itemsPerPage = ref(20)
-const docsContainer = ref(null)
-watch(currentPage, () => {
-  // Scroll to top of docs list
-  docsContainer.value.scrollIntoView({ behavior: 'smooth', block: 'start' })
-})
-watch(itemsPerPage, () => {
-  // Reset to page 1 when items per page changes
-  currentPage.value = 1
-})
+const fgisDocs = shallowReactive([])
 
-const onFilterSubmit = async () => {
-  const grsiUrl = 'https://fgis.gost.ru/fundmetrology/cm/xcdb/mit24/get'
+const searchFgis = async () => {
+  const fgisUrl = 'https://fgis.gost.ru/fundmetrology/cm/xcdb/mit24/get'
 
   // Escape special characters for FGIS API query
   const escapeQuery = str => str.replace(/(["\\])/g, '\\$1')
@@ -93,7 +167,7 @@ const onFilterSubmit = async () => {
     return
   }
   const queryString = `q=${encodeURIComponent(qValue)}`
-  const targetUrl = `${grsiUrl}?${queryString}&rows=1000`
+  const targetUrl = `${fgisUrl}?${queryString}&rows=1000`
   // console.log(`targetUrl: ${JSON.stringify(targetUrl, null, 2)}`)
 
   let responseData
@@ -118,12 +192,15 @@ const onFilterSubmit = async () => {
     return
   }
 
-  fgis.length = 0 // Clear previous results
-  currentPage.value = 1
+  fgisDocs.length = 0 // Clear previous results
+  pagination.value.pageIndex = 0
   for (const doc of responseData.response.docs) {
     try {
       const newDoc = parseFgisDoc(doc)
-      fgis.push(newDoc)
+      fgisDocs.push({
+        ...newDoc,
+        inDB: dbRstr.some(dbDoc => dbDoc.number === newDoc.number),
+      })
     } catch (e) {
       showNotice({
         title: 'Ошибка обработки данных документа',
@@ -132,7 +209,7 @@ const onFilterSubmit = async () => {
       })
     }
   }
-  if (fgis.length === 1000) {
+  if (fgisDocs.length === 1000) {
     showNotice({
       title: 'Найдено более 1000 документов!',
       description: 'Пожалуйста, уточните параметры поиска.',
@@ -140,11 +217,6 @@ const onFilterSubmit = async () => {
   }
 }
 
-/**
- * Parses a raw FGIS document response into a structured document object
- * @param {Object} doc - Raw document from FGIS API response
- * @returns {Object} Parsed document with number, name, type_si, brand, date, file_ot, file_mp
- */
 const parseFgisDoc = (doc, options = {}) => {
   //
   options.removeKRIN = options.removeKRIN || false
@@ -174,7 +246,8 @@ const parseFgisDoc = (doc, options = {}) => {
       : ''
     emptyValues.includes(newDoc.brand) && (newDoc.brand = '')
 
-    newDoc.date = doc.valid_to ? new Date(doc.valid_to).toLocaleDateString('ru-RU') : ''
+    newDoc.date = doc.valid_to || ''
+    // newDoc.date = doc.valid_to ? new Date(doc.valid_to).toLocaleDateString('ru-RU') : ''
 
     /**
      * В ГРСИ у документа может быть несколько спецификаций и методов испытаний.
@@ -265,6 +338,7 @@ const downloadFile = async uuid => {
 }
 
 const addDocToDB = async doc => {
+  //
   let proceed = await showMessage({
     title: 'Добавить документ в базу данных?',
     description: `Добавляем документ "${doc.number + ' ' + doc.name}". Продолжаем?`,
@@ -405,8 +479,10 @@ const refreshDBDocs = async () => {
       let newValue = newDoc[key]
 
       if (key === 'date' && dbValue) {
-        // Convert ISO date to DD.MM.YYYY using local timezone
-        dbValue = new Date(dbValue).toLocaleDateString('ru-RU')
+        // example: dbValue: "2015-01-01T00:00:00.000Z" newValue: "2015-01-01T00:00:00Z"
+        // Для корректного сравнения оставляем все до Т (mySQL примет такой формат)
+        dbValue && (dbValue = dbValue.split('T')[0])
+        newValue && (newValue = newValue.split('T')[0])
       }
 
       // Treat null, undefined, and empty string as equal
@@ -466,8 +542,9 @@ const refreshDBDocs = async () => {
       formData.append('type_si', newDoc.type_si)
       formData.append('brand', newDoc.brand)
       // Convert date from DD.MM.YYYY to YYYY-MM-DD for MySQL
-      const dateForDb = newDoc.date ? newDoc.date.split('.').reverse().join('-') : ''
-      formData.append('date', dateForDb)
+      // const dateForDb = newDoc.date ? newDoc.date.split('.').reverse().join('-') : ''
+      // formData.append('date', dateForDb)
+      formData.append('date', newDoc.date)
 
       // Append files with temp filenames
       if (fileOtBlob) {
@@ -532,7 +609,7 @@ defineExpose({
     <div class="flex justify-between">
       <UForm
         :state="filterState"
-        @submit="onFilterSubmit"
+        @submit="searchFgis"
         class="flex items-end gap-4">
         <UFormField
           label="Номер"
@@ -573,89 +650,99 @@ defineExpose({
       </UForm>
       <div class="flex items-end justify-end gap-4">
         <div
-          v-if="fgis.length"
+          v-if="fgisDocs.length"
           class="text-sm text-gray-600">
-          Найдено записей: {{ fgis.length }}
+          Найдено записей: {{ fgisDocs.length }}
         </div>
         <USelect
-          v-model="itemsPerPage"
+          :model-value="pagination.pageSize"
+          @update:model-value="onPageSizeChange"
           :items="[20, 50, 100, 500]"
           variant="outline"
           class="w-20" />
       </div>
     </div>
 
-    <div ref="docsContainer">
-      <UTable
-        :data="activeDocs"
-        :columns="columns"
-        :meta="{
-          class: {
-            tr: row => (row.original.inDB ? 'bg-green-100 hover:bg-green-200' : 'hover:bg-gray-200'),
-          },
-        }"
-        :ui="{
-          th: 'text-center bg-gray-100',
-          td: 'p-2',
-        }"
-        class="py-4">
-        <template #number-cell="{ row }">
-          <div class="flex items-center gap-2">
-            <UButton
-              v-if="!row.original.inDB"
-              icon="i-heroicons-plus"
-              title="Добавить в базу данных"
-              variant="outline"
-              size="xs"
-              class="rounded-full p-0"
-              @click="addDocToDB(row.original)" />
-            <span>{{ row.original.number }}</span>
-          </div>
-        </template>
-        <template #name-cell="{ row }">
-          <div class="max-w-xs wrap-break-word whitespace-normal">
-            {{ row.original.name }}
-          </div>
-        </template>
-        <template #type_si-cell="{ row }">
-          <div class="max-w-xs wrap-break-word whitespace-normal">
-            {{ row.original.type_si }}
-          </div>
-        </template>
-        <template #brand-cell="{ row }">
-          <div class="max-w-xs wrap-break-word whitespace-normal">
-            {{ row.original.brand }}
-          </div>
-        </template>
-        <template #file_ot-cell="{ row }">
-          <a
-            v-if="row.original.file_ot"
-            href="#"
-            @click.prevent="downloadFile(row.original.file_ot.uuid)"
-            class="text-blue-600 underline hover:text-blue-800">
-            {{ row.original.file_ot.title }}
-          </a>
-        </template>
-        <template #file_mp-cell="{ row }">
-          <a
-            v-if="row.original.file_mp"
-            href="#"
-            @click.prevent="downloadFile(row.original.file_mp.uuid)"
-            class="text-blue-600 underline hover:text-blue-800">
-            {{ row.original.file_mp.title }}
-          </a>
-        </template>
-      </UTable>
-    </div>
+    <UTable
+      ref="table"
+      :data="fgisDocs"
+      :columns="columns"
+      v-model:pagination="pagination"
+      :pagination-options="{
+        getPaginationRowModel: getPaginationRowModel(),
+      }"
+      :meta="{
+        class: {
+          tr: row => (row.original.inDB ? 'bg-green-100 hover:bg-green-200' : 'hover:bg-gray-200'),
+        },
+      }"
+      :ui="{
+        th: 'bg-gray-100',
+        td: 'p-2',
+      }"
+      class="my-6">
+      <template #number-cell="{ row }">
+        <div class="flex items-center gap-2">
+          <UButton
+            v-if="!row.original.inDB"
+            icon="i-heroicons-plus"
+            title="Добавить в базу данных"
+            variant="outline"
+            size="xs"
+            class="rounded-full p-0"
+            @click="addDocToDB(row.original)" />
+          <span>{{ row.original.number }}</span>
+        </div>
+      </template>
+      <template #name-cell="{ row }">
+        <div class="max-w-xs wrap-break-word whitespace-normal">
+          {{ row.original.name }}
+        </div>
+      </template>
+      <template #type_si-cell="{ row }">
+        <div class="max-w-xs wrap-break-word whitespace-normal">
+          {{ row.original.type_si }}
+        </div>
+      </template>
+      <template #brand-cell="{ row }">
+        <div class="max-w-xs wrap-break-word whitespace-normal">
+          {{ row.original.brand }}
+        </div>
+      </template>
+      <template #file_ot-cell="{ row }">
+        <a
+          v-if="row.original.file_ot"
+          href="#"
+          @click.prevent="downloadFile(row.original.file_ot.uuid)"
+          class="text-blue-600 underline hover:text-blue-800">
+          {{ row.original.file_ot.title }}
+        </a>
+      </template>
+      <template #file_mp-cell="{ row }">
+        <a
+          v-if="row.original.file_mp"
+          href="#"
+          @click.prevent="downloadFile(row.original.file_mp.uuid)"
+          class="text-blue-600 underline hover:text-blue-800">
+          {{ row.original.file_mp.title }}
+        </a>
+      </template>
+    </UTable>
 
     <div
-      v-if="fgis.length > itemsPerPage"
-      class="mt-6 flex justify-center">
+      v-if="fgisDocs.length > pagination.pageSize"
+      class="my-6 flex justify-center">
       <UPagination
-        v-model:page="currentPage"
-        :items-per-page="itemsPerPage"
-        :total="fgis.length"
-        show-edges />
+        show-edges
+        :page="(table?.tableApi?.getState().pagination.pageIndex || 0) + 1"
+        :items-per-page="table?.tableApi?.getState().pagination.pageSize"
+        :total="fgisDocs.length"
+        @update:page="
+          p => {
+            table?.tableApi?.setPageIndex(p - 1)
+            table?.$el?.scrollIntoView({ behavior: 'smooth' })
+          }
+        " />
     </div>
   </div>
 </template>

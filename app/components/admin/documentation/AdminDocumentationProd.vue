@@ -1,10 +1,13 @@
 <script setup>
-import { form } from '#build/ui'
+//
 import { h, resolveComponent } from 'vue'
 
 const UCheckbox = resolveComponent('UCheckbox')
 
 const emit = defineEmits(['navigateToDoc'])
+
+const table = useTemplateRef('table')
+const countFilteredRows = computed(() => table.value?.tableApi?.getFilteredRowModel().rows.length || 0)
 
 const state = shallowReactive({
   cats: [],
@@ -28,7 +31,7 @@ const goToDocument = (docType, doc) => {
 
 onMounted(async () => {
   //
-  state.cats = await myFetch('/api/admin/cms/documentation/getMainCats')
+  state.cats = await myFetch('/api/admin/cms/getMainCats')
 })
 
 const updateProds = async () => {
@@ -141,16 +144,53 @@ const closeForm = () => {
   formState.pasports = []
 }
 
-const editProd = prod => {
+const editTypes = ref(['standarts', 'reestrs', 'pasports'])
+const editCheckboxes = ref([
+  {
+    label: 'Стнд',
+    title: 'Изменять стандарты',
+    value: 'standarts',
+  },
+  {
+    label: 'Рстр',
+    title: 'Изменять реестры',
+    value: 'reestrs',
+  },
+  {
+    label: 'Пасп',
+    title: 'Изменять паспорта',
+    value: 'pasports',
+  },
+])
+
+const editProd = async prod => {
+  //
+  if (!editTypes.value.length) {
+    await showMessage({
+      title: 'Все типы документов отключены!',
+      description: 'Пожалуйста, выберите хотя бы один тип документов для редактирования.',
+      type: 'error',
+    })
+    return
+  }
+
   formState.isOpen = true
   formState.prods = [prod]
-  formState.standarts = prod.standarts
-  formState.reestrs = prod.reestrs
-  formState.pasports = prod.pasports
+  for (const type of editTypes.value) {
+    formState[type] = prod[type]
+  }
 }
 
 const editMassProds = async () => {
   //
+  if (!editTypes.value.length) {
+    await showMessage({
+      title: 'Все типы документов отключены!',
+      description: 'Пожалуйста, выберите хотя бы один тип документов для редактирования.',
+      type: 'error',
+    })
+    return
+  }
   const selectedIndices = Object.keys(state.rowSelection).map(Number)
   if (!selectedIndices.length) return
 
@@ -159,14 +199,10 @@ const editMassProds = async () => {
   const firstProd = formState.prods[0]
 
   // Check if all products have identical docs (compare arrays using cached IDs)
-  const allIdentical = formState.prods.every(
-    p =>
-      p.standarts.length === firstProd.standarts.length &&
-      p.standarts.every(s => firstProd.standarts.includes(s)) &&
-      p.reestrs.length === firstProd.reestrs.length &&
-      p.reestrs.every(r => firstProd.reestrs.includes(r)) &&
-      p.pasports.length === firstProd.pasports.length &&
-      p.pasports.every(pa => firstProd.pasports.includes(pa)),
+  const allIdentical = formState.prods.every(p =>
+    editTypes.value.every(
+      type => p[type].length === firstProd[type].length && p[type].every(doc => firstProd[type].includes(doc)),
+    ),
   )
 
   if (!allIdentical) {
@@ -182,38 +218,35 @@ const editMassProds = async () => {
   }
 
   if (allIdentical) {
-    formState.standarts = firstProd.standarts
-    formState.reestrs = firstProd.reestrs
-    formState.pasports = firstProd.pasports
+    for (const type of editTypes.value) {
+      formState[type] = firstProd[type]
+    }
   } else {
-    // error documents will be excluded
-    const commonStandarts = formState.prods.reduce((common, prod) => {
-      return common.filter(s => prod.standarts.some(ps => ps === s))
-    }, formState.prods[0].standarts)
-
-    const commonReestrs = formState.prods.reduce((common, prod) => {
-      return common.filter(r => prod.reestrs.some(pr => pr === r))
-    }, formState.prods[0].reestrs)
-
-    const commonPasports = formState.prods.reduce((common, prod) => {
-      return common.filter(pa => prod.pasports.some(pp => pp === pa))
-    }, formState.prods[0].pasports)
-
-    formState.standarts = commonStandarts
-    formState.reestrs = commonReestrs
-    formState.pasports = commonPasports
+    for (const type of editTypes.value) {
+      formState[type] = formState.prods.reduce((common, prod) => {
+        return common.filter(d => prod[type].some(pd => pd === d))
+      }, formState.prods[0][type])
+    }
   }
-
   formState.isOpen = true
+}
+
+const moveDoc = (type, index, direction) => {
+  const newIndex = index + direction
+  if (newIndex < 0 || newIndex >= formState[type].length) return
+  const arr = [...formState[type]]
+  const [item] = arr.splice(index, 1)
+  arr.splice(newIndex, 0, item)
+  formState[type] = arr
+}
+
+const removeDoc = (type, id) => {
+  formState[type] = formState[type].filter(d => d.id !== id)
 }
 
 const saveProds = async () => {
   // check for errors first
-  if (
-    formState.standarts.some(s => s.error) ||
-    formState.reestrs.some(r => r.error) ||
-    formState.pasports.some(p => p.error)
-  ) {
+  if (editTypes.value.some(type => formState[type].some(doc => doc.error))) {
     await showMessage({
       title: 'Ошибка в документах',
       description: 'Проверьте, что все выбранные документы корректны.',
@@ -225,9 +258,10 @@ const saveProds = async () => {
   for (const prod of formState.prods) {
     const formData = new FormData()
     formData.append('id', prod.id)
-    formData.append('standart_ids', formState.standarts.map(s => s.id).join(','))
-    formData.append('reestr_ids', formState.reestrs.map(r => r.id).join(','))
-    formData.append('pasport_ids', formState.pasports.map(p => p.id).join(','))
+    editTypes.value.forEach(type => {
+      const paramName = type === 'standarts' ? 'standart_ids' : type === 'reestrs' ? 'reestr_ids' : 'pasport_ids'
+      formData.append(paramName, formState[type].map(d => d.id).join(','))
+    })
 
     await myFetch('/api/admin/cms/documentation/setProd', {
       method: 'post',
@@ -252,13 +286,6 @@ const onTest = () => {
 <template>
   <div>
     <div class="flex items-center gap-4">
-      <UButton
-        label="Группа"
-        title="Редактировать выбранные товары"
-        icon="i-heroicons-pencil-square"
-        :disabled="!Object.keys(state.rowSelection).length"
-        variant="outline"
-        @click="editMassProds" />
       <USelectMenu
         v-model="state.activeCatId"
         :items="state.cats"
@@ -270,21 +297,40 @@ const onTest = () => {
         }"
         placeholder="Выберите категорию"
         class="w-96" />
-      <div
-        v-if="state.prods.length"
-        class="text-sm text-gray-600">
-        Всего: {{ state.prods.length }} товаров
-      </div>
-
       <UInput
         v-model="state.globalFilter"
         placeholder="Filter..."
         icon="i-lucide-filter"
         class="w-64"
         type="search" />
+      <div
+        v-if="state.prods.length"
+        class="text-sm text-gray-600">
+        Всего: {{ state.prods.length }}
+        <span v-if="state.globalFilter.length">, отфильтровано: {{ countFilteredRows }}</span>
+      </div>
+      <div class="flex grow items-center justify-end gap-4">
+        <UButton
+          :label="`Группа (${Object.keys(state.rowSelection).length})`"
+          title="Редактировать выбранные товары"
+          icon="i-heroicons-pencil-square"
+          :disabled="!Object.keys(state.rowSelection).length"
+          variant="outline"
+          @click="editMassProds" />
+        <UCheckboxGroup
+          v-model="editTypes"
+          :items="editCheckboxes"
+          orientation="horizontal"
+          variant="table"
+          size="sm"
+          :ui="{
+            item: 'p-1.5',
+          }" />
+      </div>
     </div>
 
     <UTable
+      ref="table"
       v-model:row-selection="state.rowSelection"
       v-model:global-filter="state.globalFilter"
       :data="state.prods"
@@ -394,27 +440,50 @@ const onTest = () => {
               </div>
             </div>
 
-            <UFormField label="Стандарты">
+            <UFormField
+              v-for="type in ['standarts', 'reestrs', 'pasports'].filter(t => editTypes.includes(t))"
+              :key="type"
+              :label="type === 'standarts' ? 'Стандарты' : type === 'reestrs' ? 'ГРСИ (Реестры)' : 'Паспорта'">
               <div class="mb-2 flex flex-wrap gap-2">
                 <UBadge
-                  v-for="stnd in formState.standarts"
-                  :key="stnd.id"
-                  :color="stnd.error ? 'error' : 'neutral'"
+                  v-for="(doc, index) in formState[type]"
+                  :key="doc.id"
+                  :color="doc.error ? 'error' : 'neutral'"
                   variant="subtle"
                   class="flex items-center gap-1">
-                  {{ stnd.error ? `Не найден (ID: ${stnd.id})` : stnd.number }}
+                  <UButton
+                    v-if="index > 0"
+                    icon="i-heroicons-arrow-long-left"
+                    size="xs"
+                    variant="link"
+                    class="p-0"
+                    @click="moveDoc(type, index, -1)" />
+                  <UButton
+                    v-if="index < formState[type].length - 1"
+                    icon="i-heroicons-arrow-long-right"
+                    size="xs"
+                    variant="link"
+                    class="p-0"
+                    @click="moveDoc(type, index, 1)" />
+                  {{ doc.error ? `Не найден (ID: ${doc.id})` : doc.number || doc.name }}
                   <UButton
                     color="neutral"
                     variant="link"
                     size="xs"
                     icon="i-heroicons-x-mark"
                     class="p-0"
-                    @click="formState.standarts = formState.standarts.filter(i => i.id !== stnd.id)" />
+                    @click="removeDoc(type, doc.id)" />
                 </UBadge>
               </div>
               <USelectMenu
-                v-model="formState.standarts"
-                :items="docState.stnd.map(s => ({ label: `${s.number} - ${s.name}`, value: s }))"
+                v-model="formState[type]"
+                :items="
+                  type === 'standarts'
+                    ? docState.stnd.map(s => ({ label: `${s.number} - ${s.name}`, value: s }))
+                    : type === 'reestrs'
+                      ? docState.rstr.map(r => ({ label: `№${r.number} - ${r.name}`, value: r }))
+                      : docState.pasp.map(p => ({ label: p.name, value: p }))
+                "
                 value-key="value"
                 multiple
                 :search-input="{
@@ -422,69 +491,7 @@ const onTest = () => {
                   icon: 'i-lucide-filter',
                   type: 'search',
                 }"
-                placeholder="Добавить стандарты"
-                class="w-full" />
-            </UFormField>
-            <UFormField label="ГРСИ (Реестры)">
-              <div class="mb-2 flex flex-wrap gap-2">
-                <UBadge
-                  v-for="rstr in formState.reestrs"
-                  :key="rstr.id"
-                  :color="rstr.error ? 'error' : 'neutral'"
-                  variant="subtle"
-                  class="flex items-center gap-1">
-                  {{ rstr.error ? `Не найден (ID: ${rstr.id})` : `№${rstr.number}` }}
-                  <UButton
-                    color="neutral"
-                    variant="link"
-                    size="xs"
-                    icon="i-heroicons-x-mark"
-                    class="p-0"
-                    @click="formState.reestrs = formState.reestrs.filter(i => i.id !== rstr.id)" />
-                </UBadge>
-              </div>
-              <USelectMenu
-                v-model="formState.reestrs"
-                :items="docState.rstr.map(r => ({ label: `№${r.number} - ${r.name}`, value: r }))"
-                value-key="value"
-                multiple
-                :search-input="{
-                  placeholder: 'Filter...',
-                  icon: 'i-lucide-filter',
-                  type: 'search',
-                }"
-                placeholder="Добавить ГРСИ"
-                class="w-full" />
-            </UFormField>
-            <UFormField label="Паспорта">
-              <div class="mb-2 flex flex-wrap gap-2">
-                <UBadge
-                  v-for="pasp in formState.pasports"
-                  :key="pasp.id"
-                  :color="pasp.error ? 'error' : 'neutral'"
-                  variant="subtle"
-                  class="flex items-center gap-1">
-                  {{ pasp.error ? `Не найден (ID: ${pasp.id})` : pasp.name }}
-                  <UButton
-                    color="neutral"
-                    variant="link"
-                    size="xs"
-                    icon="i-heroicons-x-mark"
-                    class="p-0"
-                    @click="formState.pasports = formState.pasports.filter(i => i.id !== pasp.id)" />
-                </UBadge>
-              </div>
-              <USelectMenu
-                v-model="formState.pasports"
-                :items="docState.pasp.map(p => ({ label: p.name, value: p }))"
-                value-key="value"
-                multiple
-                :search-input="{
-                  placeholder: 'Filter...',
-                  icon: 'i-lucide-filter',
-                  type: 'search',
-                }"
-                placeholder="Добавить паспорта"
+                placeholder="Добавить"
                 class="w-full" />
             </UFormField>
 

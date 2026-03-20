@@ -4,16 +4,21 @@ export default defineEventHandler(async event => {
   const prod = await getFormData(event)
   // console.log(`prod: ${JSON.stringify(prod, null, 2)}`)
 
-  // IDs already come as comma-separated strings
-  const standart_ids = prod.standart_ids || ''
-  const reestr_ids = prod.reestr_ids || ''
-  const pasport_ids = prod.pasport_ids || ''
+  const updates = []
 
-  const query = `UPDATE ${dbTable} SET
-    standart_ids = '${standart_ids}',
-    reestr_ids = '${reestr_ids}',
-    pasport_ids = '${pasport_ids}'
-    WHERE id = ${prod.id}`
+  if (prod.standart_ids !== undefined) {
+    updates.push(`standart_ids = '${prod.standart_ids || ''}'`)
+  }
+  if (prod.reestr_ids !== undefined) {
+    updates.push(`reestr_ids = '${prod.reestr_ids || ''}'`)
+  }
+  if (prod.pasport_ids !== undefined) {
+    updates.push(`pasport_ids = '${prod.pasport_ids || ''}'`)
+  }
+
+  if (!updates.length) return true
+
+  const query = `UPDATE ${dbTable} SET ${updates.join(', ')} WHERE id = ${prod.id}`
 
   // console.log(`query: ${JSON.stringify(query, null, 2)}`)
   await dbReq(query)

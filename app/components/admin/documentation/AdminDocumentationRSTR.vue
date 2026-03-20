@@ -12,6 +12,9 @@ const props = defineProps({
   },
 })
 
+const table = useTemplateRef('table')
+const countFilteredRows = computed(() => table.value?.tableApi?.getFilteredRowModel().rows.length || 0)
+
 const globalFilter = ref('')
 
 watch(
@@ -216,17 +219,19 @@ const getActionsItems = row => [
       <UButton
         label="Добавить запись"
         @click="openForm({ id: null, number: '', name: '', type_si: '', brand: '', date: '' })" />
+
+      <UInput
+        v-model="globalFilter"
+        placeholder="Filter..."
+        icon="i-lucide-filter"
+        class="w-64"
+        type="search" />
       <div
         v-if="rstr"
         class="text-sm text-gray-600">
-        Всего документов: {{ rstr.length }}
+        Всего: {{ rstr.length }}
+        <span v-if="globalFilter.length">, отфильтровано: {{ countFilteredRows }}</span>
       </div>
-      <UInput
-        v-model="globalFilter"
-        :placeholder="'Filter...'"
-        :icon="'i-lucide-filter'"
-        type="search"
-        class="w-64" />
       <div class="flex grow justify-end gap-4">
         <UButton
           label="Обновить данные"
@@ -235,6 +240,7 @@ const getActionsItems = row => [
     </div>
 
     <UTable
+      ref="table"
       :data="rstr"
       :columns="columns"
       v-model:global-filter="globalFilter"

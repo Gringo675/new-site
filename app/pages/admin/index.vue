@@ -4,28 +4,16 @@
 
 <template>
   <HelperAdminOnly>
-    <div class="flex space-x-4">
+    <div class="flex gap-6">
       <UButton
-        label="Менеджер категорий"
-        to="/admin/categories" />
-      <UButton
-        label="Менеджер товаров"
-        to="/admin/products" />
-      <UButton
-        label="Менеджер документации"
-        to="/admin/documentation" />
+        label="Контент менеджер"
+        to="/admin/cms" />
       <UButton
         label="Options"
         to="/admin/options" />
       <UButton
         label="Console"
         to="/admin/console" />
-      <UButton
-        label="Импорт данных"
-        to="/admin/dbImport" />
-      <UButton
-        label="Products Prices"
-        to="/admin/prices" />
       <UButton
         label="Log"
         to="/admin/log" />

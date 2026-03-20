@@ -12,6 +12,9 @@ const props = defineProps({
   },
 })
 
+const table = useTemplateRef('table')
+const countFilteredRows = computed(() => table.value?.tableApi?.getFilteredRowModel().rows.length || 0)
+
 const globalFilter = ref('')
 
 watch(
@@ -170,20 +173,22 @@ const getActionsItems = row => [
       <UButton
         label="Добавить стандарт"
         @click="openForm({ id: null, number: '', name: '' })" />
+      <UInput
+        v-model="globalFilter"
+        placeholder="Filter..."
+        icon="i-lucide-filter"
+        class="w-64"
+        type="search" />
       <div
         v-if="stnd"
         class="text-sm text-gray-600">
-        Всего документов: {{ stnd.length }}
+        Всего: {{ stnd.length }}
+        <span v-if="globalFilter.length">, отфильтровано: {{ countFilteredRows }}</span>
       </div>
-      <UInput
-        v-model="globalFilter"
-        :placeholder="'Filter...'"
-        :icon="'i-lucide-filter'"
-        type="search"
-        class="w-64" />
     </div>
 
     <UTable
+      ref="table"
       :data="stnd"
       :columns="columns"
       v-model:global-filter="globalFilter"

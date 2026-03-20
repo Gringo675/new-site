@@ -12,7 +12,8 @@ export default defineNuxtConfig({
         lang: 'ru',
       },
       meta: [
-        // { name: 'robots', content: 'noindex, nofollow' },
+        // Блокируем индексацию для не-production сборок (причина - пререндеренные статические страницы, которые отдаются nginx напрямую без x-robots tag)
+        ...(process.env.NUXT_BUILD_MODE !== 'prod' ? [{ name: 'robots', content: 'noindex, nofollow' }] : []),
         { name: 'apple-mobile-web-app-title', content: 'ТД ЧИ' },
       ],
       link: [
@@ -30,7 +31,7 @@ export default defineNuxtConfig({
     },
   },
   css: ['~/assets/css/main.css'],
-  modules: ['@nuxt/ui', '@nuxtjs/sitemap', 'nuxt-schema-org', '@nuxtjs/robots'],
+  modules: ['@nuxt/ui', '@nuxtjs/sitemap', 'nuxt-schema-org'],
 
   ui: {
     colorMode: false,
@@ -44,8 +45,9 @@ export default defineNuxtConfig({
     '/admin/**': { ssr: false, appLayout: 'admin' },
     '/user/**': { ssr: false },
     '/search/**': { ssr: false },
+    '/robots.txt': { prerender: true },
     '/': { prerender: true },
-    // '/(marketing)/**': { prerender: true }, do not work
+    // '/(marketing)/**': { prerender: true }, doesn't work
     '/about': { prerender: true },
     '/contacts': { prerender: true },
     '/help': { prerender: true },
@@ -155,7 +157,7 @@ export default defineNuxtConfig({
       'Интернет-магазин измерительного инструмента и оборудования. Продукция Челябинского инструментального завода (ЧИЗ), Ставропольского инструментального завода (СТИЗ), Кировского инструментального завода (КировИнструмент, ВИНС), GRIFF. Поверка, калибровка средств измерений. Доставка по России, гарантия качества.',
     url: 'https://chelinstrument.ru',
     name: 'ТД Челябинский Инструмент',
-    indexable: process.env.NUXT_BUILD_MODE === 'prod', // allow indexing only for prod build
+    // indexable: process.env.NUXT_BUILD_MODE === 'prod', // allow indexing only for prod build
   },
   sitemap: {
     exclude: ['/admin/**', '/user/**', '/try/**', '/materials/grsi', '/materials/standards'],
@@ -169,10 +171,11 @@ export default defineNuxtConfig({
       },
     ],
   },
-  robots: {
-    // botDetection: false,
-    disallow: ['/admin', '/search', '/user', '/cart', '/try', '/test', '/catalog/*?f=*'],
-  },
+  // robots: {
+  //   // enabled: false,
+  //   // botDetection: false,
+  //   // disallow: ['/admin', '/search', '/user', '/cart', '/try', '/test', '/catalog/*?f=*'],
+  // },
   schemaOrg: {
     identity: defineOrganization({
       '@type': ['Organization', 'Store', 'OnlineStore'],

@@ -1,5 +1,8 @@
 <script setup>
 //
+const route = useRoute()
+const router = useRouter()
+
 const fgisRef = useTemplateRef('fgis')
 
 const docState = shallowReactive({
@@ -11,6 +14,13 @@ const docState = shallowReactive({
 const standardsSearch = ref('')
 const passportsSearch = ref('')
 const rstrSearch = ref('')
+
+const activeTab = computed({
+  get: () => route.hash.replace('#', '') || 'products',
+  set: value => {
+    router.push({ path: route.path, hash: `#${value}` })
+  },
+})
 
 const navigateToDoc = ({ type, searchText }) => {
   // Reset all searches
@@ -31,9 +41,6 @@ const navigateToDoc = ({ type, searchText }) => {
   }
 }
 
-// const updateProds = async () => {
-//   state.prods = await myFetch('/api/admin/cms/documentation/getProds')
-// }
 const updatePasp = async () => {
   docState.pasp = await myFetch('/api/admin/cms/documentation/getPasp')
 }
@@ -73,33 +80,37 @@ const tabs = [
     value: 'fgis',
   },
 ]
-const activeTab = ref('products')
 </script>
 
 <template>
   <!-- content -->
-  <div class="mb-8">
+  <div class="mb-10">
     <AdminDocumentationProd
+      id="products"
       v-show="activeTab === 'products'"
       :doc-state="docState"
       @navigateToDoc="navigateToDoc" />
     <AdminDocumentationStnd
+      id="standards"
       v-show="activeTab === 'standards'"
       :stnd="docState.stnd"
       :search="standardsSearch"
       @updateStnd="updateStnd" />
     <AdminDocumentationPasp
+      id="passports"
       v-show="activeTab === 'passports'"
       :pasp="docState.pasp"
       :search="passportsSearch"
       @updatePasp="updatePasp" />
     <AdminDocumentationRSTR
+      id="rstr"
       v-show="activeTab === 'rstr'"
       :rstr="docState.rstr"
       :search="rstrSearch"
       @updateRstr="updateRstr"
       @refreshDB="fgisRef?.refreshDBDocs()" />
     <AdminDocumentationFGIS
+      id="fgis"
       ref="fgis"
       v-show="activeTab === 'fgis'"
       :dbRstr="docState.rstr"

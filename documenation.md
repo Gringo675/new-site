@@ -1,11 +1,14 @@
 ## chord
 - footer links hydration mismatch 'cause url changed before footer resolve
+- ssr doesn't generate characteristics and docs for the product's pages
+
+## robots issue
+- add bingbot detection in middleware on the server
 
 ## cms
-documentation:
-FGIS
-- button +
-- new record: send file?
+products:
+- labels
+
 prices:
 - column's width
 - no consistency: quantity, notice (and no online access to .xls file). Solution - export .xls to mysql. Or better replace with online editor. (+ quantity case...). Another solution: Google Sheets.
