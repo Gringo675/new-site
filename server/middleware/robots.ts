@@ -1,6 +1,6 @@
-// Запрещаем индексацию для служебных путей и не-production сборок
 export default defineEventHandler(event => {
-  //
+  // Запрещаем индексацию для служебных путей и не-production сборок
+
   const url = event.node.req.url || ''
   const config = useRuntimeConfig(event)
 
@@ -17,4 +17,10 @@ export default defineEventHandler(event => {
   if (noIndexPattern.test(url)) {
     setHeader(event, 'X-Robots-Tag', 'noindex, follow')
   }
+
+  // Test: detecting bingbot
+  // const userAgent = getRequestHeader(event, 'user-agent')
+  // if (userAgent && /bingbot/i.test(userAgent)) {
+  //   setTextToLog(`Bingbot requested URL: ${url}`)
+  // }
 })

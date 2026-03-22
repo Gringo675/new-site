@@ -137,6 +137,7 @@ export default defineNuxtConfig({
   },
   experimental: {
     purgeCachedData: false, // nuxt v3.17 breaking change (delete cache when component-initiator is unmounted)
+    payloadExtraction: true, // for getCachedData (default, may delete)
   },
   // devtools: {
   //   timeline: {

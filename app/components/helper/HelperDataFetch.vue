@@ -18,7 +18,17 @@ const { status, data, error } = await useLazyAsyncData(
     )
   },
   {
-    getCachedData: key => useNuxtData(key).data?.value,
+    getCachedData: (key, nuxtApp) => {
+      //
+      // const cachedData = useNuxtData(key).data?.value
+      // const cachedData = nuxtApp.isHydrating ? nuxtApp.payload.data[key] : nuxtApp.static.data[key]
+      const cachedData = nuxtApp.isHydrating ? nuxtApp.payload.data[key] : useNuxtData(key).data?.value
+
+      // const inCache = cachedData !== undefined
+      // console.log(`inCache: ${JSON.stringify(inCache, null, 2)}`)
+
+      return cachedData
+    },
     deep: false,
     dedupe: 'defer',
   },

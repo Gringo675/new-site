@@ -62,6 +62,9 @@ if (!richError.suppressed) {
 // don't log errors during hydration('cause we already get it from server render) and 404 errors
 if (!nuxtApp.isHydrating && richError.statusCode !== 404) setErrorToLog(richError)
 async function setErrorToLog(richError) {
+  // for investigation purpose
+  richError.isDataCached = useNuxtData(richError.url)?.data?.value !== undefined
+
   richError.build = config.public.BUILD
   try {
     await $fetch('/api/log/setError', {
