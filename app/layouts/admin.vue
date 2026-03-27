@@ -18,7 +18,7 @@
       >
       <div class="w-10"></div>
     </header>
-    <main class="mx-auto w-full max-w-screen grow bg-gray-50 p-2">
+    <main class="mx-auto w-full grow overflow-y-auto bg-gray-50 p-2">
       <slot />
     </main>
   </div>

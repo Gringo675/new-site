@@ -3,7 +3,8 @@
 - ssr doesn't generate characteristics and docs for the product's pages
 
 ## robots issue
-- add bingbot detection in middleware on the server
+- added data.value check to HelperDataFetch.vue
+- add users tracking from server to the client (and compare the data)
 
 ## cms
 products:
@@ -211,6 +212,15 @@ upd 07.11.25 Наверно дело не в островах, смотри ко
 Результаты смотреть либо на странице /admin/console (если залогинин как админ), либо в текстовом файле cv.log.
 Локально лежит в корне проекта (D:\pr_gt\projects\site\cv.log)
 Удаленно на Бегете в /chelinstrument.ru/public_html/test/cv.log . Для слежения удобно использовать putty: tail -f chelinstrument.ru/public_html/test/cv.log // путь неверный, изменить
+
+# Robots
+
+В ходе борьбы с ошибками, вызываемыми ботами, создал свою систему взаимодействия с ними (хотя результата не дало и можно было продолжать использовать Nuxt seo robots).
+В систему входит:
+- динамическое создание (+ пререндеринг) файла robots.txt в server\routes\robots.txt.ts
+- вставка в ответ сервера заголовка X-Robots-tag в server\middleware\robots.ts
+- вставка в html ответ сервера meta robots для неиндексируемых страниц в nuxt.config: (process.env.NUXT_BUILD_MODE !== 'prod' ? [{ name: 'robots', content: 'noindex, nofollow' }] : [])
+Замечание по поводу заголовков X-Robots-tag, помимо путей, запрещенных в robots.txt, он дополнительно запрещает индексацию /api путей (добавление /api в robots.txt закончилось плачевно). Возможно также понадобится запретить _payload адреса, если они начнут вылазить в индексе.
 
 # Miscellaneous
 

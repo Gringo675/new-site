@@ -57,32 +57,30 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="flex h-full flex-col gap-1">
+  <div class="h-full pb-7">
     <!-- content -->
-    <div class="grow">
-      <AdminProdsProd
-        id="prods"
-        v-show="activeTab === 'prods'"
-        :shared-state="sharedState" />
-      <AdminProdsVendors
-        id="vendors"
-        v-show="activeTab === 'vendors'"
-        :vendors="sharedState.vendors" />
-      <AdminProdsProps
-        id="props"
-        v-show="activeTab === 'props'"
-        :props="sharedState.props" />
-      <AdminProdsBrands
-        id="brands"
-        v-show="activeTab === 'brands'"
-        :brands="sharedState.brands" />
-      <AdminProdsLabels
-        id="labels"
-        v-show="activeTab === 'labels'"
-        :labels="sharedState.labels" />
-    </div>
+    <AdminProdsProd
+      id="prods"
+      v-show="activeTab === 'prods'"
+      :shared-state="sharedState" />
+    <AdminProdsVendors
+      id="vendors"
+      v-show="activeTab === 'vendors'"
+      :vendors="sharedState.vendors" />
+    <AdminProdsProps
+      id="props"
+      v-show="activeTab === 'props'"
+      :props="sharedState.props" />
+    <AdminProdsBrands
+      id="brands"
+      v-show="activeTab === 'brands'"
+      :brands="sharedState.brands" />
+    <AdminProdsLabels
+      id="labels"
+      v-show="activeTab === 'labels'"
+      :labels="sharedState.labels" />
     <!-- tabs -->
-    <div class="z-20 border-t border-gray-300 bg-gray-200">
+    <div class="fixed right-0 bottom-0 left-0 border-t border-gray-300 bg-gray-200">
       <UTabs
         v-model="activeTab"
         :content="false"

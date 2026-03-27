@@ -33,7 +33,7 @@
     /* scrollbar-gutter: stable; */
     /* scrollbar-color: #c4b5fd #fee2e2;
     scrollbar-width: thin; */
-    @apply bg-gradient-to-r from-purple-100 via-fuchsia-200/85 via-30% to-violet-100 2xl:from-purple-50 2xl:to-violet-50;
+    @apply bg-linear-to-r from-purple-100 via-fuchsia-200/85 via-30% to-violet-100 2xl:from-purple-50 2xl:to-violet-50;
   }
 
   html {
@@ -45,9 +45,8 @@
     background-position: center top;
     background-repeat: repeat;
     background-attachment: fixed;
-    overflow-y: scroll; /* visible on pages without scroll (work well with modal overlay)*/
     font-size: 1rem;
-    /*overflow-y: scroll;  always visible */
+    /*overflow-y: scroll;  always visible (disabled 'cause some admin pages don't need vertical scrollbar */
     /* background-image: url('/img/background.svg'), var(--bg-gradient);
     background-size:
       250px auto,

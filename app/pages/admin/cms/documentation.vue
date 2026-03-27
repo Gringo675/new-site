@@ -84,7 +84,7 @@ const tabs = [
 
 <template>
   <!-- content -->
-  <div class="mb-10">
+  <div class="pb-7">
     <AdminDocumentationProd
       id="products"
       v-show="activeTab === 'products'"
@@ -117,7 +117,7 @@ const tabs = [
       @updateRstr="updateRstr" />
   </div>
   <!-- tabs -->
-  <div class="fixed right-0 bottom-0 left-0 z-20 border-t border-gray-300 bg-gray-200">
+  <div class="fixed right-0 bottom-0 left-0 border-t border-gray-300 bg-gray-200">
     <UTabs
       v-model="activeTab"
       :content="false"
