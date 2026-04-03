@@ -3,7 +3,11 @@
 </script>
 
 <template>
-  <div class="">
-    <h2>Тестовый компонент</h2>
-  </div>
+  <UModal>
+    <template #body>
+      <div class="">
+        <h1>This should be within UModal</h1>
+      </div>
+    </template>
+  </UModal>
 </template>

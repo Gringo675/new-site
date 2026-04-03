@@ -102,51 +102,51 @@ const countFilteredLog = computed(() => table.value?.tableApi?.getFilteredRowMod
 </script>
 
 <template>
-  <header class="mb-8">
-    <div class="flex justify-between border-b border-gray-300 pb-2">
-      <h1 class="font-accent text-3xl">
-        Лог
-        <span class="px-2 text-base text-gray-500"
-          >(Всего: {{ countLogs }}
-          <template v-if="countLogs !== countFilteredLog">, отфильтровано: {{ countFilteredLog }}</template> )
-        </span>
-      </h1>
+  <div class="flex h-full flex-col">
+    <div class="mb-8">
+      <div class="flex justify-between border-b border-gray-300 pb-2">
+        <h1 class="font-accent text-3xl">
+          Лог
+          <span class="px-2 text-base text-gray-500"
+            >(Всего: {{ countLogs }}
+            <template v-if="countLogs !== countFilteredLog">, отфильтровано: {{ countFilteredLog }}</template> )
+          </span>
+        </h1>
 
-      <div class="flex gap-4">
-        <UInput
-          :model-value="table?.tableApi?.getColumn('text')?.getFilterValue()"
-          class="w-50"
-          placeholder="Filter by text..."
-          @update:model-value="table?.tableApi?.getColumn('text')?.setFilterValue($event)">
-          <template
-            v-if="table?.tableApi?.getColumn('text')?.getFilterValue()"
-            #trailing>
-            <UButton
-              color="neutral"
-              variant="link"
-              icon="i-heroicons-x-mark-20-solid"
-              class="p-0"
-              @click="table?.tableApi?.getColumn('text')?.setFilterValue('')" />
-          </template>
-        </UInput>
-        <USelect
-          v-model="selected"
-          :items="selectItems"
-          class="w-25" />
-        <UButton
-          label="Refresh"
-          @click="updateLog" />
-        <UButton
-          label="Clear all"
-          @click="clearLog" />
+        <div class="flex gap-4">
+          <UInput
+            :model-value="table?.tableApi?.getColumn('text')?.getFilterValue()"
+            class="w-50"
+            placeholder="Filter by text..."
+            @update:model-value="table?.tableApi?.getColumn('text')?.setFilterValue($event)">
+            <template
+              v-if="table?.tableApi?.getColumn('text')?.getFilterValue()"
+              #trailing>
+              <UButton
+                color="neutral"
+                variant="link"
+                icon="i-heroicons-x-mark-20-solid"
+                class="p-0"
+                @click="table?.tableApi?.getColumn('text')?.setFilterValue('')" />
+            </template>
+          </UInput>
+          <USelect
+            v-model="selected"
+            :items="selectItems"
+            class="w-25" />
+          <UButton
+            label="Refresh"
+            @click="updateLog" />
+          <UButton
+            label="Clear all"
+            @click="clearLog" />
+        </div>
       </div>
     </div>
-  </header>
-  <div class="w-full">
     <UTable
       ref="table"
       :data="logs"
       :columns="columns"
-      class="flex-1" />
+      class="w-full grow overflow-auto" />
   </div>
 </template>

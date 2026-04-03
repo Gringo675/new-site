@@ -6,71 +6,56 @@ const UButton = resolveComponent('UButton')
 const table = useTemplateRef('table')
 const countFilteredRows = computed(() => table.value?.tableApi?.getFilteredRowModel().rows.length || 0)
 const columnPinning = ref({ left: ['select'], right: [] })
+const activeCatId = ref(null)
+const rowSelection = shallowRef({})
+const globalFilter = ref('')
+const prods = ref([])
+const cats = shallowRef([])
 
-const { prps } = useProperties()
-
-const state = shallowReactive({
-  cats: [],
-  prods: [],
-  activeCatId: null,
-  rowSelection: {},
-  globalFilter: '',
-})
+const { prps, editPrps } = useProperties()
 
 onMounted(async () => {
-  state.cats = await myFetch('/api/admin/cms/getMainCats')
+  cats.value = await myFetch('/api/admin/cms/getMainCats')
 })
 
-watch(
-  () => state.activeCatId,
-  async newVal => {
-    if (newVal) {
-      await updateProds()
-    }
-  },
-)
+const prpsGroupsMap = computed(() => usePrpsGroupsMap(activeCatId.value))
 
-const prpsGroupsMap = usePrpsGroupsMap()
-
-const updateProds = async () => {
-  if (!state.activeCatId) return
-
-  state.prods = (await myFetch('/api/admin/cms/products/getProds?cat_id=' + state.activeCatId)).map(prod => {
-    for (const gName of prpsGroupsMap.keys()) {
-      prod[gName] =
-        prod[gName] > 0
-          ? {
-              id: prod[gName],
-              name: prps.value[gName].find(p => p.id === prod[gName]).name,
-            }
-          : null
-    }
-
-    return prod
-  })
-  state.rowSelection = {}
-  state.globalFilter = ''
-}
+watch(activeCatId, updateProds)
 
 function getHeader(column, label) {
-  const isPinned = column.getIsPinned()
+  const isSorted = column.getIsSorted()
   return h('div', { class: 'flex items-center gap-1 justify-start' }, [
-    h(UButton, {
-      icon: isPinned ? 'i-lucide-pin-off' : 'i-lucide-pin',
-      size: 'xs',
-      color: 'neutral',
-      variant: 'ghost',
-      onClick: e => {
-        e.stopPropagation()
-        const newPin = isPinned === 'left' ? false : 'left'
-        column.pin(newPin)
-      },
-    }),
-    label,
+    h('div', { class: 'flex flex-col' }, [
+      h(UButton, {
+        icon: column.getIsPinned() ? 'i-lucide-pin-off' : 'i-lucide-pin',
+        size: 'xs',
+        class: 'p-0',
+        color: 'neutral',
+        variant: 'ghost',
+        onClick: e => {
+          e.stopPropagation()
+          const newPin = column.getIsPinned() === 'left' ? false : 'left'
+          column.pin(newPin)
+        },
+      }),
+      h(UButton, {
+        icon: isSorted
+          ? isSorted === 'asc'
+            ? 'i-lucide-arrow-up-narrow-wide'
+            : 'i-lucide-arrow-down-wide-narrow'
+          : 'i-lucide-arrow-up-down',
+        size: 'xs',
+        class: 'p-0',
+        color: 'neutral',
+        variant: 'ghost',
+        onClick: () => column.toggleSorting(),
+      }),
+    ]),
+
+    h('div', label),
   ])
 }
-
-const columns = [
+const columns = computed(() => [
   {
     id: 'select',
     header: ({ table }) =>
@@ -199,142 +184,20 @@ const columns = [
       },
     },
   },
-  {
-    accessorKey: 'p0_brand',
-    header: ({ column }) => getHeader(column, 'Бренд'),
-    label: 'Бренд',
-    accessorFn: row => row.p0_brand?.name || '',
+  ...Array.from(prpsGroupsMap.value.entries()).map(([pGroup, { name }]) => ({
+    id: pGroup,
+    header: ({ column }) => getHeader(column, name),
+    label: name,
+    accessorFn: row => row[pGroup]?.name || '',
     enableColumnPinning: true,
     size: 120,
-    minSize: 120,
-    maxSize: 120,
     meta: {
       class: {
         th: 'w-[120px] min-w-[120px] max-w-[120px]',
         td: 'w-[120px] min-w-[120px] max-w-[120px]',
       },
     },
-  },
-  {
-    accessorKey: 'p1_type',
-    header: ({ column }) => getHeader(column, 'Тип'),
-    label: 'Тип',
-    enableColumnPinning: true,
-    size: 120,
-    minSize: 120,
-    maxSize: 120,
-    meta: {
-      class: {
-        th: 'w-[120px] min-w-[120px] max-w-[120px]',
-        td: 'w-[120px] min-w-[120px] max-w-[120px]',
-      },
-    },
-  },
-  {
-    accessorKey: 'p2_counting_system',
-    header: ({ column }) => getHeader(column, 'Система счисления'),
-    label: 'Система счисления',
-    enableColumnPinning: true,
-    size: 150,
-    minSize: 150,
-    maxSize: 150,
-    meta: {
-      class: {
-        th: 'w-[150px] min-w-[150px] max-w-[150px]',
-        td: 'w-[150px] min-w-[150px] max-w-[150px]',
-      },
-    },
-  },
-  {
-    accessorKey: 'p3_range',
-    header: ({ column }) => getHeader(column, 'Диапазон'),
-    label: 'Диапазон',
-    enableColumnPinning: true,
-    size: 120,
-    minSize: 120,
-    maxSize: 120,
-    meta: {
-      class: {
-        th: 'w-[120px] min-w-[120px] max-w-[120px]',
-        td: 'w-[120px] min-w-[120px] max-w-[120px]',
-      },
-    },
-  },
-  {
-    accessorKey: 'p4_size',
-    header: ({ column }) => getHeader(column, 'Размер'),
-    label: 'Размер',
-    enableColumnPinning: true,
-    size: 120,
-    minSize: 120,
-    maxSize: 120,
-    meta: {
-      class: {
-        th: 'w-[120px] min-w-[120px] max-w-[120px]',
-        td: 'w-[120px] min-w-[120px] max-w-[120px]',
-      },
-    },
-  },
-  {
-    accessorKey: 'p5_accuracy',
-    header: ({ column }) => getHeader(column, 'Точность'),
-    label: 'Точность',
-    enableColumnPinning: true,
-    size: 120,
-    minSize: 120,
-    maxSize: 120,
-    meta: {
-      class: {
-        th: 'w-[120px] min-w-[120px] max-w-[120px]',
-        td: 'w-[120px] min-w-[120px] max-w-[120px]',
-      },
-    },
-  },
-  {
-    accessorKey: 'p6_class',
-    header: ({ column }) => getHeader(column, 'Класс'),
-    label: 'Класс',
-    enableColumnPinning: true,
-    size: 120,
-    minSize: 120,
-    maxSize: 120,
-    meta: {
-      class: {
-        th: 'w-[120px] min-w-[120px] max-w-[120px]',
-        td: 'w-[120px] min-w-[120px] max-w-[120px]',
-      },
-    },
-  },
-  {
-    accessorKey: 'p7_feature',
-    header: ({ column }) => getHeader(column, 'Особенность'),
-    label: 'Особенность',
-    enableColumnPinning: true,
-    size: 120,
-    minSize: 120,
-    maxSize: 120,
-    meta: {
-      class: {
-        th: 'w-[120px] min-w-[120px] max-w-[120px]',
-        td: 'w-[120px] min-w-[120px] max-w-[120px]',
-      },
-    },
-  },
-  {
-    accessorKey: 'p8_pack',
-    header: ({ column }) => getHeader(column, 'Упаковка'),
-    label: 'Упаковка',
-    enableColumnPinning: true,
-    size: 120,
-    minSize: 120,
-    maxSize: 120,
-    meta: {
-      class: {
-        th: 'w-[120px] min-w-[120px] max-w-[120px]',
-        td: 'w-[120px] min-w-[120px] max-w-[120px]',
-      },
-    },
-  },
+  })),
   {
     accessorKey: 'label',
     header: ({ column }) => getHeader(column, 'Метка'),
@@ -366,15 +229,67 @@ const columns = [
       },
     },
   },
-]
+])
+
+async function updateProds() {
+  if (!activeCatId.value) return
+
+  prods.value = (await myFetch('/api/admin/cms/products/getProds?cat_id=' + activeCatId.value)).map(prod => {
+    for (const gName of prpsGroupsMap.value.keys()) {
+      prod[gName] =
+        prod[gName] > 0
+          ? {
+              id: prod[gName],
+              name: prps.value[gName].find(p => p.id === prod[gName]).name,
+            }
+          : null
+    }
+
+    return prod
+  })
+  rowSelection.value = {}
+  globalFilter.value = ''
+}
+
+const onTableClick = event => {
+  // calculate clicked element
+  const cell = event.target.closest('td')
+  if (!cell) return
+  const rowElement = cell.closest('tr')
+  if (!rowElement) return
+  const rowIndex = rowElement.rowIndex - 2
+  const cellIndex = cell.cellIndex
+
+  const tableApi = table.value?.tableApi
+  const visibleRows = tableApi.getRowModel().rows
+
+  const clickedRow = visibleRows[rowIndex]
+  const clickedCell = clickedRow.getVisibleCells()[cellIndex]
+
+  const clicked = {
+    rowIndex: clickedCell.row.index,
+    columnId: clickedCell.column.id,
+  }
+
+  const product = prods.value[clicked.rowIndex]
+
+  if (/^p\d_/.test(clicked.columnId)) {
+    // prps clicked
+    const pGroup = clicked.columnId
+    const pGroupName = prpsGroupsMap.value.get(pGroup)?.name || 'Unknown group'
+    const pId = product[pGroup].id
+
+    editPrps(pGroup, pGroupName, [pId])
+  }
+}
 </script>
 
 <template>
-  <div class="prods flex h-full flex-col gap-1">
+  <div class="flex h-full flex-col gap-1">
     <div class="flex items-center gap-4">
       <USelectMenu
-        v-model="state.activeCatId"
-        :items="state.cats"
+        v-model="activeCatId"
+        :items="cats"
         value-key="value"
         :search-input="{
           placeholder: 'Filter...',
@@ -384,16 +299,16 @@ const columns = [
         placeholder="Выберите категорию"
         class="w-96" />
       <UInput
-        v-model="state.globalFilter"
+        v-model="globalFilter"
         placeholder="Filter..."
         icon="i-lucide-filter"
         class="w-64"
         type="search" />
       <div
-        v-if="state.prods.length"
+        v-if="prods.length"
         class="text-sm text-gray-600">
-        Всего: {{ state.prods.length }}
-        <span v-if="state.globalFilter.length">, отфильтровано: {{ countFilteredRows }}</span>
+        Всего: {{ prods.length }}
+        <span v-if="globalFilter.length">, отфильтровано: {{ countFilteredRows }}</span>
       </div>
       <div class="flex grow justify-end gap-1">
         <UDropdownMenu
@@ -445,18 +360,19 @@ const columns = [
     <div class="min-h-0 w-full grow">
       <UTable
         ref="table"
-        v-model:row-selection="state.rowSelection"
-        v-model:global-filter="state.globalFilter"
-        v-model:column-pinning="columnPinning"
         sticky
-        :data="state.prods"
+        v-model:row-selection="rowSelection"
+        v-model:global-filter="globalFilter"
+        v-model:column-pinning="columnPinning"
+        :data="prods"
         :columns="columns"
         :ui="{
-          th: 'text-center bg-gray-100 px-2',
-          td: 'p-2 wrap-break-word whitespace-normal',
-          tr: 'bg-gray-50/95 hover:bg-gray-200/95 data-[selected=true]:bg-violet-100/95',
+          th: 'text-center bg-gray-100 px-2 even:bg-white/35 wrap-break-word whitespace-normal',
+          td: 'p-2 wrap-break-word whitespace-normal even:bg-white/35',
+          tr: 'bg-gray-100/95 hover:bg-gray-200/95 data-[selected=true]:bg-violet-100/95',
         }"
-        class="h-full w-full overflow-auto" />
+        class="h-full w-full overflow-auto"
+        @click="onTableClick" />
     </div>
   </div>
 </template>

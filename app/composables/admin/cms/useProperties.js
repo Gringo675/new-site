@@ -1,4 +1,7 @@
+import { LazyAdminPrpsEditor } from '#components'
+
 export function useProperties() {
+  //
   const prps = shallowRef({})
 
   const updatePrps = async () => {
@@ -7,21 +10,21 @@ export function useProperties() {
 
   onMounted(updatePrps)
 
-  async function handleChanges(groupName, newItems) {
-    const oldItems = props.value[groupName]
-    // ... logic here
-    if (changedItems.length) {
-      const success = await $fetch('/api/admin/setProperties', {
-        method: 'POST',
-        body: changedItems,
-      })
-      if (success) await getItems()
-      else return false
-    }
-    return true
+  const editPrps = async (pGroup, pGroupName, activeIds, options = {}) => {
+    //
+    options.multiple = options.multiple ?? false
+    activeIds = Array.isArray(activeIds) ? activeIds : activeIds.split(',')
+
+    const overlay = useOverlay()
+    const editor = overlay.create(LazyAdminPrpsEditor, {
+      props: { pGroup: prps.value[pGroup], pGroupName, activeIds, options },
+    })
+    const response = await editor.open()
+    console.log(`response: ${JSON.stringify(response, null, 2)}`)
   }
 
   return {
     prps,
+    editPrps,
   }
 }

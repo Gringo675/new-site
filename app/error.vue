@@ -64,6 +64,10 @@ if (!nuxtApp.isHydrating && richError.statusCode !== 404) setErrorToLog(richErro
 async function setErrorToLog(richError) {
   // for investigation purpose
   richError.isDataCached = useNuxtData(richError.url)?.data?.value !== undefined
+  if (!richError.onServer) {
+    richError.historyLength = window.history.length
+    richError.referrer = document.referrer
+  }
 
   richError.build = config.public.BUILD
   try {

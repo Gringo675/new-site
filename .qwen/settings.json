@@ -2,5 +2,11 @@
   "general": {
     "language": "en"
   },
-  "$version": 3
+  "$version": 3,
+  "permissions": {
+    "allow": [
+      "mcp__nuxt-ui__list-composables",
+      "WebFetch(ui.nuxt.com)"
+    ]
+  }
 }

@@ -139,11 +139,12 @@ export default defineNuxtConfig({
     purgeCachedData: false, // nuxt v3.17 breaking change (delete cache when component-initiator is unmounted)
     payloadExtraction: true, // for getCachedData (default, may delete)
   },
-  // devtools: {
-  //   timeline: {
-  //     enabled: true,
-  //   },
-  // },
+  devtools: {
+    enabled: false,
+    // timeline: {
+    //   enabled: true,
+    // },
+  },
   // enable to see hydration mismatch details on production (didn't check it yet)
   // vite: {
   //   define: {

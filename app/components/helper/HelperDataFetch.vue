@@ -41,13 +41,6 @@ if (import.meta.server && status.value === 'error') throw createError(error.valu
 watch(status, statusValue => {
   if (statusValue === 'error') throw createError(error.value)
 })
-
-// for bot's debugging
-if (import.meta.server && !data.value.id) {
-  setTextToLog(
-    `!! Bot's debugging: url ${props.url} has no data, status: ${status.value}, error: ${JSON.stringify(error.value, null, 2)}, data: ${JSON.stringify(data.value, null, 2)}`,
-  )
-}
 </script>
 
 <template>

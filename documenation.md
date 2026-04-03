@@ -3,12 +3,28 @@
 - ssr doesn't generate characteristics and docs for the product's pages
 
 ## robots issue
-- added data.value check to HelperDataFetch.vue
+- remove update date from sitemap
 - add users tracking from server to the client (and compare the data)
+- add routing history to check requests to /api/... from spa side (added richError.historyLength and richError.referrer)
 
 ## cms
+- replace useCatProps and usePropsGroups with usePrpsGroups
 products:
+- default sorting
+- history state (undo)
+- insert prod
+-- copy some data from existing prod
+- delete prod
+- edit prod
+-- edit text
+-- edit html
+-- edit props
+- mass edit
+-- choose the same
 - labels
+-- show all prods?
+- images
+- AI text generation
 
 prices:
 - column's width
