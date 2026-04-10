@@ -21,7 +21,7 @@ const verifyData = data => {
   for (const item of data) {
     switch (item.field) {
       case 'name':
-        if (item.value.length < 3) throw createError({ statusCode: 400, statusMessage: `Incorrect name format!` })
+        if (!item.value.length) throw createError({ statusCode: 400, statusMessage: `Incorrect name format!` })
         break
       case 'mail':
         if (!validateMail(item.value)) throw createError({ statusCode: 400, statusMessage: `Incorrect mail format!` })

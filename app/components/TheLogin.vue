@@ -6,6 +6,7 @@ const closeLogin = () => {
 }
 
 const formRef = useTemplateRef('loginForm')
+const userConsent = useTemplateRef('userConsentRef')
 const user = useUser()
 
 const showVerifyScreen = ref(false)
@@ -42,6 +43,7 @@ const validate = () => {
 
 const sendCode = async () => {
   if (fieldErrors.mail) return
+  if (!userConsent.value.checkConsent()) return
 
   const isCodeSend = await myFetch('/api/auth/login/createCode', {
     method: 'post',
@@ -83,6 +85,8 @@ const backOnMailScreen = () => {
 }
 
 const runOAuth = provider => {
+  if (!userConsent.value.checkConsent()) return
+
   showLoader()
   const url = getOAuthURL(provider)
   const oauthWinParams = `status=no,location=no,toolbar=no,menubar=no,width=500,height=500,left=200,top=0`
@@ -145,7 +149,7 @@ const onSubmit = () => {
                 @click="sendCode" />
             </div>
           </div>
-          <div class="text-sm">Данный адрес не будет использоваться для рассылок или передаваться третьим лицам.</div>
+          <UserConsentCheckbox ref="userConsentRef" />
           <USeparator label="Или" />
           <div class="mx-auto w-3xs space-y-4">
             <UButton

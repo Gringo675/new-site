@@ -17,7 +17,7 @@ const props = defineProps({
   },
 })
 const userFormRef = useTemplateRef('userFormRef')
-defineExpose({ userFormRef, getUserFormData })
+defineExpose({ getUserFormData })
 
 const formState = reactive({
   message: props.message,

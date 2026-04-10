@@ -4,10 +4,14 @@ useTitle('Профиль пользователя')
 
 const user = useUser()
 
-const TheUserProfileRef = ref()
+const userProfile = useTemplateRef('TheUserProfileRef')
+const userConsent = useTemplateRef('userConsentRef')
 
 const buttonHandler = async () => {
-  const isUserSaved = await TheUserProfileRef.value.saveUserData()
+  if (!(await userProfile.value.validateUserData())) return
+  if (!userConsent.value.checkConsent()) return
+
+  const isUserSaved = await userProfile.value.saveUserData()
   if (isUserSaved) showNotice({ title: 'Данные успешно изменены!', type: 'success' })
 }
 </script>
@@ -19,6 +23,9 @@ const buttonHandler = async () => {
     v-if="user.auth"
     class="mx-auto flex max-w-md flex-col p-4">
     <TheUserProfile ref="TheUserProfileRef" />
+    <UserConsentCheckbox
+      ref="userConsentRef"
+      class="mt-4" />
     <UButton
       label="Сохранить изменения"
       variant="outline"

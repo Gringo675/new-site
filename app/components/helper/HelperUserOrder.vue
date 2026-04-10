@@ -3,10 +3,13 @@
 
 const user = useUser()
 const userProfile = useTemplateRef('userProfileRef')
+const userConsent = useTemplateRef('userConsentRef')
 const fastOrder = ref(false)
 
 const emit = defineEmits(['createOrder'])
 const onCreateOrderClick = async () => {
+    if (!(await userProfile.value.validateUserData())) return
+  if (!userConsent.value.checkConsent()) return
   const isUserSaved = await userProfile.value.saveUserData()
   if (!isUserSaved) return
   emit('createOrder')
@@ -36,6 +39,9 @@ const onCreateOrderClick = async () => {
       class=""
       v-else>
       <TheUserProfile ref="userProfileRef" />
+          <UserConsentCheckbox
+      ref="userConsentRef"
+      class="mt-4" />
       <UButton
         label="Оформить заказ"
         color="tertiary"

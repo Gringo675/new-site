@@ -1,0 +1,31 @@
+:root {
+  /* seems like vars are cached somewhere */
+  /* --vscode-tab-activeBackground: #1e1e2e !important; */
+  /* --vscode-tab-activeBackground: #e8e8f1 !important; */
+  --vscode-sideBarSectionHeader-border: #4f366e !important; /* groups|explorer divider */
+}
+/* don't stretch the last tab in a row */
+.monaco-workbench
+  .part.editor
+  > .content
+  .editor-group-container
+  > .title
+  > .tabs-and-actions-container.wrapping
+  .tabs-container
+  > .tab.sizing-fit.last-in-row:not(:last-child) {
+  flex-grow: 0 !important;
+}
+
+.monaco-workbench .part.editor > .content .editor-group-container.active > .title .tabs-container > .tab.active {
+  background-color: #4f1e42 !important;
+}
+.monaco-workbench .part.editor > .content .editor-group-container.active > .title .tabs-container > .tab {
+  color: #adceea;
+}
+
+.monaco-workbench .part.editor > .content .editor-group-container > .title .tabs-container {
+  --editor-group-tab-height: 24px !important;
+}
+/* .monaco-workbench .part.editor > .content .editor-group-container > .title .tabs-container > .tab {
+  height: 24px !important;
+} */

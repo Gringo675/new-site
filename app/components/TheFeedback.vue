@@ -9,10 +9,15 @@ const emit = defineEmits(['close'])
 
 const userProfile = useTemplateRef('userProfileRef')
 const userForm = useTemplateRef('userFormRef')
+const userConsent = useTemplateRef('userConsentRef')
 
 const submitForm = async () => {
   const formData = await userForm.value.getUserFormData()
   if (!formData) return
+
+  if (!(await userProfile.value.validateUserData())) return
+
+  if (!userConsent.value.checkConsent()) return
 
   const isUserSaved = await userProfile.value.saveUserData()
   if (!isUserSaved) return
@@ -51,6 +56,7 @@ const submitForm = async () => {
     :ui="{
       content: 'max-w-2xl',
       header: 'min-h-auto',
+      footer: 'flex-col',
     }">
     <template #body>
       <div class="grid gap-x-6 gap-y-4 md:grid-cols-2">
@@ -67,6 +73,8 @@ const submitForm = async () => {
       </div>
     </template>
     <template #footer>
+      <!-- <div id="consent-container"></div> -->
+      <UserConsentCheckbox ref="userConsentRef" />
       <div class="flex w-full items-center justify-end gap-x-4">
         <UButton
           label="Отмена"

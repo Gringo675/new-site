@@ -1,14 +1,17 @@
 <script setup>
 /**
  * Компонент показа и сохранения изменений в данных пользователя.
- * Используется на странице данных пользователя (/user/profile), в корзине (/user/cart) и на форме обратной связи.
- * Передает наружу функцию saveUserData, которую нужно запускать в родителе.
+ * Используется на странице данных пользователя (/user/profile), в корзине (/user/cart)
+ * и на форме обратной связи.
+ * Передает наружу функции validateUserData, saveUserData, которые нужно
+ * последовательно запускать в родителе. (Необходимость разделить функционал возникла
+ * после добавления UserConsentCheckbox, который вставляется между ними)
  * Если пользователь авторизован, все изменения в данных записываются в базу.
  * Если нет, введенные данные просто записываются в переменную user.
  */
 
 const userProfileRef = useTemplateRef('userProfileRef')
-defineExpose({ userProfileRef, saveUserData })
+defineExpose({ validateUserData, saveUserData })
 
 await getUser({ hidden: true })
 const user = useUser()
@@ -100,7 +103,7 @@ function onError(event) {
   }
 }
 
-async function saveUserData() {
+async function validateUserData() {
   if (shouldVerifyNewMail.value) {
     // scroll to verifier
     const element = document.getElementById('mail-verifier')
@@ -114,6 +117,12 @@ async function saveUserData() {
     userProfileRef.value.submit() // для запуска onError
     return false
   }
+
+  return true
+}
+
+async function saveUserData() {
+  if (!validateUserData()) return false // перестраховка, если все настроено правильно, родительский компонент уже проверил validateUserData
 
   try {
     const dataKeys = ['name', 'mail', 'org', 'inn', 'address', 'phone'] // без почты, для нее отдельный компонент
