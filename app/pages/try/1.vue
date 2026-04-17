@@ -14,5 +14,5 @@ const showEditor = () => {
       label="Edit"
       @click="showEditor" />
   </div>
-  <pre>{{ prps }}</pre>
+  <!-- <pre>{{ prps }}</pre> -->
 </template>

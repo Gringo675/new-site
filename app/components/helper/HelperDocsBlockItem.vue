@@ -11,12 +11,13 @@ const { item } = defineProps({
     <div class="mt-2 flex flex-wrap gap-2">
       <UButton
         v-for="button in item.buttons"
+        :to="button.url"
+        :external="true"
         :label="button.label"
         variant="outline"
         truncate
         class="max-w-full"
-        @click="showDocViewer({ title: item.title, url: button.url })"
-      />
+        @click.prevent="showDocViewer({ title: item.title, url: button.url })" />
     </div>
   </div>
 </template>

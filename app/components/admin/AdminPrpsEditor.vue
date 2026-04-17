@@ -6,51 +6,58 @@ const props = defineProps({
   activeIds: Array,
   options: Object,
 })
-const emit = defineEmits(['update:activeIds'])
+// const emit = defineEmits(['update:activeIds'])
+// локальная копия
+const pGroup = ref(
+  JSON.parse(JSON.stringify(props.pGroup)).map(item => ({
+    ...item,
+    active: props.activeIds.includes(item.id),
+  })),
+)
 
-const addItem = () => {}
-const deleteItem = async () => {
-  const proceed = await showMessage({
-    title: 'Подтвердите удаление',
-    description: ``,
-    isDialog: true,
-  })
-  // if (proceed)
+const activeItems = computed(() => pGroup.value.filter(item => item.active))
+const toggleActive = item => {
+  if (!props.options.multiple) {
+    // Single mode: deactivate all others
+    pGroup.value.forEach(i => (i.active = false))
+    item.active = true
+  } else {
+    // Multiple mode: toggle as normal
+    item.active = !item.active
+  }
 }
-
-const dropdownMenu = [
-  {
-    label: 'Добавить ниже',
-    icon: 'i-heroicons-plus',
-    onClick: () => addItem(),
-  },
-  {
-    label: 'Удалить',
-    color: 'error',
-    variant: 'ghost',
-    size: 'sm',
-    icon: 'i-heroicons-trash',
-    onClick: () => deleteItem(),
-  },
-]
 
 const filter = ref('')
 const filteredPrps = computed(() => {
-  if (!filter.value) return props.pGroup.map(item => ({ ...item, filtered: true }))
-  return props.pGroup.filter(item => item.name.toLowerCase().includes(filter.value.toLowerCase()))
+  return pGroup.value.filter(item => item.name.toLowerCase().includes(filter.value.toLowerCase()))
 })
+const haveHiddenItems = computed(() => pGroup.value.length !== filteredPrps.value.length)
+
+const prpsWrapper = useTemplateRef('prpsWrapper')
+const fixHeight = () => {
+  // закрепляем высоту формы, чтобы не было скачков при фильтрации
+  if (prpsWrapper.value) {
+    prpsWrapper.value.style.height = `${prpsWrapper.value.scrollHeight}px`
+  }
+}
 
 // d&d start
-const propsWrapper = useTemplateRef('propsWrapper')
-onMounted(() => {
-  // закрепляем высоту формы, чтобы не было скачков при фильтрации
-  // propsWrapper.value.style.height = `${propsWrapper.value.scrollHeight}px`
-})
 const draggableElementIndex = ref(null)
 const handleDragStart = ev => {
-  if (ev.target.dataset?.draggable === undefined) return
-  draggableElementIndex.value = Number(ev.target.parentElement.dataset.index)
-  ev.dataTransfer.setDragImage(ev.target.parentElement, 290, 20)
+  const dragHandler = ev.target.closest('[data-drag-handler]')
+  if (!dragHandler) return
+  if (haveHiddenItems.value)
+    return showMessage({
+      title: 'Есть скрытые элементы!',
+      description: 'Пожалуйста, сбросьте фильтр, прежде чем перетаскивать элементы.',
+    })
+  const draggableElement = dragHandler.parentElement
+  draggableElementIndex.value = Number(draggableElement.dataset.index)
+
+  const rect = draggableElement.getBoundingClientRect()
+  const xOffset = ev.clientX - rect.left
+  const yOffset = ev.clientY - rect.top
+  ev.dataTransfer.setDragImage(draggableElement, xOffset, yOffset)
 }
 const handleDragEnd = () => {
   draggableElementIndex.value = null
@@ -84,75 +91,120 @@ const changeArrayDebounced = {
   },
 }
 // d&d end
+
+const addItem = index => {
+  console.log(`index: ${JSON.stringify(index, null, 2)}`)
+}
+const deleteItem = async index => {
+  const proceed = await showMessage({
+    title: 'Подтвердите удаление',
+    description: ``,
+    isDialog: true,
+  })
+  // if (proceed)
+}
+
+// вешаем горячую клавишу
+defineShortcuts({
+  escape: {
+    usingInput: 'filterInput',
+    handler: () => (filter.value = ''),
+  },
+})
 </script>
 
 <template>
   <UModal
     :title="props.pGroupName"
     :dismissible="false"
+    @after:enter="fixHeight"
     :ui="{
       content: 'max-w-xl',
     }">
+    <template #description>
+      <div class="m-2">
+        {{ options.multiple ? 'Выбраны:' : 'Выбран:' }} {{ activeItems.map(i => i.name).join(', ') }}
+      </div></template
+    >
     <template #body>
-      <!--  <div class="flex flex-col gap-2">
-         <div
-          v-for="(prp, i) in props.pGroup"
-          :key="prp.id"
-          class="flex">
-          <UInput
-            v-model.lazy="prp.name"
-            placeholder="Введите значение"
-            class="w-full" />
-          <UDropdownMenu
-            :items="dropdownMenu"
-            :ui="{ content: 'w-48' }">
-            <UButton
-              color="neutral"
-              variant="ghost"
-              size="sm"
-              icon="i-heroicons-ellipsis-vertical" />
-          </UDropdownMenu>
-        </div>
-      </div> -->
+      <UInput
+        v-model="filter"
+        autofocus
+        placeholder="Filter..."
+        icon="i-lucide-filter"
+        class="w-64"
+        type="search" />
       <div
-        ref="propsWrapper"
-        class="overflow-auto bg-amber-100 p-5"
+        ref="prpsWrapper"
+        class="flex flex-col items-center overflow-auto p-5"
         @dragstart="handleDragStart"
         @dragend="handleDragEnd"
         @dragenter="handleDragEnter"
         @dragover="handleDragOver">
         <TransitionGroup name="transition-props-editor">
-          <template
+          <div
             v-for="(prp, i) in filteredPrps"
-            :key="prp.id">
+            :key="prp.id"
+            :data-index="i"
+            :class="{ 'opacity-60': draggableElementIndex === i }"
+            class="m-2 flex items-center gap-2 rounded-lg border border-gray-600 bg-violet-300 p-2 transition-opacity duration-300">
+            <UCheckbox
+              :ui="{
+                base: 'bg-violet-200', // Unchecked state
+              }"
+              :model-value="prp.active"
+              @update:model-value="toggleActive(prp)" />
+            <input
+              type="text"
+              v-model.lazy="prp.name"
+              class="w-78 rounded-sm bg-gray-100 px-2 outline-hidden" />
             <div
-              v-if="prp.filtered"
-              :data-index="i"
-              :class="{ 'opacity-20': draggableElementIndex === i }"
-              class="float-left m-2 flex items-center rounded-lg border border-orange-700 bg-orange-200 p-2 transition-opacity duration-300">
-              <UCheckbox v-model="prp.selected" />
-              <input
-                type="text"
-                v-model.lazy="prp.name"
-                class="ml-2 w-48 rounded-xs bg-orange-100 px-1 outline-hidden" />
-              <img
-                @click="deleteItem(i)"
-                class="ml-2 inline cursor-pointer select-none"
-                src="/img/icons/trash.svg" />
-              <img
-                @click="addItem(i)"
-                class="mx-2 inline cursor-pointer select-none"
-                :class="{ 'pointer-events-none opacity-40': haveHiddenItems }"
-                src="/img/icons/file-plus.svg" />
-              <img
-                class="inline cursor-move select-none"
-                :class="{ 'pointer-events-none opacity-40': haveHiddenItems }"
-                src="/img/icons/arrows-move.svg"
-                data-draggable />
+              draggable="true"
+              data-drag-handler
+              class="">
+              <UDropdownMenu
+                :items="[
+                  {
+                    label: 'Добавить ниже',
+                    icon: 'i-heroicons-plus',
+                    onClick: () => addItem(i),
+                  },
+                  {
+                    label: 'Удалить',
+                    color: 'error',
+                    variant: 'ghost',
+                    size: 'sm',
+                    icon: 'i-heroicons-trash',
+                    onClick: () => deleteItem(i),
+                  },
+                ]"
+                :ui="{ content: 'w-48' }">
+                <UButton
+                  color="neutral"
+                  variant="ghost"
+                  size="sm"
+                  icon="i-heroicons-ellipsis-vertical" />
+              </UDropdownMenu>
             </div>
-          </template>
+          </div>
         </TransitionGroup>
       </div>
     </template>
   </UModal>
 </template>
+
+<style>
+.transition-props-editor-move,
+.transition-props-editor-enter-active,
+.transition-props-editor-leave-active {
+  transition: all 300ms ease;
+}
+.transition-props-editor-enter-from,
+.transition-props-editor-leave-to {
+  opacity: 0;
+  transform: scaleY(0.1);
+}
+/* .transition-props-editor-leave-active {
+  position: absolute;
+} */
+</style>

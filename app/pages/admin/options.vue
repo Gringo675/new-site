@@ -30,6 +30,24 @@ const refreshSearchIndex = async () => {
   }
 }
 
+const runImageOptimization = async () => {
+  // Возвращаем успешный JSON-ответ
+  //   return { success: true, message: `Обработано ${filesToProcess.length} файлов.` }
+  // } catch (error) {
+  //   console.error('Ошибка при оптимизации изображений:', error)
+
+  //   // Возвращаем JSON-ответ с ошибкой
+  //   setResponseStatus(event, 500)
+  //   return { success: false, message: 'Произошла ошибка на сервере.', error: error.message }
+  // }
+  const res = await myFetch('/api/imgOptimization/products')
+  if (res.success) showNotice({ title: `Image optimization completed! `, description: res.message, type: 'success' })
+  else if (res.status === 'error') {
+    console.error(`Image optimization error: ${JSON.stringify(res.message, null, 2)}`)
+    showNotice({ title: `Image optimization error!`, description: 'More info in console.', type: 'error' })
+  }
+}
+
 const onTest = async () => {
   const result = await $fetch('/api/admin/system/test')
   console.log(`Test result: ${JSON.stringify(result, null, 2)}`)
@@ -48,6 +66,9 @@ const onTest = async () => {
       <UButton
         label="Refresh Search Index"
         @click="refreshSearchIndex" />
+      <UButton
+        label="Run product image optimization"
+        @click="runImageOptimization" />
       <UButton
         label="Test"
         @click="onTest" />

@@ -19,6 +19,10 @@
 .monaco-workbench .part.editor > .content .editor-group-container.active > .title .tabs-container > .tab.active {
   background-color: #4f1e42 !important;
 }
+
+.monaco-workbench .part.editor > .content .editor-group-container.inactive > .title .tabs-container > .tab {
+  color: #99aab8;
+}
 .monaco-workbench .part.editor > .content .editor-group-container.active > .title .tabs-container > .tab {
   color: #adceea;
 }

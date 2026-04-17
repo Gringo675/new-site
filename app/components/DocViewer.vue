@@ -5,8 +5,7 @@ const props = defineProps({
   url: String,
 })
 
-const fileFolder = '/static/doc/'
-const src = fileFolder + props.url + '#toolbar=0'
+const src = props.url + '#toolbar=0'
 </script>
 
 <template>
@@ -21,12 +20,12 @@ const src = fileFolder + props.url + '#toolbar=0'
       body: 'p-0 sm:p-0',
     }"
     :close="{
-      color: 'primary',
+      color: 'warning',
       variant: 'link',
-      icon: 'i-heroicons-x-circle',
+      icon: 'i-lucide-x',
       class: 'z-10 p-0 focus-visible:ring-0 focus-visible:outline-none',
       ui: {
-        leadingIcon: 'size-8',
+        leadingIcon: 'size-8 sm:size-10',
       },
     }">
     <template #description></template>

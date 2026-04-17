@@ -7,6 +7,12 @@
 - add users tracking from server to the client (and compare the data)
 - add routing history to check requests to /api/... from spa side (added richError.historyLength and richError.referrer)
 
+## Log
+- parse data
+- add color bubbles for bot, human, server, client, isChunkError
+- add filters bot/human, server/client
+- links to url
+
 ## cms
 - replace useCatProps and usePropsGroups with usePrpsGroups
 products:

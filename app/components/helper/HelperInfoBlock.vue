@@ -6,7 +6,7 @@ import _appConfig from '#build/app.config'
 import theme from '#build/ui/tabs'
 import { tv } from '#ui/utils/tv'
 import type { AvatarProps } from '#ui/types'
-import type { DynamicSlots, PartialString } from '#ui/types/utils'
+import type { DynamicSlots } from '#ui/types/utils'
 
 const appConfigTabs = _appConfig as AppConfig & { ui: { tabs: Partial<typeof theme> } }
 
@@ -38,7 +38,7 @@ export interface TabsProps<T extends TabsItem = TabsItem>
   content?: boolean
   labelKey?: string
   class?: any
-  ui?: PartialString<typeof tabs.slots>
+  ui?: Partial<Record<string, string>>
 }
 
 export interface TabsEmits extends TabsRootEmits<string | number> {}
@@ -55,7 +55,7 @@ export type TabsSlots<T extends TabsItem = TabsItem> = {
 
 <script setup lang="ts" generic="T extends TabsItem">
 import { TabsRoot, TabsList, TabsIndicator, TabsTrigger, TabsContent, useForwardPropsEmits } from 'reka-ui'
-import { reactivePick } from '@vueuse/core'
+// import { reactivePick } from '@vueuse/core'
 import UIcon from '#ui/components/Icon.vue'
 
 const props = defineProps({
@@ -67,36 +67,41 @@ const props = defineProps({
     default: () => ({}),
   },
   showDelivery: Boolean,
-  content: {
-    type: Boolean,
-    default: true,
-  },
-  modelValue: String,
-  defaultValue: {
-    type: String,
-    default: '0',
-  },
-  orientation: {
-    type: String as () => 'horizontal' | 'vertical',
-    default: 'horizontal',
-  },
-  unmountOnHide: {
-    type: Boolean,
-    default: true,
-  },
-  labelKey: {
-    type: String,
-    default: 'label',
-  },
+  // content: {
+  //   type: Boolean,
+  //   default: true,
+  // },
+  // modelValue: String,
+  // defaultValue: {
+  //   type: String,
+  //   default: '0',
+  // },
+  // orientation: {
+  //   type: String as () => 'horizontal' | 'vertical',
+  //   default: 'horizontal',
+  // },
+  // unmountOnHide: {
+  //   type: Boolean,
+  //   default: false,
+  // },
+  // labelKey: {
+  //   type: String,
+  //   default: 'label',
+  // },
 })
 
 const emits = defineEmits<TabsEmits>()
 const slots = defineSlots<TabsSlots<T>>()
 
-const rootProps = useForwardPropsEmits(
-  reactivePick(props, 'modelValue', 'defaultValue', 'orientation', 'unmountOnHide'),
-  emits,
-)
+// const rootProps = useForwardPropsEmits(
+//   reactivePick(props, 'modelValue', 'defaultValue', 'orientation', 'unmountOnHide'),
+//   emits,
+// )
+const rootProps = {
+  defaultValue: '0',
+  orientation: 'horizontal' as const,
+  unmountOnHide: false, // 'true' is better for performance, but'false' generated html for all tabs on server side, which is better for seo
+}
 
 const items = []
 if (props.description)
@@ -153,13 +158,13 @@ onUnmounted(() => {
         class="relative flex rounded-t-lg bg-stone-800 p-1 pb-2 max-lg:w-full"
         :class="title ? 'w-max' : 'w-full'">
         <TabsIndicator
-          class="TabsIndicator absolute top-1 bottom-2 left-0 w-(--reka-tabs-indicator-size) translate-x-(--reka-tabs-indicator-position) rounded-md bg-(--ui-primary) transition-[translate,width] duration-400" />
+          class="TabsIndicator bg-primary absolute top-1 bottom-2 left-0 w-(--reka-tabs-indicator-size) translate-x-(--reka-tabs-indicator-position) rounded-md transition-[translate,width] duration-400" />
 
         <TabsTrigger
           v-for="(item, index) of items"
           :key="index"
           :value="item.value || String(index)"
-          class="relative inline-flex w-full flex-1 items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ui-primary) data-[state=active]:text-white data-[state=inactive]:text-orange-200 hover:data-[state=inactive]:cursor-pointer hover:data-[state=inactive]:text-orange-100 max-lg:min-w-0 max-sm:flex-wrap sm:px-3 sm:py-2">
+          class="focus-visible:outline-primary relative inline-flex w-full flex-1 items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 data-[state=active]:text-white data-[state=inactive]:text-orange-200 hover:data-[state=inactive]:cursor-pointer hover:data-[state=inactive]:text-orange-100 max-lg:min-w-0 max-sm:flex-wrap sm:px-3 sm:py-2">
           <slot
             name="leading"
             :item="item"
@@ -182,7 +187,7 @@ onUnmounted(() => {
       id="info_block_container"
       :style="{ height: containerHeight }">
       <div
-        class=""
+        class="flow-root"
         ref="contentRef">
         <TabsContent
           v-for="(item, index) of items"
@@ -193,14 +198,17 @@ onUnmounted(() => {
             v-if="item.html"
             v-html="item.html"></div>
           <LazyHelperDocsBlock
+            hydrate-on-visible
             v-else-if="item.label === 'Документация'"
             :docs="documentation" />
-          <LazyHelperDeliveryBlock v-else-if="item.label === 'Способы получения'" />
+          <LazyHelperDeliveryBlock
+            hydrate-on-visible
+            v-else-if="item.label === 'Способы получения'" />
           <div v-else>{{ item.content }}</div>
         </TabsContent>
       </div>
 
-      <div class="from-muted absolute inset-x-0 bottom-0 flex h-12 items-center justify-end bg-gradient-to-t">
+      <div class="from-muted absolute inset-x-0 bottom-0 flex h-12 items-center justify-end bg-linear-to-t">
         <UButton
           color="primary"
           :label="expand ? 'Свернуть' : 'Развернуть'"

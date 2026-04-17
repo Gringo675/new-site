@@ -1,4 +1,3 @@
-// ...existing code...
 <script setup lang="ts">
 //
 const refHelperInputMenu = useTemplateRef('helperInputMenu')
@@ -104,54 +103,56 @@ const SideEffectWatcher = defineComponent({
       мы отправим его транспортной компанией. Отгрузка осуществляется бесплатно, вы оплачиваете только междугороднюю
       перевозку по тарифам ТК.
     </HelperAlarm>
-    <HelperInputMenu
-      ref="helperInputMenu"
-      @onEnter="changeCity"
-      class="ml-4 max-w-80">
-      <template #result="{ searchState }">
-        <SideEffectWatcher />
-        <div
-          v-if="searchState.result.length"
-          class="space-y-1">
-          <button
-            role="link"
-            class="block text-left leading-tight underline-offset-4 hover:underline"
-            v-for="city in searchState.result"
-            @click="changeCity(city)">
-            {{ city.name }}
-          </button>
-        </div>
-        <div
-          v-else
-          class="">
-          Нет результатов! Попробуйте изменить запрос.
-        </div>
-      </template>
-    </HelperInputMenu>
-    <h2 class="my-4 text-xl">
-      Расчет стоимости доставки до <span class="font-bold">{{ city.name }}</span
-      ><sup>*</sup>
-    </h2>
-    <div
-      class="flex flex-wrap gap-4"
-      :class="status === 'pending' && 'animate-pulse opacity-70'">
-      <HelperPresentationCard
-        v-for="option in deliveryOptions"
-        :key="option.title"
-        :item="{
-          icon: option.icon,
-          title: option.title,
-          description: getDescription(option),
-        }" />
-    </div>
-    <div class="pt-4">
-      <sup>*</sup> Расчет выполняется по данным ТК "Деловые Линии" и носит предварительный характер. Для получения
-      полной информации пройдите по
-      <NuxtLink
-        to="https://www.dellin.ru/requests/"
-        class="text-indigo-500 underline-offset-4 hover:underline"
-        >ссылке</NuxtLink
-      >.
-    </div>
+    <ClientOnly>
+      <HelperInputMenu
+        ref="helperInputMenu"
+        @onEnter="changeCity"
+        class="ml-4 max-w-80">
+        <template #result="{ searchState }">
+          <SideEffectWatcher />
+          <div
+            v-if="searchState.result.length"
+            class="space-y-1">
+            <button
+              role="link"
+              class="block text-left leading-tight underline-offset-4 hover:underline"
+              v-for="city in searchState.result"
+              @click="changeCity(city)">
+              {{ city.name }}
+            </button>
+          </div>
+          <div
+            v-else
+            class="">
+            Нет результатов! Попробуйте изменить запрос.
+          </div>
+        </template>
+      </HelperInputMenu>
+      <h2 class="my-4 text-xl">
+        Расчет стоимости доставки до <span class="font-bold">{{ city.name }}</span
+        ><sup>*</sup>
+      </h2>
+      <div
+        class="flex flex-wrap gap-4"
+        :class="status === 'pending' && 'animate-pulse opacity-70'">
+        <HelperPresentationCard
+          v-for="option in deliveryOptions"
+          :key="option.title"
+          :item="{
+            icon: option.icon,
+            title: option.title,
+            description: getDescription(option),
+          }" />
+      </div>
+      <div class="pt-4">
+        <sup>*</sup> Расчет выполняется по данным ТК "Деловые Линии" и носит предварительный характер. Для получения
+        полной информации пройдите по
+        <NuxtLink
+          to="https://www.dellin.ru/requests/"
+          class="text-indigo-500 underline-offset-4 hover:underline"
+          >ссылке</NuxtLink
+        >.
+      </div>
+    </ClientOnly>
   </div>
 </template>

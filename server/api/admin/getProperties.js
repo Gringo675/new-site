@@ -1,9 +1,10 @@
+// todo: move to /cms/
 export default defineEventHandler(async event => {
   // const query = `SELECT * FROM i_properties WHERE group_id=0 ORDER by group_id, ordering`
   const query = `SELECT * FROM i_properties ORDER by group_id, ordering`
   const rawProps = await dbReq(query)
   // разделим параметры на группы
-  const propsGroups = usePropsGroups()
+  const propsGroups = usePrpsGroupsMap().keys().toArray()
 
   const props = {}
   for (const groupName of propsGroups) {

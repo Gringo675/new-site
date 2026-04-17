@@ -1,6 +1,6 @@
 import { LazyDocViewer } from '#components'
 
-const imageViewer = useOverlay().create(LazyDocViewer)
+const docViewer = useOverlay().create(LazyDocViewer)
 
 export const showDocViewer = (options = {}) => {
   /**
@@ -8,7 +8,5 @@ export const showDocViewer = (options = {}) => {
    */
   if (import.meta.server) return
 
-  imageViewer.open(options)
+  docViewer.open(options)
 }
-
-// export const closeImageViewer = () => imageViewer.close()

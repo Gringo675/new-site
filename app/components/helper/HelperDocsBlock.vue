@@ -3,6 +3,7 @@
 const { docs } = defineProps({
   docs: Object,
 })
+const docsFolder = '/static/doc'
 
 const items = []
 for (const stn of docs.stnd ?? []) {
@@ -13,7 +14,7 @@ for (const stn of docs.stnd ?? []) {
   if (stn.file) {
     item.buttons.push({
       label: `Открыть ${stn.number}`,
-      url: `stnd/${stn.file}`,
+      url: `${docsFolder}/stnd/${stn.file}`,
     })
   }
   items.push(item)
@@ -28,19 +29,19 @@ for (const rstr of docs.rstr ?? []) {
   if (rstr.file_svid) {
     item.buttons.push({
       label: 'Открыть свидетельство об утверждении типа',
-      url: `rstr/${rstr.file_svid}`,
+      url: `${docsFolder}/rstr/${rstr.file_svid}`,
     })
   }
   if (rstr.file_ot) {
     item.buttons.push({
       label: 'Открыть описание типа',
-      url: `rstr/${rstr.file_ot}`,
+      url: `${docsFolder}/rstr/${rstr.file_ot}`,
     })
   }
   if (rstr.file_mp) {
     item.buttons.push({
       label: 'Открыть методику поверки',
-      url: `rstr/${rstr.file_mp}`,
+      url: `${docsFolder}/rstr/${rstr.file_mp}`,
     })
   }
   items.push(item)
@@ -53,7 +54,7 @@ for (const pasp of docs.pasp ?? []) {
   if (pasp.file) {
     item.buttons.push({
       label: 'Открыть паспорт',
-      url: `pasp/${pasp.file}`,
+      url: `${docsFolder}/pasp/${pasp.file}`,
     })
   }
   items.push(item)
