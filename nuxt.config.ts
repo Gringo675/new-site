@@ -145,12 +145,18 @@ export default defineNuxtConfig({
     //   enabled: true,
     // },
   },
-  // enable to see hydration mismatch details on production (didn't check it yet)
-  // vite: {
-  //   define: {
-  //     __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: 'true',
-  //   },
-  // },
+  vite: {
+    define: {
+      // __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: 'true', // enable to see hydration mismatch details on production (disabled 'cause Nuxt UI has id issue)
+    },
+    // build: {
+    //   sourcemap: 'hidden', // перебивается Nuxt
+    // },
+  },
+  sourcemap: {
+    client: 'hidden',
+    server: true,
+  },
   site: {
     // used in SEO modules + useCanonical composable
     title:

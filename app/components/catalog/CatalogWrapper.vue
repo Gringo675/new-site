@@ -103,31 +103,41 @@ function addFilterToURL() {
 
 <template>
   <div class="">
-    <LazyBreadCrumbsWrapper
-      hydrate-on-idle
-      :catId="catData.id" />
-    <LazyHelperInfoBlock
-      :title="catData.name"
-      :image="catData.image"
-      :description="catData.description"
-      :characteristics="catData.characteristics"
-      :documentation="catData.docs" />
+    <div class="hydration-boundary">
+      <LazyBreadCrumbsWrapper
+        hydrate-on-idle
+        :catId="catData.id" />
+    </div>
+    <div class="hydration-boundary">
+      <LazyHelperInfoBlock
+        :title="catData.name"
+        :image="catData.image"
+        :description="catData.description"
+        :characteristics="catData.characteristics"
+        :documentation="catData.docs" />
+    </div>
     <HelperAsideGrid>
       <template #aside>
-        <LazyCatalogFilter
-          hydrate-on-idle
-          v-if="filter.length"
-          :filter="filter"
-          @filterChanged="handleFilter"
-          @resetFilter="initializeFilter(true)" />
-        <LazyCatalogBanner
-          hydrate-on-visible
-          class="max-md:hidden" />
+        <div class="hydration-boundary">
+          <LazyCatalogFilter
+            hydrate-on-idle
+            v-if="filter.length"
+            :filter="filter"
+            @filterChanged="handleFilter"
+            @resetFilter="initializeFilter(true)" />
+        </div>
+        <div class="hydration-boundary">
+          <LazyCatalogBanner
+            hydrate-on-visible
+            class="max-md:hidden" />
+        </div>
       </template>
-      <LazyCatalogProductsWrapper
-        hydrate-on-idle
-        :products
-        :activeProductsIndx />
+      <div class="hydration-boundary">
+        <LazyCatalogProductsWrapper
+          hydrate-on-idle
+          :products
+          :activeProductsIndx />
+      </div>
     </HelperAsideGrid>
   </div>
 </template>

@@ -57,11 +57,13 @@ const priceMultiplier = ref(1)
 
 <template>
   <div class="">
-    <LazyBreadCrumbsWrapper
-      hydrate-on-idle
-      :catId="product.category_id"
-      :productCats="subCats"
-      :productName="product.name" />
+    <div class="hydration-boundary">
+      <LazyBreadCrumbsWrapper
+        hydrate-on-idle
+        :catId="product.category_id"
+        :productCats="subCats"
+        :productName="product.name" />
+    </div>
     <h1 class="font-accent my-4 text-2xl leading-7 max-xl:text-xl max-xl:leading-6">{{ product.name }}</h1>
     <div class="flex items-center gap-2">
       <UIcon
@@ -76,10 +78,12 @@ const priceMultiplier = ref(1)
     <div class="my-1 border-b border-gray-200"></div>
     <div class="mb-6 grid grid-cols-3 grid-rows-[auto_1fr] gap-4 max-lg:grid-cols-2 max-sm:grid-cols-1">
       <div class="sm:row-span-2">
-        <LazyImageViewerProduct
-          hydrate-on-idle
-          :images="product.images"
-          :name="product.name" />
+        <div class="hydration-boundary">
+          <LazyImageViewerProduct
+            hydrate-on-idle
+            :images="product.images"
+            :name="product.name" />
+        </div>
       </div>
       <div class="flex items-start gap-2 p-2">
         <img
@@ -98,7 +102,7 @@ const priceMultiplier = ref(1)
             <span class=""> {{ formatPrice(product.price * priceMultiplier) }}</span>
             <div
               v-if="product.priceRegular"
-              class="text-primary-700 absolute -top-4 right-3 rounded-full bg-gradient-to-b from-fuchsia-300 to-fuchsia-200 px-2 py-1 text-sm leading-none line-through">
+              class="text-primary-700 absolute -top-4 right-3 rounded-full bg-linear-to-b from-fuchsia-300 to-fuchsia-200 px-2 py-1 text-sm leading-none line-through">
               {{ formatPrice(product.priceRegular * priceMultiplier) }}
             </div>
           </div>
@@ -107,9 +111,11 @@ const priceMultiplier = ref(1)
             :items="priceOptions" />
 
           <div class="buttons flex w-70 flex-col gap-5">
-            <LazyProductCartButton
-              hydrate-on-idle
-              :prod="product" />
+            <div class="hydration-boundary">
+              <LazyProductCartButton
+                hydrate-on-idle
+                :prod="product" />
+            </div>
             <UButton
               label="Быстрый заказ"
               variant="outline"
@@ -141,7 +147,9 @@ const priceMultiplier = ref(1)
           </div>
         </NuxtLink>
       </div>
-      <div class="bl4 max-lg:xs:grid-cols-2 my-4 grid content-start gap-x-4 gap-y-6 p-2 max-lg:sm:col-span-2">
+      <div
+        class="bl4 max-lg:xs:grid-cols-2 my-4 grid content-start gap-x-4 gap-y-6 p-2 max-lg:sm:col-span-2"
+        data-testid="product-props">
         <div
           v-for="prop in product.props"
           class="relative rounded-lg border border-gray-300 bg-gray-200 px-3 py-1.5">
@@ -153,26 +161,32 @@ const priceMultiplier = ref(1)
         </div>
       </div>
     </div>
-    <LazyHelperInfoBlock
-      hydrate-on-idle
-      :description="product.description"
-      :characteristics="product.characteristics"
-      :documentation="product.docs"
-      showDelivery />
-    <LazyHelperAlarm hydrate-never>
-      <template #title>
-        Уважаемые покупатели, представленный ассортимент и стоимость продукции не являются окончательными!
-      </template>
-      <p>
-        Уточняйте наличие и условия предоставления скидок у наших специалистов. Возможен индивидуальный подбор аналогов
-        и комплектация заказа под Ваши задачи.
-      </p>
-      <p>Сотрудничая с нами, Вы получаете гарантию качества и точность исполнения заказа!</p>
-    </LazyHelperAlarm>
-    <LazyProductsSlider
-      hydrate-on-visible
-      v-if="product.relatedProds.length"
-      :products="product.relatedProds"
-      label="Похожие товары" />
+    <div class="hydration-boundary">
+      <LazyHelperInfoBlock
+        hydrate-on-idle
+        :description="product.description"
+        :characteristics="product.characteristics"
+        :documentation="product.docs"
+        showDelivery />
+    </div>
+    <div class="hydration-boundary">
+      <LazyHelperAlarm hydrate-never>
+        <template #title>
+          Уважаемые покупатели, представленный ассортимент и стоимость продукции не являются окончательными!
+        </template>
+        <p>
+          Уточняйте наличие и условия предоставления скидок у наших специалистов. Возможен индивидуальный подбор
+          аналогов и комплектация заказа под Ваши задачи.
+        </p>
+        <p>Сотрудничая с нами, Вы получаете гарантию качества и точность исполнения заказа!</p>
+      </LazyHelperAlarm>
+    </div>
+    <div class="hydration-boundary">
+      <LazyProductsSlider
+        hydrate-on-visible
+        v-if="product.relatedProds.length"
+        :products="product.relatedProds"
+        label="Похожие товары" />
+    </div>
   </div>
 </template>

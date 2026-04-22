@@ -6,6 +6,14 @@
 - remove update date from sitemap
 - add users tracking from server to the client (and compare the data)
 - add routing history to check requests to /api/... from spa side (added richError.historyLength and richError.referrer)
+- 20 april: поймал непонятную ошибку на продакшене:
+data : error : true message : "Server Error" statusCode : 500 statusMessage : "Server Error" url : "http://localhost/api/getData/product/normalemer-bv-5045-izmeron" [[Prototype]] : Object 
+error : "true" message : "[GET] \"/api/getData/product/normalemer-bv-5045-izmeron\": 500 Server Error" status : 500 statusCode : 500 statusMessage : "Server Error" statusText : "Server Error" url : "/product/normalemer-bv-5045-izmeron"
+Непонятно, с чего вдруг он решил обращаться к локалхост (браузер подсунул кэшированный .js файл?). Ситуация усугубляется еще и тем, что данная ошибка не была залогирована. Скорее всего логировать пытался тоже через локалхост (но почему тогда не было еще одной ошибки в консоле о неудачном логировании?). Возможное решение: попробовать жестко логировать все ошибки через продакшн-сервер: $fetch('https://chelinstument.ru/api/log/setError',... но это потребует как минимум изменить CORS политику.
+Что сделал 20.04:
+- добавил сырую ошибку в лог (наблюдать за data)
+- productWrapper, catalogWrapper - added <div class="hydration-boundary"> to prevent Failed to execute 'insertBefore' error
+- added source maps for prod build (use resolve-stack.js to decode)
 
 ## Log
 - parse data
@@ -234,6 +242,10 @@ upd 07.11.25 Наверно дело не в островах, смотри ко
 Результаты смотреть либо на странице /admin/console (если залогинин как админ), либо в текстовом файле cv.log.
 Локально лежит в корне проекта (D:\pr_gt\projects\site\cv.log)
 Удаленно на Бегете в /chelinstrument.ru/public_html/test/cv.log . Для слежения удобно использовать putty: tail -f chelinstrument.ru/public_html/test/cv.log // путь неверный, изменить
+
+## Hydration issues
+
+У Nuxt UI есть проблема с назначением id на динамические элементы, при использовании Lazy- компонентов и отложенной гидрации элементы активируются в разном порядке на сервере и клиенте, из-за чего useID выдает им разные ид (imho, не нашел прямого подтверждения). ~~Добавил на URadioGroup и HelperInfoBlock директивы data-allow-mismatch.~~(не работает)
 
 # Robots
 

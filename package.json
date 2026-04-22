@@ -12,6 +12,7 @@
     "redeploy": "node deploy.js --redeploy",
     "serv": "npm run build && npm run deploy",
     "generate": "nuxt generate",
+    "prev on 3001": "set \"PORT=3001\" && node .output/server/index.mjs",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "prod_build": "set \"NUXT_BUILD_MODE=prod\" && nuxt build",
@@ -44,6 +45,7 @@
     "minisearch": "^7.2.0",
     "mysql2": "^3.11.3",
     "nodemailer": "^6.9.1",
-    "sharp": "^0.34.4"
+    "sharp": "^0.34.4",
+    "source-map": "^0.7.6"
   }
 }

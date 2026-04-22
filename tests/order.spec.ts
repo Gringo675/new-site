@@ -53,6 +53,9 @@ test('test cart and order', async ({ page, browserName }) => {
   // send email only in chromium to avoid spamming
   if (browserName === 'chromium') {
     await page.getByRole('button', { name: 'Оформить заказ' }).click()
+    await expect(page.getByText('Для продолжения нам необходимо получить Ваше согласие')).toBeVisible()
+    await page.getByRole('checkbox', { name: 'Подтверждаю Согласие на сбор и обработку моих персональных данных в соответствии' }).click()
+    await page.getByRole('button', { name: 'Оформить заказ' }).click()
     await expect(page.getByRole('heading', { name: /Заказ № \d+ успешно создан!/ })).toBeVisible()
   }
 })

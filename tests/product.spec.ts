@@ -19,24 +19,19 @@ test('test product page', async ({ page }) => {
   // check price
   await expect(page.getByText(formatPrice(productDataFromApi.price), { exact: true })).toBeVisible()
   // check first image
-  await expect(
-    page.locator(`img[src="/static/img/products/w_300/${productDataFromApi.images[0]}.jpg"]`),
-  ).toBeInViewport()
+  await expect(page.locator(`img[src="/static/img/products/w_300/${productDataFromApi.images[0]}.jpg"]`)).toBeInViewport()
   // check thumbnails
   for (const ind in productDataFromApi.images) {
-    await expect(
-      page.locator(`button:has(img[src="/static/img/products/w_64/${productDataFromApi.images[ind]}.jpg"])`),
-    ).toBeVisible()
+    await expect(page.locator(`button:has(img[src="/static/img/products/w_64/${productDataFromApi.images[ind]}.jpg"])`)).toBeVisible()
   }
   // check brand
   await expect(page.locator(`img[src="/static/img/brands/${productDataFromApi.brand.image}"]`)).toBeVisible()
-  await expect(
-    page.getByText(`${productDataFromApi.brand.shortName} (${productDataFromApi.brand.fullName})`, { exact: true }),
-  ).toBeVisible()
+  await expect(page.getByText(`${productDataFromApi.brand.shortName} (${productDataFromApi.brand.fullName})`, { exact: true })).toBeVisible()
   //check props
+  const productProps = page.getByTestId('product-props')
   for (const prop of productDataFromApi.props) {
-    await expect(page.getByText(prop.name, { exact: true })).toBeVisible()
-    await expect(page.getByText(prop.val, { exact: true })).toBeVisible()
+    await expect(productProps.getByText(prop.name, { exact: true })).toBeVisible()
+    await expect(productProps.getByText(prop.val, { exact: true })).toBeVisible()
   }
 
   // check cart
@@ -58,17 +53,11 @@ test('test product page', async ({ page }) => {
 
   // check images viewer (after hydration)
   await page.getByRole('button', { name: 'Следующее' }).click()
-  await expect(
-    page.locator(`img[src="/static/img/products/w_300/${productDataFromApi.images[1]}.jpg"]`),
-  ).toBeInViewport()
+  await expect(page.locator(`img[src="/static/img/products/w_300/${productDataFromApi.images[1]}.jpg"]`)).toBeInViewport()
   await page.getByRole('button', { name: 'Предыдущее' }).click()
-  await expect(
-    page.locator(`img[src="/static/img/products/w_300/${productDataFromApi.images[0]}.jpg"]`),
-  ).toBeInViewport()
+  await expect(page.locator(`img[src="/static/img/products/w_300/${productDataFromApi.images[0]}.jpg"]`)).toBeInViewport()
   await page.locator('#img_0').click()
-  await expect(
-    page.locator(`img[src="/static/img/products/w_max/${productDataFromApi.images[0]}.jpg"]`),
-  ).toBeInViewport()
+  await expect(page.locator(`img[src="/static/img/products/w_max/${productDataFromApi.images[0]}.jpg"]`)).toBeInViewport()
   await page.getByRole('button', { name: 'Закрыть' }).click()
 
   // better accept cookies before proceeding
@@ -83,8 +72,7 @@ test('test product page', async ({ page }) => {
 
   // Characteristics tab
   await page.getByRole('tab', { name: 'Характеристики' }).click()
-  if (productDataFromApi.characteristics?.length)
-    await expect(page.getByText(stripHtml(productDataFromApi.characteristics).slice(0, 20))).toBeVisible()
+  if (productDataFromApi.characteristics?.length) await expect(page.getByText(stripHtml(productDataFromApi.characteristics).slice(0, 20))).toBeVisible()
 
   // Documentation tab
   await page.getByRole('tab', { name: 'Документация' }).click()
@@ -121,21 +109,14 @@ test('test product page', async ({ page }) => {
     await page.getByRole('button', { name: 'Close' }).and(page.locator('.z-10')).click()
   }
   for (const rst of productDataFromApi.docs.rstr) {
-    await expect(
-      page.getByText(
-        `Госреестр №${rst.number} ${rst.name}${rst.type_si?.length > 1 ? ` тип - ${rst.type_si}` : ''}${
-          rst.brand?.length > 1 ? ` Изготовитель: ${rst.brand}.` : ''
-        }${rst.date?.length > 1 ? ` Срок свидетельства: ${parseIsoDate(rst.date)}` : ''}`,
-        { exact: true },
-      ),
-    ).toBeVisible()
-    await expect(page.getByRole('button', { name: 'Открыть свидетельство об утверждении типа' })).toBeVisible()
-    await expect(page.getByRole('button', { name: 'Открыть описание типа' })).toBeVisible()
-    await expect(page.getByRole('button', { name: 'Открыть методику поверки' })).toBeVisible()
+    await expect(page.getByText(`Госреестр №${rst.number} ${rst.name}${rst.type_si?.length > 1 ? ` тип - ${rst.type_si}` : ''}${rst.brand?.length > 1 ? ` Изготовитель: ${rst.brand}.` : ''}${rst.date?.length > 1 ? ` Срок свидетельства: ${parseIsoDate(rst.date)}` : ''}`, { exact: true })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Открыть свидетельство об утверждении типа' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Открыть описание типа' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Открыть методику поверки' })).toBeVisible()
   }
   for (const pas of productDataFromApi.docs.pasp) {
     await expect(page.getByText(pas.name, { exact: true })).toBeVisible()
-    await expect(page.getByRole('button', { name: 'Открыть паспорт' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Открыть паспорт' })).toBeVisible()
   }
 
   // Delivery info tab
@@ -152,9 +133,7 @@ test('test product page', async ({ page }) => {
   // Wait for the response and parse it
   const response = await responsePromise
   const deliveryData = await response.json()
-  await expect(
-    page.getByRole('heading', { name: 'Расчет стоимости доставки до Рязань г (Рязанская обл.)*' }),
-  ).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Расчет стоимости доставки до Рязань г (Рязанская обл.)*' })).toBeVisible()
   // Assert that the "Самовывоз с ПВЗ" option is visible with the correct data
   const expectedPickupText = `От ${formatPrice(deliveryData.term_price)}, срок от ${deliveryData.term_days} дн.`
   await expect(page.getByText(expectedPickupText, { exact: true })).toBeVisible()

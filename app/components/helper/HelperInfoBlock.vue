@@ -25,8 +25,7 @@ export interface TabsItem {
 
 type TabsVariants = VariantProps<typeof tabs>
 
-export interface TabsProps<T extends TabsItem = TabsItem>
-  extends Pick<TabsRootProps<string | number>, 'defaultValue' | 'modelValue' | 'activationMode' | 'unmountOnHide'> {
+export interface TabsProps<T extends TabsItem = TabsItem> extends Pick<TabsRootProps<string | number>, 'defaultValue' | 'modelValue' | 'activationMode' | 'unmountOnHide'> {
   as?: any
   items?: T[]
   title?: string
@@ -118,13 +117,13 @@ if (props.characteristics)
     content: 'Характеристики',
     html: `<div class="characteristics">${props.characteristics}</div>`,
   })
-if (Object.keys(props.documentation).length > 0)
-  items.push({ label: 'Документация', icon: 'i-heroicons-document-text', content: 'Документация' })
+if (Object.keys(props.documentation).length > 0) items.push({ label: 'Документация', icon: 'i-heroicons-document-text', content: 'Документация' })
 if (props.showDelivery)
   items.push({
     label: 'Способы получения',
     icon: 'i-heroicons-truck',
     content: 'Способы получения',
+    value: 'delivery',
   })
 
 const contentRef = useTemplateRef('contentRef')
@@ -141,13 +140,19 @@ onMounted(() => {
 onUnmounted(() => {
   observer.disconnect()
 })
+
+const isDeliveryVisible = ref(false)
+const onTabChange = tabIndex => {
+  expand.value = true
+  tabIndex === 'delivery' && (isDeliveryVisible.value = true)
+}
 </script>
 
 <template>
   <TabsRoot
     class="my-4"
     v-bind="rootProps"
-    @update:modelValue="expand = true">
+    @update:modelValue="onTabChange">
     <div class="flex w-full items-end max-lg:flex-wrap">
       <div
         v-if="title"
@@ -157,8 +162,7 @@ onUnmounted(() => {
       <TabsList
         class="relative flex rounded-t-lg bg-stone-800 p-1 pb-2 max-lg:w-full"
         :class="title ? 'w-max' : 'w-full'">
-        <TabsIndicator
-          class="TabsIndicator bg-primary absolute top-1 bottom-2 left-0 w-(--reka-tabs-indicator-size) translate-x-(--reka-tabs-indicator-position) rounded-md transition-[translate,width] duration-400" />
+        <TabsIndicator class="TabsIndicator bg-primary absolute top-1 bottom-2 left-0 w-(--reka-tabs-indicator-size) translate-x-(--reka-tabs-indicator-position) rounded-md transition-[translate,width] duration-400" />
 
         <TabsTrigger
           v-for="(item, index) of items"
@@ -203,7 +207,8 @@ onUnmounted(() => {
             :docs="documentation" />
           <LazyHelperDeliveryBlock
             hydrate-on-visible
-            v-else-if="item.label === 'Способы получения'" />
+            v-else-if="item.label === 'Способы получения'"
+            :visible="isDeliveryVisible" />
           <div v-else>{{ item.content }}</div>
         </TabsContent>
       </div>

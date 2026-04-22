@@ -11,6 +11,7 @@ const config = useRuntimeConfig()
 
 const userAgent = import.meta.client ? navigator.userAgent : useRequestHeader('user-agent')
 const richError = {
+  rawError: props.error,
   statusCode: props.error.statusCode || props.error.code || props.error.data?.statusCode || props.error.data?.code || 0,
   statusMessage:
     props.error.statusMessage ||

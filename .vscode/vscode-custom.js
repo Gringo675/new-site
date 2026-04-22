@@ -1,20 +1,21 @@
-console.log(`from custom js`)
+// console.log(`from custom js`)
 const TITLE_TARGET_SELECTOR = '#workbench\\.parts\\.auxiliarybar h2'
 const TABS_TARGET_SELECTOR =
   '#workbench\\.parts\\.auxiliarybar .monaco-split-view2.horizontal .split-view-view.visible:has(.tabs-container)'
 const TERMINAL_TARGET_SELECTOR =
   '#workbench\\.parts\\.auxiliarybar .monaco-split-view2.horizontal .split-view-view.visible:has(.terminal-outer-container)'
 
+let attemptCount = 0
+const maxAttempts = 10
+
 // 1. This function handles the actual logic
 function initializeCustomTitle(element) {
   console.log('Target element found! Attaching direct listener...')
 
-  // Now we attach the listener DIRECTLY to the h2, not the body
   element.addEventListener('click', () => {
-    console.log('Custom title clicked!')
     const terminal = document.querySelector(TERMINAL_TARGET_SELECTOR)
     if (terminal) {
-      console.log('Terminal found! Set style:"left: 0, width: 100%"')
+      // console.log('Terminal found! Set style:"left: 0, width: 100%"')
       terminal.style.left = '0'
       terminal.style.width = '100%'
     }
@@ -23,14 +24,14 @@ function initializeCustomTitle(element) {
 
 // 2. Create the observer to watch for the element's appearance
 const observer = new MutationObserver((mutations, obs) => {
-  console.log(`from observer`)
+  // console.log(`from observer`)
   const element = document.querySelector(TITLE_TARGET_SELECTOR)
 
   if (element) {
     initializeCustomTitle(element)
-    // Optional: Stop observing once found to save CPU
     obs.disconnect()
   }
+  if (++attemptCount === maxAttempts) obs.disconnect()
 })
 
 // 3. Start observing the document body for changes in the child tree

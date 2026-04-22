@@ -5,7 +5,8 @@
   "singleAttributePerLine": true,
   "bracketSameLine": true,
   "arrowParens": "avoid",
-  "printWidth": 120,
+  "printWidth": 1000,
+  "htmlWhitespaceSensitivity": "ignore",
   "overrides": [
     {
       "files": "*.md",
