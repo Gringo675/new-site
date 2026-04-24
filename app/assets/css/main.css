@@ -64,13 +64,7 @@
     font-family: 'Bad Script';
   }
   .bg-black-striped {
-    background: repeating-linear-gradient(
-      45deg,
-      var(--color-stone-900),
-      var(--color-stone-900) 30px,
-      var(--color-stone-800) 30px,
-      var(--color-stone-800) 60px
-    );
+    background: repeating-linear-gradient(45deg, var(--color-stone-900), var(--color-stone-900) 30px, var(--color-stone-800) 30px, var(--color-stone-800) 60px);
   }
   header {
     --header-hidden-block: 120px;
@@ -281,20 +275,25 @@
 
 /*Все что ниже всегда будет в итоговом css-файле*/
 /* todo: оставить только те стили, которые не указаны явно в коде (transition), остальное перенести в @layer utilities */
-/* Стили для таблиц в характеристиках, со старого сайта */
-.characteristics table {
-  width: 80%;
-  margin: 15px auto;
-  text-align: center;
-}
-.characteristics table td {
-  padding: 5px;
-  border: 1px solid #d5d5c8;
-}
-.characteristics table tr:first-child,
-.table-header {
-  background: #999 0 0;
-  color: #fff;
+/* Стили для блока характеристик */
+.characteristics {
+  table {
+    width: 80%;
+    margin: 15px auto;
+    text-align: center;
+  }
+  table td {
+    padding: 5px;
+    border: 1px solid #d5d5c8;
+  }
+  table tr:first-child,
+  .table-header {
+    background: #999 0 0;
+    color: #fff;
+  }
+  .doc-viewer-link {
+    @apply text-indigo-500 underline-offset-4 hover:underline;
+  }
 }
 
 .transition-fade-enter-active,

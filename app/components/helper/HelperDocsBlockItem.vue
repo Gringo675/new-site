@@ -1,5 +1,5 @@
 <script setup>
-//
+// The parent HelperInfoBlock handles clicks
 const { item } = defineProps({
   item: Object,
 })
@@ -14,10 +14,10 @@ const { item } = defineProps({
         :to="button.url"
         :external="true"
         :label="button.label"
+        :data-title="item.title"
         variant="outline"
         truncate
-        class="max-w-full"
-        @click.prevent="showDocViewer({ title: item.title, url: button.url })" />
+        class="doc-viewer-link max-w-full" />
     </div>
   </div>
 </template>

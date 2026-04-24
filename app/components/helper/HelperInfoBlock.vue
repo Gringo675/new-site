@@ -109,13 +109,15 @@ if (props.description)
     icon: 'i-heroicons-information-circle',
     content: 'Описание',
     html: props.description,
+    class: 'description',
   })
 if (props.characteristics)
   items.push({
     label: 'Характеристики',
     icon: 'i-heroicons-chart-bar-square',
     content: 'Характеристики',
-    html: `<div class="characteristics">${props.characteristics}</div>`,
+    html: props.characteristics,
+    class: 'characteristics',
   })
 if (Object.keys(props.documentation).length > 0) items.push({ label: 'Документация', icon: 'i-heroicons-document-text', content: 'Документация' })
 if (props.showDelivery)
@@ -145,6 +147,15 @@ const isDeliveryVisible = ref(false)
 const onTabChange = tabIndex => {
   expand.value = true
   tabIndex === 'delivery' && (isDeliveryVisible.value = true)
+}
+
+const handleDocClick = ev => {
+  const link = ev.target.closest('.doc-viewer-link')
+  if (!link) return
+  ev.preventDefault()
+  const url = link.getAttribute('href')
+  const title = link.getAttribute('data-title') || link.textContent
+  showDocViewer({ title, url })
 }
 </script>
 
@@ -192,7 +203,8 @@ const onTabChange = tabIndex => {
       :style="{ height: containerHeight }">
       <div
         class="flow-root"
-        ref="contentRef">
+        ref="contentRef"
+        @click="handleDocClick">
         <TabsContent
           v-for="(item, index) of items"
           :key="index"
@@ -200,6 +212,7 @@ const onTabChange = tabIndex => {
           class="">
           <div
             v-if="item.html"
+            :class="item.class"
             v-html="item.html"></div>
           <LazyHelperDocsBlock
             hydrate-on-visible

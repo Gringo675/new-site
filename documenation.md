@@ -1,6 +1,7 @@
 ## chord
 - footer links hydration mismatch 'cause url changed before footer resolve
 - ssr doesn't generate characteristics and docs for the product's pages
+- improve dbReq(query, [par1, par2]) (string interpolation under the hood?)
 
 ## robots issue
 - remove update date from sitemap
