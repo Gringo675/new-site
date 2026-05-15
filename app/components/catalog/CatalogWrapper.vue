@@ -49,16 +49,12 @@ function handleFilter(filterFromURL = false) {
   // отбираем по фильтру товары
   activeProducts.length = 0
   products.forEach(product => {
-    const isProductMatch = activeFilter.every(fGroup =>
-      fGroup.length ? fGroup.some(activeVal => product.props.includes(activeVal)) : true,
-    )
+    const isProductMatch = activeFilter.every(fGroup => (fGroup.length ? fGroup.some(activeVal => product.props.includes(activeVal)) : true))
     if (isProductMatch) activeProducts.push(product)
   })
   activeProductsIndx.value = []
   products.forEach((product, i) => {
-    const isProductMatch = activeFilter.every(fGroup =>
-      fGroup.length ? fGroup.some(activeVal => product.props.includes(activeVal)) : true,
-    )
+    const isProductMatch = activeFilter.every(fGroup => (fGroup.length ? fGroup.some(activeVal => product.props.includes(activeVal)) : true))
     if (isProductMatch) activeProductsIndx.value.push(i)
   })
   // Вычисляем неактивные пункты в фильтре.
@@ -68,19 +64,14 @@ function handleFilter(filterFromURL = false) {
     fGroup.values.forEach(value => {
       const localFilter = activeFilter.map(group => [...group]) // делаем копию
       localFilter[i] = [value.val] // проверяемое значение должно быть одно в группе
-      value.disabled = !products.some(product =>
-        localFilter.every(fGroup =>
-          fGroup.length ? fGroup.some(activeVal => product.props.includes(activeVal)) : true,
-        ),
-      )
+      value.disabled = !products.some(product => localFilter.every(fGroup => (fGroup.length ? fGroup.some(activeVal => product.props.includes(activeVal)) : true)))
     })
   })
   if (filterFromURL) return
   // засовываем фильтр в url
   addFilterToURL()
   // показываем уведомление
-  if (activeProductsIndx.value.length > 0)
-    showNotice({ title: `Подобрано товаров - ${activeProductsIndx.value.length}`, type: 'success' })
+  if (activeProductsIndx.value.length > 0) showNotice({ title: `Подобрано товаров - ${activeProductsIndx.value.length}`, type: 'success' })
   else
     showNotice({
       title: 'Не найдено подходящих товаров.',
@@ -103,41 +94,31 @@ function addFilterToURL() {
 
 <template>
   <div class="">
-    <div class="hydration-boundary">
-      <LazyBreadCrumbsWrapper
-        hydrate-on-idle
-        :catId="catData.id" />
-    </div>
-    <div class="hydration-boundary">
-      <LazyHelperInfoBlock
-        :title="catData.name"
-        :image="catData.image"
-        :description="catData.description"
-        :characteristics="catData.characteristics"
-        :documentation="catData.docs" />
-    </div>
+    <LazyBreadCrumbsWrapper
+      hydrate-on-idle
+      :catId="catData.id" />
+    <LazyHelperInfoBlock
+      :title="catData.name"
+      :image="catData.image"
+      :description="catData.description"
+      :characteristics="catData.characteristics"
+      :documentation="catData.docs" />
     <HelperAsideGrid>
       <template #aside>
-        <div class="hydration-boundary">
-          <LazyCatalogFilter
-            hydrate-on-idle
-            v-if="filter.length"
-            :filter="filter"
-            @filterChanged="handleFilter"
-            @resetFilter="initializeFilter(true)" />
-        </div>
-        <div class="hydration-boundary">
-          <LazyCatalogBanner
-            hydrate-on-visible
-            class="max-md:hidden" />
-        </div>
-      </template>
-      <div class="hydration-boundary">
-        <LazyCatalogProductsWrapper
+        <LazyCatalogFilter
           hydrate-on-idle
-          :products
-          :activeProductsIndx />
-      </div>
+          v-if="filter.length"
+          :filter="filter"
+          @filterChanged="handleFilter"
+          @resetFilter="initializeFilter(true)" />
+        <LazyCatalogBanner
+          hydrate-on-visible
+          class="max-md:hidden" />
+      </template>
+      <LazyCatalogProductsWrapper
+        hydrate-on-idle
+        :products
+        :activeProductsIndx />
     </HelperAsideGrid>
   </div>
 </template>

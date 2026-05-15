@@ -1,6 +1,14 @@
 export const usePrpsGroupsMap = catId => {
-  //
+  // the order of groups should match the group_id in i_properties table, i.e. p0_brand has group_id=0, p1_type has group_id=1 and so on
+  // disabled: true means that this group doesn't include in filter on category pages
   const map = new Map([
+    [
+      'p0_brand',
+      {
+        name: 'Производитель',
+        ordering: 80,
+      },
+    ],
     [
       'p1_type',
       {
@@ -48,13 +56,6 @@ export const usePrpsGroupsMap = catId => {
       {
         name: 'Особенности',
         ordering: 70,
-      },
-    ],
-    [
-      'p0_brand',
-      {
-        name: 'Производитель',
-        ordering: 80,
       },
     ],
     [

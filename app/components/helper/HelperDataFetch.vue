@@ -1,4 +1,5 @@
 <script setup>
+//
 const props = defineProps({
   url: {
     type: String,
@@ -44,12 +45,14 @@ watch(status, statusValue => {
 </script>
 
 <template>
-  <Transition
-    name="page"
-    mode="out-in">
-    <HelperLoader v-if="status !== 'success'" />
-    <div v-else>
+  <div class="dataFetchWrapper">
+    <HelperLoader
+      v-if="status !== 'success'"
+      key="loader" />
+    <div
+      v-else
+      key="content">
       <slot :data="data">some fallback</slot>
     </div>
-  </Transition>
+  </div>
 </template>

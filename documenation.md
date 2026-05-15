@@ -1,19 +1,11 @@
 ## chord
 - footer links hydration mismatch 'cause url changed before footer resolve
-- ssr doesn't generate characteristics and docs for the product's pages
 - improve dbReq(query, [par1, par2]) (string interpolation under the hood?)
 
 ## robots issue
 - remove update date from sitemap
 - add users tracking from server to the client (and compare the data)
 - add routing history to check requests to /api/... from spa side (added richError.historyLength and richError.referrer)
-- 20 april: поймал непонятную ошибку на продакшене:
-data : error : true message : "Server Error" statusCode : 500 statusMessage : "Server Error" url : "http://localhost/api/getData/product/normalemer-bv-5045-izmeron" [[Prototype]] : Object 
-error : "true" message : "[GET] \"/api/getData/product/normalemer-bv-5045-izmeron\": 500 Server Error" status : 500 statusCode : 500 statusMessage : "Server Error" statusText : "Server Error" url : "/product/normalemer-bv-5045-izmeron"
-Непонятно, с чего вдруг он решил обращаться к локалхост (браузер подсунул кэшированный .js файл?). Ситуация усугубляется еще и тем, что данная ошибка не была залогирована. Скорее всего логировать пытался тоже через локалхост (но почему тогда не было еще одной ошибки в консоле о неудачном логировании?). Возможное решение: попробовать жестко логировать все ошибки через продакшн-сервер: $fetch('https://chelinstument.ru/api/log/setError',... но это потребует как минимум изменить CORS политику.
-Что сделал 20.04:
-- добавил сырую ошибку в лог (наблюдать за data)
-- productWrapper, catalogWrapper - added <div class="hydration-boundary"> to prevent Failed to execute 'insertBefore' error
 - added source maps for prod build (use resolve-stack.js to decode)
 
 ## Log

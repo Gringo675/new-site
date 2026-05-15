@@ -57,13 +57,11 @@ const priceMultiplier = ref(1)
 
 <template>
   <div class="">
-    <div class="hydration-boundary">
-      <LazyBreadCrumbsWrapper
-        hydrate-on-idle
-        :catId="product.category_id"
-        :productCats="subCats"
-        :productName="product.name" />
-    </div>
+    <LazyBreadCrumbsWrapper
+      hydrate-on-idle
+      :catId="product.category_id"
+      :productCats="subCats"
+      :productName="product.name" />
     <h1 class="font-accent my-4 text-2xl leading-7 max-xl:text-xl max-xl:leading-6">{{ product.name }}</h1>
     <div class="flex items-center gap-2">
       <UIcon
@@ -78,12 +76,10 @@ const priceMultiplier = ref(1)
     <div class="my-1 border-b border-gray-200"></div>
     <div class="mb-6 grid grid-cols-3 grid-rows-[auto_1fr] gap-4 max-lg:grid-cols-2 max-sm:grid-cols-1">
       <div class="sm:row-span-2">
-        <div class="hydration-boundary">
-          <LazyImageViewerProduct
-            hydrate-on-idle
-            :images="product.images"
-            :name="product.name" />
-        </div>
+        <LazyImageViewerProduct
+          hydrate-on-idle
+          :images="product.images"
+          :name="product.name" />
       </div>
       <div class="flex items-start gap-2 p-2">
         <img
@@ -91,15 +87,12 @@ const priceMultiplier = ref(1)
           width="80"
           height="40"
           alt="brand" />
-        <div class="grow text-sm leading-tight font-semibold">
-          {{ product.brand.shortName }} ({{ product.brand.fullName }})
-        </div>
+        <div class="grow text-sm leading-tight font-semibold">{{ product.brand.shortName }} ({{ product.brand.fullName }})</div>
       </div>
       <div class="lg:row-span-2">
         <div class="flex flex-wrap items-center justify-center gap-4">
-          <div
-            class="text-primary relative my-5 shrink-0 grow-0 rounded-2xl bg-slate-200 px-4 py-2 text-2xl leading-none whitespace-nowrap">
-            <span class=""> {{ formatPrice(product.price * priceMultiplier) }}</span>
+          <div class="text-primary relative my-5 shrink-0 grow-0 rounded-2xl bg-slate-200 px-4 py-2 text-2xl leading-none whitespace-nowrap">
+            <span class="">{{ formatPrice(product.price * priceMultiplier) }}</span>
             <div
               v-if="product.priceRegular"
               class="text-primary-700 absolute -top-4 right-3 rounded-full bg-linear-to-b from-fuchsia-300 to-fuchsia-200 px-2 py-1 text-sm leading-none line-through">
@@ -111,11 +104,9 @@ const priceMultiplier = ref(1)
             :items="priceOptions" />
 
           <div class="buttons flex w-70 flex-col gap-5">
-            <div class="hydration-boundary">
-              <LazyProductCartButton
-                hydrate-on-idle
-                :prod="product" />
-            </div>
+            <LazyProductCartButton
+              hydrate-on-idle
+              :prod="product" />
             <UButton
               label="Быстрый заказ"
               variant="outline"
@@ -152,41 +143,30 @@ const priceMultiplier = ref(1)
         data-testid="product-props">
         <div
           v-for="prop in product.props"
+          :key="prop.name"
           class="relative rounded-lg border border-gray-300 bg-gray-200 px-3 py-1.5">
-          <div
-            class="absolute -top-3 right-8 rounded-full border border-gray-300 bg-gray-200 px-2.5 py-1 text-sm leading-none after:absolute after:-inset-x-px after:top-1/2 after:-bottom-px after:bg-gray-200">
+          <div class="absolute -top-3 right-8 rounded-full border border-gray-300 bg-gray-200 px-2.5 py-1 text-sm leading-none after:absolute after:-inset-x-px after:top-1/2 after:-bottom-px after:bg-gray-200">
             <span class="relative -top-0.5 z-10 font-semibold">{{ prop.name }}</span>
           </div>
           <div class="relative z-10 leading-tight">{{ prop.val }}</div>
         </div>
       </div>
     </div>
-    <div class="hydration-boundary">
-      <LazyHelperInfoBlock
-        hydrate-on-idle
-        :description="product.description"
-        :characteristics="product.characteristics"
-        :documentation="product.docs"
-        showDelivery />
-    </div>
-    <div class="hydration-boundary">
-      <LazyHelperAlarm hydrate-never>
-        <template #title>
-          Уважаемые покупатели, представленный ассортимент и стоимость продукции не являются окончательными!
-        </template>
-        <p>
-          Уточняйте наличие и условия предоставления скидок у наших специалистов. Возможен индивидуальный подбор
-          аналогов и комплектация заказа под Ваши задачи.
-        </p>
-        <p>Сотрудничая с нами, Вы получаете гарантию качества и точность исполнения заказа!</p>
-      </LazyHelperAlarm>
-    </div>
-    <div class="hydration-boundary">
-      <LazyProductsSlider
-        hydrate-on-visible
-        v-if="product.relatedProds.length"
-        :products="product.relatedProds"
-        label="Похожие товары" />
-    </div>
+    <LazyHelperInfoBlock
+      hydrate-on-idle
+      :description="product.description"
+      :characteristics="product.characteristics"
+      :documentation="product.docs"
+      showDelivery />
+    <LazyHelperAlarm hydrate-never>
+      <template #title>Уважаемые покупатели, представленный ассортимент и стоимость продукции не являются окончательными!</template>
+      <p>Уточняйте наличие и условия предоставления скидок у наших специалистов. Возможен индивидуальный подбор аналогов и комплектация заказа под Ваши задачи.</p>
+      <p>Сотрудничая с нами, Вы получаете гарантию качества и точность исполнения заказа!</p>
+    </LazyHelperAlarm>
+    <LazyProductsSlider
+      hydrate-on-visible
+      v-if="product.relatedProds.length"
+      :products="product.relatedProds"
+      label="Похожие товары" />
   </div>
 </template>

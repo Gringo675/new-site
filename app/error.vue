@@ -10,27 +10,27 @@ const user = useUser()
 const config = useRuntimeConfig()
 
 const userAgent = import.meta.client ? navigator.userAgent : useRequestHeader('user-agent')
+
+const detectExternalDomManipulation = () => {
+  if (import.meta.server) return false
+  // Google Translate often wraps text in <font> tags or adds specific classes
+  return !!document.querySelector('font, .goog-te-menu-value, .goog-te-banner-frame, #goog-gt-tt')
+}
+
 const richError = {
   rawError: props.error,
   statusCode: props.error.statusCode || props.error.code || props.error.data?.statusCode || props.error.data?.code || 0,
-  statusMessage:
-    props.error.statusMessage ||
-    props.error.message ||
-    props.error.data?.statusMessage ||
-    props.error.data?.message ||
-    'No message',
+  statusMessage: props.error.statusMessage || props.error.message || props.error.data?.statusMessage || props.error.data?.message || 'No message',
   url: props.error.url || router.currentRoute.value.fullPath, // useRoute returns incorrect res.
   onServer: import.meta.server,
   userAgent,
   stack: props.error.stack || props.error.data?.stack || 'No stack',
   isBot: useBotDetector(userAgent),
+  externalManipulation: detectExternalDomManipulation(),
+  routeParams: router.currentRoute.value.params,
+  routeQuery: router.currentRoute.value.query,
 }
-richError.isChunkError =
-  !richError.onServer &&
-  (richError.statusMessage.toLowerCase().includes('failed to fetch dynamically imported module') ||
-    richError.statusMessage.toLowerCase().includes('error loading dynamically imported module') ||
-    richError.statusMessage.toLowerCase().includes('importing a module script failed') ||
-    richError.statusMessage.startsWith(`Failed to execute 'insertBefore' on 'Node'`))
+richError.isChunkError = !richError.onServer && (richError.statusMessage.toLowerCase().includes('failed to fetch dynamically imported module') || richError.statusMessage.toLowerCase().includes('error loading dynamically imported module') || richError.statusMessage.toLowerCase().includes('importing a module script failed') || richError.statusMessage.startsWith(`Failed to execute 'insertBefore' on 'Node'`))
 
 if (richError.isChunkError) {
   if (richError.isBot) {
@@ -68,6 +68,12 @@ async function setErrorToLog(richError) {
   if (!richError.onServer) {
     richError.historyLength = window.history.length
     richError.referrer = document.referrer
+    // Capture the DOM patch context if it exists
+    if (window.__VUE_INSERT_ERROR_CONTEXT__) {
+      richError.insertErrorContext = window.__VUE_INSERT_ERROR_CONTEXT__
+      // Clear it after capturing to avoid logging the same error multiple times
+      delete window.__VUE_INSERT_ERROR_CONTEXT__
+    }
   }
 
   richError.build = config.public.BUILD
@@ -97,8 +103,7 @@ const toMainPage = () => {
 const displayError = {
   400: {
     title: 'Некорректная ссылка активации',
-    description:
-      'Похоже, вы перешли по некорректной или устаревшей ссылке из письма. Проверьте правильность ссылки или запросите новое письмо для активации аккаунта.',
+    description: 'Похоже, вы перешли по некорректной или устаревшей ссылке из письма. Проверьте правильность ссылки или запросите новое письмо для активации аккаунта.',
     icon: 'i-lucide-link-2-off',
   },
   401: {
@@ -113,8 +118,7 @@ const displayError = {
   },
   404: {
     title: 'Страница не найдена',
-    description:
-      'Запрашиваемая страница не существует или была перемещена. Воспользуйтесь нашим каталогом или поиском для выбора подходящей модели.',
+    description: 'Запрашиваемая страница не существует или была перемещена. Воспользуйтесь нашим каталогом или поиском для выбора подходящей модели.',
     icon: 'i-lucide-file-question',
   },
 }[richError.statusCode] || {
@@ -126,8 +130,7 @@ const displayError = {
 
 <template>
   <HelperApp v-if="!richError.suppressed">
-    <div
-      class="mx-auto my-6 flex w-full max-w-xl flex-col items-center justify-center gap-6 rounded-xl bg-gray-200 p-6 shadow-lg md:my-12">
+    <div class="mx-auto my-6 flex w-full max-w-xl flex-col items-center justify-center gap-6 rounded-xl bg-gray-200 p-6 shadow-lg md:my-12">
       <UIcon
         :name="displayError.icon"
         class="text-error size-20" />

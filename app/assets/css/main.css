@@ -370,6 +370,7 @@
   transition: height 0.3s linear;
 } */
 
+/* I've removed transition in HelperDataFetch.vue 
 .page-enter-from,
 .page-leave-to {
   opacity: 0;
@@ -377,7 +378,7 @@
 .page-enter-active,
 .page-leave-active {
   transition: opacity 0.2s linear;
-}
+} */
 
 .productsWrapperTransition {
   transition-property: transform, opacity, height;

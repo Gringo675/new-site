@@ -8,20 +8,33 @@ export function useProperties() {
     prps.value = await myFetch('/api/admin/getProperties')
   }
 
-  onMounted(updatePrps)
-
   const editPrps = async (pGroup, pGroupName, activeIds, options = {}) => {
     //
     options.multiple = options.multiple ?? false
-    activeIds = Array.isArray(activeIds) ? activeIds : activeIds.split(',')
+
+    if (!Array.isArray(activeIds)) {
+      if (typeof activeIds === 'string') {
+        activeIds = activeIds.split(',').map(id => {
+          const n = Number(id)
+          return isNaN(n) ? id : n
+        })
+      } else {
+        activeIds = activeIds != null && typeof activeIds !== 'object' ? [activeIds] : []
+      }
+    }
 
     const overlay = useOverlay()
     const editor = overlay.create(LazyAdminPrpsEditor, {
       props: { pGroup: prps.value[pGroup], pGroupName, activeIds, options },
     })
-    const response = await editor.open()
-    console.log(`response: ${JSON.stringify(response, null, 2)}`)
+    const edited = await editor.open()
+
+    if (edited?.hasChanges) await updatePrps()
+
+    return edited?.activeIds
   }
+
+  onMounted(updatePrps)
 
   return {
     prps,

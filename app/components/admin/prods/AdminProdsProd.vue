@@ -39,11 +39,7 @@ function getHeader(column, label) {
         },
       }),
       h(UButton, {
-        icon: isSorted
-          ? isSorted === 'asc'
-            ? 'i-lucide-arrow-up-narrow-wide'
-            : 'i-lucide-arrow-down-wide-narrow'
-          : 'i-lucide-arrow-up-down',
+        icon: isSorted ? (isSorted === 'asc' ? 'i-lucide-arrow-up-narrow-wide' : 'i-lucide-arrow-down-wide-narrow') : 'i-lucide-arrow-up-down',
         size: 'xs',
         class: 'p-0',
         color: 'neutral',
@@ -188,7 +184,10 @@ const columns = computed(() => [
     id: pGroup,
     header: ({ column }) => getHeader(column, name),
     label: name,
-    accessorFn: row => row[pGroup]?.name || '',
+    accessorFn: prod => {
+      // prps.value[pGroup].find(p => p.id === prod[pGroup]?.id)?.name || 'Unknown value'
+      return prod[pGroup] > 0 ? prps.value[pGroup].find(p => p.id === prod[pGroup]).name : ''
+    },
     enableColumnPinning: true,
     size: 120,
     meta: {
@@ -234,24 +233,12 @@ const columns = computed(() => [
 async function updateProds() {
   if (!activeCatId.value) return
 
-  prods.value = (await myFetch('/api/admin/cms/products/getProds?cat_id=' + activeCatId.value)).map(prod => {
-    for (const gName of prpsGroupsMap.value.keys()) {
-      prod[gName] =
-        prod[gName] > 0
-          ? {
-              id: prod[gName],
-              name: prps.value[gName].find(p => p.id === prod[gName]).name,
-            }
-          : null
-    }
-
-    return prod
-  })
+  prods.value = await myFetch('/api/admin/cms/products/getProds?cat_id=' + activeCatId.value)
   rowSelection.value = {}
   globalFilter.value = ''
 }
 
-const onTableClick = event => {
+const onTableClick = async event => {
   // calculate clicked element
   const cell = event.target.closest('td')
   if (!cell) return
@@ -277,9 +264,13 @@ const onTableClick = event => {
     // prps clicked
     const pGroup = clicked.columnId
     const pGroupName = prpsGroupsMap.value.get(pGroup)?.name || 'Unknown group'
-    const pId = product[pGroup].id
 
-    editPrps(pGroup, pGroupName, [pId])
+    const newId = (await editPrps(pGroup, pGroupName, product[pGroup]))?.[0] ?? undefined
+    console.log(`newId: ${JSON.stringify(newId, null, 2)}`)
+    if (newId && newId !== product[pGroup].id) {
+      // product[pGroup].name = prps.value[pGroup].find(p => p.id === newId)?.name || 'Unknown value'
+      product[pGroup] = newId
+    }
   }
 }
 </script>

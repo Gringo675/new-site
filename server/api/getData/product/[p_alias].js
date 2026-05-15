@@ -1,6 +1,7 @@
 export default defineEventHandler(async event => {
   // функция по алиасу отдает информацию о товаре
   // const start = Date.now()
+  // await new Promise(resolve => setTimeout(resolve, 10000))
 
   const alias = getRouterParam(event, 'p_alias')
   if (!alias.length) throw createError({ statusCode: 500, statusMessage: 'Incorrect URI!' })
@@ -132,25 +133,7 @@ export default defineEventHandler(async event => {
   }
 
   // удаляем ненужное
-  const toDelete = [
-    'old_id',
-    'brand_eans',
-    'special_price',
-    'old_price',
-    'vendor_price',
-    'vendor_old_price',
-    'verification_price',
-    'stock',
-    'vendor_stock',
-    'hits',
-    'published',
-    'date_modified',
-    'date_price_changed',
-    'date_vendor_price_changed',
-    'standart_ids',
-    'reestr_ids',
-    'pasport_ids',
-  ]
+  const toDelete = ['old_id', 'brand_eans', 'special_price', 'old_price', 'vendor_price', 'vendor_old_price', 'verification_price', 'stock', 'vendor_stock', 'hits', 'published', 'date_modified', 'date_price_changed', 'date_vendor_price_changed', 'standart_ids', 'reestr_ids', 'pasport_ids']
   toDelete.forEach(name => delete productData[name])
   propsGroups.forEach(name => delete productData[name])
 

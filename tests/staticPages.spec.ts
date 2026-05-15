@@ -28,6 +28,8 @@ test('test static pages', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Микрометры' })).toBeVisible()
 
   await page.getByRole('button', { name: 'Принять' }).click() // cookie banner
+  await expect(page.getByRole('button', { name: 'Принять' })).toBeHidden()
+  await page.waitForLoadState('networkidle')
 
   const checkDirectLinks = [
     { link: 'privacy', heading: 'Политика конфиденциальности' },
@@ -36,6 +38,7 @@ test('test static pages', async ({ page }) => {
   ] // replace with real links and headings
   for (const item of checkDirectLinks) {
     await page.goto(new URL(item.link, urlBase).toString())
+    await page.waitForLoadState('networkidle')
     await expect(page.getByRole('heading', { name: item.heading })).toBeVisible()
   }
 })

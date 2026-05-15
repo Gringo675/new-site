@@ -34,6 +34,7 @@ test('test recently viewed products block', async ({ page }) => {
   for (let i = 1; i < 3; i++) {
     const product = productsToVisit[i]
     await page.goto(new URL(product.href, urlBase).toString())
+    await page.waitForLoadState('networkidle')
     await expect(page.getByRole('heading', { name: product.name })).toBeVisible()
     await page.waitForTimeout(4000)
     await expect(viewedBlock).toBeVisible()
