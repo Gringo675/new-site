@@ -2,7 +2,7 @@
 //
 const checkVPS = async () => {
   const res = await $fetch('/api/admin/checkVPS')
-console.log(`checkVPS res: ${JSON.stringify(res, null, 2)}`)
+  console.log(`checkVPS res: ${JSON.stringify(res, null, 2)}`)
 }
 </script>
 

@@ -9,7 +9,7 @@ This error occurs when the Vue renderer attempts to insert a DOM node relative t
 ## Affected Areas
 - **Catalog Pages**: [`app/components/catalog/CatalogWrapper.vue`](app/components/catalog/CatalogWrapper.vue)
 - **Product Pages**: [`app/components/product/ProductWrapper.vue`](app/components/product/ProductWrapper.vue)
-- **Core Component**: [`app/components/helper/HelperDataFetch.vue`](app/components/helper/HelperDataFetch.vue) (specifically the `<Transition>` logic).
+- **Core Component**: [`app/components/helper/HelperDataFetch.vue`](app/components/helper/HelperDataFetch.vue)
 
 ## Technical Analysis
 
@@ -23,7 +23,7 @@ Using a monkey-patch on `Node.prototype.insertBefore`, we captured the exact sta
 
 1.  **Root Stripping**: The `parent` node was found to be a `DIV` with no classes, containing only the inner content of `HelperLoader.vue`. This proves that the root element of the loader (which had `flex h-full...` classes) was stripped away by an external force.
 2.  **Fake Anchors**: The `referenceNode` (the anchor) was found to be a comment containing `]`. This is not a standard Vue anchor, confirming that a bot or optimizer injected or modified the comments.
-3.  **Transition Collision**: The error occurs during the `out-in` transition in `HelperDataFetch.vue`. The bot's modification of the DOM structure makes the transition's `insertBefore` call fail because the anchor is no longer a child of the parent.
+3.  **Transition Collision**: The error occurred during the `out-in` transition in `HelperDataFetch.vue`. The bot's modification of the DOM structure made the transition's `insertBefore` call fail because the anchor was no longer a child of the parent.
 4.  **Bot Correlation**: The error is highly correlated with bots (e.g., `Googlebot`, `bingbot`), which often "optimize" HTML by stripping redundant wrappers and modifying comments.
 
 ### Reproduction Results
@@ -47,18 +47,10 @@ A reproduction page [`app/pages/try/3.vue`](app/pages/try/3.vue) was created:
 - **Action**: Implemented a `Node.prototype.insertBefore` monkey-patch to capture the exact failing nodes.
 - **Result**: Identified the "Stripped Root" and "Fake Anchor" patterns caused by bot rendering engines.
 
-## Final Resolution Strategy
+## Final Resolution
 
-### Phase 1: Stability & Cleanup (Completed)
-- Remove ineffective `hydration-boundary` wrappers.
-- Add missing `:key` attributes to all `v-for` loops.
+The issue was resolved by eliminating the vulnerability to anchor loss in [`app/components/helper/HelperDataFetch.vue`](app/components/helper/HelperDataFetch.vue):
 
-### Phase 2: Enhanced Diagnostics (Completed)
-- Implement external manipulation detection in `app/error.vue`.
-- Capture route params and query in error logs.
-- Implement monkey-patch for `insertBefore` to capture DOM context.
-
-### Phase 3: Structural Fix (Current)
-To eliminate the vulnerability, we must stop relying on `insertBefore` for the loader/content swap.
-- **Hybrid Visibility Approach**: Replace `v-if` in `HelperDataFetch.vue` with a combination of `v-show` on the outer wrappers (to prevent `insertBefore` calls) and `v-if` on the inner content (to prevent premature slot execution).
-- **Remove `mode="out-in"`**: Eliminate the complex transition state that is most susceptible to anchor loss.
+1.  **Removed `<Transition mode="out-in">`**: Eliminated the complex transition state that was most susceptible to anchor loss during bot-induced DOM shifts.
+2.  **Added Stable Root Wrapper**: Introduced `<div class="dataFetchWrapper">` as a dedicated parent. This ensures that even if the inner `HelperLoader` root is stripped, the `v-if/v-else` anchors remain children of a stable parent.
+3.  **Explicit Keys**: Added `key="loader"` and `key="content"` to the conditional elements to ensure unambiguous node identification during updates.

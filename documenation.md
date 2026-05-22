@@ -2,11 +2,19 @@
 - footer links hydration mismatch 'cause url changed before footer resolve
 - improve dbReq(query, [par1, par2]) (string interpolation under the hood?)
 
-## robots issue
-- remove update date from sitemap
-- add users tracking from server to the client (and compare the data)
-- add routing history to check requests to /api/... from spa side (added richError.historyLength and richError.referrer)
-- added source maps for prod build (use resolve-stack.js to decode)
+## errors issue
+- play with 'insertBefore' error:
+   - remove <div class="dataFetchWrapper">
+   - re-enable Transition
+- chunks errors
+   - manually re-write current chunks from /archived_builds/_cached_chunks several times
+- 403 errors
+   - attempts to solve the problem have failed. Most likely the hoster is the cause
+   - added clearError, maybe better reloadNuxtApp
+- 500 errors on RecentlyViewed.vue and CatalogProductsWrapper.vue
+- do the cleaning:
+   - remove unnecessary props from richError
+   - remove update date from sitemap
 
 ## Log
 - parse data

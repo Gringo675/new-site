@@ -35,9 +35,7 @@ const saveOrder = async (event, order) => {
   const userId = (await checkToken(event)).id
   const query = `INSERT INTO i_orders SET created = '${order.created}', user_id = '${userId}',
                   cart = '${prepareString(order.cart)}', message = '${prepareString(order.message)}',
-                  files = '${
-                    order.files.length ? prepareString(order.files.map(file => file.filename).join(', ')) : ''
-                  }'`
+                  files = '${order.files.length ? prepareString(order.files.map(file => file.filename).join(', ')) : ''}'`
   // @ts-ignore
   return Number((await dbReq(query)).insertId)
 }
@@ -46,11 +44,7 @@ const sendMails = async (order, event) => {
   // 1. Загрузка шаблонов с кэшированием
   if (process.env.NODE_ENV === 'development' || !cachedClientTemplate || !cachedSellerTemplate || !cachedRowTemplate) {
     const storage = useStorage('assets:server')
-    const [clientTpl, sellerTpl, rowTpl] = await Promise.all([
-      storage.getItem('emails/orderClientTemplate.html'),
-      storage.getItem('emails/orderSellerTemplate.html'),
-      storage.getItem('emails/orderProductRow.html'),
-    ])
+    const [clientTpl, sellerTpl, rowTpl] = await Promise.all([storage.getItem('emails/orderClientTemplate.html'), storage.getItem('emails/orderSellerTemplate.html'), storage.getItem('emails/orderProductRow.html')])
     if (!clientTpl || !sellerTpl || !rowTpl) throw new Error('Не удалось загрузить один из шаблонов письма.')
     cachedClientTemplate = clientTpl
     cachedSellerTemplate = sellerTpl
@@ -115,19 +109,12 @@ const sendMails = async (order, event) => {
   }
 
   // 4. Генерация текстовых версий писем
-  const productRowsText = cartProducts
-    .map(
-      product =>
-        `* ${product.name} (Арт: ${product.id}) - ${product.quantity} шт. x ${formatCurrency(
-          product.price,
-        )} = ${formatCurrency(product.price * product.quantity)}`,
-    )
-    .join('\n')
+  const productRowsText = cartProducts.map(product => `* ${product.name} (Арт: ${product.id}) - ${product.quantity} шт. x ${formatCurrency(product.price)} = ${formatCurrency(product.price * product.quantity)}`).join('\n')
 
   const clientText = `Здравствуйте, ${order.user.name}!
 
 Спасибо за ваш заказ №${order.id} от ${new Date(order.created).toLocaleDateString('ru-RU')}.
-В ближайшее время Вы получите счет для оплаты, или наш менеджер свяжется с Вами для уточнения делатей заказа.
+В ближайшее время Вы получите счет для оплаты, или наш менеджер свяжется с Вами для уточнения деталей заказа.
 
 СОСТАВ ЗАКАЗА:
 ${productRowsText}

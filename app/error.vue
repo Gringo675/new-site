@@ -11,14 +11,7 @@ const config = useRuntimeConfig()
 
 const userAgent = import.meta.client ? navigator.userAgent : useRequestHeader('user-agent')
 
-const detectExternalDomManipulation = () => {
-  if (import.meta.server) return false
-  // Google Translate often wraps text in <font> tags or adds specific classes
-  return !!document.querySelector('font, .goog-te-menu-value, .goog-te-banner-frame, #goog-gt-tt')
-}
-
 const richError = {
-  rawError: props.error,
   statusCode: props.error.statusCode || props.error.code || props.error.data?.statusCode || props.error.data?.code || 0,
   statusMessage: props.error.statusMessage || props.error.message || props.error.data?.statusMessage || props.error.data?.message || 'No message',
   url: props.error.url || router.currentRoute.value.fullPath, // useRoute returns incorrect res.
@@ -26,12 +19,9 @@ const richError = {
   userAgent,
   stack: props.error.stack || props.error.data?.stack || 'No stack',
   isBot: useBotDetector(userAgent),
-  externalManipulation: detectExternalDomManipulation(),
-  routeParams: router.currentRoute.value.params,
-  routeQuery: router.currentRoute.value.query,
 }
-richError.isChunkError = !richError.onServer && (richError.statusMessage.toLowerCase().includes('failed to fetch dynamically imported module') || richError.statusMessage.toLowerCase().includes('error loading dynamically imported module') || richError.statusMessage.toLowerCase().includes('importing a module script failed') || richError.statusMessage.startsWith(`Failed to execute 'insertBefore' on 'Node'`))
 
+richError.isChunkError = !richError.onServer && (richError.statusMessage.toLowerCase().includes('failed to fetch dynamically imported module') || richError.statusMessage.toLowerCase().includes('error loading dynamically imported module') || richError.statusMessage.toLowerCase().includes('importing a module script failed') || richError.statusMessage.startsWith(`Failed to execute 'insertBefore' on 'Node'`))
 if (richError.isChunkError) {
   if (richError.isBot) {
     // Ignore bot errors due to dynamic import failure
@@ -43,16 +33,11 @@ if (richError.isChunkError) {
   }
 }
 
-// if (
-//   richError.isBot &&
-//   richError.statusCode === 500 &&
-//   richError.statusMessage.startsWith('Failed to fetch dynamically imported module')
-// ) {
-//   // Ignore bot errors due to dynamic import failure
-//   richError.suppressed = true
-//   clearError({ redirect: richError.url })
-//   // maybe better use full refresh window.location.reload()
-// }
+richError.isBingBot403Error = richError.statusCode === 403 && richError.isBot && /bingbot/i.test(userAgent)
+if (richError.isBingBot403Error) {
+  richError.suppressed = true
+  clearError({ redirect: richError.url })
+}
 
 useOverlay().closeAll()
 if (!richError.suppressed) {
@@ -63,19 +48,7 @@ if (!richError.suppressed) {
 // don't log errors during hydration('cause we already get it from server render) and 404 errors
 if (!nuxtApp.isHydrating && richError.statusCode !== 404) setErrorToLog(richError)
 async function setErrorToLog(richError) {
-  // for investigation purpose
-  richError.isDataCached = useNuxtData(richError.url)?.data?.value !== undefined
-  if (!richError.onServer) {
-    richError.historyLength = window.history.length
-    richError.referrer = document.referrer
-    // Capture the DOM patch context if it exists
-    if (window.__VUE_INSERT_ERROR_CONTEXT__) {
-      richError.insertErrorContext = window.__VUE_INSERT_ERROR_CONTEXT__
-      // Clear it after capturing to avoid logging the same error multiple times
-      delete window.__VUE_INSERT_ERROR_CONTEXT__
-    }
-  }
-
+  //
   richError.build = config.public.BUILD
   try {
     await $fetch('/api/log/setError', {

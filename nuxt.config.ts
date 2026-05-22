@@ -3,8 +3,12 @@ import useCompany from './app/composables/useCompany.js'
 
 const company = useCompany()
 
+const now = new Date()
+const timestamp = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16).replace('T', '_').replace(':', '-')
+
 export default defineNuxtConfig({
   app: {
+    buildAssetsDir: `_nuxt/${timestamp}`,
     // baseURL: process.env.NODE_ENV === 'production' ? '/test/' : '/',
     // baseURL: '/test/',
     head: {
@@ -110,8 +114,7 @@ export default defineNuxtConfig({
     dbPassword: process.env.DB_PASSWORD,
     dbOldName: process.env.DB_OLD_NAME,
     dbOldUser: process.env.DB_OLD_USER,
-    dbOldPassword:
-      process.env.NODE_ENV === 'production' ? process.env.DB_OLD_PASSWORD : process.env.DB_OLD_PASSWORD_LOCAL,
+    dbOldPassword: process.env.NODE_ENV === 'production' ? process.env.DB_OLD_PASSWORD : process.env.DB_OLD_PASSWORD_LOCAL,
     JWT_TOKEN_KEY: process.env.JWT_TOKEN,
     JWT_TOKEN_LIFETIME: process.env.JWT_TOKEN_LIFETIME,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
@@ -159,10 +162,8 @@ export default defineNuxtConfig({
   },
   site: {
     // used in SEO modules + useCanonical composable
-    title:
-      'ТД Челябинский Инструмент: интернет-магазин измерительного инструмента, поверка и калибровка средств измерений.',
-    description:
-      'Интернет-магазин измерительного инструмента и оборудования. Продукция Челябинского инструментального завода (ЧИЗ), Ставропольского инструментального завода (СТИЗ), Кировского инструментального завода (КировИнструмент, ВИНС), GRIFF. Поверка, калибровка средств измерений. Доставка по России, гарантия качества.',
+    title: 'ТД Челябинский Инструмент: интернет-магазин измерительного инструмента, поверка и калибровка средств измерений.',
+    description: 'Интернет-магазин измерительного инструмента и оборудования. Продукция Челябинского инструментального завода (ЧИЗ), Ставропольского инструментального завода (СТИЗ), Кировского инструментального завода (КировИнструмент, ВИНС), GRIFF. Поверка, калибровка средств измерений. Доставка по России, гарантия качества.',
     url: 'https://chelinstrument.ru',
     name: 'ТД Челябинский Инструмент',
     // indexable: process.env.NUXT_BUILD_MODE === 'prod', // allow indexing only for prod build

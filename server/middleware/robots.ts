@@ -17,10 +17,4 @@ export default defineEventHandler(event => {
   if (noIndexPattern.test(url)) {
     setHeader(event, 'X-Robots-Tag', 'noindex, follow')
   }
-
-  // Test: detecting bingbot
-  // const userAgent = getRequestHeader(event, 'user-agent')
-  // if (userAgent && /bingbot/i.test(userAgent)) {
-  //   setTextToLog(`Bingbot requested URL: ${url}`)
-  // }
 })

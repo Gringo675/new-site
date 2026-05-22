@@ -12,7 +12,7 @@ const props = defineProps({
 
 const { status, data, error } = await useLazyAsyncData(
   props.url,
-  () => {
+  async () => {
     return $fetch(
       props.url,
       //, { headers }

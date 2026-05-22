@@ -44,6 +44,26 @@ async function deploy(archivePath, deployDir) {
     const resUnpack = await ssh.execCommand(`tar -xf ~/${deployDir}/build.tar.gz -C ~/${deployDir}/build_tmp`)
     if (resUnpack.stderr) throw new Error(resUnpack.stderr)
     console.log(`\u2713 Archive unpacked to build_tmp.`)
+
+    // Preserve assets from previous builds (last 90 days)
+    const preserveCmd = `
+      if [ -d ~/${deployDir}/build/public/_nuxt ]; then
+        THRESHOLD=$(date -d "90 days ago" +"%Y-%m-%d_00-00")
+        for dir in ~/${deployDir}/build/public/_nuxt/*/; do
+          [ -d "$dir" ] || continue
+          dir_name=$(basename "$dir")
+          if [[ "$dir_name" > "$THRESHOLD" ]]; then
+            if [ ! -d ~/${deployDir}/build_tmp/public/_nuxt/$dir_name ]; then
+              cp -r "$dir" ~/${deployDir}/build_tmp/public/_nuxt/
+            fi
+          fi
+        done
+      fi
+    `
+    const resPreserve = await ssh.execCommand(preserveCmd)
+    if (resPreserve.stderr) throw new Error(`Asset preservation failed: ${resPreserve.stderr}`)
+    console.log(`\u2713 Old assets preserved.`)
+
     const resRemove = await ssh.execCommand(`rm -rf ~/${deployDir}/build`)
     if (resRemove.stderr) throw new Error(resRemove.stderr)
     console.log(`\u2713 Old build removed.`)
@@ -102,9 +122,7 @@ async function main() {
     }
 
     console.log('Please choose an archive to deploy:')
-    archives.forEach((archive, index) =>
-      console.log(`${index + 1}: ${archive.name} (${archive.time.toLocaleString()})`),
-    )
+    archives.forEach((archive, index) => console.log(`${index + 1}: ${archive.name} (${archive.time.toLocaleString()})`))
 
     const choice = await prompt(`Enter the number of the archive (1-${archives.length}): `)
     const choiceIndex = parseInt(choice, 10) - 1
@@ -120,11 +138,7 @@ async function main() {
   } else {
     isProduction = process.env.NUXT_BUILD_MODE === 'prod'
     const now = new Date()
-    const timestamp = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
-      .toISOString()
-      .slice(0, 16)
-      .replace('T', '_')
-      .replace(':', '-')
+    const timestamp = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16).replace('T', '_').replace(':', '-')
     const buildType = isProduction ? 'prod' : 'test'
     const archiveName = `${buildType}_${timestamp}.tar.gz`
     archivePath = `archived_builds/${archiveName}`
