@@ -18,29 +18,27 @@ const headerCss = {
 <template>
   <UModal
     :title="title"
-    :description="description"
     :close="!isDialog"
     :dismissible="!isDialog"
-    :ui="{ header: headerCss[type] }"
-  >
+    :ui="{ header: headerCss[type] }">
+    <template #body>
+      <div class="whitespace-pre-line">{{ description }}</div>
+    </template>
     <template
       #footer
-      v-if="isDialog"
-    >
+      v-if="isDialog">
       <div class="flex w-full justify-end gap-4">
         <UButton
           color="neutral"
           variant="outline"
           label="Отмена"
-          @click="emit('close', false)"
-        />
+          @click="emit('close', false)" />
         <UButton
           color="success"
           variant="outline"
           class="px-7"
           label="ОК"
-          @click="emit('close', true)"
-        />
+          @click="emit('close', true)" />
       </div>
     </template>
   </UModal>

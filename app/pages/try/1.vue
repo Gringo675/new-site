@@ -1,18 +1,11 @@
-<script setup>
-//
-
-const { prps, editPrps } = useProperties()
-
-const showEditor = () => {
-  editPrps('p0_brand', 'custom Name', [2], { multiple: true })
-}
+<script setup lang="ts">
+const items = ref(['aaabbb', ['Apple', 'Banana', 'Blueberry', 'Grapes', 'Pineapple'], ['Aubergine', 'Broccoli', 'Carrot', 'Courgette', 'Leek']])
+const value = ref('Apple')
 </script>
 
 <template>
-  <div>
-    <UButton
-      label="Edit"
-      @click="showEditor" />
-  </div>
-  <!-- <pre>{{ prps }}</pre> -->
+  <USelectMenu
+    v-model="value"
+    :items="items"
+    class="w-48" />
 </template>

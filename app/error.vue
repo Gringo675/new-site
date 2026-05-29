@@ -21,32 +21,29 @@ const richError = {
   isBot: useBotDetector(userAgent),
 }
 
-richError.isChunkError = !richError.onServer && (richError.statusMessage.toLowerCase().includes('failed to fetch dynamically imported module') || richError.statusMessage.toLowerCase().includes('error loading dynamically imported module') || richError.statusMessage.toLowerCase().includes('importing a module script failed') || richError.statusMessage.startsWith(`Failed to execute 'insertBefore' on 'Node'`))
-if (richError.isChunkError) {
+// set 'undefined' to avoid log pollution
+richError.isChunkError = (!richError.onServer && (richError.statusMessage.toLowerCase().includes('failed to fetch dynamically imported module') || richError.statusMessage.toLowerCase().includes('error loading dynamically imported module') || richError.statusMessage.toLowerCase().includes('importing a module script failed'))) || undefined
+richError.isBingBot403Error = (richError.statusCode === 403 && richError.isBot && /bingbot/i.test(userAgent)) || undefined
+
+// reload strategy
+if (!richError.onServer) {
   if (richError.isBot) {
-    // Ignore bot errors due to dynamic import failure
-    richError.suppressed = true
-    clearError({ redirect: richError.url })
-  } else {
+    if (richError.isChunkError) {
+      richError.isSuppressed = true
+      clearError({ redirect: richError.url })
+    } else if (richError.statusCode === 500 || richError.isBingBot403Error) {
+      richError.isSuppressed = true
+      reloadNuxtApp({ ttl: 20000 }) // 20 sec to avoid reload loop
+    }
+  } else if (richError.isChunkError) {
     // For users, try to recover by full page reload
+    richError.isSuppressed = true
     reloadNuxtApp({ ttl: 20000 }) // 20 sec to avoid reload loop
   }
 }
 
-richError.isBingBot403Error = richError.statusCode === 403 && richError.isBot && /bingbot/i.test(userAgent)
-if (richError.isBingBot403Error) {
-  richError.suppressed = true
-  clearError({ redirect: richError.url })
-}
-
-useOverlay().closeAll()
-if (!richError.suppressed) {
-  useTitle('Ошибка ' + richError.statusCode)
-  console.error('Captured error:', props.error)
-}
-
-// don't log errors during hydration('cause we already get it from server render) and 404 errors
-if (!nuxtApp.isHydrating && richError.statusCode !== 404) setErrorToLog(richError)
+// don't log errors during hydration('cause we already get it from server render) and 404 errors and isBingBot403Error
+if (!nuxtApp.isHydrating && richError.statusCode !== 404 && !richError.isBingBot403Error) setErrorToLog(richError)
 async function setErrorToLog(richError) {
   //
   richError.build = config.public.BUILD
@@ -58,6 +55,12 @@ async function setErrorToLog(richError) {
   } catch (e) {
     console.error(`Can't write error to the log: ${e.message}`)
   }
+}
+
+useOverlay().closeAll()
+if (!richError.isSuppressed) {
+  useTitle('Ошибка ' + richError.statusCode)
+  console.error('Captured error:', props.error)
 }
 
 const onLogin = async () => {
@@ -102,7 +105,7 @@ const displayError = {
 </script>
 
 <template>
-  <HelperApp v-if="!richError.suppressed">
+  <HelperApp v-if="!richError.isSuppressed">
     <div class="mx-auto my-6 flex w-full max-w-xl flex-col items-center justify-center gap-6 rounded-xl bg-gray-200 p-6 shadow-lg md:my-12">
       <UIcon
         :name="displayError.icon"

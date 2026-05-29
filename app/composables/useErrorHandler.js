@@ -11,7 +11,7 @@ export default async () => {
     window.addEventListener('unhandledrejection', event => {
       event.preventDefault()
       // console.warn(`UNHANDLED PROMISE REJECTION: ${event.reason}`)
-      const error = createError({ statusCode: 465, statusMessage: `UNHANDLED PROMISE REJECTION: ${event.reason}` })
+      const error = createError({ statusCode: 500, statusMessage: `UNHANDLED PROMISE REJECTION: ${event.reason}` })
       // handleError(error)
       showError(error)
     })

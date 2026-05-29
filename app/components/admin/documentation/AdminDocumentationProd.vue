@@ -29,25 +29,47 @@ const goToDocument = (docType, doc) => {
   emit('navigateToDoc', { type: docType, searchText })
 }
 
+function mapCats(catsArr, level = 0, rootId = null) {
+  if (!Array.isArray(catsArr)) return []
+  const result = []
+  for (const cat of catsArr) {
+    const currentRootId = rootId || cat.id
+    result.push({
+      value: cat.id,
+      label: '- '.repeat(level) + cat.name,
+      rootId: currentRootId,
+    })
+    if (cat.children && Array.isArray(cat.children)) {
+      result.push(...mapCats(cat.children, level + 1, currentRootId))
+    }
+  }
+  return result
+}
+
 onMounted(async () => {
-  //
-  state.cats = await myFetch('/api/admin/cms/getMainCats')
+  try {
+    const data = await myFetch('/api/getData/categories')
+    state.cats = mapCats(data)
+  } catch (e) {
+    console.error('Error fetching categories:', e)
+  }
 })
 
 const updateProds = async () => {
-  //
   if (!state.activeCatId) return
-  const prods = await myFetch('/api/admin/cms/documentation/getProds?cat_id=' + state.activeCatId)
+
+  const selectedCat = state.cats.find(c => c.value === state.activeCatId)
+  const rootId = selectedCat?.rootId
+
+  if (!rootId) return
+
+  const parentId = rootId === state.activeCatId ? 0 : rootId
+
+  const prods = await myFetch('/api/admin/cms/documentation/getProds?cat_id=' + state.activeCatId + '&parent_id=' + parentId)
   state.prods = prods.map(p => {
-    const standarts = p.standart_ids
-      ? p.standart_ids.split(',').map(id => docState.stnd.find(s => s.id === Number(id)) || { id, error: true })
-      : []
-    const reestrs = p.reestr_ids
-      ? p.reestr_ids.split(',').map(id => docState.rstr.find(r => r.id === Number(id)) || { id, error: true })
-      : []
-    const pasports = p.pasport_ids
-      ? p.pasport_ids.split(',').map(id => docState.pasp.find(pa => pa.id === Number(id)) || { id, error: true })
-      : []
+    const standarts = p.standart_ids ? p.standart_ids.split(',').map(id => docState.stnd.find(s => s.id === Number(id)) || { id, error: true }) : []
+    const reestrs = p.reestr_ids ? p.reestr_ids.split(',').map(id => docState.rstr.find(r => r.id === Number(id)) || { id, error: true }) : []
+    const pasports = p.pasport_ids ? p.pasport_ids.split(',').map(id => docState.pasp.find(pa => pa.id === Number(id)) || { id, error: true }) : []
     return {
       id: p.id,
       name: p.name,
@@ -199,11 +221,7 @@ const editMassProds = async () => {
   const firstProd = formState.prods[0]
 
   // Check if all products have identical docs (compare arrays using cached IDs)
-  const allIdentical = formState.prods.every(p =>
-    editTypes.value.every(
-      type => p[type].length === firstProd[type].length && p[type].every(doc => firstProd[type].includes(doc)),
-    ),
-  )
+  const allIdentical = formState.prods.every(p => editTypes.value.every(type => p[type].length === firstProd[type].length && p[type].every(doc => firstProd[type].includes(doc))))
 
   if (!allIdentical) {
     const proceed = await showMessage({
@@ -477,13 +495,7 @@ const onTest = () => {
               </div>
               <USelectMenu
                 v-model="formState[type]"
-                :items="
-                  type === 'standarts'
-                    ? docState.stnd.map(s => ({ label: `${s.number} - ${s.name}`, value: s }))
-                    : type === 'reestrs'
-                      ? docState.rstr.map(r => ({ label: `№${r.number} - ${r.name}`, value: r }))
-                      : docState.pasp.map(p => ({ label: p.name, value: p }))
-                "
+                :items="type === 'standarts' ? docState.stnd.map(s => ({ label: `${s.number} - ${s.name}`, value: s })) : type === 'reestrs' ? docState.rstr.map(r => ({ label: `№${r.number} - ${r.name}`, value: r })) : docState.pasp.map(p => ({ label: p.name, value: p }))"
                 value-key="value"
                 multiple
                 :search-input="{

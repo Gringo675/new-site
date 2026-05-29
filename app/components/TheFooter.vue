@@ -5,34 +5,33 @@ const company = useCompany()
 
 <template>
   <div class="bg-black-striped">
-    <div
-      class="max-xs:grid-cols-1 footer-links mx-auto grid max-w-screen-xl grid-cols-[2fr_1fr_1fr] gap-6 p-4 text-violet-200 max-lg:grid-cols-2">
+    <div class="max-xs:grid-cols-1 footer-links mx-auto grid max-w-screen-xl grid-cols-[2fr_1fr_1fr] gap-6 p-4 text-violet-200 max-lg:grid-cols-2">
       <div class="flex flex-col items-start gap-1.5 max-lg:items-center">
         <NuxtLink
           no-prefetch
-          to="/help"
-          >Как сделать заказ</NuxtLink
-        >
+          to="/help">
+          Как сделать заказ
+        </NuxtLink>
         <NuxtLink
           no-prefetch
-          to="/shipping"
-          >Доставка инструмента</NuxtLink
-        >
+          to="/shipping">
+          Доставка инструмента
+        </NuxtLink>
         <NuxtLink
           no-prefetch
-          to="/returns"
-          >Возврат товара</NuxtLink
-        >
+          to="/returns">
+          Возврат товара
+        </NuxtLink>
         <NuxtLink
           no-prefetch
-          to="/warranty"
-          >Гарантия качества</NuxtLink
-        >
+          to="/warranty">
+          Гарантия качества
+        </NuxtLink>
         <NuxtLink
           no-prefetch
-          to="/poverka"
-          >Поверка инструмента</NuxtLink
-        >
+          to="/poverka">
+          Поверка инструмента
+        </NuxtLink>
       </div>
 
       <div class="flex flex-col gap-1.5 max-lg:items-center">
