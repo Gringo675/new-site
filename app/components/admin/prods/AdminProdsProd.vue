@@ -238,8 +238,19 @@ const columns = computed(() => [
     accessorKey: 'published',
     header: ({ column }) => getHeader(column, 'Опубликован'),
     label: 'Опубликован',
-    cell: ({ row }) => (row.original.published == 1 ? 'Да' : 'Нет'),
+    cell: ({ row }) =>
+      h(UCheckbox, {
+        modelValue: row.original.published == 1,
+        'onUpdate:modelValue': async value => {
+          const newValue = value ? 1 : 0
+          if (await updateProds({ id: row.original.id, published: newValue })) {
+            row.original.published = newValue
+          }
+        },
+        'aria-label': 'Опубликован',
+      }),
     enableColumnPinning: true,
+    enableGlobalFilter: false,
     size: 120,
     minSize: 120,
     maxSize: 120,
@@ -317,6 +328,32 @@ async function getProds() {
   }
 }
 
+const onTableDbClick = async event => {
+  const cell = event.target.closest('td')
+  if (!cell) return
+  const rowElement = cell.closest('tr')
+  if (!rowElement) return
+  const rowIndex = rowElement.rowIndex - 2
+  const cellIndex = cell.cellIndex
+
+  const tableApi = table.value?.tableApi
+  const visibleRows = tableApi.getRowModel().rows
+
+  const clickedRow = visibleRows[rowIndex]
+  const clickedCell = clickedRow.getVisibleCells()[cellIndex]
+
+  const field = clickedCell.column.id
+  const selectedIndices = Object.keys(rowSelection.value).filter(index => rowSelection.value[index])
+
+  if (selectedIndices.length > 1) {
+    const selectedProds = selectedIndices.map(index => prods.value[parseInt(index)])
+    await editField(field, selectedProds)
+  } else {
+    const product = prods.value[clickedCell.row.index]
+    await editField(field, [product])
+  }
+}
+
 const editField = async (field, productsToEdit) => {
   const isMass = productsToEdit.length > 1
   let initialValue
@@ -343,7 +380,7 @@ const editField = async (field, productsToEdit) => {
   if (/^p\d_/.test(field)) {
     const pGroupName = prpsGroupsMap.value.get(field)?.name || 'Unknown group'
     newValue = (await editPrps(field, pGroupName, initialValue))?.[0]
-  } else if (['name', 'alias', 'brand_eans', 'images', 'description', 'characteristics', 'label', 'published'].includes(field)) {
+  } else if (['name', 'alias', 'brand_eans', 'images', 'description', 'characteristics'].includes(field)) {
     const column = columns.value.find(col => col['accessorKey'] === field || col['id'] === field)
     const label = column?.label || field
     newValue = await editText(initialValue, field, label)
@@ -362,32 +399,6 @@ const editField = async (field, productsToEdit) => {
         await createAlias(p)
       }
     }
-  }
-}
-
-const onTableDbClick = async event => {
-  const cell = event.target.closest('td')
-  if (!cell) return
-  const rowElement = cell.closest('tr')
-  if (!rowElement) return
-  const rowIndex = rowElement.rowIndex - 2
-  const cellIndex = cell.cellIndex
-
-  const tableApi = table.value?.tableApi
-  const visibleRows = tableApi.getRowModel().rows
-
-  const clickedRow = visibleRows[rowIndex]
-  const clickedCell = clickedRow.getVisibleCells()[cellIndex]
-
-  const field = clickedCell.column.id
-  const selectedIndices = Object.keys(rowSelection.value).filter(index => rowSelection.value[index])
-
-  if (selectedIndices.length > 1) {
-    const selectedProds = selectedIndices.map(index => prods.value[parseInt(index)])
-    await editField(field, selectedProds)
-  } else {
-    const product = prods.value[clickedCell.row.index]
-    await editField(field, [product])
   }
 }
 
@@ -672,9 +683,9 @@ const updateProds = async prods => {
         :data="prods"
         :columns="columns"
         :ui="{
+          tr: 'bg-gray-100/95 hover:bg-gray-200/95 data-[selected=true]:bg-violet-100/95',
           th: 'text-center bg-gray-100 px-2 even:bg-white/35 wrap-break-word whitespace-normal',
           td: 'p-2 wrap-break-word whitespace-normal even:bg-white/35',
-          tr: 'bg-gray-100/95 hover:bg-gray-200/95 data-[selected=true]:bg-violet-100/95',
         }"
         class="h-full w-full overflow-auto"
         @dblclick="onTableDbClick" />

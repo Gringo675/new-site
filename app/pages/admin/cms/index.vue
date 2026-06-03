@@ -12,6 +12,9 @@
         label="Товары"
         to="/admin/cms/products" />
       <UButton
+        label="Лейблы"
+        to="/admin/cms/labels" />
+      <UButton
         label="Документация"
         to="/admin/cms/documentation" />
       <UButton

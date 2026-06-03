@@ -8,7 +8,7 @@ const timestamp = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toIS
 
 export default defineNuxtConfig({
   app: {
-    buildAssetsDir: `_nuxt/${timestamp}`,
+    buildAssetsDir: process.env.NODE_ENV === 'production' ? `_nuxt/${timestamp}` : '_nuxt',
     // baseURL: process.env.NODE_ENV === 'production' ? '/test/' : '/',
     // baseURL: '/test/',
     head: {
