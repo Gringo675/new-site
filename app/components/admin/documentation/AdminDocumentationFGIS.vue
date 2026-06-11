@@ -1,6 +1,5 @@
 <script setup>
 //
-import { getPaginationRowModel } from '@tanstack/vue-table'
 import { h } from 'vue'
 import { UButton } from '#components'
 
@@ -29,11 +28,7 @@ const columns = [
         color: 'neutral',
         variant: 'ghost',
         label: 'Номер',
-        icon: isSorted
-          ? isSorted === 'asc'
-            ? 'i-lucide-arrow-up-narrow-wide'
-            : 'i-lucide-arrow-down-wide-narrow'
-          : 'i-lucide-arrow-up-down',
+        icon: isSorted ? (isSorted === 'asc' ? 'i-lucide-arrow-up-narrow-wide' : 'i-lucide-arrow-down-wide-narrow') : 'i-lucide-arrow-up-down',
         class: '-mx-2.5',
         onClick: () => column.toggleSorting(),
       })
@@ -48,11 +43,7 @@ const columns = [
         color: 'neutral',
         variant: 'ghost',
         label: 'Наименование',
-        icon: isSorted
-          ? isSorted === 'asc'
-            ? 'i-lucide-arrow-up-narrow-wide'
-            : 'i-lucide-arrow-down-wide-narrow'
-          : 'i-lucide-arrow-up-down',
+        icon: isSorted ? (isSorted === 'asc' ? 'i-lucide-arrow-up-narrow-wide' : 'i-lucide-arrow-down-wide-narrow') : 'i-lucide-arrow-up-down',
         class: '-mx-2.5',
         onClick: () => column.toggleSorting(),
       })
@@ -67,11 +58,7 @@ const columns = [
         color: 'neutral',
         variant: 'ghost',
         label: 'Обозначение',
-        icon: isSorted
-          ? isSorted === 'asc'
-            ? 'i-lucide-arrow-up-narrow-wide'
-            : 'i-lucide-arrow-down-wide-narrow'
-          : 'i-lucide-arrow-up-down',
+        icon: isSorted ? (isSorted === 'asc' ? 'i-lucide-arrow-up-narrow-wide' : 'i-lucide-arrow-down-wide-narrow') : 'i-lucide-arrow-up-down',
         class: '-mx-2.5',
         onClick: () => column.toggleSorting(),
       })
@@ -86,11 +73,7 @@ const columns = [
         color: 'neutral',
         variant: 'ghost',
         label: 'Производитель',
-        icon: isSorted
-          ? isSorted === 'asc'
-            ? 'i-lucide-arrow-up-narrow-wide'
-            : 'i-lucide-arrow-down-wide-narrow'
-          : 'i-lucide-arrow-up-down',
+        icon: isSorted ? (isSorted === 'asc' ? 'i-lucide-arrow-up-narrow-wide' : 'i-lucide-arrow-down-wide-narrow') : 'i-lucide-arrow-up-down',
         class: '-mx-2.5',
         onClick: () => column.toggleSorting(),
       })
@@ -105,11 +88,7 @@ const columns = [
         color: 'neutral',
         variant: 'ghost',
         label: 'Срок до',
-        icon: isSorted
-          ? isSorted === 'asc'
-            ? 'i-lucide-arrow-up-narrow-wide'
-            : 'i-lucide-arrow-down-wide-narrow'
-          : 'i-lucide-arrow-up-down',
+        icon: isSorted ? (isSorted === 'asc' ? 'i-lucide-arrow-up-narrow-wide' : 'i-lucide-arrow-down-wide-narrow') : 'i-lucide-arrow-up-down',
         class: '-mx-2.5',
         onClick: () => column.toggleSorting(),
       })
@@ -128,16 +107,6 @@ const columns = [
     header: 'Методика поверки',
   },
 ]
-
-const pagination = ref({
-  pageIndex: 0,
-  pageSize: 20,
-})
-function onPageSizeChange(size) {
-  pagination.value.pageSize = size
-  pagination.value.pageIndex = 0
-  table.value?.tableApi?.setPageSize(size)
-}
 
 const fgisDocs = shallowReactive([])
 
@@ -193,7 +162,6 @@ const searchFgis = async () => {
   }
 
   fgisDocs.length = 0 // Clear previous results
-  pagination.value.pageIndex = 0
   for (const doc of responseData.response.docs) {
     try {
       const newDoc = parseFgisDoc(doc)
@@ -260,8 +228,7 @@ const parseFgisDoc = (doc, options = {}) => {
           uuid: s.doc_uuid,
         }))
       : []
-    newDoc.file_ot =
-      specifications.length > 0 && !emptyValues.includes(specifications[0].uuid) ? specifications[0] : undefined
+    newDoc.file_ot = specifications.length > 0 && !emptyValues.includes(specifications[0].uuid) ? specifications[0] : undefined
 
     const methods = doc.j_methods
       ? JSON.parse(doc.j_methods).map(m => ({
@@ -486,10 +453,7 @@ const refreshDBDocs = async () => {
       }
 
       // Treat null, undefined, and empty string as equal
-      if (
-        (dbValue === null || dbValue === undefined || dbValue === '') &&
-        (newValue === null || newValue === undefined || newValue === '')
-      ) {
+      if ((dbValue === null || dbValue === undefined || dbValue === '') && (newValue === null || newValue === undefined || newValue === '')) {
         continue
       }
 
@@ -504,15 +468,11 @@ const refreshDBDocs = async () => {
     const filesToAdd = []
     if (newDoc.file_ot && !rst.file_ot) {
       filesToAdd.push({ key: 'file_ot', ...newDoc.file_ot })
-      console.log(
-        `Document ${rst.number} file "file_ot" will be added: "${newDoc.file_ot.title}" (uuid: ${newDoc.file_ot.uuid})`,
-      )
+      console.log(`Document ${rst.number} file "file_ot" will be added: "${newDoc.file_ot.title}" (uuid: ${newDoc.file_ot.uuid})`)
     }
     if (newDoc.file_mp && !rst.file_mp) {
       filesToAdd.push({ key: 'file_mp', ...newDoc.file_mp })
-      console.log(
-        `Document ${rst.number} file "file_mp" will be added: "${newDoc.file_mp.title}" (uuid: ${newDoc.file_mp.uuid})`,
-      )
+      console.log(`Document ${rst.number} file "file_mp" will be added: "${newDoc.file_mp.title}" (uuid: ${newDoc.file_mp.uuid})`)
     }
 
     // Skip if no changes
@@ -605,7 +565,7 @@ defineExpose({
 </script>
 
 <template>
-  <div>
+  <div class="flex h-full flex-col gap-1">
     <div class="flex justify-between">
       <UForm
         :state="filterState"
@@ -648,101 +608,76 @@ defineExpose({
           label="Поиск"
           type="submit" />
       </UForm>
-      <div class="flex items-end justify-end gap-4">
-        <div
-          v-if="fgisDocs.length"
-          class="text-sm text-gray-600">
-          Найдено записей: {{ fgisDocs.length }}
-        </div>
-        <USelect
-          :model-value="pagination.pageSize"
-          @update:model-value="onPageSizeChange"
-          :items="[20, 50, 100, 500]"
-          variant="outline"
-          class="w-20" />
+      <div
+        v-if="fgisDocs.length"
+        class="flex items-end justify-end gap-4">
+        Найдено записей: {{ fgisDocs.length }}
       </div>
     </div>
-
-    <UTable
-      ref="table"
-      :data="fgisDocs"
-      :columns="columns"
-      v-model:pagination="pagination"
-      :pagination-options="{
-        getPaginationRowModel: getPaginationRowModel(),
-      }"
-      :meta="{
-        class: {
-          tr: row => (row.original.inDB ? 'bg-green-100 hover:bg-green-200' : 'hover:bg-gray-200'),
-        },
-      }"
-      :ui="{
-        th: 'bg-gray-100',
-        td: 'p-2',
-      }"
-      class="my-6">
-      <template #number-cell="{ row }">
-        <div class="flex items-center gap-2">
-          <UButton
-            v-if="!row.original.inDB"
-            icon="i-heroicons-plus"
-            title="Добавить в базу данных"
-            variant="outline"
-            size="xs"
-            class="rounded-full p-0"
-            @click="addDocToDB(row.original)" />
-          <span>{{ row.original.number }}</span>
-        </div>
-      </template>
-      <template #name-cell="{ row }">
-        <div class="max-w-xs wrap-break-word whitespace-normal">
-          {{ row.original.name }}
-        </div>
-      </template>
-      <template #type_si-cell="{ row }">
-        <div class="max-w-xs wrap-break-word whitespace-normal">
-          {{ row.original.type_si }}
-        </div>
-      </template>
-      <template #brand-cell="{ row }">
-        <div class="max-w-xs wrap-break-word whitespace-normal">
-          {{ row.original.brand }}
-        </div>
-      </template>
-      <template #file_ot-cell="{ row }">
-        <a
-          v-if="row.original.file_ot"
-          href="#"
-          @click.prevent="downloadFile(row.original.file_ot.uuid)"
-          class="text-blue-600 underline hover:text-blue-800">
-          {{ row.original.file_ot.title }}
-        </a>
-      </template>
-      <template #file_mp-cell="{ row }">
-        <a
-          v-if="row.original.file_mp"
-          href="#"
-          @click.prevent="downloadFile(row.original.file_mp.uuid)"
-          class="text-blue-600 underline hover:text-blue-800">
-          {{ row.original.file_mp.title }}
-        </a>
-      </template>
-    </UTable>
-
-    <div
-      v-if="fgisDocs.length > pagination.pageSize"
-      class="my-6 flex justify-center">
-      <UPagination
-        show-edges
-        :page="(table?.tableApi?.getState().pagination.pageIndex || 0) + 1"
-        :items-per-page="table?.tableApi?.getState().pagination.pageSize"
-        :total="fgisDocs.length"
-        @update:page="
-          p => {
-            table?.tableApi?.setPageIndex(p - 1)
-            table?.$el?.scrollIntoView({ behavior: 'smooth' })
-          }
-        " />
+    <div class="min-h-0 w-full grow">
+      <UTable
+        ref="table"
+        sticky
+        virtualize
+        :data="fgisDocs"
+        :columns="columns"
+        :meta="{
+          class: {
+            tr: row => (row.original.inDB ? 'bg-green-100 hover:bg-green-200' : 'hover:bg-gray-200'),
+          },
+        }"
+        :ui="{
+          th: 'bg-gray-100',
+          td: 'p-2',
+        }"
+        class="h-full w-full">
+        <template #number-cell="{ row }">
+          <div class="flex items-center gap-2">
+            <UButton
+              v-if="!row.original.inDB"
+              icon="i-heroicons-plus"
+              title="Добавить в базу данных"
+              variant="outline"
+              size="xs"
+              class="rounded-full p-0"
+              @click="addDocToDB(row.original)" />
+            <span>{{ row.original.number }}</span>
+          </div>
+        </template>
+        <template #name-cell="{ row }">
+          <div class="max-w-xs wrap-break-word whitespace-normal">
+            {{ row.original.name }}
+          </div>
+        </template>
+        <template #type_si-cell="{ row }">
+          <div class="max-w-xs wrap-break-word whitespace-normal">
+            {{ row.original.type_si }}
+          </div>
+        </template>
+        <template #brand-cell="{ row }">
+          <div class="max-w-xs wrap-break-word whitespace-normal">
+            {{ row.original.brand }}
+          </div>
+        </template>
+        <template #file_ot-cell="{ row }">
+          <a
+            v-if="row.original.file_ot"
+            href="#"
+            @click.prevent="downloadFile(row.original.file_ot.uuid)"
+            class="text-blue-600 underline hover:text-blue-800">
+            {{ row.original.file_ot.title }}
+          </a>
+        </template>
+        <template #file_mp-cell="{ row }">
+          <a
+            v-if="row.original.file_mp"
+            href="#"
+            @click.prevent="downloadFile(row.original.file_mp.uuid)"
+            class="text-blue-600 underline hover:text-blue-800">
+            {{ row.original.file_mp.title }}
+          </a>
+        </template>
+      </UTable>
     </div>
   </div>
 </template>

@@ -39,7 +39,7 @@ export default defineEventHandler(async event => {
 
 const isPropUsing = async prop => {
   // получает пропс и проверяет, присутствует ли он в какой-либо категории или товаре
-  const propsGroups = usePropsGroups()
+  const propsGroups = Array.from(usePrpsGroupsMap().keys())
   const inCats = (await dbReq(`SELECT id FROM i_categories WHERE FIND_IN_SET('${prop.id}', ${propsGroups[prop.group_id]}) LIMIT 1`)).length === 1
   if (inCats) return true
   const inProducts = (await dbReq(`SELECT id FROM i_products WHERE ${propsGroups[prop.group_id]} = ${prop.id} LIMIT 1`)).length === 1

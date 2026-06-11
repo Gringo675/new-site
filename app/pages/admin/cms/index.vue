@@ -15,6 +15,9 @@
         label="Лейблы"
         to="/admin/cms/labels" />
       <UButton
+        label="Артикулы поставщиков"
+        to="/admin/cms/vendors" />
+      <UButton
         label="Документация"
         to="/admin/cms/documentation" />
       <UButton

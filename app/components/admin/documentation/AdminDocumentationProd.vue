@@ -302,7 +302,7 @@ const onTest = () => {
 </script>
 
 <template>
-  <div>
+  <div class="flex h-full flex-col gap-1">
     <div class="flex items-center gap-4">
       <USelectMenu
         v-model="state.activeCatId"
@@ -346,98 +346,100 @@ const onTest = () => {
           }" />
       </div>
     </div>
-
-    <UTable
-      ref="table"
-      v-model:row-selection="state.rowSelection"
-      v-model:global-filter="state.globalFilter"
-      :data="state.prods"
-      :columns="columns"
-      :ui="{
-        th: 'text-center bg-gray-100 px-2',
-        td: 'p-2',
-        tr: 'hover:bg-gray-200 data-[selected=true]:bg-violet-100/50',
-      }"
-      class="my-4">
-      <template #id-cell="{ row }">
-        <div class="wrap-break-word whitespace-normal">
-          {{ row.original.id }}
-        </div>
-      </template>
-      <template #name-cell="{ row }">
-        <div class="wrap-break-word whitespace-normal">
-          {{ row.original.name }}
-        </div>
-      </template>
-      <template #standarts-cell="{ row }">
-        <div class="wrap-break-word whitespace-normal">
-          <div
-            v-for="stnd in row.original.standarts"
-            class="">
-            <span
-              v-if="stnd.error"
-              class="block text-red-600">
-              Не найден (ID: {{ stnd.id }})
-            </span>
-            <span
-              v-else
-              :title="stnd.name"
-              class="cursor-pointer text-blue-600 hover:underline"
-              @click="goToDocument('standards', stnd)">
-              {{ stnd.number }}
-            </span>
+    <div class="min-h-0 w-full grow">
+      <UTable
+        ref="table"
+        virtualize
+        sticky
+        v-model:row-selection="state.rowSelection"
+        v-model:global-filter="state.globalFilter"
+        :data="state.prods"
+        :columns="columns"
+        :ui="{
+          th: 'text-center bg-gray-100 px-2',
+          td: 'p-2',
+          tr: 'hover:bg-gray-200 data-[selected=true]:bg-violet-100/50',
+        }"
+        class="h-full w-full">
+        <template #id-cell="{ row }">
+          <div class="wrap-break-word whitespace-normal">
+            {{ row.original.id }}
           </div>
-        </div>
-      </template>
-      <template #reestrs-cell="{ row }">
-        <div class="wrap-break-word whitespace-normal">
-          <div
-            v-for="rstr in row.original.reestrs"
-            class="">
-            <span
-              v-if="rstr.error"
-              class="block text-red-600">
-              Не найден (ID: {{ rstr.id }})
-            </span>
-            <span
-              v-else
-              :title="rstr.name"
-              class="cursor-pointer text-blue-600 hover:underline"
-              @click="goToDocument('rstr', rstr)">
-              {{ rstr.number }}
-            </span>
+        </template>
+        <template #name-cell="{ row }">
+          <div class="wrap-break-word whitespace-normal">
+            {{ row.original.name }}
           </div>
-        </div>
-      </template>
-      <template #pasports-cell="{ row }">
-        <div class="wrap-break-word whitespace-normal">
-          <div
-            v-for="pasp in row.original.pasports"
-            class="">
-            <span
-              v-if="pasp.error"
-              class="block text-red-600">
-              Не найден (ID: {{ pasp.id }})
-            </span>
-            <span
-              v-else
-              :title="pasp.name"
-              class="cursor-pointer text-blue-600 hover:underline"
-              @click="goToDocument('passports', pasp)">
-              {{ pasp.name }}
-            </span>
+        </template>
+        <template #standarts-cell="{ row }">
+          <div class="wrap-break-word whitespace-normal">
+            <div
+              v-for="stnd in row.original.standarts"
+              class="">
+              <span
+                v-if="stnd.error"
+                class="block text-red-600">
+                Не найден (ID: {{ stnd.id }})
+              </span>
+              <span
+                v-else
+                :title="stnd.name"
+                class="cursor-pointer text-blue-600 hover:underline"
+                @click="goToDocument('standards', stnd)">
+                {{ stnd.number }}
+              </span>
+            </div>
           </div>
-        </div>
-      </template>
-      <template #actions-cell="{ row }">
-        <UButton
-          variant="ghost"
-          size="sm"
-          icon="i-heroicons-pencil"
-          @click="editProd(row.original)" />
-      </template>
-    </UTable>
-
+        </template>
+        <template #reestrs-cell="{ row }">
+          <div class="wrap-break-word whitespace-normal">
+            <div
+              v-for="rstr in row.original.reestrs"
+              class="">
+              <span
+                v-if="rstr.error"
+                class="block text-red-600">
+                Не найден (ID: {{ rstr.id }})
+              </span>
+              <span
+                v-else
+                :title="rstr.name"
+                class="cursor-pointer text-blue-600 hover:underline"
+                @click="goToDocument('rstr', rstr)">
+                {{ rstr.number }}
+              </span>
+            </div>
+          </div>
+        </template>
+        <template #pasports-cell="{ row }">
+          <div class="wrap-break-word whitespace-normal">
+            <div
+              v-for="pasp in row.original.pasports"
+              class="">
+              <span
+                v-if="pasp.error"
+                class="block text-red-600">
+                Не найден (ID: {{ pasp.id }})
+              </span>
+              <span
+                v-else
+                :title="pasp.name"
+                class="cursor-pointer text-blue-600 hover:underline"
+                @click="goToDocument('passports', pasp)">
+                {{ pasp.name }}
+              </span>
+            </div>
+          </div>
+        </template>
+        <template #actions-cell="{ row }">
+          <UButton
+            variant="ghost"
+            size="sm"
+            icon="i-heroicons-pencil"
+            @click="editProd(row.original)" />
+        </template>
+      </UTable>
+    </div>
     <UModal
       v-model:open="formState.isOpen"
       :title="formState.prods.length > 1 ? `Редактирование (${formState.prods.length} товаров)` : 'Редактирование'"
@@ -506,22 +508,23 @@ const onTest = () => {
                 placeholder="Добавить"
                 class="w-full" />
             </UFormField>
-
-            <div class="flex justify-end gap-x-4">
-              <UButton
-                label="Отмена"
-                variant="outline"
-                color="neutral"
-                @click="closeForm" />
-              <UButton
-                label="Сохранить"
-                type="submit"
-                variant="subtle"
-                color="neutral"
-                class="px-8" />
-            </div>
           </div>
         </UForm>
+      </template>
+      <template #footer>
+        <div class="flex w-full justify-end gap-x-4">
+          <UButton
+            label="Отмена"
+            variant="outline"
+            color="neutral"
+            @click="closeForm" />
+          <UButton
+            label="Сохранить"
+            type="submit"
+            variant="subtle"
+            color="neutral"
+            class="px-8" />
+        </div>
       </template>
     </UModal>
   </div>

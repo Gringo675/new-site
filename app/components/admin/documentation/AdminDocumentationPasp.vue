@@ -157,7 +157,7 @@ const getActionsItems = row => [
 </script>
 
 <template>
-  <div>
+  <div class="flex h-full flex-col gap-1">
     <div class="flex items-center gap-4">
       <UButton
         label="Добавить паспорт"
@@ -175,101 +175,105 @@ const getActionsItems = row => [
         <span v-if="globalFilter.length">, отфильтровано: {{ countFilteredRows }}</span>
       </div>
     </div>
-
-    <UTable
-      ref="table"
-      :data="pasp"
-      :columns="columns"
-      v-model:global-filter="globalFilter"
-      class="my-4"
-      :ui="{
-        th: 'text-center bg-gray-100',
-        td: 'p-2',
-        tr: 'hover:bg-gray-200',
-      }">
-      <template #name-cell="{ row }">
-        <div class="wrap-break-word whitespace-normal">
-          {{ row.original.name }}
-        </div>
-      </template>
-      <template #file-cell="{ row }">
-        <div class="wrap-break-word whitespace-normal">
-          <a
-            :href="`/static/doc/pasp/${encodeURIComponent(row.original.file)}`"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-blue-600 hover:underline">
-            {{ row.original.file }}
-          </a>
-        </div>
-      </template>
-      <template #actions-cell="{ row }">
-        <UDropdownMenu
-          :items="getActionsItems(row.original)"
-          :ui="{ content: 'w-48' }">
-          <UButton
-            color="neutral"
-            variant="ghost"
-            size="sm"
-            icon="i-heroicons-ellipsis-vertical" />
-        </UDropdownMenu>
-      </template>
-    </UTable>
-
-    <UModal
-      v-model:open="formState.isOpen"
-      title="Редактирование"
-      :dismissible="false"
-      :ui="{
-        content: 'max-w-xl',
-      }">
-      <template #body>
-        <UForm
-          :validate="validate"
-          :state="formState"
-          @submit="submitForm">
-          <div class="space-y-4">
-            <UFormField
-              label="Наименование"
-              name="name">
-              <UInput
-                v-model="formState.name"
-                placeholder="Введите наименование"
-                class="w-full" />
-            </UFormField>
-
-            <UFormField label="Файл (только для замены существующего)">
-              <UFileUpload
-                position="inside"
-                layout="list"
-                label="Click or drop the file here"
-                description="Only PDF allowed"
-                accept=".pdf"
-                v-model="formState.file"
-                color="neutral"
-                highlight
-                class="w-full"
-                :ui="{
-                  base: 'min-h-32',
-                }" />
-            </UFormField>
-
-            <div class="flex justify-end gap-x-4">
-              <UButton
-                label="Отмена"
-                variant="outline"
-                color="neutral"
-                @click="closeForm" />
-              <UButton
-                label="Сохранить"
-                type="submit"
-                variant="subtle"
-                color="neutral"
-                class="px-8" />
-            </div>
+    <div class="min-h-0 w-full grow">
+      <UTable
+        ref="table"
+        sticky
+        virtualize
+        :data="pasp"
+        :columns="columns"
+        v-model:global-filter="globalFilter"
+        class="h-full w-full"
+        :ui="{
+          th: 'text-center bg-gray-100',
+          td: 'p-2',
+          tr: 'hover:bg-gray-200',
+        }">
+        <template #name-cell="{ row }">
+          <div class="wrap-break-word whitespace-normal">
+            {{ row.original.name }}
           </div>
-        </UForm>
-      </template>
-    </UModal>
+        </template>
+        <template #file-cell="{ row }">
+          <div class="wrap-break-word whitespace-normal">
+            <a
+              :href="`/static/doc/pasp/${encodeURIComponent(row.original.file)}`"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-blue-600 hover:underline">
+              {{ row.original.file }}
+            </a>
+          </div>
+        </template>
+        <template #actions-cell="{ row }">
+          <UDropdownMenu
+            :items="getActionsItems(row.original)"
+            :ui="{ content: 'w-48' }">
+            <UButton
+              color="neutral"
+              variant="ghost"
+              size="sm"
+              icon="i-heroicons-ellipsis-vertical" />
+          </UDropdownMenu>
+        </template>
+      </UTable>
+
+      <UModal
+        v-model:open="formState.isOpen"
+        title="Редактирование"
+        :dismissible="false"
+        :ui="{
+          content: 'max-w-xl',
+        }">
+        <template #body>
+          <UForm
+            :validate="validate"
+            :state="formState"
+            @submit="submitForm">
+            <div class="space-y-4">
+              <UFormField
+                label="Наименование"
+                name="name">
+                <UInput
+                  v-model="formState.name"
+                  placeholder="Введите наименование"
+                  class="w-full" />
+              </UFormField>
+
+              <UFormField label="Файл (только для замены существующего)">
+                <UFileUpload
+                  position="inside"
+                  layout="list"
+                  label="Click or drop the file here"
+                  description="Only PDF allowed"
+                  accept=".pdf"
+                  v-model="formState.file"
+                  color="neutral"
+                  highlight
+                  class="w-full"
+                  :ui="{
+                    base: 'min-h-32',
+                  }" />
+              </UFormField>
+            </div>
+          </UForm>
+        </template>
+        <template #footer>
+          <div class="flex w-full justify-end gap-x-4">
+            <UButton
+              label="Отмена"
+              variant="outline"
+              color="neutral"
+              @click="closeForm" />
+            <UButton
+              label="Сохранить"
+              type="submit"
+              variant="subtle"
+              color="neutral"
+              class="px-8" />
+          </div>
+        </template>
+      </UModal>
+    </div>
   </div>
 </template>

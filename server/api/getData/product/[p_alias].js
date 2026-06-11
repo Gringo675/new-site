@@ -12,7 +12,7 @@ export default defineEventHandler(async event => {
   if (productData === undefined) throw createError({ statusCode: 404, statusMessage: 'Page Not Found!' })
   // console.log(`productData: ${JSON.stringify(productData)}`);
 
-  const propsGroups = usePropsGroups()
+  const propsGroups = Array.from(usePrpsGroupsMap().keys())
   // отбираем под- и под-под-категории, к которым относится данный продукт
   query = `SELECT id FROM i_categories
             WHERE (parent_id = ${productData.category_id} OR
@@ -66,13 +66,13 @@ export default defineEventHandler(async event => {
                  FROM i_properties 
                  WHERE id IN (${productData.props.map(prop => prop.val).join()})`
   const decipherP = await dbReq(query)
-  const catProps = useCatProps(productData.category_id)
+  const catProps = usePrpsGroupsMap(productData.category_id)
   let brandIndex // нужно вытащить из характеристик производителя в отдельное свойство
   productData.props.forEach((prop, i) => {
     if (prop.name === 'p0_brand') brandIndex = i
     prop.val = decipherP.find(item => item.id === prop.val)?.name
-    prop.ordering = catProps[prop.name].ordering
-    prop.name = catProps[prop.name].name
+    prop.ordering = catProps.get(prop.name).ordering
+    prop.name = catProps.get(prop.name).name
   })
   productData.brand = {
     shortName: productData.props[brandIndex].val,

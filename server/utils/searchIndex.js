@@ -6,9 +6,7 @@ const miniSearchOptions = {
   processTerm: term => {
     if (term.includes('-')) {
       // add variants for terms with hyphen: aa-11 -> ['aa-11', 'aa', '11', 'aa11']
-      return [term.toLowerCase(), ...term.split('-').map(t => t.toLowerCase()), term.replace(/-/g, '')].map(t =>
-        t.toLowerCase(),
-      )
+      return [term.toLowerCase(), ...term.split('-').map(t => t.toLowerCase()), term.replace(/-/g, '')].map(t => t.toLowerCase())
     }
     return term.toLowerCase() // default normalization
   },
@@ -55,7 +53,7 @@ export const refreshSearchIndex = async () => {
 }
 
 const createSearchIndexDocsJSON = async () => {
-  const propsGroups = usePropsGroups()
+  const propsGroups = Array.from(usePrpsGroupsMap().keys())
 
   const prodsQuery = `SELECT
     p.id,

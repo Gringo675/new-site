@@ -39,22 +39,22 @@ export default defineEventHandler(async event => {
   if (!products.length) return { catData }
 
   // на основе полученных товаров создаем фильтр
-  const filterGroups = useCatProps(productsCatId)
+  const filterGroups = usePrpsGroupsMap(productsCatId)
   const allProps = [] // набор из всех уникальных id, для запроса в базу
 
-  for (let propKey in filterGroups) {
-    filterGroups[propKey].ids = {} // будем считать, в скольких продуктах присутствует активный пропс, чтобы исключить значения, присутствующие во всех продуктах
+  for (let propKey of filterGroups.keys()) {
+    filterGroups.get(propKey).ids = {} // будем считать, в скольких продуктах присутствует активный пропс, чтобы исключить значения, присутствующие во всех продуктах
 
     products.forEach(product => {
-      if (!filterGroups[propKey].disabled && product[propKey] > 0) {
-        filterGroups[propKey].ids[product[propKey]] = (filterGroups[propKey].ids[product[propKey]] || 0) + 1
+      if (!filterGroups.get(propKey).disabled && product[propKey] > 0) {
+        filterGroups.get(propKey).ids[product[propKey]] = (filterGroups.get(propKey).ids[product[propKey]] || 0) + 1
         if (product.props === undefined) product.props = [] // собираем все пропсы в 1 массив, чтобы легче работать с фильтром
         product.props.push(product[propKey])
       }
       delete product[propKey] // удаляем, больше не понадобится
     })
-    for (const id in filterGroups[propKey].ids) {
-      if (filterGroups[propKey].ids[id] === products.length) delete filterGroups[propKey].ids[id]
+    for (const id in filterGroups.get(propKey).ids) {
+      if (filterGroups.get(propKey).ids[id] === products.length) delete filterGroups.get(propKey).ids[id]
       else allProps.push(id)
     }
   }
@@ -73,7 +73,7 @@ export default defineEventHandler(async event => {
     })
 
     // создаем фильтр: отбираем группы в которых есть пропсы, сортируем группы
-    filter = Object.values(filterGroups)
+    filter = Array.from(filterGroups.values())
       .filter(fGroup => !fGroup.disabled && Object.keys(fGroup.ids).length > 0)
       .sort((a, b) => a.ordering - b.ordering)
     filter.forEach(fGroup => {

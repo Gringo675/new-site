@@ -115,7 +115,7 @@ export default defineNuxtConfig({
     dbOldName: process.env.DB_OLD_NAME,
     dbOldUser: process.env.DB_OLD_USER,
     dbOldPassword: process.env.NODE_ENV === 'production' ? process.env.DB_OLD_PASSWORD : process.env.DB_OLD_PASSWORD_LOCAL,
-    JWT_TOKEN_KEY: process.env.JWT_TOKEN,
+    JWT_TOKEN_KEY: process.env.JWT_TOKEN_KEY,
     JWT_TOKEN_LIFETIME: process.env.JWT_TOKEN_LIFETIME,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     VK_CLIENT_SECRET: process.env.VK_CLIENT_SECRET,

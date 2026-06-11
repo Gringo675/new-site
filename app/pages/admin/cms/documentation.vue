@@ -84,7 +84,7 @@ const tabs = [
 
 <template>
   <!-- content -->
-  <div class="pb-7">
+  <div class="h-full pb-7">
     <AdminDocumentationProd
       id="products"
       v-show="activeTab === 'products'"

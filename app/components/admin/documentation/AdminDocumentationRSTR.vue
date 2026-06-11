@@ -214,7 +214,7 @@ const getActionsItems = row => [
 </script>
 
 <template>
-  <div>
+  <div class="flex h-full flex-col gap-1">
     <div class="flex items-center gap-4">
       <UButton
         label="Добавить запись"
@@ -238,203 +238,207 @@ const getActionsItems = row => [
           @click="emit('refreshDB')" />
       </div>
     </div>
-
-    <UTable
-      ref="table"
-      :data="rstr"
-      :columns="columns"
-      v-model:global-filter="globalFilter"
-      class="my-4"
-      :ui="{
-        th: 'text-center bg-gray-100',
-        td: 'p-2',
-        tr: 'hover:bg-gray-200',
-      }">
-      <template #name-cell="{ row }">
-        <div class="max-w-xs wrap-break-word whitespace-normal">
-          {{ row.original.name }}
-        </div>
-      </template>
-      <template #type_si-cell="{ row }">
-        <div class="max-w-xs wrap-break-word whitespace-normal">
-          {{ row.original.type_si }}
-        </div>
-      </template>
-      <template #brand-cell="{ row }">
-        <div class="max-w-xs wrap-break-word whitespace-normal">
-          {{ row.original.brand }}
-        </div>
-      </template>
-      <template #date-cell="{ row }">
-        <div v-if="row.original.date">
-          {{ new Date(row.original.date).toLocaleDateString('ru-RU') }}
-        </div>
-      </template>
-      <template #file_ot-cell="{ row }">
-        <div class="max-w-xs wrap-break-word whitespace-normal">
-          <a
-            v-if="row.original.file_ot"
-            :href="`/static/doc/rstr/${encodeURIComponent(row.original.file_ot)}`"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-blue-600 hover:underline">
-            {{ row.original.file_ot }}
-          </a>
-        </div>
-      </template>
-      <template #file_mp-cell="{ row }">
-        <div class="max-w-xs wrap-break-word whitespace-normal">
-          <a
-            v-if="row.original.file_mp"
-            :href="`/static/doc/rstr/${encodeURIComponent(row.original.file_mp)}`"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-blue-600 hover:underline">
-            {{ row.original.file_mp }}
-          </a>
-        </div>
-      </template>
-      <template #file_svid-cell="{ row }">
-        <div class="max-w-xs wrap-break-word whitespace-normal">
-          <a
-            v-if="row.original.file_svid"
-            :href="`/static/doc/rstr/${encodeURIComponent(row.original.file_svid)}`"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-blue-600 hover:underline">
-            {{ row.original.file_svid }}
-          </a>
-        </div>
-      </template>
-      <template #actions-cell="{ row }">
-        <UDropdownMenu
-          :items="getActionsItems(row.original)"
-          :ui="{ content: 'w-48' }">
-          <UButton
-            color="neutral"
-            variant="ghost"
-            size="sm"
-            icon="i-heroicons-ellipsis-vertical" />
-        </UDropdownMenu>
-      </template>
-    </UTable>
-
-    <UModal
-      v-model:open="formState.isOpen"
-      title="Редактирование"
-      :dismissible="false"
-      :ui="{
-        content: 'max-w-xl',
-      }">
-      <template #body>
-        <UForm
-          :validate="validate"
-          :state="formState"
-          @submit="submitForm">
-          <div class="space-y-4">
-            <UFormField
-              label="Номер"
-              name="number">
-              <UInput
-                v-model="formState.number"
-                placeholder="Введите номер"
-                class="w-full" />
-            </UFormField>
-
-            <UFormField
-              label="Наименование"
-              name="name">
-              <UInput
-                v-model="formState.name"
-                placeholder="Введите наименование"
-                class="w-full" />
-            </UFormField>
-
-            <UFormField label="Тип СИ">
-              <UInput
-                v-model="formState.type_si"
-                placeholder="Введите тип СИ"
-                class="w-full" />
-            </UFormField>
-
-            <UFormField label="Производитель">
-              <UInput
-                v-model="formState.brand"
-                placeholder="Введите производителя"
-                class="w-full" />
-            </UFormField>
-
-            <UFormField label="Срок до">
-              <UInput
-                v-model="formState.date"
-                type="date"
-                class="w-full" />
-            </UFormField>
-
-            <UFormField label="Описание типа (только для замены)">
-              <UFileUpload
-                position="inside"
-                layout="list"
-                label="Click or drop the file here"
-                description="Only PDF allowed"
-                accept=".pdf"
-                v-model="formState.file_ot"
-                color="neutral"
-                highlight
-                class="w-full"
-                :ui="{
-                  base: 'min-h-24',
-                }" />
-            </UFormField>
-
-            <UFormField label="Методика поверки (только для замены)">
-              <UFileUpload
-                position="inside"
-                layout="list"
-                label="Click or drop the file here"
-                description="Only PDF allowed"
-                accept=".pdf"
-                v-model="formState.file_mp"
-                color="neutral"
-                highlight
-                class="w-full"
-                :ui="{
-                  base: 'min-h-24',
-                }" />
-            </UFormField>
-
-            <UFormField label="Свидетельство (только для замены)">
-              <UFileUpload
-                position="inside"
-                layout="list"
-                label="Click or drop the file here"
-                description="Only PDF allowed"
-                accept=".pdf"
-                v-model="formState.file_svid"
-                color="neutral"
-                highlight
-                class="w-full"
-                :ui="{
-                  base: 'min-h-24',
-                }" />
-            </UFormField>
-
-            <div class="flex justify-end gap-x-4">
-              <UButton
-                label="Отмена"
-                variant="outline"
-                color="neutral"
-                @click="closeForm" />
-              <UButton
-                label="Сохранить"
-                type="submit"
-                variant="subtle"
-                color="neutral"
-                class="px-8" />
-            </div>
+    <div class="min-h-0 w-full grow">
+      <UTable
+        ref="table"
+        :data="rstr"
+        :columns="columns"
+        v-model:global-filter="globalFilter"
+        class="h-full w-full"
+        sticky
+        virtualize
+        :ui="{
+          th: 'text-center bg-gray-100',
+          td: 'p-2',
+          tr: 'hover:bg-gray-200',
+        }">
+        <template #name-cell="{ row }">
+          <div class="max-w-xs wrap-break-word whitespace-normal">
+            {{ row.original.name }}
           </div>
-        </UForm>
-      </template>
-    </UModal>
+        </template>
+        <template #type_si-cell="{ row }">
+          <div class="max-w-xs wrap-break-word whitespace-normal">
+            {{ row.original.type_si }}
+          </div>
+        </template>
+        <template #brand-cell="{ row }">
+          <div class="max-w-xs wrap-break-word whitespace-normal">
+            {{ row.original.brand }}
+          </div>
+        </template>
+        <template #date-cell="{ row }">
+          <div v-if="row.original.date">
+            {{ new Date(row.original.date).toLocaleDateString('ru-RU') }}
+          </div>
+        </template>
+        <template #file_ot-cell="{ row }">
+          <div class="max-w-xs wrap-break-word whitespace-normal">
+            <a
+              v-if="row.original.file_ot"
+              :href="`/static/doc/rstr/${encodeURIComponent(row.original.file_ot)}`"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-blue-600 hover:underline">
+              {{ row.original.file_ot }}
+            </a>
+          </div>
+        </template>
+        <template #file_mp-cell="{ row }">
+          <div class="max-w-xs wrap-break-word whitespace-normal">
+            <a
+              v-if="row.original.file_mp"
+              :href="`/static/doc/rstr/${encodeURIComponent(row.original.file_mp)}`"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-blue-600 hover:underline">
+              {{ row.original.file_mp }}
+            </a>
+          </div>
+        </template>
+        <template #file_svid-cell="{ row }">
+          <div class="max-w-xs wrap-break-word whitespace-normal">
+            <a
+              v-if="row.original.file_svid"
+              :href="`/static/doc/rstr/${encodeURIComponent(row.original.file_svid)}`"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-blue-600 hover:underline">
+              {{ row.original.file_svid }}
+            </a>
+          </div>
+        </template>
+        <template #actions-cell="{ row }">
+          <UDropdownMenu
+            :items="getActionsItems(row.original)"
+            :ui="{ content: 'w-48' }">
+            <UButton
+              color="neutral"
+              variant="ghost"
+              size="sm"
+              icon="i-heroicons-ellipsis-vertical" />
+          </UDropdownMenu>
+        </template>
+      </UTable>
+
+      <UModal
+        v-model:open="formState.isOpen"
+        title="Редактирование"
+        :dismissible="false"
+        :ui="{
+          content: 'max-w-xl',
+        }">
+        <template #body>
+          <UForm
+            :validate="validate"
+            :state="formState"
+            @submit="submitForm">
+            <div class="space-y-4">
+              <UFormField
+                label="Номер"
+                name="number">
+                <UInput
+                  v-model="formState.number"
+                  placeholder="Введите номер"
+                  class="w-full" />
+              </UFormField>
+
+              <UFormField
+                label="Наименование"
+                name="name">
+                <UInput
+                  v-model="formState.name"
+                  placeholder="Введите наименование"
+                  class="w-full" />
+              </UFormField>
+
+              <UFormField label="Тип СИ">
+                <UInput
+                  v-model="formState.type_si"
+                  placeholder="Введите тип СИ"
+                  class="w-full" />
+              </UFormField>
+
+              <UFormField label="Производитель">
+                <UInput
+                  v-model="formState.brand"
+                  placeholder="Введите производителя"
+                  class="w-full" />
+              </UFormField>
+
+              <UFormField label="Срок до">
+                <UInput
+                  v-model="formState.date"
+                  type="date"
+                  class="w-full" />
+              </UFormField>
+
+              <UFormField label="Описание типа (только для замены)">
+                <UFileUpload
+                  position="inside"
+                  layout="list"
+                  label="Click or drop the file here"
+                  description="Only PDF allowed"
+                  accept=".pdf"
+                  v-model="formState.file_ot"
+                  color="neutral"
+                  highlight
+                  class="w-full"
+                  :ui="{
+                    base: 'min-h-24',
+                  }" />
+              </UFormField>
+
+              <UFormField label="Методика поверки (только для замены)">
+                <UFileUpload
+                  position="inside"
+                  layout="list"
+                  label="Click or drop the file here"
+                  description="Only PDF allowed"
+                  accept=".pdf"
+                  v-model="formState.file_mp"
+                  color="neutral"
+                  highlight
+                  class="w-full"
+                  :ui="{
+                    base: 'min-h-24',
+                  }" />
+              </UFormField>
+
+              <UFormField label="Свидетельство (только для замены)">
+                <UFileUpload
+                  position="inside"
+                  layout="list"
+                  label="Click or drop the file here"
+                  description="Only PDF allowed"
+                  accept=".pdf"
+                  v-model="formState.file_svid"
+                  color="neutral"
+                  highlight
+                  class="w-full"
+                  :ui="{
+                    base: 'min-h-24',
+                  }" />
+              </UFormField>
+            </div>
+          </UForm>
+        </template>
+        <template #footer>
+          <div class="flex w-full justify-end gap-x-4">
+            <UButton
+              label="Отмена"
+              variant="outline"
+              color="neutral"
+              @click="closeForm" />
+            <UButton
+              label="Сохранить"
+              type="submit"
+              variant="subtle"
+              color="neutral"
+              class="px-8" />
+          </div>
+        </template>
+      </UModal>
+    </div>
   </div>
 </template>

@@ -13,8 +13,8 @@ const pool = mysql.createPool({
   timezone: 'Z',
 })
 
-export default async query => {
-  const [rows] = await pool.execute(query)
-
+export default async (query, params = []) => {
+  // pool.execute handles prepared statements automatically in mysql2
+  const [rows] = await pool.execute(query, params)
   return rows
 }

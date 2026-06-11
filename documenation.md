@@ -1,6 +1,6 @@
 ## chord
 - improve dbReq(query, [par1, par2]) (string interpolation under the hood?)
-- implement industry news functionality?
+In a production environment, using parameterized queries (prepared statements) is the industry standard for preventing these vulnerabilities.
 
 ## errors issue
 - 500 errors on RecentlyViewed.vue and CatalogProductsWrapper.vue
@@ -14,12 +14,13 @@
 - links to url
 
 ## cms
-- replace useCatProps and usePropsGroups with usePrpsGroups
 products:
 - AI text generation
 vendors:
-- save vendors data in DB, each in separate table
-- save product's changed vendor price and quantity
+- replace old_id in kirov, stiz prices
+- how to use discount price?
+- how to set verification price? Relevant only for Kirov, create independent script.
+- parse Kirov's stock?
 prices:
 - column's width
 - no consistency: quantity, notice (and no online access to .xls file). Solution - export .xls to mysql. Or better replace with online editor. (+ quantity case...). Another solution: Google Sheets.
