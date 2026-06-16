@@ -28,7 +28,7 @@ export default defineEventHandler(async event => {
 
   const products = await dbReq(`SELECT id, name, brand_eans FROM ${productsTable} WHERE p0_brand = ?`, [vendorId])
 
-  const vendorItems = await dbReq(`SELECT ean, name FROM ${vendorTable}`)
+  const vendorItems = await dbReq(`SELECT ean, name, stock FROM ${vendorTable}`)
 
   return { products, vendorItems }
 })

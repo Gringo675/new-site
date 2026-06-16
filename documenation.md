@@ -1,6 +1,8 @@
 ## chord
 - improve dbReq(query, [par1, par2]) (string interpolation under the hood?)
-In a production environment, using parameterized queries (prepared statements) is the industry standard for preventing these vulnerabilities.
+
+## old id's replacement
+- replace old_id in kirov, stiz prices
 
 ## errors issue
 - 500 errors on RecentlyViewed.vue and CatalogProductsWrapper.vue
@@ -17,7 +19,6 @@ In a production environment, using parameterized queries (prepared statements) i
 products:
 - AI text generation
 vendors:
-- replace old_id in kirov, stiz prices
 - how to use discount price?
 - how to set verification price? Relevant only for Kirov, create independent script.
 - parse Kirov's stock?
