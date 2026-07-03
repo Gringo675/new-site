@@ -19,22 +19,22 @@ export default defineEventHandler(async event => {
     }
 
     // проверяем, есть ли юзер с полученной почтой в базе
-    let query = `SELECT id, ver_code, admin FROM i_users 
-        WHERE mail = '${oUser.email}' LIMIT 1`
-    let user = (await dbReq(query))[0]
+    let query = `SELECT id, ver_code, admin FROM i_users
+        WHERE mail = ? LIMIT 1`
+    let user = (await dbReq(query, [oUser.email]))[0]
     if (user) {
       // есть в базе
       if (user.ver_code !== 0) {
         // верифицируем юзера
-        query = `UPDATE i_users SET ver_code = '' WHERE id = ${user.id}`
-        await dbReq(query)
+        query = `UPDATE i_users SET ver_code = '' WHERE id = ?`
+        await dbReq(query, [user.id])
       }
     } else {
       // добавляем
       user = {}
       query = `INSERT INTO i_users (mail, name, created)
-             VALUES('${oUser.email}', '${oUser.name}', '${new Date().toISOString()}')`
-      user.id = (await dbReq(query)).insertId
+             VALUES(?, ?, ?)`
+      user.id = (await dbReq(query, [oUser.email, oUser.name, new Date().toISOString()])).insertId
       user.admin = 0
     }
 
@@ -102,11 +102,7 @@ export default defineEventHandler(async event => {
     <body>
       <div class="card">
         <div class="icon">
-          ${
-            resultText.includes('успешно')
-              ? '<svg width="56" height="56" fill="none" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#ede9fe"/><path d="M18 29l7 7 13-13" stroke="#6141f0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-              : '<svg width="56" height="56" fill="none" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#fff7ed"/><path d="M20 36L36 20M36 36L20 20" stroke="#f97316" stroke-width="3" stroke-linecap="round"/></svg>'
-          }
+          ${resultText.includes('успешно') ? '<svg width="56" height="56" fill="none" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#ede9fe"/><path d="M18 29l7 7 13-13" stroke="#6141f0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '<svg width="56" height="56" fill="none" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#fff7ed"/><path d="M20 36L36 20M36 36L20 20" stroke="#f97316" stroke-width="3" stroke-linecap="round"/></svg>'}
         </div>
         <h2 class="${resultText.includes('успешно') ? 'success' : 'error'}">${resultText}</h2>
         <button class="btn" onclick="window.open('', '_self', ''); window.close();">Закрыть окно</button>

@@ -33,11 +33,12 @@ export default defineEventHandler(async event => {
 const saveOrder = async (event, order) => {
   // сохраняем заказ в базе и возвращаем id (номер) заказа
   const userId = (await checkToken(event)).id
-  const query = `INSERT INTO i_orders SET created = '${order.created}', user_id = '${userId}',
-                  cart = '${prepareString(order.cart)}', message = '${prepareString(order.message)}',
-                  files = '${order.files.length ? prepareString(order.files.map(file => file.filename).join(', ')) : ''}'`
+  const query = `INSERT INTO i_orders SET created = ?, user_id = ?,
+                   cart = ?, message = ?,
+                   files = ?`
+  const filesStr = order.files.length ? order.files.map(file => file.filename).join(', ') : ''
   // @ts-ignore
-  return Number((await dbReq(query)).insertId)
+  return Number((await dbReq(query, [order.created, userId, order.cart, order.message, filesStr])).insertId)
 }
 
 const sendMails = async (order, event) => {

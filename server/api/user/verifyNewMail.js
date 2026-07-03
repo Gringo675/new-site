@@ -13,8 +13,8 @@ export default defineEventHandler(async event => {
   if (!validateMail(mail)) throw createError({ statusCode: 400, statusMessage: `Incorrect mail format!` })
 
   // проверяем на отсутствие в базе (уникальность)
-  const query = `SELECT id FROM i_users WHERE mail = '${mail}' LIMIT 1`
-  if ((await dbReq(query))[0]) return { error: true, message: 'Почтовый адрес уже принадлежит другому пользователю!' }
+  const query = `SELECT id FROM i_users WHERE mail = ? LIMIT 1`
+  if ((await dbReq(query, [mail]))[0]) return { error: true, message: 'Почтовый адрес уже принадлежит другому пользователю!' }
 
   const code = getRandomCode().toString()
   const hashCode = createHash('sha256').update(code).digest('hex')

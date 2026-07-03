@@ -38,9 +38,9 @@ export const createToken = (user, event) => {
 
   // записываем в базу время обновления
   const query = `UPDATE i_users
-                   SET last_refresh = '${new Date().toISOString()}'
-                   WHERE id = ${user.id}`
-  dbReq(query)
+                    SET last_refresh = ?
+                    WHERE id = ?`
+  dbReq(query, [new Date().toISOString(), user.id])
 }
 
 export const deleteToken = event => {
@@ -54,8 +54,8 @@ export const deleteToken = event => {
 
 export const refreshToken = async (tokenUser, event) => {
   const query = `SELECT id, admin
-                   FROM i_users WHERE id = ${tokenUser.id} LIMIT 1`
-  const user = (await dbReq(query))[0]
+                    FROM i_users WHERE id = ? LIMIT 1`
+  const user = (await dbReq(query, [tokenUser.id]))[0]
   if (!user) throw createError({ statusCode: 401, statusMessage: `User not found!` })
 
   createToken(user, event)

@@ -9,9 +9,11 @@ export default defineEventHandler(async event => {
   if (!newData.length) throw createError({ statusCode: 400, statusMessage: `Incorrect data format!` })
   verifyData(newData)
 
-  const values = newData.map(item => `${item.field} = '${prepareString(item.value)}'`).join(', ')
-  const query = `UPDATE i_users SET ${values} WHERE id = ${tokenUser.id}`
-  await dbReq(query)
+  const values = newData.map(item => `${item.field} = ?`).join(', ')
+  const params = newData.map(item => item.value)
+  params.push(tokenUser.id)
+  const query = `UPDATE i_users SET ${values} WHERE id = ?`
+  await dbReq(query, params)
 
   return true
 })
@@ -27,20 +29,16 @@ const verifyData = data => {
         if (!validateMail(item.value)) throw createError({ statusCode: 400, statusMessage: `Incorrect mail format!` })
         break
       case 'org':
-        if (item.value.length && item.value.length < 3)
-          throw createError({ statusCode: 400, statusMessage: `Incorrect organization format!` })
+        if (item.value.length && item.value.length < 3) throw createError({ statusCode: 400, statusMessage: `Incorrect organization format!` })
         break
       case 'inn':
-        if (item.value.length && (isNaN(item.value) || (item.value.length !== 10 && item.value.length !== 12)))
-          throw createError({ statusCode: 400, statusMessage: `Incorrect inn format!` })
+        if (item.value.length && (isNaN(item.value) || (item.value.length !== 10 && item.value.length !== 12))) throw createError({ statusCode: 400, statusMessage: `Incorrect inn format!` })
         break
       case 'address':
-        if (item.value.length && item.value.length < 3)
-          throw createError({ statusCode: 400, statusMessage: `Incorrect address format!` })
+        if (item.value.length && item.value.length < 3) throw createError({ statusCode: 400, statusMessage: `Incorrect address format!` })
         break
       case 'phone':
-        if (item.value.length && !validatePhone(item.value))
-          throw createError({ statusCode: 400, statusMessage: `Incorrect phone format!` })
+        if (item.value.length && !validatePhone(item.value)) throw createError({ statusCode: 400, statusMessage: `Incorrect phone format!` })
         break
     }
   }

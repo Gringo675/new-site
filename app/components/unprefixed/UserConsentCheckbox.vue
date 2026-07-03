@@ -30,7 +30,6 @@ function onError(event) {
     @error="onError">
     <UFormField name="consent">
       <UCheckbox
-        required
         v-model="state.consent"
         label="Политикой конфиденциальности"
         class="">

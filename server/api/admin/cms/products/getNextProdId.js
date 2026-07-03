@@ -4,7 +4,7 @@ export default defineEventHandler(async event => {
 
   if (!cat_id) throw createError({ statusCode: 400, statusMessage: 'cat_id is required' })
 
-  const result = await dbReq(`SELECT MAX(id) as maxId FROM ${table} WHERE category_id = ${cat_id}`)
+  const result = await dbReq(`SELECT MAX(id) as maxId FROM ${table} WHERE category_id = ?`, [cat_id])
   const maxId = result[0]?.maxId
 
   if (maxId !== null && maxId !== undefined) {

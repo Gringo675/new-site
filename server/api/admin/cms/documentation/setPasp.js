@@ -5,9 +5,11 @@ export default defineEventHandler(async event => {
   const dbTable = 'i_docs_pasp'
   const pasp = await getFormData(event)
   let query
+  let params = []
 
   if (pasp.delete) {
-    query = `DELETE FROM ${dbTable} WHERE id = ${pasp.id}`
+    query = `DELETE FROM ${dbTable} WHERE id = ?`
+    params = [pasp.id]
     if (pasp.fileName && (await fileExists(`/doc/pasp/${pasp.fileName}`))) {
       await deleteFile(`/doc/pasp/${pasp.fileName}`)
     }
@@ -23,13 +25,21 @@ export default defineEventHandler(async event => {
     }
     if (pasp.id > 0) {
       // don't update file if no new file was uploaded
-      query = `UPDATE ${dbTable} SET name = '${pasp.name}' ${pasp.fileName.length ? `, file = '${pasp.fileName}'` : ''} WHERE id = ${pasp.id}`
+      let updateSet = 'name = ?'
+      params = [pasp.name]
+      if (pasp.fileName.length) {
+        updateSet += ', file = ?'
+        params.push(pasp.fileName)
+      }
+      params.push(pasp.id)
+      query = `UPDATE ${dbTable} SET ${updateSet} WHERE id = ?`
     } else {
-      query = `INSERT INTO ${dbTable} (name, file) VALUES ('${pasp.name}', '${pasp.fileName}')`
+      query = `INSERT INTO ${dbTable} (name, file) VALUES (?, ?)`
+      params = [pasp.name, pasp.fileName]
     }
   }
   // console.log(`query: ${JSON.stringify(query, null, 2)}`)
-  await dbReq(query)
+  await dbReq(query, params)
 
   return true
 })

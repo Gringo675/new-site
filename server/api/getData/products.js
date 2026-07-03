@@ -7,10 +7,18 @@ export default defineEventHandler(async event => {
     throw createError({ statusCode: 500, statusMessage: 'Incorrect data!' })
   }
 
-  const query = `SELECT id, name, alias, price, special_price, images, label FROM i_products WHERE ${
-    lId ? `label = ${lId}` : `id IN (${pIds})`
-  } AND published = 1`
-  const products = await dbReq(query)
+  let query
+  let params = []
+  if (lId) {
+    query = `SELECT id, name, alias, price, special_price, images, label FROM i_products WHERE label = ? AND published = 1`
+    params = [lId]
+  } else {
+    const ids = pIds.split(',').map(Number)
+    const placeholders = ids.map(() => '?').join(',')
+    query = `SELECT id, name, alias, price, special_price, images, label FROM i_products WHERE id IN (${placeholders}) AND published = 1`
+    params = ids
+  }
+  const products = await dbReq(query, params)
 
   if (!products.length) return []
 

@@ -5,8 +5,8 @@ export default defineEventHandler(async event => {
   if (!alias.length) throw createError({ statusCode: 500, statusMessage: 'Incorrect URI!' })
 
   // получаем категорию
-  let query = `SELECT * FROM i_categories WHERE alias = '${alias}'  AND published = 1 LIMIT 1`
-  const catData = (await dbReq(query))[0]
+  let query = `SELECT * FROM i_categories WHERE alias = ?  AND published = 1 LIMIT 1`
+  const catData = (await dbReq(query, [alias]))[0]
   if (catData === undefined) throw createError({ statusCode: 404, statusMessage: 'Page Not Found!!!!' })
 
   const catActiveProps = [] // для основных категорий будет пустой массив, для подкатегорий добавляем ниже
@@ -22,20 +22,24 @@ export default defineEventHandler(async event => {
   if (catData.parent_id === 0) productsCatId = catData.id
   else {
     // т.к. на данный момент в категориях максимум 2 уровня вложенности, достаточно одного запроса для определения первого родителя
-    query = `SELECT parent_id FROM i_categories WHERE id = '${catData.parent_id}' LIMIT 1`
-    const parentParentId = (await dbReq(query))[0].parent_id
+    query = `SELECT parent_id FROM i_categories WHERE id = ? LIMIT 1`
+    const parentParentId = (await dbReq(query, [catData.parent_id]))[0].parent_id
     productsCatId = parentParentId > 0 ? parentParentId : catData.parent_id
   }
+  const productParams = [productsCatId]
+  const productFilter = catActiveProps.reduce((acc, prop) => {
+    const ids = prop[1].split(',').map(Number)
+    const placeholders = ids.map(() => '?').join(',')
+    productParams.push(...ids)
+    return acc + `AND ${prop[0]} IN (${placeholders}) `
+  }, '')
   query = `SELECT id, name, alias, price, special_price, images, label,
-                 p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature, p8_pack,
-                 standart_ids, reestr_ids
-                 FROM i_products WHERE category_id = '${productsCatId}' 
-                 ${catActiveProps.reduce((acc, prop) => {
-                   acc += `AND ${prop[0]} IN (${prop[1]}) ` // [name, value]
-                   return acc
-                 }, '')}
-                 AND published = 1`
-  const products = await dbReq(query)
+                  p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature, p8_pack,
+                  standart_ids, reestr_ids
+                  FROM i_products WHERE category_id = ?
+                  ${productFilter}
+                  AND published = 1`
+  const products = await dbReq(query, productParams)
   if (!products.length) return { catData }
 
   // на основе полученных товаров создаем фильтр
@@ -64,9 +68,9 @@ export default defineEventHandler(async event => {
   if (allProps.length) {
     // получаем пропсы
     query = `SELECT id, name, ordering
-                FROM i_properties 
-                WHERE id IN (${allProps.join(',')})`
-    const propsArr = await dbReq(query)
+                 FROM i_properties
+                 WHERE id IN (${allProps.map(() => '?').join(',')})`
+    const propsArr = await dbReq(query, allProps)
     const props = {} // для удобства создаем объект из всех пропсов
     propsArr.forEach(prop => {
       props[prop.id] = { name: prop.name, order: prop.ordering }
@@ -129,13 +133,17 @@ export default defineEventHandler(async event => {
   // catData.docs = {}
   if (stnds.size) {
     query = `SELECT number, name, file FROM i_docs_stnd
-                 WHERE id IN (${Array.from(stnds).join(',')})`
-    ;(catData.docs = catData.docs || {}).stnd = await dbReq(query)
+                  WHERE id IN (${Array.from(stnds)
+                    .map(() => '?')
+                    .join(',')})`
+    ;(catData.docs = catData.docs || {}).stnd = await dbReq(query, Array.from(stnds))
   }
   if (rstrs.size) {
     query = `SELECT number, name, type_si, brand, date, file_ot, file_mp, file_svid FROM i_docs_rstr
-                 WHERE id IN (${Array.from(rstrs).join(',')})`
-    ;(catData.docs = catData.docs || {}).rstr = await dbReq(query)
+                  WHERE id IN (${Array.from(rstrs)
+                    .map(() => '?')
+                    .join(',')})`
+    ;(catData.docs = catData.docs || {}).rstr = await dbReq(query, Array.from(rstrs))
   }
 
   // удаляем ненужное

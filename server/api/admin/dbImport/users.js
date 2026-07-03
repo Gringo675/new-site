@@ -2,9 +2,7 @@ export default defineEventHandler(async event => {
   // полностью переписывает таблицу i_users из старой базы
 
   try {
-    let users = await dbOldReq(
-      'SELECT `u_name`, `f_name`, `l_name`, firma_name, `email`, city, `phone` FROM `instr_jshopping_users`',
-    )
+    let users = await dbOldReq('SELECT `u_name`, `f_name`, `l_name`, firma_name, `email`, city, `phone` FROM `instr_jshopping_users`')
 
     // допиливаем
     for (const user of users) {
@@ -41,22 +39,17 @@ export default defineEventHandler(async event => {
       admin: 1,
     }
     // удаляем админа и дубликаты, мешающие импорту
-    users = users.filter(
-      user => !['gringo675g@gmail.com', 'gringo675@yandex.ru', '7907748@rambler.ru'].includes(user.email),
-    )
+    users = users.filter(user => !['gringo675g@gmail.com', 'gringo675@yandex.ru', '7907748@rambler.ru'].includes(user.email))
     users.unshift(admin)
 
     const currentDate = new Date().toISOString()
 
-    const query = `INSERT INTO i_users (mail, name, admin, org, address, phone, created) VALUES ${users
-      .map(
-        user =>
-          `('${user.email}', '${prepareString(user.name)}', '${user.admin}', '${prepareString(user.firma_name)}', '${prepareString(user.city)}', '${user.phone}', '${currentDate}')`,
-      )
-      .join(', ')}`
+    const placeholders = users.map(() => '(?, ?, ?, ?, ?, ?, ?)').join(', ')
+    const values = users.flatMap(user => [user.email, user.name, user.admin, user.firma_name, user.city, user.phone, currentDate])
+    const query = `INSERT INTO i_users (mail, name, admin, org, address, phone, created) VALUES ${placeholders}`
 
     await dbReq('TRUNCATE i_users') // удаляет все записи
-    await dbReq(query)
+    await dbReq(query, values)
 
     return { status: 'ok' }
   } catch (e) {

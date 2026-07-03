@@ -15,10 +15,8 @@ export default defineEventHandler(async event => {
 
   const getProducts = (qExpression, fastSearch) => {
     try {
-      const query = `SELECT id, name, alias, category_id, price, special_price, images, p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature, label FROM i_products WHERE name LIKE '%${qExpression}%' LIMIT ${
-        fastSearch ? '10' : '100'
-      }`
-      return dbReq(query)
+      const query = `SELECT id, name, alias, category_id, price, special_price, images, p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature, label FROM i_products WHERE name LIKE ? LIMIT ?`
+      return dbReq(query, [`%${qExpression}%`, fastSearch ? 10 : 100])
     } catch (e) {
       return null
     }
@@ -53,40 +51,32 @@ export default defineEventHandler(async event => {
       product.props.push(product[propsGroup.name])
       if (product[propsGroup.name] > 0) propsSet.add(product[propsGroup.name])
     }
-    if (catsWithProductProps[product.category_id] === undefined)
-      catsWithProductProps[product.category_id] = [product.props]
+    if (catsWithProductProps[product.category_id] === undefined) catsWithProductProps[product.category_id] = [product.props]
     else catsWithProductProps[product.category_id].push(product.props)
   }
   // получаем категории
   const qWhere = []
+  const qParams = []
   for (const key in catsWithProductProps) {
     const productsProps = []
     for (const props of catsWithProductProps[key]) {
       const chunks = []
       for (let i = 0; i < 8; i++) {
-        // chunks.push(`${propsGroupOrder[i].name} ${props[i] === 0 ? `= ${props[i]}` : `IN (0, ${props[i]})`}`)
-        chunks.push(
-          props[i] === 0
-            ? `${propsGroupOrder[i].name} = ''`
-            : `(${propsGroupOrder[i].name} = '' OR FIND_IN_SET(${props[i]}, ${propsGroupOrder[i].name}))`,
-        )
+        if (props[i] === 0) {
+          chunks.push(`${propsGroupOrder[i].name} = ''`)
+        } else {
+          chunks.push(`(${propsGroupOrder[i].name} = '' OR FIND_IN_SET(?, ${propsGroupOrder[i].name}))`)
+          qParams.push(props[i])
+        }
       }
-      productsProps.push(`${chunks.join(' AND ')}`)
+      productsProps.push(`(${chunks.join(' AND ')})`)
     }
-    // const chunk = `((id = ${key} OR parent_id = ${key} OR parent_id IN (SELECT id FROM i_categories WHERE parent_id = ${key})) AND ${`(${productsProps.join(
-    //   ' OR '
-    // )})`})`
-    // убрал под-под-категории
-    const chunk = `((id = ${key} OR parent_id = ${key}) AND ${`(${productsProps.join(' OR ')})`})`
-    // const chunk = `((parent_id = ${key}) AND ${`(${productsProps.join(' OR ')})`})`
-
+    const chunk = `((id = ? OR parent_id = ?) AND ${productsProps.join(' OR ')})`
+    qParams.push(key, key)
     qWhere.push(chunk)
   }
-  // let query = `SELECT name, id, parent_id, p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature, ordering FROM i_categories WHERE ${qWhere.join(
-  //   ' OR '
-  // )}`
   let query = `SELECT name, alias, id, parent_id, ordering FROM i_categories WHERE ${qWhere.join(' OR ')}`
-  const rawCats = await dbReq(query)
+  const rawCats = await dbReq(query, qParams)
   let cats = sortCategories(rawCats)
 
   // обрабатываем полученные категории
@@ -122,8 +112,10 @@ export default defineEventHandler(async event => {
   // }
 
   // получаем пропсы
-  query = `SELECT id, group_id, ordering FROM i_properties WHERE id IN (${Array.from(propsSet).join(', ')})`
-  const props = await dbReq(query)
+  query = `SELECT id, group_id, ordering FROM i_properties WHERE id IN (${Array.from(propsSet)
+    .map(() => '?')
+    .join(', ')})`
+  const props = await dbReq(query, Array.from(propsSet))
   const propsOrder = props
     .sort((a, b) => {
       // сначала отсортируем все пропсы по порядку групп
@@ -136,8 +128,7 @@ export default defineEventHandler(async event => {
   products = products
     .sort((a, b) => {
       // сначала сортируем по порядку категорий
-      if (a.category_id !== b.category_id)
-        return cats.findIndex(cat => cat.id === a.category_id) - cats.findIndex(cat => cat.id === b.category_id)
+      if (a.category_id !== b.category_id) return cats.findIndex(cat => cat.id === a.category_id) - cats.findIndex(cat => cat.id === b.category_id)
       // затем по пропсам
       for (const prop of propsOrder) {
         const isA = a.props.includes(prop)

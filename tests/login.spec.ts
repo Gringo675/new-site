@@ -11,17 +11,17 @@ test('test login, user pages and feedback', async ({ page, browserName }) => {
   await page.getByRole('button', { name: 'Войти' }).click()
   await expect(page.getByRole('heading', { name: 'Вход/регистрация' })).toBeVisible()
 
-  await page.getByRole('button', { name: 'Войти через google' }).click()
+  await page.getByRole('button', { name: 'Войти через vk' }).click()
 
   await expect(page.getByText('Для продолжения нам необходимо получить Ваше согласие')).toBeVisible()
 
   await page.getByRole('checkbox', { name: 'Подтверждаю Согласие на сбор и обработку моих персональных данных в соответствии' }).click()
 
-  await page.getByRole('button', { name: 'Войти через google' }).click()
-  const googlePage = await page.waitForEvent('popup')
-  await expect(googlePage.getByText('Sign in with Google')).toBeVisible({ timeout: 15000 })
-  await expect(googlePage.getByText('to continue to chelinstrument.ru')).toBeVisible()
-  await googlePage.close()
+  // await page.getByRole('button', { name: 'Войти через google' }).click()
+  // const googlePage = await page.waitForEvent('popup')
+  // await expect(googlePage.getByText('Sign in with Google')).toBeVisible({ timeout: 15000 })
+  // await expect(googlePage.getByText('to continue to chelinstrument.ru')).toBeVisible()
+  // await googlePage.close()
 
   await page.getByRole('button', { name: 'Войти через vk' }).click()
   const vkPage = await page.waitForEvent('popup')
@@ -62,9 +62,9 @@ test('test login, user pages and feedback', async ({ page, browserName }) => {
     await page.getByRole('button', { name: 'Быстрый заказ' }).click()
     await expect(page.getByRole('textbox', { name: 'Почта*' })).toHaveValue(process.env.FAST_LOGIN_MAIL ?? '')
     await page.getByRole('textbox', { name: 'Сообщение' }).fill(`Тестовое сообщение от ${currentDate}`)
-    
+
     await page.getByRole('button', { name: 'Ok' }).click()
-      await expect(page.getByText('Для продолжения нам необходимо получить Ваше согласие')).toBeVisible()
+    await expect(page.getByText('Для продолжения нам необходимо получить Ваше согласие')).toBeVisible()
     await page.getByRole('checkbox', { name: 'Подтверждаю Согласие на сбор и обработку моих персональных данных в соответствии' }).click()
 
     await page.getByRole('button', { name: 'Ok' }).click()

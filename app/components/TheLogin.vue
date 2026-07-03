@@ -153,11 +153,6 @@ const onSubmit = () => {
           <USeparator label="Или" />
           <div class="mx-auto w-3xs space-y-4">
             <UButton
-              label="Войти через google"
-              icon="i-mdi-google"
-              block
-              @click="runOAuth('google')" />
-            <UButton
               label="Войти через vk"
               icon="i-mdi-vk"
               block

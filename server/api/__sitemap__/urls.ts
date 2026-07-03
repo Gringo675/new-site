@@ -6,16 +6,17 @@ export default defineSitemapEventHandler(async (): Promise<SitemapUrl[]> => {
   const prods = (await dbReq(`SELECT alias FROM i_products WHERE published = 1`)) as { alias: string }[]
 
   // Текущая дата для сигнализации Google об обновлении
-  const today = new Date().toISOString()
+  // todo: need to get real lastmod date from db
+  // const today = new Date().toISOString()
 
   const urls = [
     ...cats.map(cat => ({
       loc: `/catalog/${cat.alias}`,
-      lastmod: today,
+      // lastmod: today,
     })),
     ...prods.map(prod => ({
       loc: `/product/${prod.alias}`,
-      lastmod: today,
+      // lastmod: today,
     })),
   ]
 

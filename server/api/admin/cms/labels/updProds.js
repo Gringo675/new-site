@@ -5,8 +5,7 @@ export default defineEventHandler(async event => {
   for (const prod of prods) {
     if (prod.id && prod.label !== undefined) {
       const val = prod.label
-      const formattedVal = val === null || val === undefined ? 'NULL' : val
-      await dbReq(`UPDATE ${table} SET label = ${formattedVal} WHERE id = ${prod.id}`)
+      await dbReq(`UPDATE ${table} SET label = ? WHERE id = ?`, [val, prod.id])
     }
   }
 

@@ -68,9 +68,7 @@ export default defineEventHandler(async event => {
       },
     }
     // получим всю таблицу изображений (так быстрее, чем получать изображения для каждого товара отдельным запросом)
-    const images = await dbOldReq(
-      'SELECT product_id, image_name AS name, ordering FROM instr_jshopping_products_images',
-    )
+    const images = await dbOldReq('SELECT product_id, image_name AS name, ordering FROM instr_jshopping_products_images')
 
     for (const prod of prods) {
       // вытаскиваем изображения
@@ -106,15 +104,14 @@ export default defineEventHandler(async event => {
     // собираем запрос
     const fieldsArr = Object.keys(prods[0]) // вытаскиваем названия полей из первого элемента
 
-    const prodsValues = prods
-      .map(prod => `(${fieldsArr.map(field => `'${prepareString(prod[field])}'`).join(', ')})`)
-      .join(', ')
+    const placeholders = prods.map(() => `(${fieldsArr.map(() => '?').join(', ')})`).join(', ')
+    const values = prods.flatMap(prod => fieldsArr.map(field => prod[field]))
 
-    const query = `INSERT INTO i_products (${fieldsArr.join(', ')}) VALUES ${prodsValues}`
+    const query = `INSERT INTO i_products (${fieldsArr.join(', ')}) VALUES ${placeholders}`
     // return query
 
     await dbReq('TRUNCATE i_products') // удаляет все записи
-    await dbReq(query)
+    await dbReq(query, values)
 
     return { status: 'ok' }
   } catch (e) {

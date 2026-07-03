@@ -39,17 +39,12 @@ export default defineEventHandler(async event => {
     // собираем запрос
     const fieldsArr = Object.keys(cats[0]) // вытаскиваем названия полей из первого элемента
 
-    const catsValues = cats
-      .map(cat => `(${fieldsArr.map(field => `'${prepareString(cat[field])}'`).join(', ')})`)
-      .join(', ')
+    const placeholders = cats.map(() => `(${fieldsArr.map(() => '?').join(', ')})`).join(', ')
+    const values = cats.flatMap(cat => fieldsArr.map(field => cat[field]))
 
-    const query = `INSERT INTO i_categories (${fieldsArr.join(
-      ', ',
-    )}) VALUES ${catsValues} ON DUPLICATE KEY UPDATE ${fieldsArr
-      .map(field => `${field} = VALUES(${field})`)
-      .join(', ')}`
+    const query = `INSERT INTO i_categories (${fieldsArr.join(', ')}) VALUES ${placeholders} ON DUPLICATE KEY UPDATE ${fieldsArr.map(field => `${field} = VALUES(${field})`).join(', ')}`
     // console.log(`query: ${JSON.stringify(query, null, 2)}`)
-    await dbReq(query)
+    await dbReq(query, values)
 
     return { status: 'ok' }
   } catch (e) {

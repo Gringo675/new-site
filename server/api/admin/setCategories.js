@@ -18,29 +18,25 @@ export default defineEventHandler(async event => {
 
     if (cat.isDel) {
       // удаляем
-      query = `DELETE FROM i_categories WHERE id = ${catID}`
-      // console.log(`query: ${query}`);
-      await dbReq(query)
+      query = `DELETE FROM i_categories WHERE id = ?`
+      await dbReq(query, [catID])
     } else if (cat.isNew) {
       // добавляем
       delete cat.isNew
-      const params = []
-      for (const key in cat) {
-        params.push(`${key} = '${prepareString(cat[key])}'`)
-      }
-      query = `INSERT INTO i_categories SET ${params.join(', ')}`
-      // console.log(`query: ${query}`);
-      const response = await dbReq(query)
+      const keys = Object.keys(cat)
+      const setClause = keys.map(key => `${key} = ?`).join(', ')
+      const values = keys.map(key => cat[key])
+      query = `INSERT INTO i_categories SET ${setClause}`
+      const response = await dbReq(query, values)
       addedCats.push({ tempId: catID, realId: response.insertId })
     } else {
       // обновляем
-      const params = []
-      for (const key in cat) {
-        params.push(`${key} = '${prepareString(cat[key])}'`)
-      }
-      query = `UPDATE i_categories SET ${params.join(', ')}  WHERE id = ${catID}`
-      // console.log(`query: ${query}`)
-      await dbReq(query)
+      const keys = Object.keys(cat)
+      const setClause = keys.map(key => `${key} = ?`).join(', ')
+      const values = keys.map(key => cat[key])
+      values.push(catID)
+      query = `UPDATE i_categories SET ${setClause} WHERE id = ?`
+      await dbReq(query, values)
     }
   }
 

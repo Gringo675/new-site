@@ -76,18 +76,11 @@ export default defineEventHandler(async event => {
   }
   try {
     // Формируем CASE для присвоения label по old_id
-    const cases = Object.entries(labels)
-      .map(([label, arr]) => `WHEN old_id IN (${arr.join(',')}) THEN ${label}`)
-      .join(' ')
-
-    const query = `UPDATE i_products
-      SET label = CASE
-        ${cases}
-        ELSE 0
-      END;`
-
-    // console.log(`query: ${query}`)
-    await dbReq(query)
+    await dbReq(`UPDATE i_products SET label = 0`)
+    for (const [label, ids] of Object.entries(labels)) {
+      const placeholders = ids.map(() => '?').join(',')
+      await dbReq(`UPDATE i_products SET label = ? WHERE old_id IN (${placeholders})`, [label, ...ids])
+    }
 
     return { status: 'ok' }
   } catch (e) {

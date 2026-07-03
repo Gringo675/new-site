@@ -1,13 +1,13 @@
 ## chord
-- improve dbReq(query, [par1, par2]) (string interpolation under the hood?)
 
 ## old id's replacement
 - replace old_id in kirov, stiz prices
+- excel
+- 1C
 
 ## errors issue
 - 500 errors on RecentlyViewed.vue and CatalogProductsWrapper.vue
-- do the cleaning:
-   - remove update date from sitemap
+"statusMessage": "[GET] \"/api/getData/product/linejka-300-mm-stiz\": <no response> Failed to fetch" - reload page?
 
 ## Log
 - parse data
@@ -16,6 +16,7 @@
 - links to url
 
 ## cms
+Implement product and category date change functionality (for sitemap)
 products:
 - AI text generation
 vendors:
@@ -23,7 +24,6 @@ vendors:
 - how to set verification price? Relevant only for Kirov, create independent script.
 - parse Kirov's stock?
 prices:
-- column's width
 - no consistency: quantity, notice (and no online access to .xls file). Solution - export .xls to mysql. Or better replace with online editor. (+ quantity case...). Another solution: Google Sheets.
 - 1C interaction
 

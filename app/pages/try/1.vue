@@ -1,188 +1,113 @@
-<template>
-  <div class="flex flex-col gap-8 p-10">
-    <h1 class="text-2xl font-bold">UTable DnD Isolation Test</h1>
-
-    <div class="flex gap-10">
-      <!-- Source Table (Using UTable with Manual Drag to bypass interference) -->
-      <div class="flex w-[40%] flex-col gap-1">
-        <h2 class="mb-2 font-semibold">Vendor EANs (Source)</h2>
-        <UTable
-          :data="sourceData"
-          :columns="sourceColumns"
-          class="w-full">
-          <template #tr-data="{ row }">
-            <tr class="transition-colors hover:bg-gray-100">
-              <td
-                v-for="col in sourceColumns"
-                :key="col.accessorKey"
-                class="border-b p-2">
-                <div
-                  v-if="col.accessorKey === 'ean'"
-                  class="inline-block cursor-grab select-none"
-                  @mousedown="startManualDrag($event, row.original?.ean || row.ean)">
-                  {{ row.original?.ean || row.ean }}
-                </div>
-                <div v-else>{{ row.original?.[col.accessorKey] || row[col.accessorKey] }}</div>
-              </td>
-            </tr>
-          </template>
-        </UTable>
-      </div>
-
-      <!-- Destination Table -->
-      <div class="flex w-[40%] flex-col gap-1">
-        <h2 class="mb-2 font-semibold">Product Rows (Destination)</h2>
-        <UTable
-          :data="destData"
-          :columns="destColumns"
-          class="w-full">
-          <template #tr-data="{ row }">
-            <tr
-              @dragover="onDragOver($event, row.original.id)"
-              @dragleave="onDragLeave($event, row.original.id)"
-              @drop="onDrop($event, row.original.id)"
-              :class="['transition-colors hover:bg-gray-100', dragOverProductId === row.original.id ? 'bg-blue-100 ring-2 ring-blue-400' : '']">
-              <td
-                v-for="col in destColumns"
-                :key="col.accessorKey"
-                class="border-b p-2">
-                <CellRenderer
-                  :col="col"
-                  :row="row" />
-              </td>
-            </tr>
-          </template>
-        </UTable>
-      </div>
-    </div>
-
-    <div
-      v-if="isDragging"
-      :style="{
-        position: 'fixed',
-        left: `${ghostPos.x}px`,
-        top: `${ghostPos.y}px`,
-        pointerEvents: 'none',
-        zIndex: 9999,
-      }"
-      class="rounded bg-blue-500 px-2 py-1 text-sm font-medium whitespace-nowrap text-white shadow-lg">
-      {{ draggedEan }}
-    </div>
-
-    <div class="mt-10 rounded bg-gray-100 p-4 font-mono text-sm">
-      <h3 class="mb-2 font-bold">State Log:</h3>
-      <p>Dragged EAN: {{ draggedEan || 'None' }}</p>
-      <p>Hovering Product ID: {{ dragOverProductId || 'None' }}</p>
-    </div>
-  </div>
-</template>
-
 <script setup>
-import { h } from 'vue'
+const result = ref(null)
+const isLoading = ref(false)
+const error = ref(null)
+const statusMessage = ref('Ready to start workflow')
 
-// --- State ---
-const sourceData = ref([
-  { ean: '1234567890123', name: 'Vendor A' },
-  { ean: '9876543210987', name: 'Vendor B' },
-  { ean: '1122334455667', name: 'Vendor C' },
-])
+async function startWorkflow() {
+  result.value = null
+  error.value = null
+  isLoading.value = true
+  statusMessage.value = 'Connecting to server...'
 
-const destData = ref([
-  { id: 1, name: 'Product A', eans: [] },
-  { id: 2, name: 'Product B', eans: [] },
-  { id: 3, name: 'Product C', eans: [] },
-])
+  try {
+    // Nitro WebSocket routes are typically accessed via ws:// or wss://
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+    const host = window.location.host
+    // const socket = new WebSocket(`${protocol}//${host}/api/ttests675/mastraWebSocket`)
+    const socket = new WebSocket(`/api/ttests675/mastraWebSocket`)
 
-const draggedEan = ref(null)
-const dragOverProductId = ref(null)
+    socket.onopen = () => {
+      statusMessage.value = 'Connected! Sending configuration...'
+      console.log('WebSocket connected')
 
-// --- Columns ---
-const sourceColumns = [
-  {
-    accessorKey: 'ean',
-    label: 'EAN',
-    cell: ({ row }) => {
-      const ean = row.original.ean
-      return h(
-        'div',
-        {
-          class: 'cursor-grab select-none inline-block',
+      // Send the configuration message to start the workflow
+      const config = {
+        action: 'start',
+        workflowId: 'category-workflow',
+        baseUrl: 'http://localhost:4111',
+        inputData: {
+          alias: 'nutromery-ni-v-vysokotochnye',
         },
-        ean,
-      )
-    },
-  },
-  { accessorKey: 'name', label: 'Vendor Name' },
-]
-
-const destColumns = [
-  { accessorKey: 'name', label: 'Product Name' },
-  {
-    accessorKey: 'eans',
-    label: 'EANs',
-    cell: ({ row }) => row.original.eans.join(', '),
-  },
-]
-
-onMounted(() => {
-  window.addEventListener(
-    'mousedown',
-    e => {
-      if (e.target instanceof HTMLElement && e.target.getAttribute('draggable') === 'true') {
-        console.log('[Isolation] 🛡️ Capture-phase shield active for:', e.target)
-        e.stopPropagation()
       }
-    },
-    true,
-  )
-})
-
-// --- Cell Renderer (needed for #tr-data) ---
-const CellRenderer = {
-  props: ['col', 'row'],
-  setup(props) {
-    return () => {
-      if (props.col.cell) {
-        return props.col.cell({ row: props.row })
-      }
-      return props.row.original[props.col.accessorKey]
+      socket.send(JSON.stringify(config))
     }
-  },
-}
 
-// --- DnD Handlers ---
-function onDragStart(e, ean) {
-  console.log('[Isolation] 🚀 DragStart fired', { ean })
-  draggedEan.value = ean
-  e.dataTransfer.effectAllowed = 'move'
-  e.dataTransfer.setData('text/plain', ean)
-}
+    socket.onmessage = event => {
+      try {
+        const response = JSON.parse(event.data)
+        if (response.status === 'success') {
+          result.value = response.data
+          statusMessage.value = 'Workflow completed successfully!'
+        } else if (response.status === 'info') {
+          statusMessage.value = response.message || 'Processing...'
+        } else {
+          error.value = response.error || 'Unknown error occurred'
+          statusMessage.value = 'Workflow failed.'
+        }
+      } catch (e) {
+        console.error('Error parsing message:', e)
+        error.value = 'Invalid response received from server'
+      } finally {
+        isLoading.value = false
+      }
+    }
 
-function onDragOver(e, id) {
-  console.log('[Isolation] 🔄 DragOver fired', { id })
-  e.preventDefault()
-  dragOverProductId.value = id
-  e.dataTransfer.dropEffect = 'move'
-}
+    socket.onerror = event => {
+      console.error('WebSocket error:', event)
+      error.value = 'WebSocket connection error'
+      statusMessage.value = 'Connection failed.'
+      isLoading.value = false
+    }
 
-function onDragLeave(e, id) {
-  console.log('[Isolation] ↩️ DragLeave fired', { id })
-  dragOverProductId.value = null
-}
-
-async function onDrop(e, id) {
-  console.log('[Isolation] 🎯 Drop event fired', { id })
-  e.preventDefault()
-  dragOverProductId.value = null
-
-  const ean = e.dataTransfer.getData('text/plain')
-  console.log('[Isolation] 📦 Retrieved EAN:', ean)
-
-  if (!ean) return
-
-  const prod = destData.value.find(p => p.id === id)
-  if (prod && !prod.eans.includes(ean)) {
-    prod.eans.push(ean)
+    socket.onclose = event => {
+      console.log('WebSocket closed:', event.code, event.reason)
+    }
+  } catch (e) {
+    error.value = e.message
+    statusMessage.value = 'Error initiating connection.'
+    isLoading.value = false
   }
 }
 </script>
+
+<template>
+  <div class="mx-auto max-w-4xl p-8">
+    <h1 class="mb-4 text-2xl font-bold">Mastra Workflow Test (WebSocket)</h1>
+
+    <div class="mb-6 flex items-center gap-4">
+      <button
+        @click="startWorkflow"
+        :disabled="isLoading"
+        class="rounded bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700 disabled:bg-gray-400">
+        {{ isLoading ? 'Processing...' : 'Start Workflow' }}
+      </button>
+
+      <span
+        v-if="isLoading"
+        class="flex items-center gap-2 text-gray-600">
+        <span class="animate-spin">🌀</span>
+        {{ statusMessage }}
+      </span>
+      <span
+        v-else
+        class="text-gray-600">
+        {{ statusMessage }}
+      </span>
+    </div>
+
+    <div
+      v-if="error"
+      class="mb-6 rounded border border-red-200 bg-red-100 p-4 text-red-700">
+      <strong>Error:</strong>
+      {{ error }}
+    </div>
+
+    <div
+      v-if="result"
+      class="mt-6">
+      <h2 class="mb-2 text-lg font-semibold">Workflow Result:</h2>
+      <pre class="max-h-96 overflow-auto rounded bg-gray-900 p-4 text-sm text-green-400">{{ JSON.stringify(result, null, 2) }}</pre>
+    </div>
+  </div>
+</template>

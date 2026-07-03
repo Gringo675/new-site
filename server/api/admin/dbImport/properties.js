@@ -2,13 +2,9 @@ export default defineEventHandler(async event => {
   // полностью переписывает таблицу i_properties из старой базы
 
   try {
-    const props = await dbOldReq(
-      'SELECT id, field_id AS group_id, `name_ru-RU` AS name, ordering FROM instr_jshopping_products_extra_field_values'
-    )
+    const props = await dbOldReq('SELECT id, field_id AS group_id, `name_ru-RU` AS name, ordering FROM instr_jshopping_products_extra_field_values')
     // отдельным запросом получаем бренды, т.к. в новой базе они являются параметрами
-    const brands = await dbOldReq(
-      'SELECT manufacturer_id AS id, `name_ru-RU` AS name, ordering FROM instr_jshopping_manufacturers'
-    )
+    const brands = await dbOldReq('SELECT manufacturer_id AS id, `name_ru-RU` AS name, ordering FROM instr_jshopping_manufacturers')
     brands.forEach(brand => {
       props.push({ id: brand.id, group_id: 0, name: brand.name, ordering: brand.ordering })
     })
@@ -18,13 +14,12 @@ export default defineEventHandler(async event => {
     })
 
     // собираем запрос
-    const propsValues = props
-      .map(prop => `(${prop.id}, ${prop.group_id}, '${prepareString(prop.name)}', ${prop.ordering})`)
-      .join(', ')
-    const query = `INSERT INTO i_properties (id, group_id, name, ordering) VALUES ${propsValues}`
+    const placeholders = props.map(() => '(?, ?, ?, ?)').join(', ')
+    const values = props.flatMap(prop => [prop.id, prop.group_id, prop.name, prop.ordering])
+    const query = `INSERT INTO i_properties (id, group_id, name, ordering) VALUES ${placeholders}`
 
     await dbReq('TRUNCATE i_properties') // удаляет все записи
-    await dbReq(query)
+    await dbReq(query, values)
 
     return { status: 'ok' }
   } catch (e) {

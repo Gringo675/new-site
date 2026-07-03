@@ -12,25 +12,19 @@ export default defineEventHandler(async event => {
 
   for (const prod of prods) {
     if (prod.isDel) {
-      await dbReq(`DELETE FROM ${table} WHERE id = ${prod.id}`)
+      await dbReq(`DELETE FROM ${table} WHERE id = ?`, [prod.id])
     } else if (prod.isNew) {
       const keys = Object.keys(prod).filter(k => k !== 'isNew' && k !== 'isDel')
-      const values = keys.map(k => {
-        const val = prod[k]
-        return typeof val === 'string' ? `'${prepareString(val)}'` : val === null || val === undefined ? 'NULL' : val
-      })
-      await dbReq(`INSERT INTO ${table} (${keys.join(', ')}) VALUES (${values.join(', ')})`)
+      const placeholders = keys.map(() => '?').join(', ')
+      const values = keys.map(k => prod[k])
+      await dbReq(`INSERT INTO ${table} (${keys.join(', ')}) VALUES (${placeholders})`, values)
     } else {
-      const updates = Object.keys(prod)
-        .filter(k => k !== 'id' && k !== 'isDel' && k !== 'isNew')
-        .map(k => {
-          const val = prod[k]
-          const formattedVal = typeof val === 'string' ? `'${prepareString(val)}'` : val === null || val === undefined ? 'NULL' : val
-          return `${k} = ${formattedVal}`
-        })
-
-      if (updates.length > 0) {
-        await dbReq(`UPDATE ${table} SET ${updates.join(', ')} WHERE id = ${prod.id}`)
+      const keys = Object.keys(prod).filter(k => k !== 'id' && k !== 'isDel' && k !== 'isNew')
+      const setClause = keys.map(k => `${k} = ?`).join(', ')
+      const values = keys.map(k => prod[k])
+      values.push(prod.id)
+      if (keys.length > 0) {
+        await dbReq(`UPDATE ${table} SET ${setClause} WHERE id = ?`, values)
       }
     }
   }

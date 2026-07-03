@@ -52,7 +52,7 @@ export default defineEventHandler(async event => {
   console.log(`started...`)
   // const products = await dbReq(`SELECT id, name, characteristics FROM i_products WHERE characteristics LIKE "%/Library/%" LIMIT ${batchSize}`)
   // the same for categories
-  const products = await dbReq(`SELECT id, name, characteristics FROM i_categories WHERE characteristics LIKE "%/Library/%" LIMIT ${batchSize}`)
+  const products = await dbReq(`SELECT id, name, characteristics FROM i_categories WHERE characteristics LIKE ? LIMIT ?`, ['%/Library/%', batchSize])
 
   if (!products || products.length === 0) return 'No products found'
 
@@ -117,11 +117,10 @@ export default defineEventHandler(async event => {
         // const query = `UPDATE i_products
         // SET characteristics = '${prepareString(updatedChars)}'
         // WHERE id = ${product.id}`
-        const query = `UPDATE i_categories 
-        SET characteristics = '${prepareString(updatedChars)}' 
-        WHERE id = ${product.id}`
-        // return query
-        await dbReq(query)
+        const query = `UPDATE i_categories
+        SET characteristics = ?
+        WHERE id = ?`
+        await dbReq(query, [updatedChars, product.id])
         // timeout
         await new Promise(resolve => setTimeout(resolve, 500))
       }

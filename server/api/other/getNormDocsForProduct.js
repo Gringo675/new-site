@@ -11,9 +11,9 @@ export default defineEventHandler(async event => {
     FROM
         i_products AS p
     WHERE
-        old_id = ${oldEan} 
-    LIMIT 1`
-    const prod = (await dbReq(query))[0]
+        old_id = ?
+        LIMIT 1`
+    const prod = (await dbReq(query, [oldEan]))[0]
 
     // reverse array
     return (prod.stnd_numbers ?? []).concat((prod.rstr_numbers ?? []).map(num => `ГРСИ №${num}`)).reverse()

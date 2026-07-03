@@ -14,16 +14,13 @@ export default defineEventHandler(async event => {
   const salt = crypto.randomBytes(3).toString('hex') // 6 symbols
   const hashCode = crypto.createHmac('SHA256', salt).update(`${code}`).digest('base64') + `.${salt}`
 
-  let query = `SELECT id FROM i_users WHERE mail = '${mail}' LIMIT 1`
-  const user = (await dbReq(query))[0]
+  const user = (await dbReq('SELECT id FROM i_users WHERE mail = ? LIMIT 1', [mail]))[0]
   if (user) {
-    query = `UPDATE i_users SET ver_code = '${hashCode}' WHERE id = ${user.id}`
+    await dbReq('UPDATE i_users SET ver_code = ? WHERE id = ?', [hashCode, user.id])
   } else {
     const name = mail.match(/(^.+)@/)[1]
-    query = `INSERT INTO i_users (name, mail, ver_code, created) 
-                VALUES ('${name}', '${mail}', '${hashCode}', '${new Date().toISOString()}')`
+    await dbReq('INSERT INTO i_users (name, mail, ver_code, created) VALUES (?, ?, ?, ?)', [name, mail, hashCode, new Date().toISOString()])
   }
-  await dbReq(query)
 
   // собираем ссылку для автоматического входа
   let loginURL = getSiteFullOrigin(event) + '/user/verification'

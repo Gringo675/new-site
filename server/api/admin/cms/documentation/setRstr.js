@@ -5,9 +5,11 @@ export default defineEventHandler(async event => {
   const dbTable = 'i_docs_rstr'
   const rstr = await getFormData(event)
   let query
+  let params = []
 
   if (rstr.delete) {
-    query = `DELETE FROM ${dbTable} WHERE id = ${rstr.id}`
+    query = `DELETE FROM ${dbTable} WHERE id = ?`
+    params = [rstr.id]
     if (rstr.fileName_ot && (await fileExists(`/doc/rstr/${rstr.fileName_ot}`))) {
       await deleteFile(`/doc/rstr/${rstr.fileName_ot}`)
     }
@@ -53,23 +55,30 @@ export default defineEventHandler(async event => {
 
     if (rstr.id > 0) {
       // don't update files if no new files were uploaded
-      query = `UPDATE ${dbTable} SET 
-        number = '${rstr.number}', 
-        name = '${rstr.name}', 
-        type_si = '${rstr.type_si}', 
-        brand = '${rstr.brand}', 
-        date = '${rstr.date || null}'
-        ${rstr.fileName_ot.length ? `, file_ot = '${rstr.fileName_ot}'` : ''}
-        ${rstr.fileName_mp.length ? `, file_mp = '${rstr.fileName_mp}'` : ''}
-        ${rstr.fileName_svid.length ? `, file_svid = '${rstr.fileName_svid}'` : ''}
-        WHERE id = ${rstr.id}`
+      params = [rstr.number, rstr.name, rstr.type_si, rstr.brand, rstr.date || null]
+      let updateSet = 'number = ?, name = ?, type_si = ?, brand = ?, date = ?'
+      if (rstr.fileName_ot.length) {
+        updateSet += ', file_ot = ?'
+        params.push(rstr.fileName_ot)
+      }
+      if (rstr.fileName_mp.length) {
+        updateSet += ', file_mp = ?'
+        params.push(rstr.fileName_mp)
+      }
+      if (rstr.fileName_svid.length) {
+        updateSet += ', file_svid = ?'
+        params.push(rstr.fileName_svid)
+      }
+      params.push(rstr.id)
+      query = `UPDATE ${dbTable} SET ${updateSet} WHERE id = ?`
     } else {
-      query = `INSERT INTO ${dbTable} (number, name, type_si, brand, date, file_ot, file_mp, file_svid) 
-        VALUES ('${rstr.number}', '${rstr.name}', '${rstr.type_si}', '${rstr.brand}', '${rstr.date || null}', '${rstr.fileName_ot}', '${rstr.fileName_mp}', '${rstr.fileName_svid}')`
+      query = `INSERT INTO ${dbTable} (number, name, type_si, brand, date, file_ot, file_mp, file_svid)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+      params = [rstr.number, rstr.name, rstr.type_si, rstr.brand, rstr.date || null, rstr.fileName_ot, rstr.fileName_mp, rstr.fileName_svid]
     }
   }
   // console.log(`query: ${JSON.stringify(query, null, 2)}`)
-  await dbReq(query)
+  await dbReq(query, params)
 
   return true
 })

@@ -172,12 +172,12 @@ export default defineNuxtConfig({
     exclude: ['/admin/**', '/user/**', '/try/**', '/materials/grsi', '/materials/standards'],
     sources: ['/api/__sitemap__/urls'],
     xslColumns: [
-      { label: 'URL', width: '70%' },
-      {
-        label: 'Last Updated',
-        width: '30%',
-        select: 'sitemap:lastmod',
-      },
+      { label: 'URL', width: '100%' },
+      // {
+      //   label: 'Last Updated',
+      //   width: '30%',
+      //   select: 'sitemap:lastmod',
+      // },
     ],
   },
   // robots: {
@@ -216,6 +216,11 @@ export default defineNuxtConfig({
 
   compatibilityDate: '2025-03-07',
 
+  nitro: {
+    experimental: {
+      websocket: true,
+    },
+  },
   // nitro: {
   //   storage: {
   //     static: {

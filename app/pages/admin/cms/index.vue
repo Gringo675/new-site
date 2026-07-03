@@ -6,6 +6,9 @@
   <HelperAdminOnly>
     <div class="flex gap-6">
       <UButton
+        label="AI описание категорий"
+        to="/admin/cms/aiCatDescription" />
+      <UButton
         label="Категории"
         to="/admin/cms/categories" />
       <UButton

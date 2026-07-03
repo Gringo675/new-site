@@ -7,31 +7,38 @@ export default defineEventHandler(async event => {
   if (!alias.length) throw createError({ statusCode: 500, statusMessage: 'Incorrect URI!' })
   // console.log(`API alias: ${alias}`);
 
-  let query = `SELECT * FROM i_products WHERE alias = '${alias}' AND published = 1`
-  const productData = (await dbReq(query))[0]
+  let query = `SELECT * FROM i_products WHERE alias = ? AND published = 1`
+  const productData = (await dbReq(query, [alias]))[0]
   if (productData === undefined) throw createError({ statusCode: 404, statusMessage: 'Page Not Found!' })
   // console.log(`productData: ${JSON.stringify(productData)}`);
 
   const propsGroups = Array.from(usePrpsGroupsMap().keys())
   // отбираем под- и под-под-категории, к которым относится данный продукт
+  const subCatsParams = [productData.category_id, productData.category_id]
+  const subCatsFilter = propsGroups
+    .map(prop => {
+      subCatsParams.push(productData[prop])
+      return `AND (${prop} = '' OR FIND_IN_SET(?, ${prop})) `
+    })
+    .join('')
   query = `SELECT id FROM i_categories
-            WHERE (parent_id = ${productData.category_id} OR
-            parent_id IN (SELECT id FROM i_categories WHERE parent_id = ${productData.category_id}))
-            ${propsGroups.map(prop => `AND (${prop} = '' OR FIND_IN_SET('${productData[prop]}', ${prop})) `).join('')}
-            AND published = 1`
+             WHERE (parent_id = ? OR
+             parent_id IN (SELECT id FROM i_categories WHERE parent_id = ?))
+             ${subCatsFilter}
+             AND published = 1`
   // убрал под-под-категории
   // query = `SELECT id FROM i_categories
   //           WHERE parent_id = ${productData.category_id}
   //           ${propsGroups.map(prop => `AND (${prop} = '' OR FIND_IN_SET('${productData[prop]}', ${prop})) `).join('')}
   //           AND published = 1`
 
-  productData.subCatsId = (await dbReq(query)).map(item => item.id)
+  productData.subCatsId = (await dbReq(query, subCatsParams)).map(item => item.id)
 
   // отбираем related prods (из той же категории и максимально совпадающие по параметрам)
-  query = `SELECT id, name, alias, price, special_price, images, label, ${propsGroups.join()} 
-                 FROM i_products 
-                 WHERE category_id = ${productData.category_id} AND id != ${productData.id} AND published = 1`
-  const related = await dbReq(query)
+  query = `SELECT id, name, alias, price, special_price, images, label, ${propsGroups.join()}
+                  FROM i_products
+                  WHERE category_id = ? AND id != ? AND published = 1`
+  const related = await dbReq(query, [productData.category_id, productData.id])
   related.forEach(rel => {
     rel.points = 0
     propsGroups.forEach(prop => {
@@ -63,9 +70,12 @@ export default defineEventHandler(async event => {
       })
   })
   query = `SELECT id, name
-                 FROM i_properties 
-                 WHERE id IN (${productData.props.map(prop => prop.val).join()})`
-  const decipherP = await dbReq(query)
+                  FROM i_properties
+                  WHERE id IN (${productData.props.map(() => '?').join(',')})`
+  const decipherP = await dbReq(
+    query,
+    productData.props.map(prop => prop.val),
+  )
   const catProps = usePrpsGroupsMap(productData.category_id)
   let brandIndex // нужно вытащить из характеристик производителя в отдельное свойство
   productData.props.forEach((prop, i) => {
@@ -83,9 +93,9 @@ export default defineEventHandler(async event => {
 
   // получаем brand
   query = `SELECT full_name, image
-                 FROM i_brands 
-                 WHERE short_name = '${productData.brand.shortName}' LIMIT 1`
-  const brand = (await dbReq(query))[0]
+                  FROM i_brands
+                  WHERE short_name = ? LIMIT 1`
+  const brand = (await dbReq(query, [productData.brand.shortName]))[0]
   productData.brand.fullName = brand.full_name
   productData.brand.image = brand.image
 
@@ -93,9 +103,10 @@ export default defineEventHandler(async event => {
   productData.docs = {}
   // для правильного порядка в пропсах важно сначала обработать реестры
   if (productData.reestr_ids.length) {
+    const rstrIds = productData.reestr_ids.split(',').map(Number)
     query = `SELECT number, name, type_si, brand, date, file_ot, file_mp, file_svid FROM i_docs_rstr
-                 WHERE id IN (${productData.reestr_ids})`
-    productData.docs.rstr = await dbReq(query)
+                  WHERE id IN (${rstrIds.map(() => '?').join(',')})`
+    productData.docs.rstr = await dbReq(query, rstrIds)
     productData.props.push({
       name: 'Можно поверить',
       val: 'Да',
@@ -108,9 +119,10 @@ export default defineEventHandler(async event => {
     }
   }
   if (productData.standart_ids.length) {
+    const stndIds = productData.standart_ids.split(',').map(Number)
     query = `SELECT number, name, file FROM i_docs_stnd
-                 WHERE id IN (${productData.standart_ids})`
-    productData.docs.stnd = await dbReq(query)
+                  WHERE id IN (${stndIds.map(() => '?').join(',')})`
+    productData.docs.stnd = await dbReq(query, stndIds)
     if (productData.docs.stnd.length) {
       productData.props.unshift({
         name: 'Стандарт',
@@ -119,9 +131,10 @@ export default defineEventHandler(async event => {
     }
   }
   if (productData.pasport_ids.length) {
+    const paspIds = productData.pasport_ids.split(',').map(Number)
     query = `SELECT name, file FROM i_docs_pasp
-                 WHERE id IN (${productData.pasport_ids})`
-    productData.docs.pasp = await dbReq(query)
+                  WHERE id IN (${paspIds.map(() => '?').join(',')})`
+    productData.docs.pasp = await dbReq(query, paspIds)
   }
 
   productData.images = productData.images.split(',') // изображения из строки в массив

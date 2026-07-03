@@ -30,15 +30,9 @@ export default defineEventHandler(async event => {
 const copyTableHelper = async table => {
   const data = await dbOldReq(`SELECT * FROM ${table.old}`)
   const fieldsArr = Object.keys(data[0]) // вытаскиваем названия полей из первого элемента
-  const dataValues = data
-    .map(
-      row =>
-        `(${fieldsArr
-          .map(field => `'${field === 'date' ? setDateObjToString(row[field]) : prepareString(row[field])}'`)
-          .join(', ')})`
-    )
-    .join(', ')
-  const query = `INSERT INTO ${table.new} (${fieldsArr.join(', ')}) VALUES ${dataValues}`
+  const placeholders = data.map(() => `(${fieldsArr.map(() => '?').join(', ')})`).join(', ')
+  const values = data.flatMap(row => fieldsArr.map(field => (field === 'date' ? setDateObjToString(row[field]) : row[field])))
+  const query = `INSERT INTO ${table.new} (${fieldsArr.join(', ')}) VALUES ${placeholders}`
   await dbReq(`TRUNCATE ${table.new}`) // удаляет все записи
-  await dbReq(query)
+  await dbReq(query, values)
 }

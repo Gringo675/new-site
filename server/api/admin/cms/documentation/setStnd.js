@@ -5,9 +5,11 @@ export default defineEventHandler(async event => {
   const dbTable = 'i_docs_stnd'
   const stnd = await getFormData(event)
   let query
+  let params = []
 
   if (stnd.delete) {
-    query = `DELETE FROM ${dbTable} WHERE id = ${stnd.id}`
+    query = `DELETE FROM ${dbTable} WHERE id = ?`
+    params = [stnd.id]
     if (stnd.fileName && (await fileExists(`/doc/stnd/${stnd.fileName}`))) {
       await deleteFile(`/doc/stnd/${stnd.fileName}`)
     }
@@ -23,13 +25,21 @@ export default defineEventHandler(async event => {
     }
     if (stnd.id > 0) {
       // don't update file if no new file was uploaded
-      query = `UPDATE ${dbTable} SET number = '${stnd.number}', name = '${stnd.name}' ${stnd.fileName.length ? `, file = '${stnd.fileName}'` : ''} WHERE id = ${stnd.id}`
+      let updateSet = 'number = ?, name = ?'
+      params = [stnd.number, stnd.name]
+      if (stnd.fileName.length) {
+        updateSet += ', file = ?'
+        params.push(stnd.fileName)
+      }
+      params.push(stnd.id)
+      query = `UPDATE ${dbTable} SET ${updateSet} WHERE id = ?`
     } else {
-      query = `INSERT INTO ${dbTable} (number, name, file) VALUES ('${stnd.number}', '${stnd.name}', '${stnd.fileName}')`
+      query = `INSERT INTO ${dbTable} (number, name, file) VALUES (?, ?, ?)`
+      params = [stnd.number, stnd.name, stnd.fileName]
     }
   }
   // console.log(`query: ${JSON.stringify(query, null, 2)}`)
-  await dbReq(query)
+  await dbReq(query, params)
 
   return true
 })
