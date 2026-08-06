@@ -34,8 +34,8 @@ function mapCats(catsArr, level = 0, rootId = null) {
 
 onMounted(async () => {
   try {
-    const data = await myFetch('/api/getData/categories')
-    cats.value = mapCats(data)
+    const { data: catsData } = await useCats()
+    cats.value = mapCats(catsData.value)
   } catch (e) {
     console.error('Error fetching categories:', e)
   }

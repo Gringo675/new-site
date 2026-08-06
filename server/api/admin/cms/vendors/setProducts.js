@@ -1,6 +1,6 @@
 export default defineEventHandler(async event => {
   //
-  const table = 'i_products2'
+  const table = 'i_products'
   try {
     const body = await readBody(event)
     console.log('[setProducts] Incoming body:', body)

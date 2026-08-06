@@ -1,5 +1,5 @@
 export default defineEventHandler(async event => {
-  const table = 'i_products2'
+  const table = 'i_products'
   const { cat_id } = getQuery(event)
 
   if (!cat_id) throw createError({ statusCode: 400, statusMessage: 'cat_id is required' })

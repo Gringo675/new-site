@@ -10,5 +10,13 @@
     ["/\\*ui\\*/\\s*{([^;]*)}", ":\\s*[\"'`]([^\"'`]*).*?[\"'`]"]
   ],
   "tailwindCSS.classAttributes": ["class", "className", "ngClass", "ui", "active-class", "inactive-class"],
-  "cSpell.words": ["dedupe"]
+  "cSpell.words": ["dedupe"],
+  "pendant.showThinking": true,
+  "pendant.thinkingLevel": "high",
+  "pendant.thinkingDisplayMode": "collapseWhenDone",
+  "pendant.voice.enabled": false,
+  "pendant.autoGenerateSessionNames": false,
+  "pendant.autoCompact": false,
+  "pendant.autoRetry": true,
+  "pendant.fontSize": 15
 }

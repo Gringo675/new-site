@@ -1,4 +1,7 @@
 <script setup>
+//
+await checkAdminOnly()
+
 import propsG from '~/composables/admin/cats/propsG'
 import catsG from '~/composables/admin/cats/catsG'
 import * as dd from '~/composables/admin/cats/dragDrop'
@@ -31,7 +34,6 @@ onBeforeRouteLeave(async to => {
 </script>
 
 <template>
-  <HelperAdminOnly>
     <div class="p-2">
       <h1 class="">Редактирование категорий</h1>
       <div
@@ -79,5 +81,4 @@ onBeforeRouteLeave(async to => {
         <AdminCatsPropsEditor v-if="propsEditor.isActive" />
       </transition>
     </div>
-  </HelperAdminOnly>
 </template>

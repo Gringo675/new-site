@@ -1,4 +1,18 @@
-## chord
+## Mastra
+create table
+check ws /admin protector
+ping-pong schema?
+create /mastraHandler api
+### aiCatDescription
+fully update UI
+add Start button
+get current data from db
+add possibility to change/revision current description
+
+## chords
+create titles for admin pages
+mySQL table structure for AI? (mySQL as mcp or tool)
+
 
 ## old id's replacement
 - replace old_id in kirov, stiz prices
@@ -263,3 +277,9 @@ INSERT INTO new_table SELECT * FROM old_table;
 -- If need to clear the table, and then re-fill it:
 TRUNCATE TABLE new_table;
 INSERT INTO new_table SELECT * FROM old_table;
+
+## Text searching in MySQL using LIKE
+SELECT name, description FROM `i_categories` WHERE `description` LIKE '%<ul>%';
+Wildcards:
+% - Zero, one, or multiple characters
+_ - Exactly one single character

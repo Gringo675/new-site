@@ -69,10 +69,52 @@ export const usePrpsGroupsMap = catId => {
   ])
 
   if (catId) {
+    // you can map returned data but only for main categories
     switch (catId) {
       case 11: // штангенциркули
         map.get('p4_size').name = 'Губки'
         map.get('p4_size').ordering = 51
+        map.get('p7_feature').name = 'Материал'
+        break
+      case 12: // штангенглубиномеры
+        map.get('p7_feature').name = 'Зацеп (толщиномер)'
+        break
+      case 16: // индикаторы
+        map.get('p7_feature').name = 'Наличие ушка'
+        break
+      case 19: // КМД
+        map.get('p1_type').name = 'Категория'
+        map.get('p4_size').name = 'Набор'
+        break
+      case 22: // Стенкомеры, толщиномеры
+        map.get('p4_size').name = 'Вылет скобы'
+        map.get('p7_feature').name = 'Модификация'
+        break
+      case 24: // Угольники
+        map.get('p4_size').name = 'Размер'
+        break
+      case 25: // Уровни
+        map.get('p4_size').name = 'Размер'
+        break
+      case 26: // Линейки
+        map.get('p4_size').name = 'Длина'
+        break
+      case 29: // Штативы, стойки
+        map.get('p4_size').name = 'Модели'
+        break
+      case 30: // Щупы и шаблоны
+        map.get('p3_range').name = 'Набор'
+        map.get('p4_size').name = 'Модификация'
+        break
+      case 32: // Кронциркули, циркули
+        map.get('p4_size').name = 'Длина'
+        map.get('p7_feature').name = 'Модификация'
+        break
+      case 33: // Рулетки
+        map.get('p7_feature').name = 'Лента'
+        break
+      case 35: // Пластины
+        map.get('p4_size').name = 'Диаметр'
         break
     }
   }

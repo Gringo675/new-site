@@ -33,7 +33,7 @@ const createAlias = async name => {
 <template>
   <transition name="transition-fade">
     <HelperModalWrapper>
-      <div class="modal-form flex w-[1000px] max-w-[95%] flex-col justify-start overflow-auto rounded-xl border border-amber-900">
+      <div class="modal-form flex w-250 max-w-[95%] flex-col justify-start overflow-auto rounded-xl border border-amber-900">
         <div class="flex flex-row items-center justify-between bg-orange-300 p-2.5">
           <div class="size max-w-full overflow-hidden text-xl text-ellipsis whitespace-nowrap">{{ title }}</div>
 
@@ -48,7 +48,8 @@ const createAlias = async name => {
         <div class="overflow-auto bg-amber-100 p-5">
           <UTextarea
             v-model.lazy="content"
-            class=""
+            class="w-full font-mono"
+            :rows="20"
             color="secondary"
             placeholder="Пусто..."
             textareaClass="w-full h-96 max-h-[calc(100vh-200px)] bg-gray-50"

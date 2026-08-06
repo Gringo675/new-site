@@ -1,5 +1,6 @@
 <script setup>
-await myFetch('/api/admin/isAdmin') // если не админ, выкинет ошибку
+//
+await checkAdminOnly()
 
 const isListen = ref(false)
 const messages = reactive([])
@@ -61,27 +62,22 @@ const test = async () => {
 </script>
 
 <template>
-  <HelperAdminOnly>
   <h1>Console</h1>
   <div class="flex space-x-4">
     <UButton
       :label="isListen ? 'Stop' : 'Start'"
-      @click="toggleListen"
-    />
+      @click="toggleListen" />
     <UButton
       label="Clear"
-      @click="clearMessages"
-    />
+      @click="clearMessages" />
     <UButton
       label="Test"
-      @click="sendTestData"
-    />
+      @click="sendTestData" />
   </div>
-  <div class="m-2 p-2 border border-green-300 rounded-2xl">
+  <div class="m-2 rounded-2xl border border-green-300 p-2">
     <div
-      class="my-1 p-1 hover:bg-gray-100 rounded-xl"
-      v-for="mess in messages"
-    >
+      class="my-1 rounded-xl p-1 hover:bg-gray-100"
+      v-for="mess in messages">
       <div class="text-blue-400">
         {{ mess.time }}
       </div>
@@ -90,6 +86,4 @@ const test = async () => {
       </div>
     </div>
   </div>
-  </HelperAdminOnly>
 </template>
-

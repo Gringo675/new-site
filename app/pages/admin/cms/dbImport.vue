@@ -1,5 +1,7 @@
 <script setup>
 // импорт данных из старой БД в новую
+//
+await checkAdminOnly()
 
 const importHandler = async dataType => {
   const proceed = await showMessage({
@@ -20,33 +22,28 @@ const importHandler = async dataType => {
 </script>
 
 <template>
-  <HelperAdminOnly>
-    <div class="flex space-x-4">
-      <UButton
-        label="Brands"
-        @click="importHandler('brands')" />
-      <UButton
-        label="Properties"
-        @click="importHandler('properties')" />
-      <UButton
-        label="Categories"
-        @click="importHandler('categories')" />
-      <UButton
-        label="Products"
-        @click="importHandler('products')" />
-      <UButton
-        label="Documentations"
-        @click="importHandler('docs')" />
-      <UButton
-        label="Users"
-        @click="importHandler('users')" />
-      <UButton
-        label="Set Product Labels"
-        @click="importHandler('setProductLabels')" />
-    </div>
-    <HelperAlarm>
-      WARNING: похоже юзеров больше нельзя переносить со старой базы. При переносе может поменяться ид у существующего
-      юзера, и при следующей авторизации он залогиниться под чужим аккаунтом.
-    </HelperAlarm>
-  </HelperAdminOnly>
+  <div class="flex space-x-4">
+    <UButton
+      label="Brands"
+      @click="importHandler('brands')" />
+    <UButton
+      label="Properties"
+      @click="importHandler('properties')" />
+    <UButton
+      label="Categories"
+      @click="importHandler('categories')" />
+    <UButton
+      label="Products"
+      @click="importHandler('products')" />
+    <UButton
+      label="Documentations"
+      @click="importHandler('docs')" />
+    <UButton
+      label="Users"
+      @click="importHandler('users')" />
+    <UButton
+      label="Set Product Labels"
+      @click="importHandler('setProductLabels')" />
+  </div>
+  <HelperAlarm>WARNING: похоже юзеров больше нельзя переносить со старой базы. При переносе может поменяться ид у существующего юзера, и при следующей авторизации он залогиниться под чужим аккаунтом.</HelperAlarm>
 </template>

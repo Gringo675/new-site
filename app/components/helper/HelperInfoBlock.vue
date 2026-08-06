@@ -109,7 +109,7 @@ if (props.description)
     icon: 'i-heroicons-information-circle',
     content: 'Описание',
     html: props.description,
-    class: 'description',
+    class: 'description space-y-2',
   })
 if (props.characteristics)
   items.push({
@@ -117,7 +117,7 @@ if (props.characteristics)
     icon: 'i-heroicons-chart-bar-square',
     content: 'Характеристики',
     html: props.characteristics,
-    class: 'characteristics',
+    class: 'characteristics space-y-2',
   })
 if (Object.keys(props.documentation).length > 0) items.push({ label: 'Документация', icon: 'i-heroicons-document-text', content: 'Документация' })
 if (props.showDelivery)
@@ -198,7 +198,7 @@ const handleDocClick = ev => {
     </div>
 
     <div
-      class="relative -mt-2 w-full overflow-hidden rounded-lg border-4 border-stone-800 bg-gray-50 p-2 transition-[height] duration-400"
+      class="info-block relative -mt-2 w-full overflow-hidden rounded-lg border-4 border-stone-800 bg-gray-50 p-2 transition-[height] duration-400"
       id="info_block_container"
       :style="{ height: containerHeight }">
       <div

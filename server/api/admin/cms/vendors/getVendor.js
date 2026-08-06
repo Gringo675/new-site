@@ -4,7 +4,7 @@ export default defineEventHandler(async event => {
   if (!vendor) {
     throw createError({ statusCode: 400, statusMessage: 'Vendor parameter is required' })
   }
-  const productsTable = 'i_products2'
+  const productsTable = 'i_products'
   const vendorTable = `i_vendor_${vendor}`
 
   // Map vendor name to vendor ID

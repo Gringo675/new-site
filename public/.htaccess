@@ -5,6 +5,9 @@
 
 RewriteEngine On
 
+# Shablony replacement
+Redirect 301 /catalog/shablony-dlya-svarshchika /catalog/shablony-svarshchika
+
 ##### From old site #####
 
 # Catalog's redirection (old structure: /katalog/{categoryName}/{subCategoryName}/{productName})
@@ -32,7 +35,7 @@ RewriteRule ^index\.php / [R=301,L,QSD]
 
 ##### Common #####
 
-# No need redirect to https, that Beget's duty
+# No need to redirect to https, that's Beget duty
 
 # Redirect from www
 RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]

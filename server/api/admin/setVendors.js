@@ -3,7 +3,7 @@ export default defineEventHandler(async event => {
   const { vendor, items } = await readBody(event)
   if (!vendor || !items) throw createError({ statusCode: 400, statusMessage: 'vendor and items are required' })
 
-  const productsTable = 'i_products2'
+  const productsTable = 'i_products'
 
   let vendorTable, vendorId
   switch (vendor) {

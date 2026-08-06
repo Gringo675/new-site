@@ -8,7 +8,7 @@ export default defineEventHandler(async event => {
    * isChanged - измененное свойство (Update)
    */
 
-  const table = 'i_properties2'
+  const table = 'i_properties'
   const props = await readBody(event)
 
   for (const prop of props) {
