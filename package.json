@@ -35,7 +35,7 @@
     "dotenv": "^10.0.0",
     "node-ssh": "^13.0.1",
     "nuxt": "^4.3.1",
-    "nuxt-schema-org": "^5.0.9",
+    "nuxt-schema-org": "^6.3.1",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11"
   },

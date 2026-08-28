@@ -89,7 +89,7 @@ const props = defineProps({
   // },
 })
 
-const emits = defineEmits<TabsEmits>()
+// const emits = defineEmits<TabsEmits>()
 const slots = defineSlots<TabsSlots<T>>()
 
 // const rootProps = useForwardPropsEmits(

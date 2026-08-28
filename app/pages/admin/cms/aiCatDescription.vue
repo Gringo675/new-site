@@ -73,7 +73,7 @@ function connectionHandler(options = {}) {
         const config = {
           action: 'start',
           workflowId: options.workflowId,
-          baseUrl: 'http://localhost:4111',
+          baseUrl: 'http://localhost:4110',
           inputData: options.inputData,
           runId: options.runId || null,
         }
@@ -114,7 +114,7 @@ async function generateDescription() {
     inputData: {
       alias: activeCatAlias.value,
     },
-    // runId: 'edd6f830-3bd8-43ff-b35d-dbf2be0ac2f1',
+    runId: '8a02eba5-ef9d-4775-b153-4387ce8538c4',
   })
 }
 
@@ -134,7 +134,7 @@ const handleRevision = async () => {
   }
 
   const response = await connectionHandler({
-    workflowId: 'category-revision',
+    workflowId: 'category-description-revision',
     inputData: {
       originalData: aiResult.value.originalData,
       research: aiResult.value.research,
@@ -253,8 +253,7 @@ const handleSave = async () => {
           <pre
             v-else
             class="max-w-none overflow-auto rounded-lg border border-gray-200 bg-gray-50 p-4 font-mono text-sm whitespace-pre-wrap"
-            >{{ aiResult.originalData?.description }}</pre
-          >
+            >{{ aiResult.originalData?.description }}</pre>
         </div>
       </section>
 
