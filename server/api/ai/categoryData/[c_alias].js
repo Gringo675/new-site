@@ -77,6 +77,37 @@ export default defineEventHandler(async event => {
     }
   })
 
+  // Helper to fetch document markdown content from online static directory
+  const fetchDocText = async fileName => {
+    if (!fileName || typeof fileName !== 'string' || !fileName.trim()) {
+      return ''
+    }
+    const mdName = fileName.trim().replace(/\.pdf$/i, '.md')
+    const url = `https://chelinstrument.ru/static/doc/parsed/md/${encodeURIComponent(mdName)}`
+    try {
+      const res = await fetch(url)
+      if (res.ok) {
+        return await res.text()
+      }
+    } catch (err) {
+      console.error(`Error fetching doc text for ${fileName}:`, err)
+    }
+    return ''
+  }
+
+  function parseYear(docNumber) {
+    const match4 = docNumber.match(/(?:-|\s+)(19\d{2}|20\d{2})\b/) || docNumber.match(/\b(19\d{2}|20\d{2})\b/)
+    if (match4) {
+      return parseInt(match4[1], 10)
+    }
+    const match2 = docNumber.match(/-(\d{2})\b/)
+    if (match2) {
+      const yy = parseInt(match2[1], 10)
+      return yy >= 50 ? 1900 + yy : 2000 + yy
+    }
+    return 2000
+  }
+
   // 6. Fetch docs from i_docs_stnd and i_docs_rstr
   const docs = {
     stnd: [],
@@ -87,28 +118,42 @@ export default defineEventHandler(async event => {
   if (stndIds.length) {
     query = `SELECT id, number, name, file FROM i_docs_stnd WHERE id IN (${stndIds.map(() => '?').join(',')})`
     const stndRows = await dbReq(query, stndIds)
-    docs.stnd = stndRows.map(row => ({
-      number: row.number,
-      name: row.name,
-      file: row.file,
-      products: Array.from(stndMap.get(String(row.id)) || []),
-    }))
+    docs.stnd = await Promise.all(
+      stndRows.map(async row => {
+        const fileTrim = row.file?.trim() || ''
+        return {
+          number: row.number,
+          name: row.name,
+          year: parseYear(row.number || ''),
+          url: fileTrim ? `/static/doc/stnd/${encodeURIComponent(fileTrim)}` : '',
+          text: await fetchDocText(row.file),
+          products: Array.from(stndMap.get(String(row.id)) || []),
+        }
+      }),
+    )
   }
 
   const rstrIds = Array.from(rstrMap.keys())
   if (rstrIds.length) {
-    query = `SELECT id, number, name, type_si, brand, date, file_ot, file_mp FROM i_docs_rstr WHERE id IN (${rstrIds.map(() => '?').join(',')})`
+    query = `SELECT id, number, name, file_ot, file_mp FROM i_docs_rstr WHERE id IN (${rstrIds.map(() => '?').join(',')})`
     const rstrRows = await dbReq(query, rstrIds)
-    docs.rstr = rstrRows.map(row => ({
-      number: row.number,
-      name: row.name,
-      type_si: row.type_si,
-      brand: row.brand,
-      date: row.date,
-      file_ot: row.file_ot,
-      file_mp: row.file_mp,
-      products: Array.from(rstrMap.get(String(row.id)) || []),
-    }))
+    docs.rstr = await Promise.all(
+      rstrRows.map(async row => {
+        const [text_ot, text_mp] = await Promise.all([fetchDocText(row.file_ot), fetchDocText(row.file_mp)])
+        const fileOtTrim = row.file_ot?.trim() || ''
+        const fileMpTrim = row.file_mp?.trim() || ''
+        return {
+          number: row.number,
+          name: row.name,
+          year: parseYear(row.number || ''),
+          url_ot: fileOtTrim ? `/static/doc/rstr/${encodeURIComponent(fileOtTrim)}` : '',
+          url_mp: fileMpTrim ? `/static/doc/rstr/${encodeURIComponent(fileMpTrim)}` : '',
+          text_ot,
+          text_mp,
+          products: Array.from(rstrMap.get(String(row.id)) || []),
+        }
+      }),
+    )
   }
 
   // 7. Resolve categorySummary availableProps via usePrpsGroupsMap and i_properties
@@ -160,7 +205,6 @@ export default defineEventHandler(async event => {
   const resultCatData = {
     name: catData.name,
     alias: catData.alias,
-    description: catData.description || '',
     characteristics: catData.characteristics || '',
   }
 

@@ -15,3 +15,10 @@ tests/**/*.png
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+
+# pi-vscode-sr extension
+.pi/review-requests/
+.pi/review-results/
+.pi/tmp/
+.pi/.vscode-ready
