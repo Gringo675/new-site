@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Описание Категорий — UI Prototype</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-gray-100 text-gray-900 min-h-screen pb-20" x-data="prototypeApp()">
+
+    <!-- Top App Header -->
+    <header class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between shadow-sm">
+        <div class="flex items-center gap-3">
+            <span class="bg-indigo-600 text-white text-xs font-bold px-2.5 py-1 rounded">ADMIN</span>
+            <h1 class="text-xl font-bold">AI Описание Категорий (Prototype)</h1>
+        </div>
+        <div class="text-sm text-gray-500">
+            Текущий вариант: <strong x-text="currentVariantName" class="text-indigo-600"></strong>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-6xl mx-auto p-6 mt-4">
+
+        <!-- Category Selector (Common across variants) -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-lg font-semibold">Выберите категорию для анализа</h2>
+                    <p class="text-sm text-gray-500">Переключение категории сбрасывает текущий сгенерированный результат с подтверждением.</p>
+                </div>
+                <div class="w-full md:w-96 relative">
+                    <select x-model="selectedCategoryAlias" @change="handleCategoryChange($event)" class="w-full border border-gray-300 rounded-lg p-2.5 bg-white shadow-sm focus:ring-2 focus:ring-indigo-500">
+                        <option value="">-- Выберите категорию --</option>
+                        <template x-for="cat in categories" :key="cat.alias">
+                            <option :value="cat.alias" x-text="cat.name"></option>
+                        </template>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- LOADING STATE OVERLAY -->
+        <div x-show="isLoading" class="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center my-6">
+            <i class="fa-solid fa-spinner fa-spin text-4xl text-indigo-600 mb-4"></i>
+            <h3 class="text-lg font-semibold">Генерация AI-описания через воркфлоу...</h3>
+            <p class="text-sm text-gray-500 mt-1">Опрос WebSocket / анализатор стандартов и товаров в категории</p>
+        </div>
+
+        <!-- ================= VARIANT A: Sequential Flow (Recommended) ================= -->
+        <div x-show="currentVariant === 'A' && !isLoading" class="space-y-6">
+            <!-- 1. Original Description Section -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6" x-show="selectedCategoryAlias">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="flex items-center gap-2 text-lg font-semibold text-gray-800">
+                        <i class="fa-solid fa-file-lines text-gray-500"></i> Исходное описание
+                    </h3>
+                    <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded" x-text="selectedCategory?.alias"></span>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-lg border border-gray-200 text-sm text-gray-700 max-h-48 overflow-y-auto" x-html="selectedCategory?.originalDescription"></div>
+
+                <!-- GENERATE BUTTON (Visible only if NOT generated yet) -->
+                <div class="mt-6 pt-4 border-t border-gray-100 flex justify-end" x-show="!aiResult">
+                    <button @click="generateAI()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-2.5 rounded-lg shadow transition flex items-center gap-2">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Сгенерировать AI-описание
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2. Generated Results Section (Visible after generation) -->
+            <div class="space-y-6" x-show="aiResult">
+                <div class="bg-white rounded-xl shadow-sm border border-indigo-200 p-6 relative">
+                    <div class="absolute top-4 right-4">
+                        <span class="px-3 py-1 text-xs font-bold rounded-full bg-green-100 text-green-800" x-text="'Вердикт: ' + aiResult.judgeVerdict"></span>
+                    </div>
+                    <h3 class="flex items-center gap-2 text-lg font-semibold text-indigo-900 mb-4">
+                        <i class="fa-solid fa-sparkles text-indigo-600"></i> Сгенерированное описание
+                    </h3>
+
+                    <!-- Tabs: Preview / Edit -->
+                    <div class="mb-4 border-b border-gray-200 flex gap-4">
+                        <button @click="activeTab = 'preview'" :class="activeTab === 'preview' ? 'border-indigo-600 text-indigo-600 font-semibold' : 'border-transparent text-gray-500'" class="pb-2 border-b-2 text-sm transition">Предпросмотр</button>
+                        <button @click="activeTab = 'edit'" :class="activeTab === 'edit' ? 'border-indigo-600 text-indigo-600 font-semibold' : 'border-transparent text-gray-500'" class="pb-2 border-b-2 text-sm transition">Редактирование HTML</button>
+                    </div>
+
+                    <div x-show="activeTab === 'preview'" class="p-4 bg-white rounded-lg border border-gray-200 min-h-[160px]" x-html="aiResult.generatedDescription"></div>
+                    <div x-show="activeTab === 'edit'">
+                        <textarea x-model="aiResult.generatedDescription" rows="8" class="w-full font-mono text-sm p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"></textarea>
+                    </div>
+
+                    <div class="mt-6 flex items-center justify-between pt-4 border-t border-gray-100">
+                        <button @click="resetGeneration()" class="text-sm text-gray-500 hover:text-red-600 transition flex items-center gap-1">
+                            <i class="fa-solid fa-rotate-right"></i> Сбросить и сгенерировать заново
+                        </button>
+                        <button @click="saveDescription()" class="bg-green-600 hover:bg-green-700 text-white font-medium px-5 py-2 rounded-lg shadow transition flex items-center gap-2">
+                            <i class="fa-solid fa-save"></i> Сохранить в каталог
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Revision section -->
+                <div class="bg-gray-50 rounded-xl border-2 border-dashed border-gray-300 p-6">
+                    <h4 class="font-semibold text-gray-800 mb-2"><i class="fa-solid fa-message-pen mr-2"></i> Запрос на доработку AI</h4>
+                    <p class="text-sm text-gray-500 mb-3">Опишите, что именно нужно исправить или добавить в текст:</p>
+                    <textarea x-model="revisionText" rows="3" placeholder="Например: добавьте упоминание ГОСТ и сделайте текст более формальным..." class="w-full p-3 border border-gray-300 rounded-lg text-sm bg-white mb-3"></textarea>
+                    <div class="flex justify-end">
+                        <button @click="submitRevision()" class="bg-gray-800 hover:bg-black text-white text-sm font-medium px-4 py-2 rounded-lg shadow transition flex items-center gap-2">
+                            <i class="fa-solid fa-paper-plane"></i> Отправить на доработку
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= VARIANT B: Split Pane (Side-by-Side) ================= -->
+        <div x-show="currentVariant === 'B' && !isLoading" class="grid grid-cols-1 md:grid-cols-2 gap-6" x-show="selectedCategoryAlias">
+            <!-- Left Pane: Original & Controls -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-lg font-semibold mb-3"><i class="fa-solid fa-file-lines mr-2"></i> Исходное описание</h3>
+                    <div class="p-3 bg-gray-50 rounded border text-sm text-gray-700 h-64 overflow-y-auto mb-4" x-html="selectedCategory?.originalDescription"></div>
+                </div>
+                <div class="pt-4 border-t border-gray-100" x-show="!aiResult">
+                    <button @click="generateAI()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-lg shadow transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Запустить AI генерацию
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Pane: Generated Result -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-lg font-semibold"><i class="fa-solid fa-sparkles mr-2 text-indigo-600"></i> Результат ИИ</h3>
+                        <span class="text-xs bg-green-100 text-green-800 px-2.5 py-1 rounded font-bold" x-show="aiResult" x-text="aiResult?.judgeVerdict"></span>
+                    </div>
+                    <div class="p-3 bg-indigo-50/50 rounded border border-indigo-100 text-sm text-gray-800 h-64 overflow-y-auto mb-4" x-show="aiResult" x-html="aiResult?.generatedDescription"></div>
+                    <div class="h-64 flex items-center justify-center text-gray-400 border border-dashed rounded bg-gray-50 text-sm" x-show="!aiResult">
+                        Ожидание запуска генерации...
+                    </div>
+                </div>
+                <div class="pt-4 border-t border-gray-100 flex justify-end gap-2" x-show="aiResult">
+                    <button @click="saveDescription()" class="bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded shadow">Сохранить</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= VARIANT C: Stepper / Wizard Layout ================= -->
+        <div x-show="currentVariant === 'C' && !isLoading" class="bg-white rounded-xl shadow-sm border border-gray-200 p-8" x-show="selectedCategoryAlias">
+            <div class="flex items-center justify-between mb-8 border-b pb-4">
+                <div class="flex items-center gap-3">
+                    <div :class="!aiResult ? 'bg-indigo-600 text-white' : 'bg-green-600 text-white'" class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">1</div>
+                    <span class="font-medium text-sm">Выбор и исходник</span>
+                </div>
+                <div class="flex-1 h-0.5 bg-gray-200 mx-4"></div>
+                <div class="flex items-center gap-3">
+                    <div :class="aiResult ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600'" class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">2</div>
+                    <span class="font-medium text-sm">AI Генерация & Сохранение</span>
+                </div>
+            </div>
+
+            <div x-show="!aiResult">
+                <h3 class="text-md font-semibold mb-2">Шаг 1: Проверка исходного описания</h3>
+                <div class="p-4 bg-gray-50 rounded border mb-6" x-html="selectedCategory?.originalDescription"></div>
+                <button @click="generateAI()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg shadow">Далее: Сгенерировать AI</button>
+            </div>
+
+            <div x-show="aiResult">
+                <h3 class="text-md font-semibold mb-2">Шаг 2: Результат генерации</h3>
+                <div class="p-4 bg-indigo-50 rounded border mb-6" x-html="aiResult?.generatedDescription"></div>
+                <div class="flex gap-3">
+                    <button @click="saveDescription()" class="bg-green-600 text-white px-6 py-2.5 rounded shadow">Сохранить результат</button>
+                    <button @click="resetGeneration()" class="border px-4 py-2.5 rounded text-gray-600">Начать заново</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Placeholder when no category selected -->
+        <div x-show="!selectedCategoryAlias" class="bg-white rounded-xl shadow-sm border border-gray-200 p-16 text-center text-gray-400">
+            <i class="fa-solid fa-hand-pointer text-4xl mb-3 text-indigo-400"></i>
+            <p class="text-lg font-medium text-gray-600">Выберите категорию в выпадающем списке выше</p>
+            <p class="text-sm text-gray-400 mt-1">После выбора отобразится исходное описание и кнопка запуска AI генерации</p>
+        </div>
+
+    </main>
+
+    <!-- CONFIRMATION MODAL (showMessage simulation) -->
+    <div x-show="showConfirmModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-center animate-in fade-in zoom-in duration-200">
+            <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900 mb-2">Подтвердите смену категории</h3>
+            <p class="text-sm text-gray-600 mb-6">У вас есть несохраненные результаты генерации для текущей категории. При смене они будут сброшены.</p>
+            <div class="flex gap-3 justify-center">
+                <button @click="cancelCategoryChange()" class="px-4 py-2 border border-gray-300 rounded-xl text-sm font-medium hover:bg-gray-50 transition w-full">Отмена</button>
+                <button @click="confirmCategoryChange()" class="px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-medium hover:bg-red-700 transition w-full">Сбросить и сменить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FLOATING VARIANT SWITCHER BAR -->
+    <div class="fixed bottom-4 left-1/2 -translate-x-1/2 bg-gray-900/90 text-white backdrop-blur px-5 py-3 rounded-full shadow-2xl flex items-center gap-6 z-40 border border-gray-700 text-sm">
+        <button @click="prevVariant()" class="hover:text-indigo-400 transition"><i class="fa-solid fa-chevron-left"></i></button>
+        <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+            <span>Вариант <strong x-text="currentVariant"></strong>: <span x-text="currentVariantName" class="text-gray-300"></span></span>
+        </div>
+        <button @click="nextVariant()" class="hover:text-indigo-400 transition"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+
+    <script>
+        function prototypeApp() {
+            return {
+                currentVariant: 'A',
+                variants: ['A', 'B', 'C'],
+                variantNames: {
+                    'A': 'Sequential Flow (Рекомендуемый)',
+                    'B': 'Split Screen (Бок о бок)',
+                    'C': 'Stepper / Wizard (Пошаговый)'
+                },
+                get currentVariantName() {
+                    return this.variantNames[this.currentVariant];
+                },
+                
+                categories: [
+                    { alias: 'micrometers', name: 'Микрометры гладкие (МК)', originalDescription: '<p>Микрометры предназначены для измерения наружных размеров изделий с высокой точностью. ГОСТ 6507-90.</p>' },
+                    { alias: 'calipers', name: 'Штангенциркули (ШЦ)', originalDescription: '<p>Штангенциркули — универсальные измерительные инструменты для определения наружных и внутренних размеров. ГОСТ 166-89.</p>' },
+                    { alias: 'indicators', name: 'Индикаторы часового типа (ИЧ)', originalDescription: '<p>Индикаторы рычажно-зубчатые и часового типа для абсолютных и относительных измерений. ГОСТ 577-68.</p>' }
+                ],
+                selectedCategoryAlias: '',
+                pendingCategoryAlias: '',
+                selectedCategory: null,
+                aiResult: null,
+                isLoading: false,
+                activeTab: 'preview',
+                revisionText: '',
+                showConfirmModal: false,
+
+                init() {
+                    // Read variant from URL search param if present
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const v = urlParams.get('variant');
+                    if (v && this.variants.includes(v)) {
+                        this.currentVariant = v;
+                    }
+
+                    // Keyboard navigation for variants
+                    window.addEventListener('keydown', (e) => {
+                        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+                        if (e.key === 'ArrowLeft') this.prevVariant();
+                        if (e.key === 'ArrowRight') this.nextVariant();
+                    });
+                },
+
+                prevVariant() {
+                    let idx = this.variants.indexOf(this.currentVariant);
+                    idx = (idx - 1 + this.variants.length) % this.variants.length;
+                    this.setVariant(this.variants[idx]);
+                },
+
+                nextVariant() {
+                    let idx = this.variants.indexOf(this.currentVariant);
+                    idx = (idx + 1) % this.variants.length;
+                    this.setVariant(this.variants[idx]);
+                },
+
+                setVariant(v) {
+                    this.currentVariant = v;
+                    const url = new URL(window.location);
+                    url.searchParams.set('variant', v);
+                    window.history.replaceState({}, '', url);
+                },
+
+                handleCategoryChange(event) {
+                    const newAlias = event.target.value;
+                    if (this.aiResult && this.selectedCategoryAlias && this.selectedCategoryAlias !== newAlias) {
+                        // Prompt confirmation
+                        this.pendingCategoryAlias = newAlias;
+                        event.target.value = this.selectedCategoryAlias; // revert select visually until confirmed
+                        this.showConfirmModal = true;
+                        return;
+                    }
+                    this.switchCategory(newAlias);
+                },
+
+                switchCategory(alias) {
+                    this.selectedCategoryAlias = alias;
+                    this.selectedCategory = this.categories.find(c => c.alias === alias) || null;
+                    this.aiResult = null;
+                    this.revisionText = '';
+                },
+
+                confirmCategoryChange() {
+                    this.showConfirmModal = false;
+                    this.switchCategory(this.pendingCategoryAlias);
+                },
+
+                cancelCategoryChange() {
+                    this.showConfirmModal = false;
+                    this.pendingCategoryAlias = '';
+                },
+
+                generateAI() {
+                    if (!this.selectedCategoryAlias) return;
+                    this.isLoading = true;
+                    setTimeout(() => {
+                        this.isLoading = false;
+                        this.aiResult = {
+                            originalData: { description: this.selectedCategory.originalDescription },
+                            generatedDescription: `<div class="space-y-3">
+                                <h4 class="font-bold text-gray-900">Профессиональные инструменты серии ${this.selectedCategory.name}</h4>
+                                <p>Современные измерительные приборы высшего класса точности. Соответствуют строгим стандартам ГОСТ и внесены в Госреестр СИ.</p>
+                                <ul class="list-disc pl-5 text-sm text-gray-600">
+                                    <li>Повышенная износостойкость измерительных поверхностей</li>
+                                    <li>Эргономичный дизайн и удобство снятия показаний</li>
+                                    <li>Сертифицированная заводская поверка</li>
+                                </ul>
+                            </div>`,
+                            judgeVerdict: 'PASS',
+                            failedAttempts: []
+                        };
+                    }, 1200);
+                },
+
+                resetGeneration() {
+                    this.aiResult = null;
+                },
+
+                submitRevision() {
+                    if (!this.revisionText.trim()) return;
+                    this.isLoading = true;
+                    setTimeout(() => {
+                        this.isLoading = false;
+                        this.aiResult.generatedDescription += `<p class="mt-2 text-indigo-700 italic text-sm">Доработано по запросу: "${this.revisionText}"</p>`;
+                        this.revisionText = '';
+                        alert('AI успешно доработал описание!');
+                    }, 1000);
+                },
+
+                saveDescription() {
+                    alert('Описание успешно сохранено в базу данных (симуляция)!');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
