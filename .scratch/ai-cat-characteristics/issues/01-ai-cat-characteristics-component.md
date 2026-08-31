@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: resolved
 Type: task
 Blocked by: none
 
@@ -33,10 +33,10 @@ Create the Nuxt admin page `app/pages/admin/cms/aiCatCharacteristics.vue` based 
 
 ## Acceptance Criteria
 
-- [ ] File `app/pages/admin/cms/aiCatCharacteristics.vue` exists and compiles without errors.
-- [ ] Category dropdown correctly loads and selects categories.
-- [ ] Original characteristics block displays existing category characteristics.
-- [ ] Source documents/fallback research info is rendered when available in `aiResult`.
-- [ ] Generation CTA initiates `category-characteristics` workflow.
-- [ ] Save button correctly sends `{ [cat.id]: { characteristics: ... } }` to `/api/admin/setCategories`.
-- [ ] Revision button correctly sends payload to `category-characteristics-revision` and updates `generatedCharacteristics`.
+- [x] File `app/pages/admin/cms/aiCatCharacteristics.vue` exists and compiles without errors.
+- [x] Category dropdown correctly loads and selects categories.
+- [x] Original characteristics block displays existing category characteristics.
+- [x] Source documents/fallback research info is rendered when available in `aiResult`.
+- [x] Generation CTA initiates `category-characteristics` workflow.
+- [x] Save button correctly sends `{ [cat.id]: { characteristics: ... } }` to `/api/admin/setCategories`.
+- [x] Revision button correctly sends payload to `category-characteristics-revision` and updates `generatedCharacteristics`.
