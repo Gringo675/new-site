@@ -289,17 +289,46 @@
     table {
       width: 80%;
       margin: 15px auto;
-      text-align: center;
+      /* text-align: center; */
+
+      th,
+      td {
+        padding: 5px;
+        border: 1px solid #d5d5c8;
+      }
+
+      thead {
+        background: #999 0 0;
+        color: #fff;
+        th {
+          text-align: center;
+          font-weight: bold;
+        }
+      }
+      tbody {
+        th {
+          text-align: start;
+          font-weight: bold;
+        }
+      }
+
+      .ta-start {
+        text-align: start;
+      }
+      .ta-end {
+        text-align: end;
+      }
+      .ta-center {
+        text-align: center;
+      }
     }
-    table td {
-      padding: 5px;
-      border: 1px solid #d5d5c8;
-    }
-    table tr:first-child,
+
+    /* legacy */
     .table-header {
       background: #999 0 0;
       color: #fff;
     }
+
     .doc-viewer-link {
       @apply text-indigo-500 underline-offset-4 hover:underline;
     }

@@ -9,6 +9,9 @@ await checkAdminOnly()
       label="AI описание категорий"
       to="/admin/cms/aiCatDescription" />
     <UButton
+      label="AI характеристики категорий"
+      to="/admin/cms/aiCatCharacteristics" />
+    <UButton
       label="Категории"
       to="/admin/cms/categories" />
     <UButton

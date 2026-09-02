@@ -15,7 +15,9 @@ const revisionText = ref('')
 const showRawOriginal = ref(false)
 
 const activeCatAlias = ref(null)
+const previousCatAlias = ref(null)
 const cats = shallowRef([])
+
 function mapCats(catsArr, level = 0, rootId = null) {
   if (!Array.isArray(catsArr)) return []
   const result = []
@@ -33,6 +35,7 @@ function mapCats(catsArr, level = 0, rootId = null) {
   }
   return result
 }
+
 onMounted(async () => {
   try {
     const { data: catsData } = await useCats()
@@ -106,22 +109,79 @@ function connectionHandler(options = {}) {
   })
 }
 
+async function onCategoryChange(newAlias) {
+  if (!newAlias) {
+    activeCatAlias.value = null
+    aiResult.value = null
+    previousCatAlias.value = null
+    return
+  }
+
+  if (aiResult.value && aiResult.value.generatedDescription && previousCatAlias.value && previousCatAlias.value !== newAlias) {
+    const proceed = await showMessage({
+      title: 'Подтвердите смену категории',
+      description: 'Есть сгенерированное описание для текущей категории. При смене категории текущие результаты будут сброшены. Продолжить?',
+      isDialog: true,
+    })
+    if (!proceed) {
+      activeCatAlias.value = previousCatAlias.value
+      return
+    }
+  }
+
+  previousCatAlias.value = newAlias
+  isSaved.value = false
+  aiResult.value = null
+
+  try {
+    isLoading.value = true
+    const res = await $fetch(`/api/getData/category/${newAlias}`)
+    isLoading.value = false
+    if (res && typeof res === 'object' && 'catData' in res) {
+      aiResult.value = {
+        originalData: res.catData,
+        generatedDescription: null,
+      }
+    }
+  } catch (e) {
+    isLoading.value = false
+    console.error('Error fetching category data:', e)
+  }
+}
+
+watch(activeCatAlias, newVal => {
+  onCategoryChange(newVal)
+})
+
 async function generateDescription() {
   if (!activeCatAlias.value) return
 
-  aiResult.value = await connectionHandler({
+  const response = await connectionHandler({
     workflowId: 'category-description',
     inputData: {
       alias: activeCatAlias.value,
     },
     runId: '8a02eba5-ef9d-4775-b153-4387ce8538c4',
   })
+
+  if (response) {
+    aiResult.value = response
+  }
 }
 
-watch(activeCatAlias, () => {
-  isSaved.value = false
-  generateDescription()
-})
+async function resetAndRegenerate() {
+  const proceed = await showMessage({
+    title: 'Подтвердите сброс',
+    description: 'Текущий сгенерированный результат будет сброшен. Запустить генерацию заново?',
+    isDialog: true,
+  })
+  if (proceed) {
+    aiResult.value.generatedDescription = null
+    aiResult.value.failedAttempts = []
+    aiResult.value.judgeVerdict = null
+    await generateDescription()
+  }
+}
 
 const handleRevision = async () => {
   if (!revisionText.value.trim()) {
@@ -141,15 +201,15 @@ const handleRevision = async () => {
       generatedDescription: aiResult.value.generatedDescription,
       revisionText: revisionText.value,
     },
-    // runId: '49e90651-ed31-41e9-a3b3-36f3cbcf6e70',
   })
   console.log(`response: ${JSON.stringify(response, null, 2)}`)
   if (response) {
     aiResult.value.judgeVerdict = response.judgeEvaluation.verdict
 
-    if (aiResult.value.failedAttempts.length) {
+    if (aiResult.value.failedAttempts?.length) {
       aiResult.value.failedAttempts[aiResult.value.failedAttempts.length - 1].editorContent = revisionText.value
     } else {
+      aiResult.value.failedAttempts = aiResult.value.failedAttempts || []
       aiResult.value.failedAttempts.push({
         generatedDescription: aiResult.value.generatedDescription,
         editorContent: revisionText.value,
@@ -234,22 +294,30 @@ const handleSave = async () => {
       v-if="aiResult"
       class="space-y-8">
       <!-- Original Description -->
-      <section class="space-y-3">
+      <section class="space-y-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
         <div class="flex items-center justify-between">
           <h2 class="flex items-center gap-2 text-lg font-semibold">
             <UIcon name="i-lucide-file-text" />
             Исходное описание
           </h2>
-          <div class="flex items-center gap-2">
-            <span class="text-sm text-gray-500">Raw HTML</span>
-            <USwitch v-model="showRawOriginal" />
+          <div class="flex items-center gap-3">
+            <UBadge
+              variant="subtle"
+              color="neutral"
+              class="font-mono text-xs">
+              {{ aiResult.originalData?.alias || activeCatAlias }}
+            </UBadge>
+            <div class="flex items-center gap-2">
+              <span class="text-sm text-gray-500">Raw HTML</span>
+              <USwitch v-model="showRawOriginal" />
+            </div>
           </div>
         </div>
         <div class="info-block">
           <div
             v-if="!showRawOriginal"
-            class="description max-w-none space-y-2 rounded-lg border border-gray-200 bg-white p-4"
-            v-html="aiResult.originalData?.description" />
+            class="description max-w-none space-y-2 rounded-lg border border-gray-200 bg-gray-50 p-4"
+            v-html="aiResult.originalData?.description || '<em class=\'text-gray-400\'>Описание отсутствует</em>'" />
           <pre
             v-else
             class="max-w-none overflow-auto rounded-lg border border-gray-200 bg-gray-50 p-4 font-mono text-sm whitespace-pre-wrap"
@@ -257,162 +325,192 @@ const handleSave = async () => {
         </div>
       </section>
 
-      <!-- Generated Description -->
-      <section class="space-y-3">
-        <h2 class="flex items-center gap-2 text-lg font-semibold">
-          <UIcon name="i-lucide-sparkles" />
-          Сгенерированное описание
-        </h2>
-
-        <div class="grid grid-cols-1 gap-4">
-          <UTabs
-            :items="[
-              { slot: 'preview', label: 'Предпросмотр' },
-              { slot: 'edit', label: 'Редактирование' },
-            ]"
-            color="primary">
-            <template #preview>
-              <div class="info-block">
-                <div
-                  class="description max-w-none space-y-2 rounded-lg border border-gray-200 bg-white p-4"
-                  v-html="aiResult.generatedDescription" />
-              </div>
-            </template>
-            <template #edit>
-              <UTextarea
-                v-model="aiResult.generatedDescription"
-                class="w-full font-mono"
-                :rows="20"
-                placeholder="HTML content..." />
-            </template>
-          </UTabs>
-        </div>
-
-        <div class="flex items-center justify-between pt-4">
-          <div class="flex items-center gap-3">
-            <span class="text-sm font-medium">Вердикт:</span>
-            <UBadge
-              :color="aiResult.judgeVerdict === 'PASS' ? 'success' : 'error'"
-              variant="solid"
-              class="font-bold">
-              {{ aiResult.judgeVerdict }}
-            </UBadge>
-          </div>
-          <div class="flex items-center gap-3">
-            <UBadge
-              v-if="isSaved"
-              color="success"
-              variant="solid">
-              Сохранено
-            </UBadge>
-            <UButton
-              icon="i-lucide-save"
-              label="Сохранить"
-              variant="outline"
-              color="success"
-              @click="handleSave" />
-          </div>
-        </div>
+      <!-- Generate Action CTA (shown when generatedDescription is not yet present) -->
+      <section
+        v-if="!aiResult.generatedDescription"
+        class="border-primary-300 bg-primary-50/30 space-y-4 rounded-xl border-2 border-dashed p-8 text-center shadow-sm">
+        <h2 class="text-lg font-semibold">Готово к генерации</h2>
+        <p class="text-sm text-gray-600">Нажмите кнопку ниже, чтобы запустить AI-генерацию описания категории.</p>
+        <UButton
+          icon="i-lucide-sparkles"
+          size="lg"
+          label="Сгенерировать описание"
+          color="primary"
+          @click="generateDescription" />
       </section>
 
-      <!--Last critique-->
-      <section
-        v-if="aiResult.failedAttempts?.length"
-        class="space-y-3">
-        <h2 class="flex items-center gap-2 text-lg font-semibold">
-          <UIcon name="i-lucide-message-square-warning" />
-          Последняя критика
-        </h2>
-        <div
-          v-if="aiResult.failedAttempts.length >= 2 && aiResult.failedAttempts[aiResult.failedAttempts.length - 2]?.editorContent"
-          class="rounded border border-blue-100 bg-blue-50 p-3 text-sm text-blue-800">
-          {{ aiResult.failedAttempts[aiResult.failedAttempts.length - 2].editorContent }}
-        </div>
-
-        <div
-          v-if="aiResult.failedAttempts.length >= 1 && aiResult.failedAttempts[aiResult.failedAttempts.length - 1]?.requiredCorrections?.length"
-          class="rounded border border-red-200 bg-red-50 p-3">
-          <ul class="mt-1 ml-4 list-disc">
-            <li
-              v-for="correction in aiResult.failedAttempts[aiResult.failedAttempts.length - 1].requiredCorrections"
-              :key="correction">
-              {{ correction }}
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <!-- Failed Attempts -->
-      <section
-        v-if="aiResult.failedAttempts?.length"
-        class="space-y-3">
-        <h2 class="flex items-center gap-2 text-lg font-semibold">
-          <UIcon name="i-lucide-history" />
-          Неудачные попытки
-        </h2>
-        <UAccordion
-          type="multiple"
-          :items="
-            aiResult.failedAttempts.map((attempt, index) => ({
-              label: `Попытка №${index + 1}`,
-              attempt,
-            }))
-          ">
-          <template #content="{ item }">
-            <div class="space-y-4 p-4">
-              <div class="rounded border border-gray-200 bg-gray-50 p-3 text-sm">
-                <strong>Текст:</strong>
-                <div
-                  class="mt-1 max-w-none"
-                  v-html="item.attempt.generatedDescription"></div>
-              </div>
-              <div class="rounded border border-amber-100 bg-amber-50 p-3 text-sm text-amber-800">
-                <strong>Критика:</strong>
-                <div class="mt-1 whitespace-pre-wrap">{{ item.attempt.critique }}</div>
-              </div>
-              <div
-                v-if="item.attempt.requiredCorrections.length"
-                class="rounded border border-red-100 bg-red-50 p-3 text-sm text-red-800">
-                <strong>Требуемые исправления:</strong>
-                <ul class="mt-1 ml-4 list-disc">
-                  <li
-                    v-for="correction in item.attempt.requiredCorrections"
-                    :key="correction">
-                    {{ correction }}
-                  </li>
-                </ul>
-              </div>
-              <div
-                v-if="item.attempt.editorContent"
-                class="rounded border border-blue-100 bg-blue-50 p-3 text-sm text-blue-800">
-                <strong>Комментарий редактора:</strong>
-                <div class="mt-1 whitespace-pre-wrap">{{ item.attempt.editorContent }}</div>
-              </div>
+      <div
+        v-if="aiResult.generatedDescription"
+        class="space-y-8">
+        <!-- Generated Description -->
+        <section class="space-y-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <div class="flex items-center justify-between">
+            <h2 class="flex items-center gap-2 text-lg font-semibold">
+              <UIcon name="i-lucide-sparkles" />
+              Сгенерированное описание
+            </h2>
+            <div class="flex items-center gap-3">
+              <span class="text-sm font-medium text-gray-500">Вердикт:</span>
+              <UBadge
+                :color="aiResult.judgeVerdict === 'PASS' ? 'success' : 'error'"
+                variant="solid"
+                class="font-bold">
+                {{ aiResult.judgeVerdict }}
+              </UBadge>
             </div>
-          </template>
-        </UAccordion>
-      </section>
+          </div>
 
-      <!-- Revision Section -->
-      <section class="mt-12 space-y-4 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-6">
-        <h2 class="flex items-center gap-2 text-lg font-semibold">
-          <UIcon name="i-lucide-rotate-ccw" />
-          Запрос на доработку
-        </h2>
-        <p class="text-sm text-gray-600">Опишите, что нужно изменить в описании, чтобы AI перегенерировал его.</p>
-        <UTextarea
-          v-model="revisionText"
-          class="w-full"
-          placeholder="Например: добавьте больше внимания к ГОСТ 6507-90 или сделайте текст более техническим..."
-          :rows="4" />
-        <div class="flex justify-end">
-          <UButton
-            icon="i-lucide-send"
-            label="Отправить на доработку"
-            variant="outline"
-            @click="handleRevision" />
-        </div>
-      </section>
+          <div class="grid grid-cols-1 gap-4">
+            <UTabs
+              :items="[
+                { slot: 'preview', label: 'Предпросмотр' },
+                { slot: 'edit', label: 'Редактирование' },
+              ]"
+              color="neutral"
+              variant="link">
+              <template #preview>
+                <div class="info-block pt-2">
+                  <div
+                    class="description max-w-none space-y-2 rounded-lg border border-gray-200 bg-gray-50 p-4"
+                    v-html="aiResult.generatedDescription" />
+                </div>
+              </template>
+              <template #edit>
+                <div class="pt-2">
+                  <UTextarea
+                    v-model="aiResult.generatedDescription"
+                    class="w-full font-mono"
+                    :rows="20"
+                    placeholder="HTML content..." />
+                </div>
+              </template>
+            </UTabs>
+          </div>
+
+          <div class="flex items-center justify-between border-t border-gray-100 pt-4">
+            <UButton
+              icon="i-lucide-rotate-ccw"
+              label="Сбросить и сгенерировать заново"
+              variant="ghost"
+              color="neutral"
+              @click="resetAndRegenerate" />
+            <div class="flex items-center gap-3">
+              <UBadge
+                v-if="isSaved"
+                color="success"
+                variant="solid">
+                Сохранено
+              </UBadge>
+              <UButton
+                icon="i-lucide-save"
+                label="Сохранить"
+                variant="solid"
+                color="success"
+                @click="handleSave" />
+            </div>
+          </div>
+        </section>
+
+        <!--Last critique-->
+        <section
+          v-if="aiResult.failedAttempts?.length"
+          class="space-y-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <h2 class="flex items-center gap-2 text-lg font-semibold">
+            <UIcon name="i-lucide-message-square-warning" />
+            Последняя критика
+          </h2>
+          <div
+            v-if="aiResult.failedAttempts.length >= 2 && aiResult.failedAttempts[aiResult.failedAttempts.length - 2]?.editorContent"
+            class="rounded border border-blue-100 bg-blue-50 p-3 text-sm text-blue-800">
+            {{ aiResult.failedAttempts[aiResult.failedAttempts.length - 2].editorContent }}
+          </div>
+
+          <div
+            v-if="aiResult.failedAttempts.length >= 1 && aiResult.failedAttempts[aiResult.failedAttempts.length - 1]?.requiredCorrections?.length"
+            class="rounded border border-red-200 bg-red-50 p-3">
+            <ul class="mt-1 ml-4 list-disc">
+              <li
+                v-for="correction in aiResult.failedAttempts[aiResult.failedAttempts.length - 1].requiredCorrections"
+                :key="correction">
+                {{ correction }}
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- Failed Attempts -->
+        <section
+          v-if="aiResult.failedAttempts?.length"
+          class="space-y-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <h2 class="flex items-center gap-2 text-lg font-semibold">
+            <UIcon name="i-lucide-history" />
+            Неудачные попытки
+          </h2>
+          <UAccordion
+            type="multiple"
+            :items="
+              aiResult.failedAttempts.map((attempt, index) => ({
+                label: `Попытка №${index + 1}`,
+                attempt,
+              }))
+            ">
+            <template #content="{ item }">
+              <div class="space-y-4 p-4">
+                <div class="rounded border border-gray-200 bg-gray-50 p-3 text-sm">
+                  <strong>Текст:</strong>
+                  <div
+                    class="mt-1 max-w-none"
+                    v-html="item.attempt.generatedDescription"></div>
+                </div>
+                <div class="rounded border border-amber-100 bg-amber-50 p-3 text-sm text-amber-800">
+                  <strong>Критика:</strong>
+                  <div class="mt-1 whitespace-pre-wrap">{{ item.attempt.critique }}</div>
+                </div>
+                <div
+                  v-if="item.attempt.requiredCorrections.length"
+                  class="rounded border border-red-100 bg-red-50 p-3 text-sm text-red-800">
+                  <strong>Требуемые исправления:</strong>
+                  <ul class="mt-1 ml-4 list-disc">
+                    <li
+                      v-for="correction in item.attempt.requiredCorrections"
+                      :key="correction">
+                      {{ correction }}
+                    </li>
+                  </ul>
+                </div>
+                <div
+                  v-if="item.attempt.editorContent"
+                  class="rounded border border-blue-100 bg-blue-50 p-3 text-sm text-blue-800">
+                  <strong>Комментарий редактора:</strong>
+                  <div class="mt-1 whitespace-pre-wrap">{{ item.attempt.editorContent }}</div>
+                </div>
+              </div>
+            </template>
+          </UAccordion>
+        </section>
+
+        <!-- Revision Section -->
+        <section class="space-y-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <h2 class="flex items-center gap-2 text-lg font-semibold">
+            <UIcon name="i-lucide-rotate-ccw" />
+            Запрос на доработку
+          </h2>
+          <p class="text-sm text-gray-600">Опишите, что нужно изменить в описании, чтобы AI перегенерировал его.</p>
+          <UTextarea
+            v-model="revisionText"
+            class="w-full"
+            placeholder="Например: добавьте больше внимания к ГОСТ 6507-90 или сделайте текст более техническим..."
+            :rows="4" />
+          <div class="flex justify-end">
+            <UButton
+              icon="i-lucide-send"
+              label="Отправить на доработку"
+              variant="solid"
+              color="neutral"
+              @click="handleRevision" />
+          </div>
+        </section>
+      </div>
     </div>
   </div>
 </template>

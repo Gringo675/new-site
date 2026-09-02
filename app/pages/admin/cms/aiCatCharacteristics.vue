@@ -161,6 +161,7 @@ async function generateCharacteristics() {
     inputData: {
       alias: activeCatAlias.value,
     },
+    // runId: '7de4b42e-b69f-4617-8731-adbbf4d5255f',
   })
 
   if (response) {
@@ -202,6 +203,7 @@ const handleRevision = async () => {
       generatedCharacteristics: aiResult.value.generatedCharacteristics,
       revisionText: revisionText.value,
     },
+    // runId: 'af91a1a5-58b1-44a9-b116-57f2d46b93c2',
   })
   console.log(`response: ${JSON.stringify(response, null, 2)}`)
   if (response) {
@@ -317,13 +319,12 @@ const handleSave = async () => {
         <div class="info-block">
           <div
             v-if="!showRawOriginal"
-            class="description max-w-none space-y-2 rounded-lg border border-gray-200 bg-gray-50 p-4"
+            class="characteristics max-w-none space-y-2 rounded-lg border border-gray-200 bg-gray-50 p-4"
             v-html="aiResult.originalData?.characteristics || '<em class=\'text-gray-400\'>Характеристики отсутствуют</em>'" />
           <pre
             v-else
             class="max-w-none overflow-auto rounded-lg border border-gray-200 bg-gray-50 p-4 font-mono text-sm whitespace-pre-wrap"
-            >{{ aiResult.originalData?.characteristics }}</pre
-          >
+            >{{ aiResult.originalData?.characteristics }}</pre>
         </div>
       </section>
 
@@ -373,7 +374,7 @@ const handleSave = async () => {
               <template #preview>
                 <div class="info-block pt-2">
                   <div
-                    class="description max-w-none space-y-2 rounded-lg border border-gray-200 bg-gray-50 p-4"
+                    class="characteristics max-w-none space-y-2 rounded-lg border border-gray-200 bg-gray-50 p-4"
                     v-html="aiResult.generatedCharacteristics" />
                 </div>
               </template>
@@ -439,9 +440,9 @@ const handleSave = async () => {
           <!-- Fallback Research Content -->
           <div
             v-if="aiResult.usedFallback && aiResult.fallbackResearch"
-            class="rounded-lg border border-amber-200 bg-amber-50/50 p-4 space-y-2 text-sm text-amber-900">
+            class="space-y-2 rounded-lg border border-amber-200 bg-amber-50/50 p-4 text-sm text-amber-900">
             <strong class="font-semibold">Синтезированное исследование (Tavily):</strong>
-            <p class="whitespace-pre-wrap font-mono text-xs">{{ aiResult.fallbackResearch.technicalSummary }}</p>
+            <p class="font-mono text-xs whitespace-pre-wrap">{{ aiResult.fallbackResearch.technicalSummary }}</p>
           </div>
 
           <!-- Document Extractions List -->
@@ -467,9 +468,9 @@ const handleSave = async () => {
                       v-if="item.doc.fileLink"
                       :href="item.doc.fileLink"
                       target="_blank"
-                      class="text-primary-600 underline"
-                      >Открыть документ</a
-                    >
+                      class="text-primary-600 underline">
+                      Открыть документ
+                    </a>
                   </div>
                   <pre class="max-w-none overflow-auto rounded border border-gray-200 bg-gray-50 p-3 font-mono text-xs whitespace-pre-wrap">{{ item.doc.extractedMarkdown }}</pre>
                 </div>
