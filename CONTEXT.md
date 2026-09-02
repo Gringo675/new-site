@@ -8,6 +8,10 @@ Marketing and introductory HTML text block for a product category, generated via
 ### Category Characteristics (Характеристики категории)
 Structured technical specification block in HTML for a product category, synthesized from official standards (GOST), State Register of Measuring Instruments (GRSI) documents, or fallback technical web research via the `category-characteristics` Mastra workflow. Stored in `i_categories.characteristics`.
 
+### Category FAQ (Частые вопросы категории)
+Structured question–answer content for a product category, synthesized from the category's Characteristics and official documents to answer common buyer questions; rendered inline on the category page and marked up with `FAQPage` schema.
+_Avoid_: Q&A block, FAQ article
+
 ### Document Extractions (Выжимки из документов)
 Relevant specification snippets extracted from official standard texts (`stnd`) or State Register entries (`rstr`) for specific category products during category characteristics workflow execution.
 
