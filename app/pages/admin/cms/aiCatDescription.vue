@@ -17,7 +17,7 @@ const showRawOriginal = ref(false)
 const activeCatAlias = ref(null)
 const previousCatAlias = ref(null)
 const cats = shallowRef([])
-
+// todo: use /home/v-srv/projects/site/server/api/getData/categories.js
 function mapCats(catsArr, level = 0, rootId = null) {
   if (!Array.isArray(catsArr)) return []
   const result = []

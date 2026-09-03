@@ -290,6 +290,10 @@
       width: 80%;
       margin: 15px auto;
       /* text-align: center; */
+      caption {
+        font-style: italic;
+        padding: 5px;
+      }
 
       th,
       td {
@@ -298,17 +302,17 @@
       }
 
       thead {
-        background: #999 0 0;
-        color: #fff;
+        background: #ebebeb 0 0;
         th {
           text-align: center;
-          font-weight: bold;
+          font-weight: normal;
         }
       }
       tbody {
         th {
+          background: #ebebeb 0 0;
           text-align: start;
-          font-weight: bold;
+          font-weight: normal;
         }
       }
 
