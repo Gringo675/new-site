@@ -4,13 +4,13 @@
 
 **Blocked by:** None — can start immediately.
 
-**Status:** ready-for-agent
+**Status:** closed
 
-- [ ] `GET /llms-full.txt` returns HTTP 200 with `Content-Type: text/plain; charset=utf-8`
-- [ ] Body contains the Description and Characteristics of every catalog category, with HTML stripped to readable plain text (tables and lists preserved as readable markdown)
-- [ ] Body contains at least one known category name verifiable in the test
-- [ ] Body contains titled entries (title + path + body where readily available) for each of the 4 informational articles and each marketing/service page
-- [ ] Body does **not** contain product-page URLs (products are excluded — their data is already in Product JSON-LD per page)
-- [ ] The endpoint is SWR-cached at the same TTL as existing catalog routes, and reads live data on refresh
-- [ ] The endpoint is served openly (no auth)
-- [ ] Playwright E2E test verifies: status, content-type, presence of a known category name, absence of product URLs, and absence of raw HTML tags
+- [x] `GET /llms-full.txt` returns HTTP 200 with `Content-Type: text/plain; charset=utf-8`
+- [x] Body contains the Description and Characteristics of every catalog category, with HTML stripped to readable plain text (tables and lists preserved as readable markdown)
+- [x] Body contains at least one known category name verifiable in the test
+- [x] Body contains titled entries (title + path + body where readily available) for each of the 4 informational articles and each marketing/service page
+- [x] Body does **not** contain product-page URLs (products are excluded — their data is already in Product JSON-LD per page)
+- [x] The endpoint is SWR-cached at the same TTL as existing catalog routes, and reads live data on refresh
+- [x] The endpoint is served openly (no auth)
+- [x] Playwright E2E test verifies: status, content-type, presence of a known category name, absence of product URLs, and absence of raw HTML tags

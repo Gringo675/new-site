@@ -95,7 +95,7 @@ async function deploy(archivePath, deployDir) {
 
   try {
     // For warming up the server
-    child_process.execSync(`start chrome "https://${deployDir}"`)
+    child_process.execSync(`cmd.exe /c start "" "https://${deployDir}"`)
   } catch (e) {
     console.log(`Couldn't open Chrome: ${e.message}`)
   }
@@ -110,6 +110,9 @@ async function main() {
   if (isRedeploy) {
     console.log('Starting redeployment from an existing archive...')
     const archiveDir = 'archived_builds'
+    if (!fs.existsSync(archiveDir)) {
+      fs.mkdirSync(archiveDir, { recursive: true })
+    }
     const archives = fs
       .readdirSync(archiveDir)
       .filter(file => file.endsWith('.tar.gz'))
@@ -141,7 +144,11 @@ async function main() {
     const timestamp = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16).replace('T', '_').replace(':', '-')
     const buildType = isProduction ? 'prod' : 'test'
     const archiveName = `${buildType}_${timestamp}.tar.gz`
-    archivePath = `archived_builds/${archiveName}`
+    const archiveDir = 'archived_builds'
+    if (!fs.existsSync(archiveDir)) {
+      fs.mkdirSync(archiveDir, { recursive: true })
+    }
+    archivePath = `${archiveDir}/${archiveName}`
     try {
       child_process.execSync(`tar -czf ${archivePath} -C .output public server nitro.json`, { stdio: 'inherit' })
       console.log(`\u2713 Archive created: ${archivePath}`)

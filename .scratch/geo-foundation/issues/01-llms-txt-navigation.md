@@ -4,11 +4,11 @@
 
 **Blocked by:** None — can start immediately.
 
-**Status:** ready-for-agent
+**Status:** closed
 
-- [ ] `GET /llms.txt` returns HTTP 200 with `Content-Type: text/plain; charset=utf-8`
-- [ ] Body contains a curated list of key site sections: catalog (with main category names), materials/articles, and service/marketing pages
-- [ ] Body contains a link to `/llms-full.txt`
-- [ ] Body contains a link to `/sitemap.xml`
-- [ ] The endpoint is served openly (no auth), and `robots.txt` is unchanged
-- [ ] Playwright E2E test verifies the above: status, content-type, presence of section markers, and the two links
+- [x] `GET /llms.txt` returns HTTP 200 with `Content-Type: text/plain; charset=utf-8`
+- [x] Body contains a curated list of key site sections: catalog (with main category names), materials/articles, and service/marketing pages
+- [x] Body contains a link to `/llms-full.txt`
+- [x] Body contains a link to `/sitemap.xml`
+- [x] The endpoint is served openly (no auth), and `robots.txt` is unchanged
+- [x] Playwright E2E test verifies the above: status, content-type, presence of section markers, and the two links

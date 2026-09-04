@@ -64,6 +64,12 @@ export default defineNuxtConfig({
     '/materials': { prerender: true },
     '/materials/**': { prerender: true },
     // '/catalog': { prerender: true },
+    '/llms.txt': process.env.NODE_ENV === 'production' && {
+      swr: 24 * 60 * 60, // 24 hours
+    },
+    '/llms-full.txt': process.env.NODE_ENV === 'production' && {
+      swr: 24 * 60 * 60, // 24 hours
+    },
     //this caches full request of the pages
     '/catalog/**': process.env.NODE_ENV === 'production' && {
       swr: 2 * 60 * 60, // 2 hours
@@ -158,7 +164,10 @@ export default defineNuxtConfig({
   },
   sourcemap: {
     client: 'hidden',
-    server: true,
+    server: false,
+    // disabled after 'out of memory' error on production build
+    // another solution is to increase memory limit:
+    // NODE_OPTIONS="--max-old-space-size=4096" npm run build
   },
   site: {
     // used in SEO modules + useCanonical composable
