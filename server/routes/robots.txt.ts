@@ -22,7 +22,15 @@ export default defineEventHandler(event => {
       'Disallow: /catalog/*?f=*',
     )
     // Добавляем ссылку на sitemap
-    lines.push('', '# Sitemap', 'Sitemap: https://chelinstrument.ru/sitemap.xml')
+    lines.push(
+      '',
+      '# Sitemap',
+      'Sitemap: https://chelinstrument.ru/sitemap.xml',
+      '',
+      '# AI Crawlers Discovery',
+      'Allow: /llms.txt',
+      'Allow: /llms-full.txt',
+    )
   }
 
   // Устанавливаем правильный Content-Type для текстового файла

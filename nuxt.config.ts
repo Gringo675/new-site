@@ -26,6 +26,7 @@ export default defineNuxtConfig({
         { rel: 'shortcut icon', href: '/static/assets/favicons/favicon.ico' },
         { rel: 'apple-touch-icon', sizes: '180x180', href: '/static/assets/favicons/apple-touch-icon.png' },
         { rel: 'manifest', href: '/static/assets/favicons/site.webmanifest' },
+        { rel: 'alternate', type: 'text/plain', href: '/llms.txt', title: 'llms.txt' },
         // --- Added preconnect links for analytics scripts ---
         { rel: 'preconnect', href: 'https://mc.yandex.ru' },
         { rel: 'preconnect', href: 'https://www.googletagmanager.com' },

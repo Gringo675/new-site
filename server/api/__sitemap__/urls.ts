@@ -10,6 +10,12 @@ export default defineSitemapEventHandler(async (): Promise<SitemapUrl[]> => {
   // const today = new Date().toISOString()
 
   const urls = [
+    {
+      loc: '/llms.txt',
+    },
+    {
+      loc: '/llms-full.txt',
+    },
     ...cats.map(cat => ({
       loc: `/catalog/${cat.alias}`,
       // lastmod: today,
