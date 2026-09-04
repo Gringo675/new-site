@@ -109,24 +109,32 @@ function connectionHandler(options = {}) {
   })
 }
 
+let isReverting = false
+
 async function onCategoryChange(newAlias) {
+  if (isReverting) {
+    isReverting = false
+    return
+  }
+
+  if (!isSaved.value && aiResult.value && aiResult.value.generatedCharacteristics && previousCatAlias.value && previousCatAlias.value !== newAlias) {
+    const proceed = await showMessage({
+      title: 'Подтвердите смену категории',
+      description: 'Есть несохраненные сгенерированные характеристики для текущей категории. При смене категории текущие результаты будут сброшены. Продолжить?',
+      isDialog: true,
+    })
+    if (!proceed) {
+      isReverting = true
+      activeCatAlias.value = previousCatAlias.value
+      return
+    }
+  }
+
   if (!newAlias) {
     activeCatAlias.value = null
     aiResult.value = null
     previousCatAlias.value = null
     return
-  }
-
-  if (aiResult.value && aiResult.value.generatedCharacteristics && previousCatAlias.value && previousCatAlias.value !== newAlias) {
-    const proceed = await showMessage({
-      title: 'Подтвердите смену категории',
-      description: 'Есть сгенерированные характеристики для текущей категории. При смене категории текущие результаты будут сброшены. Продолжить?',
-      isDialog: true,
-    })
-    if (!proceed) {
-      activeCatAlias.value = previousCatAlias.value
-      return
-    }
   }
 
   previousCatAlias.value = newAlias
@@ -153,6 +161,15 @@ watch(activeCatAlias, newVal => {
   onCategoryChange(newVal)
 })
 
+watch(
+  () => aiResult.value?.generatedCharacteristics,
+  (newVal, oldVal) => {
+    if (newVal !== oldVal) {
+      isSaved.value = false
+    }
+  }
+)
+
 async function generateCharacteristics() {
   if (!activeCatAlias.value) return
 
@@ -166,6 +183,7 @@ async function generateCharacteristics() {
 
   if (response) {
     aiResult.value = response
+    isSaved.value = false
   }
 }
 
@@ -226,6 +244,7 @@ const handleRevision = async () => {
     })
 
     aiResult.value.generatedCharacteristics = response.finalCharacteristics
+    isSaved.value = false
     revisionText.value = ''
   }
 }

@@ -286,7 +286,27 @@
   }
 
   .characteristics {
-    table {
+    
+    /* todo: удалить легаси после полного обновления характеристик  */
+    /* 1. СТИЛИ ДЛЯ ЛЕГАСИ ТАБЛИЦ (где НЕТ thead или th) */
+    table:not(:has(thead, th)) {
+      width: 80%;
+      margin: 15px auto;
+      text-align: center;
+
+      td {
+        padding: 5px;
+        border: 1px solid #d5d5c8;
+      }
+
+      tr:first-child,
+      .table-header {
+        background: #999 0 0;
+        color: #fff;
+      }
+    }
+    /* 2. НОВЫЕ СТИЛИ (для таблиц С thead или th) */
+    table:has(thead, th) {
       width: 80%;
       margin: 15px auto;
       /* text-align: center; */
@@ -325,12 +345,6 @@
       .ta-center {
         text-align: center;
       }
-    }
-
-    /* legacy */
-    .table-header {
-      background: #999 0 0;
-      color: #fff;
     }
 
     .doc-viewer-link {

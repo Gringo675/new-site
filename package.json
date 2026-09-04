@@ -12,11 +12,11 @@
     "redeploy": "node deploy.js --redeploy",
     "serv": "npm run build && npm run deploy",
     "generate": "nuxt generate",
-    "prev on 3001": "set \"PORT=3001\" && node .output/server/index.mjs",
+    "prev on 3001": "PORT=3001 node .output/server/index.mjs",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "prod_build": "set \"NUXT_BUILD_MODE=prod\" && nuxt build",
-    "prod_deploy": "set \"NUXT_BUILD_MODE=prod\" && node deploy.js",
+    "prod_build": "NUXT_BUILD_MODE=prod nuxt build",
+    "prod_deploy": "NUXT_BUILD_MODE=prod node deploy.js",
     "prod_serv": "npm run prod_build && npm run deploy"
   },
   "devDependencies": {
