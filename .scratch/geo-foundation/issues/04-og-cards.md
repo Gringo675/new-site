@@ -4,11 +4,11 @@
 
 **Blocked by:** None — can start immediately.
 
-**Status:** ready-for-agent
+**Status:** closed
 
-- [ ] Every public page (homepage, category, product, article, marketing) emits `og:title`, `og:description`, `og:url`, `og:type`, `og:site_name`, `og:locale`, and `og:image` meta tags in the `<head>`
-- [ ] `og:title` mirrors the page `<title>`; `og:description` mirrors the meta description
-- [ ] `og:image` on product pages uses the product's main image; on category pages uses the category image; on article pages uses the article image; on all other pages falls back to the site logo
-- [ ] No page emits any `twitter:` meta tag (deliberate omission)
-- [ ] Existing page content and layout are unchanged (additive change only)
-- [ ] Playwright E2E test verifies on 4 pages (homepage, one category, one product, one article): each has the required og tags with non-empty content, and none has `twitter:` tags
+- [x] Every public page (homepage, category, product, article, marketing) emits `og:title`, `og:description`, `og:url`, `og:type`, `og:site_name`, `og:locale`, and `og:image` meta tags in the `<head>`
+- [x] `og:title` mirrors the page `<title>`; `og:description` mirrors the meta description
+- [x] `og:image` on product pages uses the product's main image; on category pages uses the category image; on article pages uses the article image; on all other pages falls back to the site logo
+- [x] No page emits any `twitter:` meta tag (deliberate omission)
+- [x] Existing page content and layout are unchanged (additive change only)
+- [x] Playwright E2E test verifies on 4 pages (homepage, one category, one product, one article): each has the required og tags with non-empty content, and none has `twitter:` tags
