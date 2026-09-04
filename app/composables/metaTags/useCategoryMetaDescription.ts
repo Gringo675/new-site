@@ -1,4 +1,5 @@
 export const useCategoryMetaDescription = (cat: Category) => {
+  const siteConfig = useSiteConfig()
   let description = `${cat.name} купить по ценам производителя с поверкой и доставкой.`
   if (cat.docs) {
     if (cat.docs.stnd?.length) {
@@ -10,5 +11,15 @@ export const useCategoryMetaDescription = (cat: Category) => {
   }
 
   description += ' Консультации по подбору измерительного инструмента. Гарантия качества.'
-  useSeoMeta({ description })
+  
+  const ogImage = cat.image
+    ? `${siteConfig.url}/static/img/categories/${cat.image}`
+    : `${siteConfig.url}/img/logo.svg`
+
+  useSeoMeta({
+    description,
+    ogDescription: description,
+    ogImage,
+    ogType: 'website',
+  })
 }
