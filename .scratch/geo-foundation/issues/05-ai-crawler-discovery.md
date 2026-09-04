@@ -12,4 +12,3 @@
 - [ ] `GET /robots.txt` in production mode references `/llms.txt` and `/llms-full.txt`
 - [ ] `GET /sitemap.xml` includes entries for `/llms.txt` and `/llms-full.txt`
 - [ ] Main site HTML `<head>` contains `<link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />`
-- [ ] Playwright E2E test verifies: presence of `llms.txt` references in `robots.txt`, sitemap, and head link tag on homepage
