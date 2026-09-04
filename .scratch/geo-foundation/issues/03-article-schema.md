@@ -4,8 +4,8 @@
 
 **Blocked by:** None — can start immediately.
 
-**Status:** ready-for-agent
+**Status:** closed
 
-- [ ] Each of the 4 article pages (`/materials/chto-takoe-poverka-instrumenta`, `/materials/chto-takoe-kalibrovka-instrumenta`, `/materials/kak-vybrat-mikrometr`, `/materials/kak-vybrat-shtangentsirkul`) emits `Article` JSON-LD in the head, joined to the existing schema graph
-- [ ] The `Article` node includes: `headline` (article title), `description` (meta description text), `author` (referencing the Organization identity), `publisher` (Organization), `datePublished`, `dateModified`, and `image` (article image)
-- [ ] The existing article page content and layout are unchanged (additive change only)
+- [x] Each of the 4 article pages (`/materials/chto-takoe-poverka-instrumenta`, `/materials/chto-takoe-kalibrovka-instrumenta`, `/materials/kak-vybrat-mikrometr`, `/materials/kak-vybrat-shtangentsirkul`) emits `Article` JSON-LD in the head, joined to the existing schema graph
+- [x] The `Article` node includes: `headline` (article title), `description` (meta description text), `author` (referencing the Organization identity), `publisher` (Organization), `datePublished`, `dateModified`, and `image` (article image)
+- [x] The existing article page content and layout are unchanged (additive change only)

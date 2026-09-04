@@ -7,8 +7,8 @@
 
 **Blocked by:** 01 — llms.txt Navigation Index, 02 — llms-full.txt Content Corpus.
 
-**Status:** ready-for-agent
+**Status:** closed
 
-- [ ] `GET /robots.txt` in production mode references `/llms.txt` and `/llms-full.txt`
-- [ ] `GET /sitemap.xml` includes entries for `/llms.txt` and `/llms-full.txt`
-- [ ] Main site HTML `<head>` contains `<link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />`
+- [x] `GET /robots.txt` in production mode references `/llms.txt` and `/llms-full.txt`
+- [x] `GET /sitemap.xml` includes entries for `/llms.txt` and `/llms-full.txt`
+- [x] Main site HTML `<head>` contains `<link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />`
