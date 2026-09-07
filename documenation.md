@@ -3,11 +3,9 @@ create table
 check ws /admin protector
 ping-pong schema?
 create /mastraHandler api
+
 ### aiCatDescription
 fully update UI
-add Start button
-get current data from db
-add possibility to change/revision current description
 
 ## chords
 create titles for admin pages
