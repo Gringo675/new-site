@@ -199,7 +199,7 @@ const editProd = async prod => {
   formState.isOpen = true
   formState.prods = [prod]
   for (const type of editTypes.value) {
-    formState[type] = prod[type]
+    formState[type] = [...prod[type]]
   }
 }
 
@@ -259,7 +259,7 @@ const moveDoc = (type, index, direction) => {
 }
 
 const removeDoc = (type, id) => {
-  formState[type] = formState[type].filter(d => d.id !== id)
+  formState[type] = formState[type].filter(d => String(d.id) !== String(id))
 }
 
 const saveProds = async () => {
@@ -523,7 +523,8 @@ const onTest = () => {
             type="submit"
             variant="subtle"
             color="neutral"
-            class="px-8" />
+            class="px-8"
+            @click="saveProds" />
         </div>
       </template>
     </UModal>

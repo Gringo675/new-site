@@ -17,7 +17,6 @@ const showRawOriginal = ref(false)
 const activeCatAlias = ref(null)
 const previousCatAlias = ref(null)
 const cats = shallowRef([])
-// todo: use /home/v-srv/projects/site/server/api/getData/categories.js
 function mapCats(catsArr, level = 0, rootId = null) {
   if (!Array.isArray(catsArr)) return []
   const result = []
@@ -167,7 +166,7 @@ watch(
     if (newVal !== oldVal) {
       isSaved.value = false
     }
-  }
+  },
 )
 
 async function generateCharacteristics() {
@@ -323,12 +322,17 @@ const handleSave = async () => {
             Исходные характеристики
           </h2>
           <div class="flex items-center gap-3">
-            <UBadge
-              variant="subtle"
-              color="neutral"
-              class="font-mono text-xs">
-              {{ aiResult.originalData?.alias || activeCatAlias }}
-            </UBadge>
+            <NuxtLink
+              :to="`/catalog/${aiResult.originalData?.alias || activeCatAlias}`"
+              target="_blank"
+              class="inline-flex">
+              <UBadge
+                variant="subtle"
+                color="neutral"
+                class="cursor-pointer font-mono text-xs transition-colors hover:bg-gray-200">
+                {{ aiResult.originalData?.alias || activeCatAlias }}
+              </UBadge>
+            </NuxtLink>
             <div class="flex items-center gap-2">
               <span class="text-sm text-gray-500">Raw HTML</span>
               <USwitch v-model="showRawOriginal" />

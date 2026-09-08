@@ -1,107 +1,3 @@
-## Mastra
-create table
-check ws /admin protector
-ping-pong schema?
-create /mastraHandler api
-
-### aiCatDescription
-fully update UI
-
-## chords
-create titles for admin pages
-mySQL table structure for AI? (mySQL as mcp or tool)
-
-
-## old id's replacement
-- replace old_id in kirov, stiz prices
-- excel
-- 1C
-
-## errors issue
-- 500 errors on RecentlyViewed.vue and CatalogProductsWrapper.vue
-"statusMessage": "[GET] \"/api/getData/product/linejka-300-mm-stiz\": <no response> Failed to fetch" - reload page?
-
-## Log
-- parse data
-- add color bubbles for bot, human, server, client, isChunkError
-- add filters bot/human, server/client
-- links to url
-
-## cms
-Implement product and category date change functionality (for sitemap)
-products:
-- AI text generation
-vendors:
-- how to use discount price?
-- how to set verification price? Relevant only for Kirov, create independent script.
-- parse Kirov's stock?
-prices:
-- no consistency: quantity, notice (and no online access to .xls file). Solution - export .xls to mysql. Or better replace with online editor. (+ quantity case...). Another solution: Google Sheets.
-- 1C interaction
-
-
-# stage 1
-- cms
-- ProductsSlider: добавить кнопки прокрутки
-- попытаться улучшить алгоритм поиска (indexSearch: eans -> full match)
-- создать единый кеш для товаров, получаемых от getProducts.js (= /getData/products) (на данный момент используется в компонентах корзины и просмотренных товаров). Также изменить логику корзины - хранить в useCart только id и количество, а сами товары брать из кеша/сервера.
-- Подумать про сохранение быстрых заказов (сейчас не сохраняются в базе)
-- сохранять дату обновления страницы товара/категории и вставлять эту информацию в sitemap (lastmod). P.S. в базе у товаров уже есть поля date_modified и date_price_changed, правда пока не понятно, как будет обновляться date_modified.
-- redesign
-- Изображения в каталоге: привести все к 1:1 ratio и попробовать ai upscaling (хотя бы до 800px)
-
-## design
-добавить воздуха
-2. Create a Stronger Call-to-Action (CTA): The "В корзину" (Add to Cart) buttons are the most important CTAs on the page. They should stand out. I recommend    
-      changing their color from the current blue to a high-contrast color like a vibrant orange, as suggested by the design system. This will draw the user's eye  
-      and make the next step clear.
-
-
-   3. Adopt a Professional Font Pairing: The current fonts are generic. Switching to the recommended pairing of JetBrains Mono for headings and IBM Plex Sans for  
-      body text will give the site a more technical, precise, and polished feel that aligns with the brand.
-
-
-   4. Increase Whitespace: The page is very dense. Increasing the spacing around elements—between the filter sidebar and the products, between each product in the 
-      grid, and within the header—will make the content easier to read and give the entire site a cleaner, more modern look.
-
-
-  ┌────────────────┬─────────────────┬─────────┬───────────────────────────────────────────────────────────────┐
-  │ Role           │ Color           │ Hex     │ Purpose                                                       │
-  ├────────────────┼─────────────────┼─────────┼───────────────────────────────────────────────────────────────┤
-  │ Background     │ Light Grey      │ #F8FAFC │ A clean, neutral base that's easy on the eyes.                │
-  │ Text           │ Dark Grey       │ #334155 │ Ensures high readability without the harshness of pure black. │
-  │ Secondary      │ Muted Blue/Grey │ #64748B │ For secondary elements, borders, or non-critical icons.       │
-  │ Call-to-Action │ Vibrant Orange  │ #F97316 │ Exclusively for primary actions.                              │
-  └────────────────┴─────────────────┴─────────┴───────────────────────────────────────────────────────────────┘
-
-   1. Clear User Guidance: By using a vibrant, high-contrast color like Safety Orange only for primary actions (like "В корзину", "Быстрый заказ", "Спросить у     
-      технолога"), you create an unmissable visual cue. Users will instinctively learn that "orange means go," which makes the purchasing journey much smoother.   
-
-
-   2. Professional & Thematic: The combination of cool, industrial greys with a functional, high-visibility accent color feels professional and is thematically    
-      appropriate for a company selling tools and industrial equipment.
-
-   3. Improved Hierarchy: It establishes a clear visual hierarchy where the most important buttons pop, while secondary elements and text remain readable but don't
-      compete for attention.
-
-Main page: The entire section is very text-heavy. It lacks a strong visual anchor to draw the user in and give the page a professional, modern feel.
-  Instead of just plain text, I recommend transforming this area into a proper "hero" section.
-   * What to do:
-       1. Add a High-Quality Background Image: Use a professional, relevant image as the background for this section. This could be a clean shot of a high-tech    
-          measuring instrument, a well-lit workshop, or an abstract image that evokes precision and technology.
-       2. Overlay the Text: Place your excellent tagline and the three main service links over this image. Ensure the text has enough contrast to be easily        
-          readable (e.g., by using a semi-transparent dark overlay on the image).
-       3. Make the Links Buttons: Turn the three service links into clear, clickable buttons. This makes them more identifiable as primary actions.
-
-
-# Copilots:
-- Gringo675 - 25
-- Gringo675-duo - 17 (перепрыгнуло на 19, когда пытался переключится на акк 19 августа) (что-то странное с аккаунтом, всегда квота выбрана и до 19...)
-- Gringo675-jet2 - 01 (тоже перепрыгнуло на следующий месяц)
-- Gringo675-jet3 - 11
-- Gringo675-jet4 - 20
-Пароли у всех одинаковые.
-
 # ТЕЗИСЫ
 
 Все товары принадлежат категориям (не подкатегориям). Подкатегории характеризуются параметрами, по которым проверяется, входит ли товар в данную подкатегорию. Таким образом, один товар может входить в несколько подкатегорий. То есть все подкатегории – это виртуальные категории. При запросе подкатегории ей отдаются все товары из главной категории, и фильтр с активированными нужными для данной подкатегории параметрами. У товаров нет порядка, то есть он формируется автоматически на основе их параметров. Можно сказать, что он задается фильтром. Сначала товары сортируются по характеристикам самой первой группы фильтра, затем по характеристикам следующей группы и т.д. 10.12.24 Решил на данном этапе ограничиться только существующими категориями (в том числи, что это лучше для преемственности) с минимальным добавлением подкатегорий 3 уровня. В связи с этим каталог категорий тоже сделать похожим на старый сайт. В поиске показывать только подкатегории 2 уровня (+ главные на странице поиска). Также убрал со страницы поиска фильтрацию по категориям (вещь довольно тяжеловесная, нет единственного интуитивно понятного алгоритма фильтрации, и в целом не понятно, нужен ли данный функционал пользователю). Уже после запуска сайта нужно будет переделать структуру категорий на изначально планируемую: множество подкатегорий 2 и 3 уровня, множество путей к единице товара. И тогда можно переделать меню категорий на "современное" ("полноэкранное" с тремя колонками главная категория -> подкатегория -> подподкатегория). Тогда же возможно изменить отражение категорий в поиске. Возможно добавить семантику в поиск. Возможно изменить алгоритм выбора категорий, создав для каждой категории семантическое ядро из наименований входящих в нее товаров. И придумать, как показывать только наиболее релевантные категории, хотя бы в окне быстрого поиска.
@@ -281,3 +177,13 @@ SELECT name, description FROM `i_categories` WHERE `description` LIKE '%<ul>%';
 Wildcards:
 % - Zero, one, or multiple characters
 _ - Exactly one single character
+
+
+
+# Copilots:
+- Gringo675 - 25
+- Gringo675-duo - 17 (перепрыгнуло на 19, когда пытался переключится на акк 19 августа) (что-то странное с аккаунтом, всегда квота выбрана и до 19...)
+- Gringo675-jet2 - 01 (тоже перепрыгнуло на следующий месяц)
+- Gringo675-jet3 - 11
+- Gringo675-jet4 - 20
+Пароли у всех одинаковые.
