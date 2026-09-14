@@ -1,5 +1,6 @@
 <script setup>
 //
+useTitle('Категории | AdminPanel')
 await checkAdminOnly()
 
 import propsG from '~/composables/admin/cats/propsG'

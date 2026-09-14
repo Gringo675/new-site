@@ -1,6 +1,7 @@
 <script setup>
 //
 await checkAdminOnly()
+useTitle('AI Описание Категорий | AdminPanel')
 
 const aiResult = ref(null)
 const isLoading = ref(false)

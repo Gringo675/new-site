@@ -1,5 +1,6 @@
 <script setup>
 //
+useTitle('Документация | AdminPanel')
 const route = useRoute()
 const router = useRouter()
 

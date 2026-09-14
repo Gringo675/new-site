@@ -1,5 +1,6 @@
 <script setup>
 //
+useTitle('Цены товаров | AdminPanel')
 import { h } from 'vue'
 const table = useTemplateRef('table')
 

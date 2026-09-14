@@ -1,5 +1,6 @@
 <script setup>
 //
+useTitle('Товары | AdminPanel')
 import { h, resolveComponent } from 'vue'
 const UCheckbox = resolveComponent('UCheckbox')
 const UButton = resolveComponent('UButton')

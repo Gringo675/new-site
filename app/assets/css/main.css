@@ -277,6 +277,8 @@
 /* todo: оставить только те стили, которые не указаны явно в коде (transition), остальное перенести в @layer utilities */
 .info-block {
   .description {
+    @apply md:p-3;
+
     ul {
       @apply ml-5 list-disc;
     }
@@ -286,6 +288,8 @@
   }
 
   .characteristics {
+    @apply md:p-3;
+
     ul {
       @apply ml-5 list-disc;
     }

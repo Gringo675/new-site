@@ -1,6 +1,7 @@
 <script setup>
 // импорт данных из старой БД в новую
 //
+useTitle('Импорт данных | AdminPanel')
 await checkAdminOnly()
 
 const importHandler = async dataType => {

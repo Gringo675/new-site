@@ -1,4 +1,5 @@
 <script setup>
+useTitle('Вход | AdminPanel')
 
 definePageMeta({
   layout: "empty",

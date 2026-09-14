@@ -55,7 +55,7 @@ onMounted(async () => {
   }
 })
 
-const updateProds = async () => {
+const updateProds = async (preserveSelection = false) => {
   if (!state.activeCatId) return
 
   const selectedCat = state.cats.find(c => c.value === state.activeCatId)
@@ -82,8 +82,10 @@ const updateProds = async () => {
       _pasp_search: pasports.map(pa => pa.name || '').join(' '),
     }
   })
-  state.rowSelection = {}
-  state.globalFilter = ''
+  if (!preserveSelection) {
+    state.rowSelection = {}
+    state.globalFilter = ''
+  }
 }
 
 watch(
@@ -295,9 +297,120 @@ const saveProds = async () => {
   await updateProds()
 }
 
-const onTest = () => {
-  console.log('Test function called')
-  state.prods[0].name = 'Updated Name ' + new Date().toLocaleTimeString()
+const positionOptions = [
+  { value: 'end', label: 'В конец' },
+  { value: 'start', label: 'В начало' },
+]
+
+const massActionState = reactive({
+  isOpen: false,
+  action: 'add', // 'add' | 'remove'
+  type: 'standarts',
+  selectedDocs: [],
+  position: 'end',
+  prods: [],
+})
+
+const closeMassActionModal = () => {
+  massActionState.isOpen = false
+  massActionState.selectedDocs = []
+  massActionState.prods = []
+}
+
+const checkSingleTypeSelected = async () => {
+  if (editTypes.value.length !== 1) {
+    await showMessage({
+      title: 'Выберите ровно один тип документов!',
+      description: 'Для массового добавления или удаления выберите только один тип документов (Стнд, Рстр или Пасп) в переключателе справа.',
+      type: 'error',
+    })
+    return false
+  }
+  return true
+}
+
+const openMassAddModal = async () => {
+  const selectedIndices = Object.keys(state.rowSelection).map(Number)
+  if (!selectedIndices.length) return
+
+  if (!(await checkSingleTypeSelected())) return
+
+  massActionState.action = 'add'
+  massActionState.type = editTypes.value[0]
+  massActionState.selectedDocs = []
+  massActionState.position = 'end'
+  massActionState.prods = selectedIndices.map(index => state.prods[index])
+  massActionState.isOpen = true
+}
+
+const openMassRemoveModal = async () => {
+  const selectedIndices = Object.keys(state.rowSelection).map(Number)
+  if (!selectedIndices.length) return
+
+  if (!(await checkSingleTypeSelected())) return
+
+  massActionState.action = 'remove'
+  massActionState.type = editTypes.value[0]
+  massActionState.selectedDocs = []
+  massActionState.prods = selectedIndices.map(index => state.prods[index])
+  massActionState.isOpen = true
+}
+
+const getDocItems = type => {
+  if (type === 'standarts') {
+    return docState.stnd.map(s => ({ label: `${s.number} - ${s.name}`, value: s }))
+  }
+  if (type === 'reestrs') {
+    return docState.rstr.map(r => ({ label: `№${r.number} - ${r.name}`, value: r }))
+  }
+  return docState.pasp.map(p => ({ label: p.name, value: p }))
+}
+
+const executeMassAction = async () => {
+  if (!massActionState.selectedDocs.length) return
+
+  const type = massActionState.type
+  const paramName = type === 'standarts' ? 'standart_ids' : type === 'reestrs' ? 'reestr_ids' : 'pasport_ids'
+
+  for (const prod of massActionState.prods) {
+    const currentDocs = prod[type] || []
+
+    let updatedDocs = []
+
+    if (massActionState.action === 'add') {
+      // Add only docs that are not already in currentDocs
+      const docsToAdd = massActionState.selectedDocs.filter(
+        newDoc => !currentDocs.some(existing => String(existing.id) === String(newDoc.id)),
+      )
+
+      if (massActionState.position === 'start') {
+        updatedDocs = [...docsToAdd, ...currentDocs]
+      } else {
+        updatedDocs = [...currentDocs, ...docsToAdd]
+      }
+    } else {
+      // Remove selected docs
+      const selectedIds = massActionState.selectedDocs.map(d => String(d.id))
+      updatedDocs = currentDocs.filter(d => !selectedIds.includes(String(d.id)))
+    }
+
+    const formData = new FormData()
+    formData.append('id', prod.id)
+    formData.append(paramName, updatedDocs.map(d => d.id).join(','))
+
+    await myFetch('/api/admin/cms/documentation/setProd', {
+      method: 'post',
+      payload: formData,
+    })
+  }
+
+  showNotice({
+    title: massActionState.action === 'add' ? 'Документы успешно добавлены' : 'Документы успешно удалены',
+    type: 'success',
+  })
+
+  closeMassActionModal()
+  await updateProds(true)
 }
 </script>
 
@@ -327,7 +440,7 @@ const onTest = () => {
         Всего: {{ state.prods.length }}
         <span v-if="state.globalFilter.length">, отфильтровано: {{ countFilteredRows }}</span>
       </div>
-      <div class="flex grow items-center justify-end gap-4">
+      <div class="flex grow items-center justify-end gap-2">
         <UButton
           :label="`Группа (${Object.keys(state.rowSelection).length})`"
           title="Редактировать выбранные товары"
@@ -335,6 +448,22 @@ const onTest = () => {
           :disabled="!Object.keys(state.rowSelection).length"
           variant="outline"
           @click="editMassProds" />
+        <UButton
+          label="Добавить"
+          title="Массово добавить документ к выбранным товарам"
+          icon="i-heroicons-plus"
+          :disabled="!Object.keys(state.rowSelection).length"
+          variant="outline"
+          color="success"
+          @click="openMassAddModal" />
+        <UButton
+          label="Удалить"
+          title="Массово удалить документ у выбранных товаров"
+          icon="i-heroicons-minus"
+          :disabled="!Object.keys(state.rowSelection).length"
+          variant="outline"
+          color="error"
+          @click="openMassRemoveModal" />
         <UCheckboxGroup
           v-model="editTypes"
           :items="editCheckboxes"
@@ -525,6 +654,79 @@ const onTest = () => {
             color="neutral"
             class="px-8"
             @click="saveProds" />
+        </div>
+      </template>
+    </UModal>
+
+    <UModal
+      v-model:open="massActionState.isOpen"
+      :title="
+        massActionState.action === 'add'
+          ? `Массовое добавление (${massActionState.prods.length} товаров)`
+          : `Массовое удаление (${massActionState.prods.length} товаров)`
+      "
+      :dismissible="false"
+      :ui="{
+        content: 'max-w-xl',
+      }">
+      <template #body>
+        <div class="space-y-4">
+          <div class="max-h-30 space-y-1 overflow-y-auto text-sm font-bold">
+            <div
+              v-for="prod in massActionState.prods"
+              :key="prod.id">
+              {{ prod.name }}
+            </div>
+          </div>
+
+          <UFormField
+            :label="
+              massActionState.action === 'add'
+                ? `Выберите ${
+                    massActionState.type === 'standarts' ? 'стандарты' : massActionState.type === 'reestrs' ? 'ГРСИ (реестры)' : 'паспорта'
+                  } для добавления`
+                : `Выберите ${
+                    massActionState.type === 'standarts' ? 'стандарты' : massActionState.type === 'reestrs' ? 'ГРСИ (реестры)' : 'паспорта'
+                  } для удаления`
+            ">
+            <USelectMenu
+              v-model="massActionState.selectedDocs"
+              :items="getDocItems(massActionState.type)"
+              value-key="value"
+              multiple
+              :search-input="{
+                placeholder: 'Filter...',
+                icon: 'i-lucide-filter',
+                type: 'search',
+              }"
+              placeholder="Выберите документы..."
+              class="w-full" />
+          </UFormField>
+
+          <UFormField
+            v-if="massActionState.action === 'add'"
+            label="Позиция вставки документов">
+            <URadioGroup
+              v-model="massActionState.position"
+              :items="positionOptions"
+              orientation="horizontal" />
+          </UFormField>
+        </div>
+      </template>
+      <template #footer>
+        <div class="flex w-full justify-end gap-x-4">
+          <UButton
+            label="Отмена"
+            variant="outline"
+            color="neutral"
+            @click="closeMassActionModal" />
+          <UButton
+            :label="massActionState.action === 'add' ? 'Добавить' : 'Удалить'"
+            :color="massActionState.action === 'add' ? 'success' : 'error'"
+            variant="subtle"
+            class="px-8"
+            :disabled="!massActionState.selectedDocs.length"
+            @click="executeMassAction" />
         </div>
       </template>
     </UModal>

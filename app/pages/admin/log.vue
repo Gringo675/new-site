@@ -1,5 +1,6 @@
 <script setup>
 //
+useTitle('Логи | AdminPanel')
 import { h } from 'vue'
 const table = useTemplateRef('table')
 

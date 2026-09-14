@@ -1,4 +1,5 @@
 <script setup>
+useTitle('Артикулы поставщиков | AdminPanel')
 import { h, resolveComponent } from 'vue'
 
 // Components

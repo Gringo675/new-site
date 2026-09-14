@@ -1,5 +1,6 @@
 <script setup>
 //
+useTitle('AI Характеристики Категорий | AdminPanel')
 await checkAdminOnly()
 
 const aiResult = ref(null)

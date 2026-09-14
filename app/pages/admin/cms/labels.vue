@@ -1,5 +1,6 @@
 <script setup>
 //
+useTitle('Лейблы | AdminPanel')
 import { h, resolveComponent } from 'vue'
 
 const UCheckbox = resolveComponent('UCheckbox')

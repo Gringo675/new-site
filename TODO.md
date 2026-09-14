@@ -1,5 +1,4 @@
 ## chords
-create titles for admin pages
 mySQL table structure for AI? (mySQL as mcp or tool)
 
 

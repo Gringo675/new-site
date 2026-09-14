@@ -1,6 +1,7 @@
 <script setup>
 //
 await checkAdminOnly()
+useTitle('Консоль | AdminPanel')
 
 const isListen = ref(false)
 const messages = reactive([])
