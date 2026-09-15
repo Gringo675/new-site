@@ -15,6 +15,10 @@ _Avoid_: Q&A block, FAQ article
 ### Document Extractions (Выжимки из документов)
 Relevant specification snippets extracted from official standard texts (`stnd`) or State Register entries (`rstr`) for specific category products during category characteristics workflow execution.
 
+### Enriched Product Designation (Специфицированное наименование товара)
+String representation of a product used when referencing products in AI category workflows (such as document extractions for standards and state register documents), composed of the base product name supplemented in parentheses by non-redundant technical property values (`p1_type` through `p7_feature`).
+_Avoid_: Расширенное имя, Полное наименование
+
 ### Fallback Research (Fallback-исследование)
 Synthesized technical summary produced via search agent when no relevant official standard or registry documents exist for a category.
 

@@ -89,6 +89,7 @@ function connectionHandler(options = {}) {
           if (response.status === 'success') {
             isLoading.value = false
             socket.close()
+            playNotificationSound()
             resolve(response.data)
           } else {
             throw new Error('Bad response from server: ' + JSON.stringify(response))
@@ -178,7 +179,7 @@ async function generateCharacteristics() {
     inputData: {
       alias: activeCatAlias.value,
     },
-    runId: '774de025-a217-4c1c-b4d2-8ef975606165',
+    runId: '0f7abf5b-0ad9-47e9-8640-1ee8ad37aa4e',
   })
 
   if (response) {
@@ -496,7 +497,18 @@ const handleSave = async () => {
                       Открыть документ
                     </a>
                   </div>
-                  <pre class="max-w-none overflow-auto rounded border border-gray-200 bg-gray-50 p-3 font-mono text-xs whitespace-pre-wrap">{{ item.doc.extractedMarkdown }}</pre>
+                  <div
+                    v-if="item.doc.brand || item.doc.toolType"
+                    class="flex items-center gap-2 text-xs text-gray-500">
+                    <span v-if="item.doc.brand">Производитель: {{ item.doc.brand }}</span>
+                    <span v-if="item.doc.brand && item.doc.toolType">•</span>
+                    <span v-if="item.doc.toolType">Тип инструмента: {{ item.doc.toolType }}</span>
+                  </div>
+                  <div class="info-block">
+                    <div
+                      class="characteristics max-w-none overflow-x-auto rounded border border-gray-200 bg-white p-4 text-xs whitespace-pre-wrap [&_table]:whitespace-normal"
+                      v-html="item.doc.extractedMarkdown" />
+                  </div>
                 </div>
               </template>
             </UAccordion>
