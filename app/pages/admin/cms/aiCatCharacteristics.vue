@@ -178,7 +178,7 @@ async function generateCharacteristics() {
     inputData: {
       alias: activeCatAlias.value,
     },
-    // runId: '7de4b42e-b69f-4617-8731-adbbf4d5255f',
+    runId: '774de025-a217-4c1c-b4d2-8ef975606165',
   })
 
   if (response) {
@@ -547,13 +547,10 @@ const handleSave = async () => {
               }))
             ">
             <template #content="{ item }">
-              <div class="space-y-4 p-4">
-                <div class="rounded border border-gray-200 bg-gray-50 p-3 text-sm">
-                  <strong>Текст:</strong>
-                  <div
-                    class="mt-1 max-w-none"
-                    v-html="item.attempt.generatedCharacteristics"></div>
-                </div>
+              <div class="space-y-2 p-2">
+                <div
+                  class="characteristics max-w-none space-y-2 rounded border border-gray-200 bg-gray-50 p-2 text-sm"
+                  v-html="item.attempt.generatedCharacteristics"></div>
                 <div
                   v-if="item.attempt.critique"
                   class="rounded border border-amber-100 bg-amber-50 p-3 text-sm text-amber-800">
