@@ -50,11 +50,60 @@ export default defineEventHandler(async event => {
                   AND published = 1`
   const products = await dbReq(query, productParams)
 
-  // 5. Extract unique standart_ids and reestr_ids and map to products
+  // 4b. Resolve property names for specified product designation
+  const targetPropKeys = ['p1_type', 'p2_counting_system', 'p3_range', 'p4_size', 'p5_accuracy', 'p6_class', 'p7_feature']
+  const propIdsToFetch = new Set()
+  products.forEach(product => {
+    targetPropKeys.forEach(key => {
+      if (product[key] && product[key] > 0) {
+        propIdsToFetch.add(product[key])
+      }
+    })
+  })
+
+  const globalPropsMap = new Map()
+  const propIdsArr = Array.from(propIdsToFetch)
+  if (propIdsArr.length) {
+    const propsQuery = `SELECT id, name FROM i_properties WHERE id IN (${propIdsArr.map(() => '?').join(',')})`
+    const propsRows = await dbReq(propsQuery, propIdsArr)
+    propsRows.forEach(p => globalPropsMap.set(p.id, p.name))
+  }
+
+  function normalizeForComparison(str) {
+    return (str || '')
+      .toLowerCase()
+      .replace(/(мм\/м|мм|град|гр|мин)/g, '')
+      .replace(/[\s\.,\/\\_\-\(\)]/g, '')
+  }
+
+  function getEnrichedProductName(product) {
+    const baseName = product.name || ''
+    const baseNameNorm = normalizeForComparison(baseName)
+    const addedParts = []
+
+    targetPropKeys.forEach(key => {
+      const propId = product[key]
+      if (propId && propId > 0 && globalPropsMap.has(propId)) {
+        const val = globalPropsMap.get(propId)?.trim()
+        const valNorm = normalizeForComparison(val)
+        if (val && val.length && valNorm.length && !baseNameNorm.includes(valNorm)) {
+          addedParts.push(val)
+        }
+      }
+    })
+
+    if (addedParts.length > 0) {
+      return `${baseName} (${addedParts.join('; ')})`
+    }
+    return baseName
+  }
+
+  // 5. Extract unique standart_ids and reestr_ids and map to products using enriched product names
   const stndMap = new Map()
   const rstrMap = new Map()
 
   products.forEach(product => {
+    const enrichedName = getEnrichedProductName(product)
     if (product.standart_ids && product.standart_ids.length) {
       product.standart_ids.split(',').forEach(idStr => {
         const id = idStr.trim()
@@ -62,7 +111,7 @@ export default defineEventHandler(async event => {
         if (!stndMap.has(id)) {
           stndMap.set(id, new Set())
         }
-        stndMap.get(id).add(product.name)
+        stndMap.get(id).add(enrichedName)
       })
     }
     if (product.reestr_ids && product.reestr_ids.length) {
@@ -72,7 +121,7 @@ export default defineEventHandler(async event => {
         if (!rstrMap.has(id)) {
           rstrMap.set(id, new Set())
         }
-        rstrMap.get(id).add(product.name)
+        rstrMap.get(id).add(enrichedName)
       })
     }
   })
