@@ -144,19 +144,6 @@ export default defineEventHandler(async event => {
     return ''
   }
 
-  function parseYear(docNumber) {
-    const match4 = docNumber.match(/(?:-|\s+)(19\d{2}|20\d{2})\b/) || docNumber.match(/\b(19\d{2}|20\d{2})\b/)
-    if (match4) {
-      return parseInt(match4[1], 10)
-    }
-    const match2 = docNumber.match(/-(\d{2})\b/)
-    if (match2) {
-      const yy = parseInt(match2[1], 10)
-      return yy >= 50 ? 1900 + yy : 2000 + yy
-    }
-    return 2000
-  }
-
   // 6. Fetch docs from i_docs_stnd and i_docs_rstr
   const docs = {
     stnd: [],
@@ -173,13 +160,14 @@ export default defineEventHandler(async event => {
         return {
           number: row.number,
           name: row.name,
-          year: parseYear(row.number || ''),
+          year: parseDocYear(row.number),
           url: fileTrim ? `/static/doc/stnd/${encodeURIComponent(fileTrim)}` : '',
           text: await fetchDocText(row.file),
           products: Array.from(stndMap.get(String(row.id)) || []),
         }
       }),
     )
+    docs.stnd = sortDocsByYear(docs.stnd)
   }
 
   const rstrIds = Array.from(rstrMap.keys())
@@ -194,7 +182,7 @@ export default defineEventHandler(async event => {
         return {
           number: row.number,
           name: row.name,
-          year: parseYear(row.number || ''),
+          year: parseDocYear(row.number),
           url_ot: fileOtTrim ? `/static/doc/rstr/${encodeURIComponent(fileOtTrim)}` : '',
           url_mp: fileMpTrim ? `/static/doc/rstr/${encodeURIComponent(fileMpTrim)}` : '',
           text_ot,
@@ -203,6 +191,7 @@ export default defineEventHandler(async event => {
         }
       }),
     )
+    docs.rstr = sortDocsByYear(docs.rstr)
   }
 
   // 7. Resolve categorySummary availableProps via usePrpsGroupsMap and i_properties

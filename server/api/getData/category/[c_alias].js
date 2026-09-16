@@ -136,14 +136,16 @@ export default defineEventHandler(async event => {
                   WHERE id IN (${Array.from(stnds)
                     .map(() => '?')
                     .join(',')})`
-    ;(catData.docs = catData.docs || {}).stnd = await dbReq(query, Array.from(stnds))
+    const stndDocs = await dbReq(query, Array.from(stnds))
+    ;(catData.docs = catData.docs || {}).stnd = sortDocsByYear(stndDocs)
   }
   if (rstrs.size) {
     query = `SELECT number, name, type_si, brand, date, file_ot, file_mp, file_svid FROM i_docs_rstr
                   WHERE id IN (${Array.from(rstrs)
                     .map(() => '?')
                     .join(',')})`
-    ;(catData.docs = catData.docs || {}).rstr = await dbReq(query, Array.from(rstrs))
+    const rstrDocs = await dbReq(query, Array.from(rstrs))
+    ;(catData.docs = catData.docs || {}).rstr = sortDocsByYear(rstrDocs)
   }
 
   // удаляем ненужное

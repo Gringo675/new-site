@@ -106,7 +106,7 @@ export default defineEventHandler(async event => {
     const rstrIds = productData.reestr_ids.split(',').map(Number)
     query = `SELECT number, name, type_si, brand, date, file_ot, file_mp, file_svid FROM i_docs_rstr
                   WHERE id IN (${rstrIds.map(() => '?').join(',')})`
-    productData.docs.rstr = await dbReq(query, rstrIds)
+    productData.docs.rstr = sortDocsByYear(await dbReq(query, rstrIds))
     productData.props.push({
       name: 'Можно поверить',
       val: 'Да',
@@ -122,7 +122,7 @@ export default defineEventHandler(async event => {
     const stndIds = productData.standart_ids.split(',').map(Number)
     query = `SELECT number, name, file FROM i_docs_stnd
                   WHERE id IN (${stndIds.map(() => '?').join(',')})`
-    productData.docs.stnd = await dbReq(query, stndIds)
+    productData.docs.stnd = sortDocsByYear(await dbReq(query, stndIds))
     if (productData.docs.stnd.length) {
       productData.props.unshift({
         name: 'Стандарт',
