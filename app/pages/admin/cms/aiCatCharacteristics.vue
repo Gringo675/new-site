@@ -13,6 +13,7 @@ watch(isLoading, newVal => {
 })
 
 const revisionText = ref('')
+const reextractDocuments = ref(false)
 const showRawOriginal = ref(false)
 
 const activeCatAlias = ref(null)
@@ -212,41 +213,76 @@ const handleRevision = async () => {
     return
   }
 
-  const response = await connectionHandler({
-    workflowId: 'category-characteristics-revision',
-    inputData: {
-      originalData: aiResult.value.originalData,
-      documentExtractions: aiResult.value.documentExtractions || [],
-      fallbackResearch: aiResult.value.fallbackResearch || null,
-      usedFallback: aiResult.value.usedFallback || false,
-      generatedCharacteristics: aiResult.value.generatedCharacteristics,
-      revisionText: revisionText.value,
-    },
-    // runId: 'af91a1a5-58b1-44a9-b116-57f2d46b93c2',
-  })
-  console.log(`response: ${JSON.stringify(response, null, 2)}`)
-  if (response) {
-    aiResult.value.judgeVerdict = response.judgeEvaluation?.verdict
+  if (reextractDocuments.value) {
+    const prevFailed = aiResult.value?.failedAttempts || []
+    const currentHTML = aiResult.value?.generatedCharacteristics
+    const currentRevisionText = revisionText.value
 
-    if (aiResult.value.failedAttempts?.length) {
-      aiResult.value.failedAttempts[aiResult.value.failedAttempts.length - 1].editorContent = revisionText.value
-    } else {
-      aiResult.value.failedAttempts = aiResult.value.failedAttempts || []
-      aiResult.value.failedAttempts.push({
-        generatedCharacteristics: aiResult.value.generatedCharacteristics,
-        editorContent: revisionText.value,
-      })
-    }
-
-    aiResult.value.failedAttempts.push({
-      generatedCharacteristics: response.finalCharacteristics,
-      critique: response.judgeEvaluation?.critique,
-      requiredCorrections: response.judgeEvaluation?.requiredCorrections || [],
+    const response = await connectionHandler({
+      workflowId: 'category-characteristics',
+      inputData: {
+        alias: activeCatAlias.value,
+        editorFeedback: currentRevisionText,
+      },
     })
+    if (response) {
+      const mergedFailedAttempts = [
+        ...prevFailed,
+        ...(currentHTML
+          ? [
+              {
+                generatedCharacteristics: currentHTML,
+                editorContent: `[Переизвлечение из документов]: ${currentRevisionText}`,
+              },
+            ]
+          : []),
+        ...(response.failedAttempts || []),
+      ]
 
-    aiResult.value.generatedCharacteristics = response.finalCharacteristics
-    isSaved.value = false
-    revisionText.value = ''
+      aiResult.value = {
+        ...response,
+        failedAttempts: mergedFailedAttempts,
+      }
+      isSaved.value = false
+      revisionText.value = ''
+      reextractDocuments.value = false
+    }
+  } else {
+    const response = await connectionHandler({
+      workflowId: 'category-characteristics-revision',
+      inputData: {
+        originalData: aiResult.value.originalData,
+        documentExtractions: aiResult.value.documentExtractions || [],
+        fallbackResearch: aiResult.value.fallbackResearch || null,
+        usedFallback: aiResult.value.usedFallback || false,
+        generatedCharacteristics: aiResult.value.generatedCharacteristics,
+        revisionText: revisionText.value,
+      },
+    })
+    console.log(`response: ${JSON.stringify(response, null, 2)}`)
+    if (response) {
+      aiResult.value.judgeVerdict = response.judgeEvaluation?.verdict
+
+      if (aiResult.value.failedAttempts?.length) {
+        aiResult.value.failedAttempts[aiResult.value.failedAttempts.length - 1].editorContent = revisionText.value
+      } else {
+        aiResult.value.failedAttempts = aiResult.value.failedAttempts || []
+        aiResult.value.failedAttempts.push({
+          generatedCharacteristics: aiResult.value.generatedCharacteristics,
+          editorContent: revisionText.value,
+        })
+      }
+
+      aiResult.value.failedAttempts.push({
+        generatedCharacteristics: response.finalCharacteristics,
+        critique: response.judgeEvaluation?.critique,
+        requiredCorrections: response.judgeEvaluation?.requiredCorrections || [],
+      })
+
+      aiResult.value.generatedCharacteristics = response.finalCharacteristics
+      isSaved.value = false
+      revisionText.value = ''
+    }
   }
 }
 
@@ -560,9 +596,12 @@ const handleSave = async () => {
             ">
             <template #content="{ item }">
               <div class="space-y-2 p-2">
-                <div
-                  class="characteristics max-w-none space-y-2 rounded border border-gray-200 bg-gray-50 p-2 text-sm"
-                  v-html="item.attempt.generatedCharacteristics"></div>
+                <div class="info-block">
+                  <div
+                    class="characteristics max-w-none space-y-2 rounded border border-gray-200 bg-gray-50 p-2 text-sm"
+                    v-html="item.attempt.generatedCharacteristics"></div>
+                </div>
+
                 <div
                   v-if="item.attempt.critique"
                   class="rounded border border-amber-100 bg-amber-50 p-3 text-sm text-amber-800">
@@ -604,7 +643,11 @@ const handleSave = async () => {
             class="w-full"
             placeholder="Например: уточните пределы погрешности для микрометров или добавите сноску на ГОСТ 6507-90..."
             :rows="4" />
-          <div class="flex justify-end">
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <UCheckbox
+              v-model="reextractDocuments"
+              label="Переизвлечь из документов"
+              description="Полный повторный прогон экстракции из ГОСТ/ГРСИ с учетом указаний редактора" />
             <UButton
               icon="i-lucide-send"
               label="Отправить на доработку"
