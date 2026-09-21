@@ -8,10 +8,8 @@ mySQL table structure for AI? (mySQL as mcp or tool)
 - 1C
 
 ## Log
-- parse data
 - add color bubbles for bot, human, server, client, isChunkError
 - add filters bot/human, server/client
-- links to url
 
 ## cms
 Implement product and category date change functionality (for sitemap).

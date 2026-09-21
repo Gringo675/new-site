@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Прототип: Трёхпозиционный чип (Tri-State Toggle) для Suppressed</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    [v-cloak] { display: none; }
+    .font-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-900 min-h-screen">
+  <div id="app" v-cloak class="max-w-6xl mx-auto p-4 sm:p-8 space-y-6">
+
+    <!-- Prototype Header -->
+    <header class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2.5">
+            <span class="bg-indigo-600 text-white text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">Прототип</span>
+            <h1 class="text-2xl font-bold text-gray-900">Интерактивный Tri-State фильтр: Suppressed</h1>
+          </div>
+          <p class="text-sm text-gray-600 mt-1">
+            Демонстрация трёхпозиционного переключателя (Все → Только Suppressed → Unsuppressed → Все) на живой таблице логов.
+          </p>
+        </div>
+        <div class="flex items-center gap-2 bg-gray-50 border border-gray-200 px-3 py-2 rounded-xl text-xs">
+          <span class="text-gray-500">Текущий режим:</span>
+          <span class="font-bold font-mono px-2 py-0.5 rounded text-white"
+            :class="{
+              'bg-gray-600': filterSuppressed === 'all',
+              'bg-blue-600': filterSuppressed === 'only',
+              'bg-amber-600': filterSuppressed === 'exclude'
+            }">
+            {{ filterSuppressed === 'all' ? '1. Все (All)' : filterSuppressed === 'only' ? '2. Только Suppressed' : '3. Unsuppressed (Исключить)' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- State Explanation Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-6 pt-6 border-t border-gray-100">
+        <!-- State 1 -->
+        <div class="p-3.5 rounded-xl border transition-all cursor-pointer"
+          :class="filterSuppressed === 'all' ? 'border-gray-800 bg-gray-50 ring-2 ring-gray-400' : 'border-gray-200 bg-white hover:bg-gray-50'"
+          @click="filterSuppressed = 'all'">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-gray-500">Состояние 1</span>
+            <span class="text-[10px] font-mono bg-gray-200 px-1.5 py-0.5 rounded">filter: 'all'</span>
+          </div>
+          <div class="mt-2 flex items-center gap-2">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-gray-300 text-xs font-medium text-gray-700 bg-white shadow-xs">
+              <i class="fa-solid fa-volume-xmark text-gray-400"></i> Suppressed
+            </span>
+          </div>
+          <p class="text-xs text-gray-500 mt-2">Отображаются <strong>все записи</strong> без фильтрации по признаку подавления.</p>
+        </div>
+
+        <!-- State 2 -->
+        <div class="p-3.5 rounded-xl border transition-all cursor-pointer"
+          :class="filterSuppressed === 'only' ? 'border-blue-600 bg-blue-50 ring-2 ring-blue-300' : 'border-gray-200 bg-white hover:bg-gray-50'"
+          @click="filterSuppressed = 'only'">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-blue-600">Состояние 2</span>
+            <span class="text-[10px] font-mono bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded">filter: 'only'</span>
+          </div>
+          <div class="mt-2 flex items-center gap-2">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-600 text-white text-xs font-medium shadow-xs">
+              <i class="fa-solid fa-volume-xmark"></i> Suppressed
+            </span>
+          </div>
+          <p class="text-xs text-blue-700 mt-2">Только <strong>подавленные</strong> ошибки (фоновые автоперезагрузки, известные сбои чанков).</p>
+        </div>
+
+        <!-- State 3 -->
+        <div class="p-3.5 rounded-xl border transition-all cursor-pointer"
+          :class="filterSuppressed === 'exclude' ? 'border-amber-600 bg-amber-50 ring-2 ring-amber-300' : 'border-gray-200 bg-white hover:bg-gray-50'"
+          @click="filterSuppressed = 'exclude'">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-700">Состояние 3 (Решение вашей задачи)</span>
+            <span class="text-[10px] font-mono bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">filter: 'exclude'</span>
+          </div>
+          <div class="mt-2 flex items-center gap-2">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-600 text-white text-xs font-medium shadow-xs">
+              <i class="fa-solid fa-volume-high"></i> Unsuppressed
+            </span>
+          </div>
+          <p class="text-xs text-amber-800 mt-2">Только <strong>НЕподавленные</strong> ошибки (чистый список реальных инцидентов для разбора).</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- Interactive Component Preview -->
+    <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
+      <!-- Toolbar Title & Stats -->
+      <div class="flex items-baseline justify-between border-b border-gray-200 pb-3">
+        <div class="flex items-baseline gap-3">
+          <h2 class="text-xl font-bold text-gray-900">Логи</h2>
+          <span class="text-sm text-gray-500">
+            Всего: <strong class="text-gray-800">{{ logs.length }}</strong>
+            <span v-if="logs.length !== filteredLogs.length" class="text-indigo-600">
+              , отфильтровано: <strong>{{ filteredLogs.length }}</strong>
+            </span>
+          </span>
+        </div>
+        <div class="text-xs text-gray-400">
+          Нажмите на кнопку чипа, чтобы переключить состояние
+        </div>
+      </div>
+
+      <!-- Filter Toolbar -->
+      <div class="flex flex-wrap items-center gap-2.5 p-3 rounded-xl bg-gray-50 border border-gray-200">
+        <!-- Search -->
+        <div class="relative min-w-56 grow sm:grow-0">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-gray-400 text-xs"></i>
+          <input
+            v-model="searchQuery"
+            placeholder="Поиск по тексту, коду, URL..."
+            class="w-full pl-8 pr-7 py-1.5 text-xs bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+          <button v-if="searchQuery" @click="searchQuery = ''" class="absolute right-2.5 top-2 text-gray-400 hover:text-gray-600">
+            <i class="fa-solid fa-xmark text-xs"></i>
+          </button>
+        </div>
+
+        <!-- Type Select -->
+        <select v-model="filterType" :disabled="hasActiveErrorFilters"
+          :title="hasActiveErrorFilters ? 'Заблокировано на errors, пока активны фильтры ошибок' : ''"
+          class="py-1.5 px-2.5 text-xs bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:bg-gray-100 disabled:cursor-not-allowed">
+          <option value="all">Все типы</option>
+          <option value="error">errors</option>
+          <option value="info">infos</option>
+        </select>
+
+        <!-- Source Select -->
+        <select v-model="filterSource" :disabled="isErrorFiltersDisabled"
+          :title="isErrorFiltersDisabled ? 'Недоступно для записей типа info' : ''"
+          class="py-1.5 px-2.5 text-xs bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:bg-gray-100 disabled:cursor-not-allowed">
+          <option value="all">Все источники</option>
+          <option value="server">server</option>
+          <option value="client">client</option>
+        </select>
+
+        <!-- Bot Select (3-state) -->
+        <select v-model="filterBot" :disabled="isErrorFiltersDisabled"
+          :title="isErrorFiltersDisabled ? 'Недоступно для записей типа info' : ''"
+          class="py-1.5 px-2.5 text-xs bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium disabled:opacity-50 disabled:bg-gray-100 disabled:cursor-not-allowed"
+          :class="filterBot !== 'all' ? 'border-indigo-500 bg-indigo-50/50 text-indigo-900 font-bold' : ''">
+          <option value="all">Все субъекты</option>
+          <option value="exclude">humans</option>
+          <option value="only">bots</option>
+        </select>
+
+        <!-- Chunk Error Select (3-state) -->
+        <select v-model="filterChunkError" :disabled="isErrorFiltersDisabled"
+          :title="isErrorFiltersDisabled ? 'Недоступно для записей типа info' : ''"
+          class="py-1.5 px-2.5 text-xs bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium disabled:opacity-50 disabled:bg-gray-100 disabled:cursor-not-allowed"
+          :class="filterChunkError !== 'all' ? 'border-amber-500 bg-amber-50/50 text-amber-900 font-bold' : ''">
+          <option value="all">Все загрузки</option>
+          <option value="exclude">успешные</option>
+          <option value="only">chunk errors</option>
+        </select>
+
+        <!-- Suppressed Select (3-state) -->
+        <select v-model="filterSuppressed" :disabled="isErrorFiltersDisabled"
+          :title="isErrorFiltersDisabled ? 'Недоступно для записей типа info' : ''"
+          class="py-1.5 px-2.5 text-xs bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium disabled:opacity-50 disabled:bg-gray-100 disabled:cursor-not-allowed"
+          :class="filterSuppressed !== 'all' ? 'border-blue-500 bg-blue-50/50 text-blue-900 font-bold' : ''">
+          <option value="all">Все состояния</option>
+          <option value="exclude">unsuppressed</option>
+          <option value="only">suppressed</option>
+        </select>
+
+        <!-- Reset Button -->
+        <button
+          v-if="hasActiveFilters"
+          @click="resetFilters"
+          class="ml-auto inline-flex items-center gap-1.5 px-2.5 py-1 text-xs text-gray-500 hover:text-gray-900 transition-colors">
+          <i class="fa-solid fa-rotate-left"></i> Сбросить фильтры
+        </button>
+      </div>
+
+      <!-- Logs Table (3 Columns for 1024px fit) -->
+      <div class="overflow-x-auto border border-gray-200 rounded-xl">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-gray-50 border-b border-gray-200 text-gray-600 font-semibold uppercase tracking-wider">
+            <tr>
+              <th class="p-3 w-32 text-center">Время</th>
+              <th class="p-3 w-80">Info</th>
+              <th class="p-3">Данные</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <tr v-for="log in filteredLogs" :key="log.id" class="hover:bg-gray-50/80 transition-colors"
+              :class="{ 'bg-amber-50/30': filterSuppressed === 'exclude' && !log.isSuppressed }">
+              <td class="p-3 text-center text-gray-500 whitespace-nowrap align-top">{{ log.time }}</td>
+              <td class="p-3 align-top">
+                <div class="flex flex-col gap-1 min-w-0">
+                  <!-- Top line: Statuses & Code -->
+                  <div class="flex flex-wrap items-center gap-1.5">
+                    <!-- Status code (replaces Error badge) -->
+                    <span v-if="log.statusCode" class="font-mono font-bold px-1.5 py-0.5 rounded text-[11px]"
+                      :class="log.statusCode >= 500 ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-800'">
+                      {{ log.statusCode }}
+                    </span>
+                    <span v-else-if="!log.error" class="px-2 py-0.5 rounded text-[11px] font-medium bg-green-100 text-green-700">
+                      Info
+                    </span>
+
+                    <span v-if="log.source === 'Server'" class="px-2 py-0.5 rounded text-[11px] font-medium border border-blue-300 text-blue-700">Server</span>
+                    <span v-else-if="log.source === 'Client'" class="px-2 py-0.5 rounded text-[11px] font-medium border border-gray-300 text-gray-700">Client</span>
+
+                    <!-- bot or human for errors -->
+                    <template v-if="log.error">
+                      <span v-if="log.isBot" class="px-2 py-0.5 rounded text-[11px] font-medium bg-amber-100 text-amber-800 flex items-center gap-1">
+                        <i class="fa-solid fa-robot text-[10px]"></i> bot
+                      </span>
+                      <span v-else class="px-2 py-0.5 rounded text-[11px] font-medium border border-gray-300 text-gray-700 flex items-center gap-1">
+                        <i class="fa-solid fa-user text-[10px]"></i> human
+                      </span>
+                    </template>
+
+                    <span v-if="log.isChunkError" class="px-2 py-0.5 rounded text-[11px] font-medium bg-yellow-400 text-gray-900 font-bold flex items-center gap-1">
+                      <i class="fa-solid fa-bolt text-[10px]"></i> chunkError
+                    </span>
+
+                    <!-- Suppressed badge -->
+                    <span v-if="log.isSuppressed" class="px-2 py-0.5 rounded text-[11px] font-medium bg-gray-200 text-gray-700 flex items-center gap-1" title="Подавленная ошибка">
+                      <i class="fa-solid fa-volume-xmark text-[10px]"></i> Suppressed
+                    </span>
+                  </div>
+
+                  <!-- Bottom line: URL -->
+                  <div v-if="log.url" class="flex max-w-full self-start min-w-0">
+                    <a :href="log.url" class="font-mono text-indigo-600 underline truncate max-w-sm hover:text-indigo-800" target="_blank">
+                      {{ log.url }}
+                    </a>
+                  </div>
+                </div>
+              </td>
+              <td class="p-3 text-gray-800 font-mono text-[11px] truncate max-w-md align-top">
+                {{ log.message }}
+              </td>
+            </tr>
+
+            <!-- Empty state -->
+            <tr v-if="filteredLogs.length === 0">
+              <td colspan="3" class="p-8 text-center text-gray-500">
+                <i class="fa-solid fa-inbox text-3xl text-gray-300 mb-2"></i>
+                <p>Нет записей, соответствующих выбранным фильтрам.</p>
+                <button @click="resetFilters" class="mt-2 text-indigo-600 font-semibold underline text-xs">
+                  Сбросить фильтры
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Footer Note -->
+      <div class="text-xs text-gray-500 flex items-center justify-between pt-2">
+        <span>Клик по чипу <strong>Suppressed</strong> меняет режим по кругу: <em>Все → Только Suppressed → Unsuppressed (Без) → Все</em></span>
+        <button @click="toggleSuppressed" class="text-indigo-600 font-medium hover:underline">
+          Попробовать переключить прямо сейчас &rarr;
+        </button>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    const { createApp, ref, computed, watch } = Vue
+
+    createApp({
+      setup() {
+        const searchQuery = ref('')
+        const filterType = ref('all')
+        const filterSource = ref('all')
+        const filterBot = ref('all')
+        const filterChunkError = ref('all')
+        const filterSuppressed = ref('all') // 'all' | 'only' | 'exclude'
+
+        const isErrorFiltersDisabled = computed(() => filterType.value === 'info')
+        const hasActiveErrorFilters = computed(() => {
+          return filterSource.value !== 'all' ||
+            filterBot.value !== 'all' ||
+            filterChunkError.value !== 'all' ||
+            filterSuppressed.value !== 'all'
+        })
+
+        // Auto-switch to 'error' when any error-specific filter is selected
+        watch(hasActiveErrorFilters, active => {
+          if (active) {
+            filterType.value = 'error'
+          }
+        })
+
+        // Reset error-specific filters when switched to 'info'
+        watch(filterType, type => {
+          if (type === 'info') {
+            filterSource.value = 'all'
+            filterBot.value = 'all'
+            filterChunkError.value = 'all'
+            filterSuppressed.value = 'all'
+          }
+        })
+
+        const resetFilters = () => {
+          searchQuery.value = ''
+          filterSource.value = 'all'
+          filterBot.value = 'all'
+          filterChunkError.value = 'all'
+          filterSuppressed.value = 'all'
+          filterType.value = 'all'
+        }
+
+        const hasActiveFilters = computed(() => {
+          return searchQuery.value.trim() !== '' ||
+            filterType.value !== 'all' ||
+            hasActiveErrorFilters.value
+        })
+
+        // Sample realistic logs
+        const logs = ref([
+          {
+            id: 108,
+            time: '18 сен, 09:15:20',
+            error: 1,
+            source: 'Client',
+            statusCode: 500,
+            url: '/catalog/micrometers',
+            isBot: false,
+            isChunkError: false,
+            isSuppressed: false,
+            message: 'TypeError: Cannot read properties of undefined (reading "price")'
+          },
+          {
+            id: 107,
+            time: '18 сен, 09:12:05',
+            error: 1,
+            source: 'Client',
+            statusCode: 500,
+            url: '/catalog/calipers',
+            isBot: true,
+            isChunkError: true,
+            isSuppressed: true,
+            message: 'Failed to fetch dynamically imported module /_nuxt/calipers.js'
+          },
+          {
+            id: 106,
+            time: '18 сен, 09:10:44',
+            error: 1,
+            source: 'Server',
+            statusCode: 500,
+            url: '/api/cart/checkout',
+            isBot: false,
+            isChunkError: false,
+            isSuppressed: false,
+            message: 'Database connection timeout on query INSERT INTO orders...'
+          },
+          {
+            id: 105,
+            time: '18 сен, 09:05:12',
+            error: 1,
+            source: 'Client',
+            statusCode: 403,
+            url: '/admin/options',
+            isBot: true,
+            isChunkError: false,
+            isSuppressed: true,
+            message: 'Bingbot 403 suppressed error reload'
+          },
+          {
+            id: 104,
+            time: '18 сен, 08:55:00',
+            error: 0,
+            source: null,
+            statusCode: null,
+            url: null,
+            isBot: false,
+            isChunkError: false,
+            isSuppressed: false,
+            message: 'toOldSite button clicked from Header'
+          },
+          {
+            id: 103,
+            time: '18 сен, 08:40:19',
+            error: 1,
+            source: 'Server',
+            statusCode: 404,
+            url: '/api/catalog/non-existent-product',
+            isBot: false,
+            isChunkError: false,
+            isSuppressed: false,
+            message: 'Product with alias "non-existent-product" not found'
+          },
+          {
+            id: 102,
+            time: '18 сен, 08:22:31',
+            error: 1,
+            source: 'Client',
+            statusCode: 500,
+            url: '/catalog/gauges',
+            isBot: false,
+            isChunkError: true,
+            isSuppressed: true,
+            message: 'Error loading dynamically imported module (auto-reloaded)'
+          }
+        ])
+
+        const filteredLogs = computed(() => {
+          const q = searchQuery.value.trim().toLowerCase()
+
+          return logs.value.filter(log => {
+            if (filterType.value === 'error' && !log.error) return false
+            if (filterType.value === 'info' && log.error) return false
+
+            if (filterSource.value === 'server' && log.source !== 'Server') return false
+            if (filterSource.value === 'client' && log.source !== 'Client') return false
+
+            // Bot filter (3-state)
+            if (filterBot.value === 'only' && !log.isBot) return false
+            if (filterBot.value === 'exclude' && log.isBot) return false
+
+            // Chunk error filter (3-state)
+            if (filterChunkError.value === 'only' && !log.isChunkError) return false
+            if (filterChunkError.value === 'exclude' && log.isChunkError) return false
+
+            // Suppressed filter (3-state)
+            if (filterSuppressed.value === 'only' && !log.isSuppressed) return false
+            if (filterSuppressed.value === 'exclude' && log.isSuppressed) return false
+
+            if (q) {
+              const matchId = String(log.id).includes(q)
+              const matchUrl = log.url ? log.url.toLowerCase().includes(q) : false
+              const matchMsg = log.message.toLowerCase().includes(q)
+              const matchCode = log.statusCode ? String(log.statusCode).includes(q) : false
+              if (!matchId && !matchUrl && !matchMsg && !matchCode) return false
+            }
+
+            return true
+          })
+        })
+
+        return {
+          searchQuery,
+          filterType,
+          filterSource,
+          filterBot,
+          filterChunkError,
+          filterSuppressed,
+          isErrorFiltersDisabled,
+          hasActiveErrorFilters,
+          resetFilters,
+          hasActiveFilters,
+          logs,
+          filteredLogs
+        }
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>
