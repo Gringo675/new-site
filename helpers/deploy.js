@@ -1,9 +1,18 @@
 import child_process from 'node:child_process'
 import fs from 'fs'
 import { NodeSSH } from 'node-ssh'
-import * as dotenv from 'dotenv'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import readline from 'node:readline'
-dotenv.config()
+import * as dotenv from 'dotenv'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const projectRoot = path.resolve(__dirname, '..')
+
+// Always ensure working directory is the project root regardless of where the script was invoked from
+process.chdir(projectRoot)
+
+dotenv.config({ path: path.resolve(projectRoot, '.env') })
 
 async function prompt(question) {
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout })
@@ -95,28 +104,30 @@ async function deploy(archivePath, deployDir) {
 
   try {
     // For warming up the server
-    child_process.execSync(`cmd.exe /c start "" "https://${deployDir}"`)
+    const startCmd = process.platform === 'win32' ? `cmd.exe /c start "" "https://${deployDir}"` : `xdg-open "https://${deployDir}"`
+    child_process.execSync(startCmd)
   } catch (e) {
-    console.log(`Couldn't open Chrome: ${e.message}`)
+    console.log(`Couldn't open browser: ${e.message}`)
   }
 }
 
 async function main() {
   const isRedeploy = process.argv.includes('--redeploy')
+  const archiveDir = path.resolve(projectRoot, 'archived_builds')
   let archivePath
   let deployDir
   let isProduction
 
+  if (!fs.existsSync(archiveDir)) {
+    fs.mkdirSync(archiveDir, { recursive: true })
+  }
+
   if (isRedeploy) {
     console.log('Starting redeployment from an existing archive...')
-    const archiveDir = 'archived_builds'
-    if (!fs.existsSync(archiveDir)) {
-      fs.mkdirSync(archiveDir, { recursive: true })
-    }
     const archives = fs
       .readdirSync(archiveDir)
       .filter(file => file.endsWith('.tar.gz'))
-      .map(file => ({ name: file, time: fs.statSync(`${archiveDir}/${file}`).mtime }))
+      .map(file => ({ name: file, time: fs.statSync(path.join(archiveDir, file)).mtime }))
       .sort((a, b) => b.time - a.time)
 
     if (archives.length === 0) {
@@ -136,7 +147,7 @@ async function main() {
     }
 
     const selectedArchive = archives[choiceIndex]
-    archivePath = `${archiveDir}/${selectedArchive.name}`
+    archivePath = path.join(archiveDir, selectedArchive.name)
     isProduction = !selectedArchive.name.startsWith('test_')
   } else {
     isProduction = process.env.NUXT_BUILD_MODE === 'prod'
@@ -144,13 +155,9 @@ async function main() {
     const timestamp = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16).replace('T', '_').replace(':', '-')
     const buildType = isProduction ? 'prod' : 'test'
     const archiveName = `${buildType}_${timestamp}.tar.gz`
-    const archiveDir = 'archived_builds'
-    if (!fs.existsSync(archiveDir)) {
-      fs.mkdirSync(archiveDir, { recursive: true })
-    }
-    archivePath = `${archiveDir}/${archiveName}`
+    archivePath = path.join(archiveDir, archiveName)
     try {
-      child_process.execSync(`tar -czf ${archivePath} -C .output public server nitro.json`, { stdio: 'inherit' })
+      child_process.execSync(`tar -czf "${archivePath}" -C .output public server nitro.json`, { stdio: 'inherit' })
       console.log(`\u2713 Archive created: ${archivePath}`)
     } catch (e) {
       throw new Error(`Can't create archive: ${e.message}`)

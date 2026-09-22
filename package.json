@@ -8,16 +8,16 @@
     "dev": "nuxt dev",
     "dev --host": "npm run dev -- --host",
     "build": "nuxt build",
-    "deploy": "node deploy.js",
-    "redeploy": "node deploy.js --redeploy",
+    "deploy": "node helpers/deploy.js",
+    "redeploy": "node helpers/deploy.js --redeploy",
     "serv": "npm run build && npm run deploy",
     "generate": "nuxt generate",
-    "prev on 3001": "PORT=3001 node .output/server/index.mjs",
+    "prev on 3001": "node helpers/run-env.js PORT=3001 node .output/server/index.mjs",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "prod_build": "NUXT_BUILD_MODE=prod nuxt build",
-    "prod_deploy": "NUXT_BUILD_MODE=prod node deploy.js",
-    "prod_serv": "npm run prod_build && npm run deploy"
+    "prod_build": "node helpers/run-env.js NUXT_BUILD_MODE=prod nuxt build",
+    "prod_deploy": "node helpers/run-env.js NUXT_BUILD_MODE=prod node helpers/deploy.js",
+    "prod_serv": "npm run prod_build && npm run prod_deploy"
   },
   "devDependencies": {
     "@iconify-json/carbon": "^1.2.13",
