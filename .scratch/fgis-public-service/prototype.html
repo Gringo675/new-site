@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Прототип: Общедоступный сервис ФГИС ГРСИ с витриной товаров</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    [v-cloak] { display: none; }
+    .font-sans { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+    .animate-slide-up {
+      animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen font-sans">
+  <div id="app" v-cloak class="max-w-7xl mx-auto p-4 sm:p-6 space-y-6">
+
+    <!-- Top Navigation / Header -->
+    <header class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2.5">
+            <span class="bg-indigo-600 text-white text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">Прототип</span>
+            <span class="text-xs text-slate-400 font-mono">/materials/fgis</span>
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mt-2">
+            ФГИС «АРШИН» — Поиск по Госреестру СИ
+          </h1>
+          <p class="text-sm text-slate-500 mt-1 max-w-3xl">
+            Публичный интерфейс для быстрого поиска описаний типов и методик поверки с прямой связью с каталогом инструментов компании.
+          </p>
+        </div>
+
+        <!-- Toolbar: Variant + Device Toggle -->
+        <div class="flex flex-col sm:flex-row gap-2 self-start md:self-auto">
+          <!-- Device Simulation Toggle -->
+          <div class="bg-slate-100 p-1.5 rounded-xl border border-slate-200 flex gap-1 text-xs">
+            <button
+              @click="isMobileSim = false"
+              class="px-2.5 py-1.5 rounded-lg font-medium transition flex items-center gap-1.5"
+              :class="!isMobileSim ? 'bg-white text-indigo-700 shadow-sm font-semibold' : 'text-slate-600 hover:text-slate-900'">
+              <i class="fa-solid fa-desktop"></i>
+              Десктоп
+            </button>
+            <button
+              @click="isMobileSim = true"
+              class="px-2.5 py-1.5 rounded-lg font-medium transition flex items-center gap-1.5"
+              :class="isMobileSim ? 'bg-white text-indigo-700 shadow-sm font-semibold' : 'text-slate-600 hover:text-slate-900'">
+              <i class="fa-solid fa-mobile-screen"></i>
+              Мобильный вид
+            </button>
+          </div>
+
+          <!-- Variant Switcher -->
+          <div class="bg-slate-100 p-1.5 rounded-xl border border-slate-200 flex gap-1 text-xs">
+            <button
+              v-for="variant in variants"
+              :key="variant.id"
+              @click="currentVariant = variant.id"
+              class="px-2.5 py-1.5 rounded-lg font-medium transition flex items-center gap-1.5"
+              :class="currentVariant === variant.id ? 'bg-white text-indigo-700 shadow-sm font-semibold' : 'text-slate-600 hover:text-slate-900'">
+              <i :class="variant.icon"></i>
+              {{ variant.label }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Variant Explanatory Banner -->
+      <div class="mt-6 pt-5 border-t border-slate-100 grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div
+          v-for="v in variants"
+          :key="'desc-' + v.id"
+          @click="currentVariant = v.id"
+          class="p-3.5 rounded-xl border transition-all cursor-pointer text-left"
+          :class="currentVariant === v.id ? 'border-indigo-600 bg-indigo-50/50 ring-2 ring-indigo-200' : 'border-slate-200 bg-white hover:bg-slate-50'">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-xs" :class="currentVariant === v.id ? 'text-indigo-900' : 'text-slate-700'">{{ v.title }}</span>
+            <span v-if="currentVariant === v.id" class="text-[10px] bg-indigo-600 text-white font-bold px-1.5 py-0.5 rounded">Активен</span>
+          </div>
+          <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">{{ v.desc }}</p>
+        </div>
+      </div>
+
+      <!-- Specific Mobile Behavior Switcher for Variant 2 -->
+      <div v-if="currentVariant === 'split'" class="mt-4 p-4 rounded-xl bg-amber-50/80 border border-amber-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+        <div class="space-y-0.5">
+          <span class="font-bold text-amber-900 flex items-center gap-1.5">
+            <i class="fa-solid fa-mobile-screen-button text-amber-600"></i>
+            Решение для мобильных экранов в Варианте 2:
+          </span>
+          <span class="text-amber-800">
+            Как отображать витрину товаров, когда экран узкий и правая колонка уезжает вниз:
+          </span>
+        </div>
+        <div class="flex items-center gap-2 bg-white px-2 py-1.5 rounded-lg border border-amber-300">
+          <label class="flex items-center gap-1.5 cursor-pointer font-medium" :class="mobileDetailMode === 'sheet' ? 'text-indigo-700 font-bold' : 'text-slate-600'">
+            <input type="radio" value="sheet" v-model="mobileDetailMode" class="text-indigo-600">
+            Нижняя шторка (Bottom Sheet)
+          </label>
+          <span class="text-slate-300">|</span>
+          <label class="flex items-center gap-1.5 cursor-pointer font-medium" :class="mobileDetailMode === 'accordion' ? 'text-indigo-700 font-bold' : 'text-slate-600'">
+            <input type="radio" value="accordion" v-model="mobileDetailMode" class="text-indigo-600">
+            Инлайн-аккордеон
+          </label>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Container (Responsive or Mobile Simulator) -->
+    <div :class="isMobileSim ? 'max-w-[420px] mx-auto border-4 border-slate-700 rounded-[2.5rem] shadow-2xl p-4 bg-slate-100 overflow-hidden relative' : 'space-y-6'">
+
+      <!-- Mobile device speaker notch imitation -->
+      <div v-if="isMobileSim" class="w-32 h-4 bg-slate-700 rounded-full mx-auto mb-3"></div>
+
+      <!-- Search Bar & Filter Form -->
+      <section class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 space-y-4 mb-4">
+        <div class="flex flex-col lg:flex-row gap-3 items-stretch lg:items-end">
+          <div class="flex-1 min-w-[140px]">
+            <label class="block text-xs font-medium text-slate-600 mb-1">Номер ГРСИ</label>
+            <input
+              v-model="filters.number"
+              type="text"
+              placeholder="например, 20448-00"
+              class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all">
+          </div>
+
+          <div class="flex-1 min-w-[180px]">
+            <label class="block text-xs font-medium text-slate-600 mb-1">Наименование СИ</label>
+            <input
+              v-model="filters.name"
+              type="text"
+              placeholder="Штангенциркули..."
+              class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all">
+          </div>
+
+          <div class="flex-1 min-w-[130px]">
+            <label class="block text-xs font-medium text-slate-600 mb-1">Тип / Обозначение</label>
+            <input
+              v-model="filters.type_si"
+              type="text"
+              placeholder="ШЦ-I, МК..."
+              class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all">
+          </div>
+
+          <div class="flex gap-2">
+            <button
+              @click="resetFilters"
+              title="Очистить фильтры"
+              class="px-3 py-2 border border-slate-300 rounded-lg hover:bg-slate-100 text-slate-600 text-sm transition">
+              <i class="fa-solid fa-rotate-left"></i>
+            </button>
+            <button
+              class="flex-1 lg:flex-none px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-semibold flex items-center justify-center gap-2 shadow-sm transition">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              Найти
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick filter & count -->
+        <div class="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-slate-100 text-xs text-slate-500">
+          <button
+            @click="filterOnlyInStock = !filterOnlyInStock"
+            class="px-2.5 py-1 rounded-full border transition flex items-center gap-1.5"
+            :class="filterOnlyInStock ? 'bg-emerald-50 border-emerald-300 text-emerald-700 font-semibold' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'">
+            <i class="fa-solid fa-cart-shopping text-emerald-600"></i>
+            Только в наличии ({{ countWithProducts }})
+          </button>
+
+          <div class="text-slate-600">
+            Найдено: <strong>{{ filteredDocs.length }}</strong>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================================================= -->
+      <!-- VARIANT 1: INLINE ACCORDION / EXPANDABLE ROW                                              -->
+      <!-- ========================================================================================= -->
+      <main v-if="currentVariant === 'accordion'" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="px-5 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-700">Результаты поиска ФГИС</h2>
+          <span class="text-xs text-slate-400">Кликните строку для раскрытия</span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-100 text-slate-600 text-xs uppercase font-semibold border-b border-slate-200">
+              <tr>
+                <th class="py-2.5 px-3">Номер</th>
+                <th class="py-2.5 px-3">Наименование</th>
+                <th class="py-2.5 px-3">Тип</th>
+                <th class="py-2.5 px-3 text-right">Каталог</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200">
+              <template v-for="doc in filteredDocs" :key="doc.number">
+                <tr
+                  @click="toggleRow(doc.number)"
+                  class="hover:bg-slate-50 transition cursor-pointer"
+                  :class="{
+                    'bg-emerald-50/40': doc.products && doc.products.length > 0 && !isRowExpanded(doc.number),
+                    'bg-indigo-50/50 border-l-4 border-l-indigo-600': isRowExpanded(doc.number)
+                  }">
+                  <td class="py-3 px-3 font-mono font-bold text-slate-900 text-xs whitespace-nowrap">
+                    {{ doc.number }}
+                  </td>
+                  <td class="py-3 px-3">
+                    <div class="font-medium text-slate-900 text-xs sm:text-sm">{{ doc.name }}</div>
+                    <div class="text-[11px] text-slate-500 truncate max-w-[200px]">{{ doc.brand }}</div>
+                  </td>
+                  <td class="py-3 px-3 text-xs text-slate-600 whitespace-nowrap">
+                    {{ doc.type_si }}
+                  </td>
+                  <td class="py-3 px-3 text-right whitespace-nowrap">
+                    <span v-if="doc.products && doc.products.length" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                      {{ doc.products.length }} в наличии
+                      <i class="fa-solid fa-chevron-down text-[9px] ml-0.5" :class="{ 'rotate-180': isRowExpanded(doc.number) }"></i>
+                    </span>
+                    <span v-else class="text-slate-400 text-xs italic">Под заказ</span>
+                  </td>
+                </tr>
+
+                <!-- Expanded Drawer -->
+                <tr v-if="isRowExpanded(doc.number)" class="bg-indigo-50/30">
+                  <td colspan="4" class="p-3 sm:p-5 border-b border-indigo-100">
+                    <div class="bg-white rounded-xl p-3 sm:p-4 border border-indigo-200 shadow-sm space-y-3">
+                      <div class="flex items-center justify-between text-xs pb-2 border-b border-slate-100">
+                        <span class="font-bold text-slate-800">Файлы ФГИС:</span>
+                        <div class="flex gap-3">
+                          <a href="#" @click.stop.prevent="fakeDownload('Описание типа', doc.file_ot)" class="text-indigo-600 font-semibold hover:underline">
+                            <i class="fa-solid fa-file-pdf text-red-500"></i> Описание типа
+                          </a>
+                          <a href="#" @click.stop.prevent="fakeDownload('Методика поверки', doc.file_mp)" class="text-indigo-600 font-semibold hover:underline">
+                            <i class="fa-solid fa-file-lines text-blue-500"></i> Методика
+                          </a>
+                        </div>
+                      </div>
+
+                      <!-- Products -->
+                      <div class="space-y-2">
+                        <div class="text-xs font-bold text-emerald-800 uppercase tracking-wider">Товары по данному реестру в наличии:</div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <div
+                            v-for="prod in doc.products"
+                            :key="prod.id"
+                            class="flex items-center justify-between p-2.5 bg-slate-50 rounded-lg border border-slate-200 text-xs">
+                            <div class="flex items-center gap-2 min-w-0">
+                              <img :src="prod.img" class="w-10 h-10 object-contain bg-white rounded border border-slate-200 shrink-0">
+                              <div class="min-w-0">
+                                <div class="font-semibold text-slate-900 truncate">{{ prod.name }}</div>
+                                <div class="text-indigo-600 font-bold">{{ prod.price }} ₽</div>
+                              </div>
+                            </div>
+                            <button
+                              @click.stop="addToCart(prod)"
+                              class="px-2.5 py-1 bg-indigo-600 text-white rounded font-medium hover:bg-indigo-700 transition shrink-0 ml-2">
+                              Купить
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+      </main>
+
+      <!-- ========================================================================================= -->
+      <!-- VARIANT 2: SPLIT VIEW (MASTER-DETAIL / SIDEBAR + MOBILE BOTTOM SHEET / ACCORDION)         -->
+      <!-- ========================================================================================= -->
+      <main v-if="currentVariant === 'split'" class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+
+        <!-- Left Column: Master List -->
+        <div :class="isMobileSim ? 'col-span-12' : 'lg:col-span-7'" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+          <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-700">Реестр СИ</h2>
+            <span class="text-xs text-slate-500">
+              <span v-if="isMobileSim || windowWidth < 1024">
+                {{ mobileDetailMode === 'sheet' ? 'Тап открывает шторку' : 'Тап раскрывает карточку' }}
+              </span>
+              <span v-else>Выберите для деталей справа</span>
+            </span>
+          </div>
+
+          <div class="divide-y divide-slate-100 max-h-[580px] overflow-y-auto">
+            <template v-for="doc in paginatedDocs" :key="doc.number">
+              <!-- Row Item -->
+              <div
+                @click="handleSelectDoc(doc)"
+                class="p-3.5 transition cursor-pointer hover:bg-slate-50"
+                :class="{
+                  'bg-indigo-50 border-l-4 border-l-indigo-600': selectedDoc?.number === doc.number,
+                  'bg-emerald-50/30': doc.products && doc.products.length && selectedDoc?.number !== doc.number
+                }">
+                <div class="flex items-start justify-between gap-2">
+                  <div class="min-w-0">
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                      <span class="font-mono font-bold text-xs sm:text-sm text-slate-900">{{ doc.number }}</span>
+                      <span class="text-[10px] bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded">{{ doc.type_si }}</span>
+                    </div>
+                    <div class="text-xs sm:text-sm font-semibold text-slate-900 mt-1 truncate">{{ doc.name }}</div>
+                    <div class="text-[11px] text-slate-500 mt-0.5 line-clamp-1">{{ doc.brand }}</div>
+                  </div>
+                  <div class="text-right shrink-0">
+                    <span v-if="doc.products && doc.products.length" class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200">
+                      <i class="fa-solid fa-check text-[9px]"></i> {{ doc.products.length }} в наличии
+                    </span>
+                    <div class="text-[10px] text-slate-400 mt-1">до {{ doc.date }}</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Option 2B (Mobile Accordion): Inline expansion on mobile -->
+              <div
+                v-if="(isMobileSim || windowWidth < 1024) && mobileDetailMode === 'accordion' && selectedDoc?.number === doc.number"
+                class="p-4 bg-indigo-50/50 border-b border-indigo-200 space-y-4">
+
+                <!-- Documents -->
+                <div class="flex gap-2">
+                  <button @click="fakeDownload('Описание типа', doc.file_ot)" class="flex-1 py-1.5 px-2 bg-white rounded border border-slate-300 text-xs font-medium flex items-center justify-center gap-1 text-slate-800">
+                    <i class="fa-solid fa-file-pdf text-red-500"></i> Описание типа
+                  </button>
+                  <button @click="fakeDownload('Методика поверки', doc.file_mp)" class="flex-1 py-1.5 px-2 bg-white rounded border border-slate-300 text-xs font-medium flex items-center justify-center gap-1 text-slate-800">
+                    <i class="fa-solid fa-file-lines text-blue-500"></i> Методика
+                  </button>
+                </div>
+
+                <!-- Products -->
+                <div class="space-y-2">
+                  <div class="text-xs font-bold text-slate-800">Товары в каталоге:</div>
+                  <div v-if="doc.products && doc.products.length" class="space-y-2">
+                    <div v-for="prod in doc.products" :key="prod.id" class="p-2.5 bg-white rounded-lg border border-slate-200 flex items-center justify-between gap-2 text-xs">
+                      <div class="min-w-0">
+                        <div class="font-semibold text-slate-900 truncate">{{ prod.name }}</div>
+                        <div class="font-bold text-slate-800">{{ prod.price }} ₽</div>
+                      </div>
+                      <button @click.stop="addToCart(prod)" class="px-2.5 py-1 bg-indigo-600 text-white rounded font-medium shrink-0">Купить</button>
+                    </div>
+                  </div>
+                  <div v-else class="text-xs text-amber-700 bg-amber-50 p-2 rounded border border-amber-200">
+                    Точного наличия нет. Поставляем под заказ с поверкой.
+                  </div>
+                </div>
+              </div>
+            </template>
+          </div>
+
+          <!-- Pagination & Range Controls (Reference: log.vue:617-641) -->
+          <div class="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 bg-slate-50/70 p-3 text-xs">
+            <div class="text-slate-500">
+              Показано <span class="font-semibold text-slate-700">{{ pageRangeText }}</span>
+              <span v-if="filteredDocs.length < allDocs.length"> (из {{ allDocs.length }} записей)</span>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <div class="flex items-center gap-1.5">
+                <span class="text-slate-500">На странице:</span>
+                <select
+                  v-model="pageSize"
+                  class="bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-700 focus:outline-none">
+                  <option :value="20">20 строк</option>
+                  <option :value="50">50 строк</option>
+                  <option :value="100">100 строк</option>
+                </select>
+              </div>
+
+              <!-- Pagination buttons -->
+              <div class="flex items-center gap-1">
+                <button
+                  :disabled="page <= 1"
+                  @click="page--"
+                  class="px-2.5 py-1 border border-slate-200 rounded-md bg-white text-slate-600 disabled:opacity-40 transition">
+                  <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                </button>
+                <span class="px-2 font-semibold text-slate-800">{{ page }}</span>
+                <button
+                  :disabled="page * pageSize >= filteredDocs.length"
+                  @click="page++"
+                  class="px-2.5 py-1 border border-slate-200 rounded-md bg-white text-slate-600 disabled:opacity-40 transition">
+                  <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Desktop Sticky Detail Card -->
+        <div v-if="!isMobileSim" class="hidden lg:block lg:col-span-5 sticky top-6 space-y-4">
+          <div v-if="selectedDoc" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 space-y-4">
+            <!-- Header -->
+            <div class="border-b border-slate-100 pb-3">
+              <div class="flex items-center justify-between">
+                <span class="font-mono font-bold text-base text-indigo-700">ГРСИ №{{ selectedDoc.number }}</span>
+                <span class="text-xs text-slate-500">до {{ selectedDoc.date }}</span>
+              </div>
+              <h3 class="text-base font-bold text-slate-900 mt-1 leading-snug">{{ selectedDoc.name }}</h3>
+              <p class="text-xs text-slate-500 mt-1">{{ selectedDoc.brand }}</p>
+            </div>
+
+            <!-- Documents -->
+            <div class="space-y-2">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Официальные документы ФГИС</h4>
+              <div class="grid grid-cols-2 gap-2">
+                <button
+                  @click="fakeDownload('Описание типа', selectedDoc.file_ot)"
+                  class="p-2.5 rounded-xl border border-slate-200 hover:border-indigo-400 bg-slate-50 text-left transition flex items-center gap-2 text-xs">
+                  <i class="fa-solid fa-file-pdf text-red-500 text-lg"></i>
+                  <div>
+                    <div class="font-semibold text-slate-800">Описание типа</div>
+                    <div class="text-[10px] text-slate-400">PDF</div>
+                  </div>
+                </button>
+                <button
+                  @click="fakeDownload('Методика поверки', selectedDoc.file_mp)"
+                  class="p-2.5 rounded-xl border border-slate-200 hover:border-indigo-400 bg-slate-50 text-left transition flex items-center gap-2 text-xs">
+                  <i class="fa-solid fa-file-lines text-blue-500 text-lg"></i>
+                  <div>
+                    <div class="font-semibold text-slate-800">Методика</div>
+                    <div class="text-[10px] text-slate-400">PDF / ГОСТ</div>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            <!-- Products -->
+            <div class="pt-3 border-t border-slate-100 space-y-2.5">
+              <div class="flex items-center justify-between">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                  <i class="fa-solid fa-store text-indigo-600"></i>
+                  Товары в наличии
+                </h4>
+                <span v-if="selectedDoc.products && selectedDoc.products.length" class="text-xs text-emerald-600 font-semibold">
+                  {{ selectedDoc.products.length }} шт.
+                </span>
+              </div>
+
+              <div v-if="selectedDoc.products && selectedDoc.products.length" class="space-y-2">
+                <div
+                  v-for="prod in selectedDoc.products"
+                  :key="prod.id"
+                  class="p-2.5 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between gap-2.5 text-xs">
+                  <div class="flex items-center gap-2 min-w-0">
+                    <img :src="prod.img" class="w-10 h-10 rounded bg-white p-1 object-contain border border-slate-200 shrink-0">
+                    <div class="min-w-0">
+                      <div class="font-semibold text-slate-900 truncate">{{ prod.name }}</div>
+                      <div class="font-bold text-slate-800">{{ prod.price }} ₽</div>
+                    </div>
+                  </div>
+                  <button @click="addToCart(prod)" class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded font-semibold shrink-0">
+                    Купить
+                  </button>
+                </div>
+              </div>
+
+              <div v-else class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-1">
+                <div class="font-bold">Под заказ с поверкой</div>
+                <p class="text-amber-800">Поможем подобрать аналогичный поверенный инструмент из наличия.</p>
+                <button class="w-full mt-1 px-3 py-1.5 bg-amber-600 text-white font-semibold rounded text-xs">Запросить КП</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- ========================================================================================= -->
+      <!-- VARIANT 3: SMART PRODUCT-FIRST CARDS                                                      -->
+      <!-- ========================================================================================= -->
+      <main v-if="currentVariant === 'cards'" class="space-y-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div
+            v-for="doc in filteredDocs"
+            :key="doc.number"
+            class="bg-white rounded-2xl p-4 shadow-sm border flex flex-col justify-between"
+            :class="doc.products && doc.products.length ? 'border-emerald-300 ring-1 ring-emerald-200' : 'border-slate-200'">
+            <div>
+              <div class="flex items-start justify-between gap-2">
+                <span class="font-mono font-bold text-xs bg-slate-100 text-slate-800 px-2 py-0.5 rounded">
+                  ГРСИ №{{ doc.number }}
+                </span>
+                <span v-if="doc.products && doc.products.length" class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                  В наличии
+                </span>
+              </div>
+              <h3 class="text-sm font-bold text-slate-900 mt-2">{{ doc.name }}</h3>
+              <p class="text-xs text-slate-500 mt-0.5">{{ doc.brand }}</p>
+            </div>
+
+            <div v-if="doc.products && doc.products.length" class="mt-3 pt-2.5 border-t border-emerald-100 bg-emerald-50/50 -mx-4 -mb-4 p-3 rounded-b-2xl">
+              <div class="text-[10px] font-bold text-emerald-900 mb-1">Товар в каталоге:</div>
+              <div class="flex items-center justify-between gap-2 bg-white p-2 rounded-lg border border-emerald-200">
+                <div class="min-w-0 text-xs">
+                  <div class="font-semibold text-slate-900 truncate">{{ doc.products[0].name }}</div>
+                  <div class="font-bold text-indigo-600">{{ doc.products[0].price }} ₽</div>
+                </div>
+                <button @click="addToCart(doc.products[0])" class="px-2.5 py-1 bg-emerald-600 text-white rounded text-xs font-semibold shrink-0">Купить</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- Option 2A (Mobile Bottom Sheet / Drawer Modal) -->
+      <div
+        v-if="isBottomSheetOpen"
+        class="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/60 backdrop-blur-xs transition-opacity"
+        @click.self="isBottomSheetOpen = false">
+        <div
+          class="bg-white w-full max-w-lg rounded-t-3xl shadow-2xl p-5 space-y-4 max-h-[85vh] overflow-y-auto animate-slide-up border-t border-slate-200">
+
+          <!-- Drag Handle -->
+          <div class="w-12 h-1.5 bg-slate-300 rounded-full mx-auto -mt-1 mb-2"></div>
+
+          <!-- Sheet Header -->
+          <div class="flex items-start justify-between gap-3 border-b border-slate-100 pb-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-mono font-bold text-base text-indigo-700">ГРСИ №{{ selectedDoc.number }}</span>
+                <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">{{ selectedDoc.type_si }}</span>
+              </div>
+              <h3 class="text-sm font-bold text-slate-900 mt-1 leading-snug">{{ selectedDoc.name }}</h3>
+              <p class="text-xs text-slate-500 mt-0.5">{{ selectedDoc.brand }}</p>
+            </div>
+            <button
+              @click="isBottomSheetOpen = false"
+              class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 flex items-center justify-center shrink-0">
+              <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+          </div>
+
+          <!-- Documents Download -->
+          <div class="space-y-1.5">
+            <div class="text-xs font-bold uppercase tracking-wider text-slate-400">Файлы из реестра</div>
+            <div class="grid grid-cols-2 gap-2">
+              <button
+                @click="fakeDownload('Описание типа', selectedDoc.file_ot)"
+                class="p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-left flex items-center gap-2 text-xs">
+                <i class="fa-solid fa-file-pdf text-red-500 text-base"></i>
+                <div class="min-w-0">
+                  <div class="font-semibold text-slate-800">Описание типа</div>
+                  <div class="text-[10px] text-slate-400">PDF</div>
+                </div>
+              </button>
+              <button
+                @click="fakeDownload('Методика поверки', selectedDoc.file_mp)"
+                class="p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-left flex items-center gap-2 text-xs">
+                <i class="fa-solid fa-file-lines text-blue-500 text-base"></i>
+                <div class="min-w-0">
+                  <div class="font-semibold text-slate-800">Методика поверки</div>
+                  <div class="text-[10px] text-slate-400">PDF / ГОСТ</div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Products in Stock -->
+          <div class="pt-2 border-t border-slate-100 space-y-2">
+            <div class="flex items-center justify-between">
+              <div class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                <i class="fa-solid fa-store text-emerald-600"></i>
+                Товары магазина в наличии
+              </div>
+              <span v-if="selectedDoc.products && selectedDoc.products.length" class="text-xs text-emerald-700 font-bold">
+                {{ selectedDoc.products.length }} шт.
+              </span>
+            </div>
+
+            <div v-if="selectedDoc.products && selectedDoc.products.length" class="space-y-2">
+              <div
+                v-for="prod in selectedDoc.products"
+                :key="prod.id"
+                class="p-2.5 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between gap-2 text-xs">
+                <div class="flex items-center gap-2 min-w-0">
+                  <img :src="prod.img" class="w-10 h-10 rounded bg-white p-1 object-contain border border-slate-200 shrink-0">
+                  <div class="min-w-0">
+                    <div class="font-semibold text-slate-900 truncate">{{ prod.name }}</div>
+                    <div class="font-bold text-slate-800">{{ prod.price }} ₽</div>
+                  </div>
+                </div>
+                <button
+                  @click="addToCart(prod)"
+                  class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold shrink-0">
+                  Купить
+                </button>
+              </div>
+            </div>
+
+            <div v-else class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-1">
+              <div class="font-bold">Товара нет на складе</div>
+              <p class="text-amber-800">Поставим под заказ с поверкой или предложим аналог.</p>
+              <button class="w-full mt-1 px-3 py-1.5 bg-amber-600 text-white font-semibold rounded text-xs">
+                Запросить КП / Аналог
+              </button>
+            </div>
+          </div>
+
+          <!-- Close button -->
+          <button
+            @click="isBottomSheetOpen = false"
+            class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs transition">
+            Закрыть
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Toast Notification -->
+    <div
+      v-if="toast.show"
+      class="fixed bottom-6 right-6 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 text-sm z-50 transition-all">
+      <i :class="toast.icon" :style="{ color: toast.color }"></i>
+      <span>{{ toast.text }}</span>
+    </div>
+
+  </div>
+
+  <script>
+    const { createApp, ref, computed, onMounted, onUnmounted } = Vue
+
+    createApp({
+      setup() {
+        const currentVariant = ref('split')
+        const isMobileSim = ref(false)
+        const mobileDetailMode = ref('sheet') // 'sheet' or 'accordion'
+        const isBottomSheetOpen = ref(false)
+        const filterOnlyInStock = ref(false)
+        const expandedRows = ref(new Set(['20448-00']))
+        const windowWidth = ref(window.innerWidth)
+
+        const handleResize = () => { windowWidth.value = window.innerWidth }
+        onMounted(() => window.addEventListener('resize', handleResize))
+        onUnmounted(() => window.removeEventListener('resize', handleResize))
+
+        const filters = ref({
+          number: '',
+          name: '',
+          type_si: ''
+        })
+
+        const variants = [
+          {
+            id: 'split',
+            label: 'Вариант 2: Split View',
+            title: '2. Сплит-панель: Реестр + Витрина',
+            icon: 'fa-solid fa-table-columns',
+            desc: 'На десктопе список слева и витрина справа. На мобильном клик вызывает шторку (Bottom Sheet) или аккордеон.'
+          },
+          {
+            id: 'accordion',
+            label: 'Вариант 1: Инлайн-аккордеон',
+            title: '1. Строка с раскрывающимся списком',
+            icon: 'fa-solid fa-list-check',
+            desc: 'Классическая таблица ФГИС. Записи раскрываются прямо в таблице.'
+          },
+          {
+            id: 'cards',
+            label: 'Вариант 3: Умные карточки',
+            title: '3. Карточный каталог',
+            icon: 'fa-solid fa-grip',
+            desc: 'Визуальный каталог карточек СИ с промо-блоком покупки.'
+          }
+        ]
+
+        const allDocs = ref([
+          {
+            number: '20448-00',
+            name: 'Штангенциркули',
+            type_si: 'ШЦ-I, ШЦ-II, ШЦ-III',
+            brand: 'АО "Красный инструментальщик", г. Киров',
+            date: '20.08.2030',
+            file_ot: 'ot_20448-00.pdf',
+            file_mp: 'mp_20448-00.pdf',
+            products: [
+              {
+                id: '10412',
+                name: 'Штангенциркуль ШЦ-I-150 0.05 КРИН с поверкой',
+                price: '3 850',
+                img: 'https://placehold.co/100x100/e2e8f0/475569?text=ШЦ-150'
+              },
+              {
+                id: '10415',
+                name: 'Штангенциркуль ШЦ-I-125 0.1 КРИН',
+                price: '2 990',
+                img: 'https://placehold.co/100x100/e2e8f0/475569?text=ШЦ-125'
+              }
+            ]
+          },
+          {
+            number: '8812-82',
+            name: 'Микрометры гладкие',
+            type_si: 'МК',
+            brand: 'ОАО "Калибр", г. Москва',
+            date: 'Бессрочно',
+            file_ot: 'ot_8812-82.pdf',
+            file_mp: 'mp_8812-82.pdf',
+            products: [
+              {
+                id: '11002',
+                name: 'Микрометр гладкий МК-25 0.01 Калибр (с поверкой)',
+                price: '4 120',
+                img: 'https://placehold.co/100x100/e2e8f0/475569?text=МК-25'
+              }
+            ]
+          },
+          {
+            number: '14567-95',
+            name: 'Индикаторы часового типа',
+            type_si: 'ИЧ-10, ИЧ-25',
+            brand: 'ЗАО "ЧИЗ", г. Челябинск',
+            date: '15.11.2028',
+            file_ot: 'ot_14567-95.pdf',
+            file_mp: 'mp_14567-95.pdf',
+            products: [
+              {
+                id: '12055',
+                name: 'Индикатор часового типа ИЧ-10 0.01 ЧИЗ с ушком',
+                price: '3 450',
+                img: 'https://placehold.co/100x100/e2e8f0/475569?text=ИЧ-10'
+              }
+            ]
+          },
+          {
+            number: '34512-07',
+            name: 'Нутромеры микрометрические',
+            type_si: 'НМ 50-175',
+            brand: 'Guangdong Instrument Co., Китай',
+            date: '01.03.2025',
+            file_ot: 'ot_34512-07.pdf',
+            file_mp: 'mp_34512-07.pdf',
+            products: []
+          }
+        ])
+
+        const selectedDoc = ref(allDocs.value[0])
+
+        const page = ref(1)
+        const pageSize = ref(20)
+
+        const filteredDocs = computed(() => {
+          return allDocs.value.filter(doc => {
+            if (filterOnlyInStock.value && (!doc.products || !doc.products.length)) return false
+            if (filters.value.number && !doc.number.toLowerCase().includes(filters.value.number.toLowerCase())) return false
+            if (filters.value.name && !doc.name.toLowerCase().includes(filters.value.name.toLowerCase())) return false
+            if (filters.value.type_si && !doc.type_si.toLowerCase().includes(filters.value.type_si.toLowerCase())) return false
+            return true
+          })
+        })
+
+        const paginatedDocs = computed(() => {
+          const size = Number(pageSize.value) || 20
+          const start = (page.value - 1) * size
+          return filteredDocs.value.slice(start, start + size)
+        })
+
+        const pageRangeText = computed(() => {
+          if (filteredDocs.value.length === 0) return '0 из 0'
+          const size = Number(pageSize.value) || 20
+          const start = (page.value - 1) * size + 1
+          const end = Math.min(page.value * size, filteredDocs.value.length)
+          return `${start}–${end} из ${filteredDocs.value.length}`
+        })
+
+        const countWithProducts = computed(() => {
+          return allDocs.value.filter(d => d.products && d.products.length > 0).length
+        })
+
+        const handleSelectDoc = (doc) => {
+          selectedDoc.value = doc
+          if (isMobileSim.value || windowWidth.value < 1024) {
+            if (mobileDetailMode.value === 'sheet') {
+              isBottomSheetOpen.value = true
+            }
+          }
+        }
+
+        const isRowExpanded = (num) => expandedRows.value.has(num)
+        const toggleRow = (num) => {
+          if (expandedRows.value.has(num)) expandedRows.value.delete(num)
+          else expandedRows.value.add(num)
+        }
+
+        const resetFilters = () => {
+          filters.value.number = ''
+          filters.value.name = ''
+          filters.value.type_si = ''
+          filterOnlyInStock.value = false
+          page.value = 1
+        }
+
+        const toast = ref({ show: false, text: '', icon: '', color: '' })
+        const showToast = (text, icon = 'fa-solid fa-check', color = '#10b981') => {
+          toast.value = { show: true, text, icon, color }
+          setTimeout(() => { toast.value.show = false }, 2500)
+        }
+
+        const fakeDownload = (title, filename) => {
+          showToast(`Имитация загрузки: ${title} (${filename})`, 'fa-solid fa-file-arrow-down', '#38bdf8')
+        }
+
+        const addToCart = (prod) => {
+          showToast(`Товар "${prod.name}" добавлен в корзину!`, 'fa-solid fa-cart-circle-check', '#10b981')
+        }
+
+        return {
+          currentVariant,
+          variants,
+          isMobileSim,
+          mobileDetailMode,
+          isBottomSheetOpen,
+          windowWidth,
+          filters,
+          allDocs,
+          filteredDocs,
+          paginatedDocs,
+          page,
+          pageSize,
+          pageRangeText,
+          selectedDoc,
+          filterOnlyInStock,
+          countWithProducts,
+          handleSelectDoc,
+          isRowExpanded,
+          toggleRow,
+          resetFilters,
+          fakeDownload,
+          addToCart,
+          toast
+        }
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>

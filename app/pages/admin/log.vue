@@ -322,7 +322,7 @@ const columns = [
     meta: {
       class: {
         th: 'text-left',
-        td: 'align-top py-2.5',
+        td: 'align-top py-2.5 whitespace-normal break-all',
       },
     },
   },
@@ -582,7 +582,7 @@ const copyToClipboard = async (text, label = 'Данные') => {
         <!-- Summary Message Cell (Данные) -->
         <template #summaryText-cell="{ row }">
           <div
-            class="line-clamp-2 text-xs font-mono text-gray-800 dark:text-gray-200"
+            class="line-clamp-2 text-xs font-mono text-gray-800 dark:text-gray-200 whitespace-normal break-all"
             :title="row.original.summaryText">
             {{ row.original.summaryText }}
           </div>

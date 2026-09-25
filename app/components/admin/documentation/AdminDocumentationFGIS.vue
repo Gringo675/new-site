@@ -1,6 +1,6 @@
 <script setup>
 //
-import { h } from 'vue'
+import { h, ref, watch } from 'vue'
 import { UButton } from '#components'
 
 const table = useTemplateRef('table')
@@ -17,6 +17,29 @@ const filterState = reactive({
   notation: '',
   manufacturers: '',
 })
+
+const onNumberKeydown = event => {
+  // Allow shortcuts and navigation/system keys (Backspace, Tab, Enter, Arrows, etc.)
+  if (event.ctrlKey || event.metaKey || event.altKey || event.key.length > 1) {
+    return
+  }
+  // Allow only digits and hyphen
+  if (!/^[\d-]$/.test(event.key)) {
+    event.preventDefault()
+  }
+}
+
+watch(
+  () => filterState.number,
+  val => {
+    if (!val) return
+    const sanitized = val.replace(/[^\d-]/g, '')
+    if (sanitized !== val) {
+      filterState.number = sanitized
+    }
+  },
+  { flush: 'sync' },
+)
 
 const columns = [
   {
@@ -109,6 +132,7 @@ const columns = [
 ]
 
 const fgisDocs = shallowReactive([])
+const numFound = ref(0)
 
 const searchFgis = async () => {
   const fgisUrl = 'https://fgis.gost.ru/fundmetrology/cm/xcdb/mit24/get'
@@ -136,7 +160,7 @@ const searchFgis = async () => {
     return
   }
   const queryString = `q=${encodeURIComponent(qValue)}`
-  const targetUrl = `${fgisUrl}?${queryString}&rows=1000`
+  const targetUrl = `${fgisUrl}?${queryString}&rows=100`
   // console.log(`targetUrl: ${JSON.stringify(targetUrl, null, 2)}`)
 
   let responseData
@@ -162,6 +186,8 @@ const searchFgis = async () => {
   }
 
   fgisDocs.length = 0 // Clear previous results
+  numFound.value = responseData.response?.numFound ?? 0
+
   for (const doc of responseData.response.docs) {
     try {
       const newDoc = parseFgisDoc(doc)
@@ -177,10 +203,10 @@ const searchFgis = async () => {
       })
     }
   }
-  if (fgisDocs.length === 1000) {
+  if (numFound.value > 100) {
     showNotice({
-      title: 'Найдено более 1000 документов!',
-      description: 'Пожалуйста, уточните параметры поиска.',
+      title: `Найдено документов: ${numFound.value}`,
+      description: 'Показаны первые 100 записей. Пожалуйста, уточните параметры поиска.',
     })
   }
 }
@@ -577,7 +603,9 @@ defineExpose({
           class="w-full">
           <UInput
             v-model="filterState.number"
-            type="search" />
+            type="search"
+            inputmode="numeric"
+            @keydown="onNumberKeydown" />
         </UFormField>
         <UFormField
           label="Наименование"
@@ -610,8 +638,13 @@ defineExpose({
       </UForm>
       <div
         v-if="fgisDocs.length"
-        class="flex items-end justify-end gap-4">
-        Найдено записей: {{ fgisDocs.length }}
+        class="flex items-end justify-end gap-4 text-sm text-gray-600">
+        <span v-if="numFound > fgisDocs.length">
+          Показано: {{ fgisDocs.length }} из {{ numFound }}
+        </span>
+        <span v-else>
+          Найдено записей: {{ numFound }}
+        </span>
       </div>
     </div>
     <div class="min-h-0 w-full grow">
