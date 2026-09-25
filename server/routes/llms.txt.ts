@@ -1,7 +1,7 @@
 // llms.txt — navigation index for AI crawlers (GPTBot, PerplexityBot, etc.)
 // Serves a curated overview of the site's canonical content surface.
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async event => {
   // Fetch the full category tree from the existing API
   let flatCats: { name: string; alias: string; level: number }[] = []
   try {
@@ -30,10 +30,11 @@ export default defineEventHandler(async (event) => {
     '',
     '## Каталог',
     '/catalog — Каталог инструментов',
-    ...flatCats.map((c) => `- /catalog/${c.alias} — ${c.name}`),
+    ...flatCats.map(c => `- /catalog/${c.alias} — ${c.name}`),
     '',
     '## Материалы и статьи',
     '/materials — Полезные статьи и обзоры',
+    '/materials/fgis — Онлайн-поиск по ФГИС РСТ (Госреестр СИ): описания типов (ОТ), методики поверки (МП), подбор приборов в каталоге',
     '/materials/standards — Нормативная документация (ГОСТы, ТУ)',
     '/materials/grsi — ФГИС ГРСИ: описания типов и методики поверки',
     '/materials/kak-vybrat-shtangentsirkul — Как выбрать штангенциркуль?',

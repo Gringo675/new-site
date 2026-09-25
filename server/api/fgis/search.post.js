@@ -2,7 +2,13 @@ export default defineEventHandler(async event => {
   assertMethod(event, 'POST')
   const body = (await readBody(event)) || {}
 
-  const fgisUrl = 'https://fgis.gost.ru/fundmetrology/cm/xcdb/mit24/get'
+  // logging
+  $fetch('/api/log/setText', {
+    method: 'POST',
+    body: {
+      text: 'FGIS search request: ' + JSON.stringify(body),
+    },
+  })
 
   // Escape special characters for Lucene query syntax
   const escapeQuery = str => str.replace(/([+\-!(){}[\]^"~*?:\\/]|&&|\|\|)/g, '\\$1')
@@ -26,26 +32,48 @@ export default defineEventHandler(async event => {
   }
 
   const rows = Math.min(Math.max(Number(body.rows) || 100, 1), 100)
-  const targetUrl = `${fgisUrl}?q=${encodeURIComponent(qValue)}&rows=${rows}`
+  const pathAndQuery = `/fundmetrology/cm/xcdb/mit24/get?q=${encodeURIComponent(qValue)}&rows=${rows}`
 
   let responseData
   try {
-    responseData = await $fetch(targetUrl, {
-      method: 'GET',
-      timeout: 15000,
-    })
+    const res = await fgisRequest(pathAndQuery, { timeout: 15000 })
+    responseData = res.json()
   } catch (error) {
     console.error('Error querying FGIS Solr:', error.message)
+    $fetch('/api/log/setText', {
+      method: 'POST',
+      body: {
+        text: `[FGIS SEARCH 502] Query: "${qValue}" | Details: ${error.message} | Code: ${error.code || 'N/A'}`,
+      },
+    }).catch(() => {})
+
     throw createError({
       statusCode: 502,
-      statusMessage: 'Сервер ФГИС АРШИН временно недоступен. Пожалуйста, повторите попытку позже.',
+      statusMessage: 'Сервер ФГИС РСТ (Росстандарт) временно недоступен или отклонил запрос.',
+      message: 'Сервер ФГИС РСТ (Росстандарт) временно недоступен или отклонил запрос.',
+      data: {
+        debug: error.message,
+        attempts: error.attempts || [],
+      },
     })
   }
 
   if (!responseData || !responseData.response || responseData.responseHeader?.status !== 0) {
+    const headerStatus = responseData?.responseHeader?.status
+    $fetch('/api/log/setText', {
+      method: 'POST',
+      body: {
+        text: `[FGIS SEARCH INVALID] Query: "${qValue}" | HeaderStatus: ${headerStatus} | Raw: ${JSON.stringify(responseData || {}).slice(0, 300)}`,
+      },
+    }).catch(() => {})
+
     throw createError({
       statusCode: 502,
-      statusMessage: 'Некорректный ответ от сервера ФГИС АРШИН.',
+      statusMessage: 'Некорректный ответ от сервера ФГИС РСТ.',
+      message: 'Некорректный ответ от сервера ФГИС РСТ.',
+      data: {
+        headerStatus,
+      },
     })
   }
 

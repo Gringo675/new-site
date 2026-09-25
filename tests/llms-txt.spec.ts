@@ -28,6 +28,7 @@ test('GET /llms.txt returns navigation index for AI crawlers', async ({ page }) 
   expect(body).toContain('/sitemap.xml')
 
   // Material articles
+  expect(body).toContain('/materials/fgis')
   expect(body).toContain('/materials/standards')
   expect(body).toContain('/materials/grsi')
   expect(body).toContain('/materials/kak-vybrat-shtangentsirkul')

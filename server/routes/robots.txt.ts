@@ -20,6 +20,7 @@ export default defineEventHandler(event => {
       'Disallow: /try',
       'Disallow: /test',
       'Disallow: /catalog/*?f=*',
+      'Disallow: /materials/fgis*?*',
     )
     // Добавляем ссылку на sitemap
     lines.push(

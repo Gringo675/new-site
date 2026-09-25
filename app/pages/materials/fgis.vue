@@ -1,13 +1,66 @@
 <script setup>
-import { ref, reactive, computed, watch, onMounted } from 'vue'
-
-useTitle('ФГИС «АРШИН» — Поиск по Госреестру СИ (ГРСИ) | chelinstrument.ru')
-useSeoMeta({
-  description: 'Онлайн-поиск по Государственному реестру средств измерений (ФГИС АРШИН Росстандарта). Скачивание официальных описаний типов СИ и методик поверки. Подбор и покупка поверенного инструмента.',
-  keywords: 'ФГИС АРШИН, ГРСИ, Госреестр СИ, описание типа СИ, методика поверки, поверка инструмента, купить поверенный инструмент',
-})
+import { ref, shallowRef, reactive, computed, watch, onMounted } from 'vue'
 
 const siteConfig = useSiteConfig()
+const canonicalUrl = `${siteConfig.url}/materials/fgis`
+
+useTitle('Поиск по ФГИС РСТ (Госреестр СИ) онлайн — база типов СИ, методики поверки | ТД «Челябинский Инструмент»')
+useSeoMeta({
+  description: 'Бесплатный онлайн-поиск по Государственному реестру средств измерений (ФГИС РСТ Росстандарта). Скачивание официальных описаний типов СИ и методик поверки в PDF. Подбор сертифицированного инструмента из каталога с первичной поверкой.',
+  keywords: 'ФГИС РСТ, ФГИС ГРСИ, Госреестр СИ, Государственный реестр средств измерений, описание типа СИ, методика поверки, поверка инструмента, купить поверенный инструмент',
+  ogTitle: 'Поиск по ФГИС РСТ (Госреестр СИ) — база типов СИ и методики поверки',
+  ogDescription: 'Онлайн-поиск по Госреестру СИ РФ: скачивание описаний типов, методик поверки, проверка сроков действия и подбор поверенного инструмента.',
+  ogUrl: canonicalUrl,
+  ogType: 'website',
+  ogImage: `${siteConfig.url}/img/logo.svg`,
+})
+
+useHead({
+  link: [
+    {
+      rel: 'canonical',
+      href: canonicalUrl,
+    },
+  ],
+})
+
+const faqItems = [
+  {
+    value: 'faq-1',
+    label: 'Что такое ФГИС РСТ и Государственный реестр средств измерений (ГРСИ)?',
+    icon: 'i-lucide-database',
+    description: 'Государственный реестр средств измерений (ГРСИ) — это официальный раздел Федерального информационного фонда по обеспечению единства измерений, курируемый Федеральным агентством по техническому регулированию и метрологии (Росстандарт) в соответствии с Федеральным законом № 102-ФЗ. В реестр включаются только те типы средств измерений, которые успешно прошли государственные метрологические испытания и допущены к применению на территории Российской Федерации.',
+    content: 'Государственный реестр средств измерений (ГРСИ) — это официальный раздел Федерального информационного фонда по обеспечению единства измерений, курируемый Федеральным агентством по техническому регулированию и метрологии (Росстандарт) в соответствии с Федеральным законом № 102-ФЗ. В реестр включаются только те типы средств измерений, которые успешно прошли государственные метрологические испытания и допущены к применению на территории Российской Федерации.',
+  },
+  {
+    value: 'faq-2',
+    label: 'Как найти методику поверки или описание типа СИ?',
+    icon: 'i-lucide-help-circle',
+    description: 'Введите в форму поиска номер в Госреестре СИ (например, 72189-18), наименование прибора или его тип. В результатах поиска выберите запись — в блоке официальных документов будут доступны прямые ссылки для скачивания Описания типа (ОТ) и Методики поверки (МП) в формате PDF.',
+    content: 'Введите в форму поиска номер в Госреестре СИ (например, 72189-18), наименование прибора или его тип. В результатах поиска выберите запись — в блоке официальных документов будут доступны прямые ссылки для скачивания Описания типа (ОТ) и Методики поверки (МП) в формате PDF.',
+  },
+  {
+    value: 'faq-3',
+    label: 'Что такое Описание типа (ОТ) и Методика поверки (МП)?',
+    icon: 'i-lucide-file-text',
+    description: 'Описание типа (ОТ) — это официальный нормативный документ Росстандарта, содержащий обязательные метрологические и технические характеристики прибора: диапазон измерений, пределы допускаемых погрешностей, условия эксплуатации, габариты и комплектность. Методика поверки (МП / МИ) — инструкция, определяющая перечень операций, оборудование и условия для проведения первичной и периодической поверки данного типа средств измерений.',
+    content: 'Описание типа (ОТ) — это официальный нормативный документ Росстандарта, содержащий обязательные метрологические и технические характеристики прибора: диапазон измерений, пределы допускаемых погрешностей, условия эксплуатации, габариты и комплектность. Методика поверки (МП / МИ) — инструкция, определяющая перечень операций, оборудование и условия для проведения первичной и периодической поверки данного типа средств измерений.',
+  },
+  {
+    value: 'faq-4',
+    label: 'Как проверить, внесён ли инструмент в Госреестр СИ?',
+    icon: 'i-lucide-search',
+    description: 'Воспользуйтесь формой поиска в начале страницы: укажите номер ГРСИ (например, 72189-18, 9289-83), обозначение типа (ШЦ-I, МК, ИЧ), наименование или завод-изготовитель. В результатах поиска будет отображена карточка записи с актуальным сроком действия свидетельства и прямыми ссылками на скачивание Описания типа и Методики поверки в формате PDF.',
+    content: 'Воспользуйтесь формой поиска в начале страницы: укажите номер ГРСИ (например, 72189-18, 9289-83), обозначение типа (ШЦ-I, МК, ИЧ), наименование или завод-изготовитель. В результатах поиска будет отображена карточка записи с актуальным сроком действия свидетельства и прямыми ссылками на скачивание Описания типа и Методики поверки в формате PDF.',
+  },
+  {
+    value: 'faq-5',
+    label: 'Можно ли заказать прибор сразу с первичной поверкой?',
+    icon: 'i-lucide-shopping-cart',
+    description: 'Да. ООО ТД «Челябинский Инструмент» организует первичную и периодическую поверку поставляемого измерительного инструмента в аккредитованных метрологических лабораториях (ФБУ «Челябинский ЦСМ», ЦИЛ ЧИЗ и др.) с оформлением свидетельства о поверке государственного образца. Доставка осуществляется по всей России.',
+    content: 'Да. ООО ТД «Челябинский Инструмент» организует первичную и периодическую поверку поставляемого измерительного инструмента в аккредитованных метрологических лабораториях (ФБУ «Челябинский ЦСМ», ЦИЛ ЧИЗ и др.) с оформлением свидетельства о поверке государственного образца. Доставка осуществляется по всей России.',
+  },
+]
 
 useSchemaOrg([
   defineBreadcrumb({
@@ -27,9 +80,30 @@ useSchemaOrg([
       {
         '@type': 'ListItem',
         position: 3,
-        name: 'ФГИС «АРШИН» Госреестр СИ',
+        name: 'ФГИС РСТ (Госреестр СИ)',
       },
     ],
+  }),
+  defineWebPage({
+    '@type': ['WebPage', 'FAQPage'],
+    name: 'Поиск по ФГИС РСТ (Госреестр СИ) онлайн',
+    description: 'База утвержденных типов средств измерений, скачивание описаний типов (ОТ) и методик поверки (МП).',
+  }),
+  ...faqItems.map(faq =>
+    defineQuestion({
+      name: faq.label,
+      acceptedAnswer: faq.content,
+    }),
+  ),
+  defineSoftwareApp({
+    name: 'Онлайн-поиск по Госреестру СИ (ФГИС РСТ)',
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'All',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'RUB',
+    },
   }),
 ])
 
@@ -45,13 +119,12 @@ const breadcrumbItems = [
     to: '/materials',
   },
   {
-    label: 'ФГИС «АРШИН» Госреестр СИ',
+    label: 'ФГИС РСТ (Госреестр СИ)',
     icon: 'i-lucide-database',
   },
 ]
 
 const route = useRoute()
-const router = useRouter()
 
 // Filter State
 const filterState = reactive({
@@ -100,35 +173,6 @@ const isBottomSheetOpen = ref(false)
 const selectedProducts = computed(() => {
   if (!selectedDoc.value) return []
   return productsCache.get(selectedDoc.value.number) || []
-})
-
-// Internal products pagination (defaults to 10 items per page)
-const productPage = ref(1)
-const productPageSize = ref(10)
-const productPageSizeOptions = [
-  { label: '10 шт.', value: 10 },
-  { label: '20 шт.', value: 20 },
-  { label: '50 шт.', value: 50 },
-]
-
-const totalSelectedProducts = computed(() => selectedProducts.value.length)
-
-const paginatedProducts = computed(() => {
-  const size = Number(productPageSize.value) || 10
-  const start = (productPage.value - 1) * size
-  return selectedProducts.value.slice(start, start + size)
-})
-
-const productPageRangeText = computed(() => {
-  if (totalSelectedProducts.value === 0) return '0 из 0'
-  const size = Number(productPageSize.value) || 10
-  const start = (productPage.value - 1) * size + 1
-  const end = Math.min(productPage.value * size, totalSelectedProducts.value)
-  return `${start}–${end} из ${totalSelectedProducts.value}`
-})
-
-watch([selectedDoc, productPageSize], () => {
-  productPage.value = 1
 })
 
 // Filtered docs based on "In Catalog only" toggle
@@ -233,13 +277,41 @@ const resetFilters = () => {
   sortField.value = 'relevance'
   sortDirection.value = 'asc'
   page.value = 1
-  router.replace({ query: {} })
+  allDocs.value = []
+  numFound.value = 0
+  hasSearched.value = false
+  selectedDoc.value = null
+  if (import.meta.client) {
+    const url = new URL(window.location.href)
+    url.search = ''
+    window.history.replaceState({}, '', url)
+  }
+}
+
+let numbersMapPromise = null
+const loadNumbersMap = () => {
+  if (!numbersMapPromise) {
+    numbersMapPromise = $fetch('/api/fgis/numbers')
+      .then(res => {
+        numbersMap.value = res || {}
+      })
+      .catch(e => {
+        console.warn('Could not load local registry numbers map:', e)
+        numbersMap.value = {}
+      })
+  }
+  return numbersMapPromise
 }
 
 // Fetch products for a specific registry number on-demand
 const loadProductsForDoc = async doc => {
   if (!doc?.number) return
   if (productsCache.has(doc.number)) return
+
+  // Wait for numbers map preload to finish to avoid false 0-count cache
+  if (numbersMapPromise) {
+    await numbersMapPromise
+  }
 
   // Check if our store has products for this number
   const count = numbersMap.value[doc.number] || 0
@@ -286,13 +358,16 @@ const search = async () => {
   loadingSearch.value = true
   page.value = 1
 
-  // Synchronize URL query params
-  const query = {}
-  if (filterState.number.trim()) query.number = filterState.number.trim()
-  if (filterState.title.trim()) query.title = filterState.title.trim()
-  if (filterState.notation.trim()) query.notation = filterState.notation.trim()
-  if (filterState.manufacturers.trim()) query.manufacturers = filterState.manufacturers.trim()
-  router.replace({ query })
+  // Synchronize URL query params via history.replaceState (same pattern as CatalogFilter/CatalogWrapper)
+  if (import.meta.client) {
+    const url = new URL(window.location.href)
+    url.search = ''
+    if (filterState.number.trim()) url.searchParams.set('number', filterState.number.trim())
+    if (filterState.title.trim()) url.searchParams.set('title', filterState.title.trim())
+    if (filterState.notation.trim()) url.searchParams.set('notation', filterState.notation.trim())
+    if (filterState.manufacturers.trim()) url.searchParams.set('manufacturers', filterState.manufacturers.trim())
+    window.history.replaceState({}, '', url)
+  }
 
   try {
     const response = await $fetch('/api/fgis/search', {
@@ -308,12 +383,6 @@ const search = async () => {
 
     if (allDocs.value.length > 0) {
       handleSelectDoc(allDocs.value[0])
-      if (import.meta.client && window.innerWidth < 1024) {
-        setTimeout(() => {
-          const el = document.getElementById('search-results')
-          if (el) el.scrollIntoView({ behavior: 'smooth' })
-        }, 150)
-      }
     } else {
       selectedDoc.value = null
     }
@@ -326,9 +395,19 @@ const search = async () => {
     }
   } catch (error) {
     console.error('Search error:', error)
+    if (error.data?.debug) {
+      console.error('[FGIS Search Debug]:', error.data.debug, error.data.attempts)
+    }
+
+    const userMessage =
+      error.data?.statusMessage ||
+      error.data?.message ||
+      (typeof error.data === 'string' && error.data ? error.data : null) ||
+      'Сервер ФГИС РСТ (Росстандарт) временно недоступен или отклонил запрос. Пожалуйста, повторите попытку через несколько секунд.'
+
     showNotice({
       title: 'Ошибка при поиске',
-      description: error.statusMessage || error.message || 'Не удалось получить данные из ФГИС.',
+      description: userMessage,
       type: 'error',
     })
   } finally {
@@ -354,11 +433,7 @@ const openFeedback = (doc = selectedDoc.value) => {
 // Initial mount: preload numbers map and check URL queries
 onMounted(async () => {
   // Preload local registry numbers
-  try {
-    numbersMap.value = (await $fetch('/api/fgis/numbers')) || {}
-  } catch (e) {
-    console.warn('Could not load local registry numbers map:', e)
-  }
+  loadNumbersMap()
 
   // Restore filters from URL query params
   let shouldAutoSearch = false
@@ -401,17 +476,20 @@ onMounted(async () => {
     <!-- Search Form Block -->
     <section class="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-xs sm:p-5">
       <UForm
+        as="form"
         :state="filterState"
         @submit="search">
         <div class="grid grid-cols-1 items-end gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <UFormField label="Номер ГРСИ">
             <UInput
+              id="fgis-number-input"
               v-model="filterState.number"
               placeholder="например, 72189-18"
               type="search"
               inputmode="numeric"
               class="w-full"
-              @keydown="onNumberKeydown" />
+              @keydown="onNumberKeydown"
+              @keydown.enter.prevent="search" />
           </UFormField>
 
           <UFormField label="Наименование СИ">
@@ -419,7 +497,8 @@ onMounted(async () => {
               v-model="filterState.title"
               placeholder="Штангенциркули, микрометры..."
               type="search"
-              class="w-full" />
+              class="w-full"
+              @keydown.enter.prevent="search" />
           </UFormField>
 
           <UFormField label="Обозначение / Тип СИ">
@@ -427,7 +506,8 @@ onMounted(async () => {
               v-model="filterState.notation"
               placeholder="ШЦ-I, МК, ИЧ..."
               type="search"
-              class="w-full" />
+              class="w-full"
+              @keydown.enter.prevent="search" />
           </UFormField>
 
           <UFormField label="Производитель">
@@ -435,7 +515,8 @@ onMounted(async () => {
               v-model="filterState.manufacturers"
               placeholder="Завод, страна..."
               type="search"
-              class="w-full" />
+              class="w-full"
+              @keydown.enter.prevent="search" />
           </UFormField>
         </div>
 
@@ -447,7 +528,8 @@ onMounted(async () => {
               label="Найти во ФГИС"
               color="primary"
               :loading="loadingSearch"
-              class="px-5" />
+              class="px-5"
+              @click="search" />
 
             <UButton
               type="button"
@@ -488,7 +570,7 @@ onMounted(async () => {
             class="size-7" />
         </div>
         <h2 class="text-xl font-bold text-slate-900 sm:text-2xl">Быстрый поиск по базе Росстандарта</h2>
-        <p class="text-sm leading-relaxed text-slate-500">Введите номер в Госреестре, наименование средства измерения, его тип или производителя. Сервис автоматически найдёт официальные описания типов и методики поверки, а также покажет поверенный инструмент из нашего каталога.</p>
+        <p class="text-sm leading-relaxed text-slate-500">Введите номер в Госреестре, наименование средства измерения, его тип или производителя. Сервис автоматически найдёт официальные описания типов и методики поверки, а также покажет подходящий инструмент из нашего каталога.</p>
 
         <!-- Service Features Grid -->
         <div class="grid grid-cols-1 gap-3 pt-4 text-left sm:grid-cols-3">
@@ -534,7 +616,7 @@ onMounted(async () => {
             class="size-6" />
         </div>
         <h3 class="text-lg font-bold text-slate-900">По вашему запросу ничего не найдено</h3>
-        <p class="text-xs leading-relaxed text-slate-500">В реестре ФГИС «АРШИН» не обнаружено документов по заданным критериям. Попробуйте сократить запрос или проверить правильность номера ГРСИ.</p>
+        <p class="text-xs leading-relaxed text-slate-500">В Государственном реестре СИ (ФГИС РСТ) не обнаружено документов по заданным критериям. Попробуйте сократить запрос или проверить правильность номера ГРСИ.</p>
         <UButton
           variant="outline"
           color="neutral"
@@ -664,142 +746,13 @@ onMounted(async () => {
       <div class="hidden space-y-4 lg:sticky lg:top-[74px] lg:col-span-5 lg:block">
         <div
           v-if="selectedDoc"
-          class="space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
-          <!-- Card Header -->
-          <div class="border-b border-slate-100 pb-4">
-            <div class="flex items-center justify-between">
-              <span class="font-mono text-lg font-bold text-indigo-700">ГРСИ № {{ selectedDoc.number }}</span>
-              <span
-                v-if="selectedDoc.date"
-                class="text-xs text-slate-500">
-                Действует до {{ new Date(selectedDoc.date).toLocaleDateString('ru-RU') }}
-              </span>
-            </div>
-            <h3 class="mt-2 text-base leading-snug font-bold text-slate-900">
-              {{ selectedDoc.name }}
-            </h3>
-            <p
-              v-if="selectedDoc.brand"
-              class="mt-1 text-xs text-slate-500">
-              {{ selectedDoc.brand }}
-            </p>
-          </div>
-
-          <!-- Official Documents Links -->
-          <div
-            v-if="selectedDoc.file_ot?.uuid || selectedDoc.file_mp?.uuid"
-            class="space-y-2">
-            <h4 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Официальные документы ФГИС</h4>
-            <div
-              class="grid gap-2"
-              :class="selectedDoc.file_ot?.uuid && selectedDoc.file_mp?.uuid ? 'grid-cols-2' : 'grid-cols-1'">
-              <a
-                v-if="selectedDoc.file_ot?.uuid"
-                :href="`/api/fgis/file/${selectedDoc.file_ot.uuid}`"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs transition hover:border-indigo-400 hover:bg-indigo-50/50">
-                <UIcon
-                  name="i-lucide-file-text"
-                  class="size-6 shrink-0 text-red-500" />
-                <div class="min-w-0">
-                  <div class="font-semibold text-slate-800">Описание типа</div>
-                  <div class="text-[10px] text-slate-400">PDF в новой вкладке</div>
-                </div>
-              </a>
-
-              <a
-                v-if="selectedDoc.file_mp?.uuid"
-                :href="`/api/fgis/file/${selectedDoc.file_mp.uuid}`"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs transition hover:border-indigo-400 hover:bg-indigo-50/50">
-                <UIcon
-                  name="i-lucide-file-text"
-                  class="size-6 shrink-0 text-blue-500" />
-                <div class="min-w-0">
-                  <div class="font-semibold text-slate-800">Методика поверки</div>
-                  <div class="text-[10px] text-slate-400">PDF в новой вкладке</div>
-                </div>
-              </a>
-            </div>
-          </div>
-
-          <!-- Catalog Products Marketing Showcase -->
-          <div
-            id="catalog-products-section"
-            class="space-y-3 border-t border-slate-100 pt-4">
-            <div class="flex items-center justify-between">
-              <h4 class="flex items-center gap-1.5 text-xs font-bold tracking-wider text-slate-700 uppercase">
-                <UIcon
-                  name="i-lucide-shopping-cart"
-                  class="size-4 text-emerald-600" />
-                <span>Товары в каталоге по ГРСИ № {{ selectedDoc.number }}</span>
-              </h4>
-              <span
-                v-if="totalSelectedProducts"
-                class="text-xs font-semibold text-emerald-700">
-                {{ productPageRangeText }}
-              </span>
-            </div>
-
-            <!-- Loading Spinner -->
-            <div
-              v-if="loadingProducts"
-              class="py-6 text-center text-xs text-slate-400">
-              Загрузка товаров из каталога...
-            </div>
-
-            <!-- Catalog Products List -->
-            <template v-else-if="totalSelectedProducts > 0">
-              <!-- Desktop Products Mini-Pagination Bar (Top, 1 line, no label) -->
-              <div
-                v-if="totalSelectedProducts > 10"
-                class="flex items-center justify-between gap-1.5 rounded-xl border border-slate-100 bg-slate-50/70 p-1.5 text-xs">
-                <USelect
-                  v-model="productPageSize"
-                  :items="productPageSizeOptions"
-                  size="xs"
-                  class="w-20 shrink-0" />
-
-                <UPagination
-                  v-if="totalSelectedProducts > Number(productPageSize)"
-                  v-model:page="productPage"
-                  :items-per-page="Number(productPageSize)"
-                  :total="totalSelectedProducts"
-                  :sibling-count="1"
-                  size="xs" />
-              </div>
-
-              <div class="@container flex max-h-[500px] flex-col gap-y-2 overflow-y-auto py-1 pr-1">
-                <CatalogProductCard
-                  v-for="prod in paginatedProducts"
-                  :key="prod.id"
-                  :prod="prod"
-                  class="shrink-0" />
-              </div>
-            </template>
-
-            <!-- Fallback Banner when no products in catalog -->
-            <div
-              v-else
-              class="space-y-2 rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs text-amber-900">
-              <div class="flex items-center gap-1.5 font-bold">
-                <UIcon
-                  name="i-heroicons-information-circle"
-                  class="size-4 text-amber-600" />
-                <span>Точного соответствия в каталоге нет</span>
-              </div>
-              <p class="leading-relaxed text-amber-800">Оставьте заявку — оперативно уточним возможность поставки или подберём аналог.</p>
-              <UButton
-                size="xs"
-                color="warning"
-                variant="subtle"
-                label="Оставить заявку"
-                class="w-full justify-center"
-                @click="openFeedback()" />
-            </div>
-          </div>
+          class="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
+          <FgisDocDetails
+            :doc="selectedDoc"
+            :products="selectedProducts"
+            :loading="loadingProducts"
+            max-height="500px"
+            @feedback="openFeedback(selectedDoc)" />
         </div>
 
         <div
@@ -813,6 +766,72 @@ onMounted(async () => {
       </div>
     </main>
 
+    <!-- SEO & FAQ Knowledge Section (Generative Engine Optimization) -->
+    <section class="mt-12 space-y-8 border-t border-slate-200 pt-10">
+      <!-- Section Header -->
+      <div class="space-y-2">
+        <h2 class="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">Справочная информация о Государственном реестре СИ (ФГИС РСТ)</h2>
+        <p class="text-sm leading-relaxed text-slate-600">Федеральный информационный фонд по обеспечению единства измерений Федерального агентства по техническому регулированию и метрологии (Росстандарт).</p>
+      </div>
+
+      <!-- Feature Grid: 3 cards -->
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-xs">
+          <div class="mb-3 inline-flex size-10 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
+            <UIcon
+              name="i-lucide-award"
+              class="size-5" />
+          </div>
+          <h3 class="text-sm font-bold text-slate-900">Утвержденные типы СИ</h3>
+          <p class="mt-1.5 text-xs leading-relaxed text-slate-500">Внесение в ГРСИ подтверждает успешное прохождение государственных испытаний и допуск средства измерений к применению в сфере госрегулирования (ФЗ № 102).</p>
+        </div>
+
+        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-xs">
+          <div class="mb-3 inline-flex size-10 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+            <UIcon
+              name="i-lucide-file-text"
+              class="size-5" />
+          </div>
+          <h3 class="text-sm font-bold text-slate-900">Официальные описания и методики</h3>
+          <p class="mt-1.5 text-xs leading-relaxed text-slate-500">Прямой доступ к официальным нормативным документам: Описаниям типа (ОТ) и Методикам поверки (МП / МИ) в формате PDF без ограничений.</p>
+        </div>
+
+        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-xs">
+          <div class="mb-3 inline-flex size-10 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+            <UIcon
+              name="i-lucide-shopping-cart"
+              class="size-5" />
+          </div>
+          <h3 class="text-sm font-bold text-slate-900">Поставка инструмента с поверкой</h3>
+          <p class="mt-1.5 text-xs leading-relaxed text-slate-500">ТД «Челябинский Инструмент» организует первичную поверку приборов в аккредитованных лабораториях с оформлением свидетельства о поверке и доставкой по РФ.</p>
+        </div>
+      </div>
+
+      <!-- FAQ Section with UAccordion -->
+      <div class="space-y-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
+        <div class="space-y-1">
+          <h3 class="text-lg font-bold text-slate-900">Часто задаваемые вопросы (FAQ)</h3>
+          <p class="text-xs text-slate-500">Ответы на популярные вопросы о Государственном реестре СИ, поверке и заказе сертифицированного инструмента</p>
+        </div>
+
+        <UAccordion
+          type="multiple"
+          :items="faqItems"
+          class="divide-y divide-slate-100">
+          <template #body="{ item }">
+            <div class="px-2 py-3 text-xs leading-relaxed text-slate-600">
+              {{ item.content }}
+            </div>
+          </template>
+          <template #content="{ item }">
+            <div class="px-2 py-3 text-xs leading-relaxed text-slate-600">
+              {{ item.content }}
+            </div>
+          </template>
+        </UAccordion>
+      </div>
+    </section>
+
     <!-- Mobile Bottom Sheet (Drawer) Modal (< lg) -->
     <div
       v-if="isBottomSheetOpen && selectedDoc"
@@ -822,140 +841,13 @@ onMounted(async () => {
         <!-- Drag Handle Indicator -->
         <div class="mx-auto -mt-1 mb-2 h-1.5 w-12 rounded-full bg-slate-300"></div>
 
-        <!-- Header -->
-        <div class="flex items-start justify-between gap-3 border-b border-slate-100 pb-3">
-          <div class="min-w-0">
-            <div class="flex items-center gap-2">
-              <span class="font-mono text-base font-bold text-indigo-700">ГРСИ № {{ selectedDoc.number }}</span>
-              <span
-                v-if="selectedDoc.type_si"
-                class="rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
-                {{ selectedDoc.type_si }}
-              </span>
-            </div>
-            <h3 class="mt-1 text-sm leading-snug font-bold text-slate-900">
-              {{ selectedDoc.name }}
-            </h3>
-            <p
-              v-if="selectedDoc.brand"
-              class="mt-0.5 text-xs text-slate-500">
-              {{ selectedDoc.brand }}
-            </p>
-          </div>
-          <UButton
-            icon="i-heroicons-x-mark"
-            color="neutral"
-            variant="ghost"
-            size="sm"
-            @click="isBottomSheetOpen = false" />
-        </div>
-
-        <!-- PDF Links -->
-        <div
-          v-if="selectedDoc.file_ot?.uuid || selectedDoc.file_mp?.uuid"
-          class="space-y-1.5">
-          <div class="text-xs font-bold tracking-wider text-slate-400 uppercase">Официальные документы</div>
-          <div
-            class="grid gap-2"
-            :class="selectedDoc.file_ot?.uuid && selectedDoc.file_mp?.uuid ? 'grid-cols-2' : 'grid-cols-1'">
-            <a
-              v-if="selectedDoc.file_ot?.uuid"
-              :href="`/api/fgis/file/${selectedDoc.file_ot.uuid}`"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-xs">
-              <UIcon
-                name="i-lucide-file-text"
-                class="size-5 shrink-0 text-red-500" />
-              <div class="min-w-0">
-                <div class="font-semibold text-slate-800">Описание типа</div>
-                <div class="text-[10px] text-slate-400">PDF</div>
-              </div>
-            </a>
-
-            <a
-              v-if="selectedDoc.file_mp?.uuid"
-              :href="`/api/fgis/file/${selectedDoc.file_mp.uuid}`"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-xs">
-              <UIcon
-                name="i-lucide-file-text"
-                class="size-5 shrink-0 text-blue-500" />
-              <div class="min-w-0">
-                <div class="font-semibold text-slate-800">Методика поверки</div>
-                <div class="text-[10px] text-slate-400">PDF</div>
-              </div>
-            </a>
-          </div>
-        </div>
-
-        <!-- Products -->
-        <div
-          id="mobile-catalog-products-section"
-          class="space-y-2 border-t border-slate-100 pt-3">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-1.5 text-xs font-bold tracking-wider text-slate-700 uppercase">
-              <UIcon
-                name="i-lucide-shopping-cart"
-                class="size-4 text-emerald-600" />
-              <span>Товары в каталоге</span>
-            </div>
-            <span
-              v-if="totalSelectedProducts"
-              class="text-xs font-bold text-emerald-700">
-              {{ productPageRangeText }}
-            </span>
-          </div>
-
-          <div
-            v-if="loadingProducts"
-            class="py-4 text-center text-xs text-slate-400">
-            Загрузка товаров...
-          </div>
-
-          <template v-else-if="totalSelectedProducts > 0">
-            <!-- Mobile Products Mini-Pagination Bar (Top, 1 line, no label) -->
-            <div
-              v-if="totalSelectedProducts > 10"
-              class="flex items-center justify-between gap-1.5 rounded-xl border border-slate-100 bg-slate-50/70 p-1.5 text-xs">
-              <USelect
-                v-model="productPageSize"
-                :items="productPageSizeOptions"
-                size="xs"
-                class="w-20 shrink-0" />
-
-              <UPagination
-                v-if="totalSelectedProducts > Number(productPageSize)"
-                v-model:page="productPage"
-                :items-per-page="Number(productPageSize)"
-                :total="totalSelectedProducts"
-                :sibling-count="1"
-                size="xs" />
-            </div>
-
-            <div class="@container flex flex-col gap-y-2 py-1">
-              <CatalogProductCard
-                v-for="prod in paginatedProducts"
-                :key="prod.id"
-                :prod="prod" />
-            </div>
-          </template>
-
-          <div
-            v-else
-            class="space-y-1 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
-            <div class="font-bold">Товаров в каталоге пока нет</div>
-            <p class="leading-relaxed text-amber-800">Оставьте заявку — оперативно уточним возможность поставки или подберём аналог.</p>
-            <UButton
-              size="xs"
-              color="warning"
-              variant="subtle"
-              label="Оставить заявку"
-              class="mt-1 w-full justify-center"
-              @click="openFeedback()" />
-          </div>
-        </div>
+        <FgisDocDetails
+          :doc="selectedDoc"
+          :products="selectedProducts"
+          :loading="loadingProducts"
+          is-mobile
+          @close="isBottomSheetOpen = false"
+          @feedback="openFeedback(selectedDoc)" />
 
         <UButton
           color="neutral"

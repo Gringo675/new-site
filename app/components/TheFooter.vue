@@ -32,6 +32,11 @@ const company = useCompany()
           to="/poverka">
           Поверка инструмента
         </NuxtLink>
+        <NuxtLink
+          no-prefetch
+          to="/materials/fgis">
+          Госреестр СИ (ФГИС РСТ)
+        </NuxtLink>
       </div>
 
       <div class="flex flex-col gap-1.5 max-lg:items-center">

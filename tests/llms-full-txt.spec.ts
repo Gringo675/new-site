@@ -37,6 +37,8 @@ test('GET /llms-full.txt returns full plain-text knowledge corpus for AI engines
   expect(body).toContain('Что такое калибровка')
 
   // 5. Core company and service pages presence
+  expect(body).toContain('/materials/fgis')
+  expect(body).toContain('Поиск по Госреестру СИ (ФГИС РСТ)')
   expect(body).toContain('/about')
   expect(body).toContain('/contacts')
   expect(body).toContain('/poverka')

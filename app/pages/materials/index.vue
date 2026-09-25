@@ -2,8 +2,7 @@
 //
 useTitle('Материалы')
 useSeoMeta({
-  description:
-    'Полезные статьи и материалы по выбору, эксплуатации, поверке и калибровке измерительного инструмента. Нормативная документация - ГОСТы, ТУ.',
+  description: 'Полезные статьи и материалы по выбору, эксплуатации, поверке и калибровке измерительного инструмента. Нормативная документация - ГОСТы, ТУ.',
 })
 </script>
 
@@ -15,6 +14,14 @@ useSeoMeta({
 
     <section class="space-y-10">
       <div class="flex flex-wrap justify-around gap-4">
+        <UButton
+          to="/materials/fgis"
+          color="primary"
+          icon="i-lucide-search"
+          class="rounded-full px-6 font-semibold"
+          size="xl">
+          Поиск по ФГИС РСТ (Госреестр СИ)
+        </UButton>
         <UButton
           to="/materials/standards"
           variant="outline"
