@@ -7,6 +7,49 @@ useSeoMeta({
   keywords: 'ФГИС АРШИН, ГРСИ, Госреестр СИ, описание типа СИ, методика поверки, поверка инструмента, купить поверенный инструмент',
 })
 
+const siteConfig = useSiteConfig()
+
+useSchemaOrg([
+  defineBreadcrumb({
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Главная',
+        item: siteConfig.url,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Материалы',
+        item: `${siteConfig.url}/materials`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: 'ФГИС «АРШИН» Госреестр СИ',
+      },
+    ],
+  }),
+])
+
+const breadcrumbItems = [
+  {
+    label: 'Главная',
+    icon: 'i-lucide-home',
+    to: '/',
+  },
+  {
+    label: 'Материалы',
+    icon: 'i-lucide-book-open',
+    to: '/materials',
+  },
+  {
+    label: 'ФГИС «АРШИН» Госреестр СИ',
+    icon: 'i-lucide-database',
+  },
+]
+
 const route = useRoute()
 const router = useRouter()
 
@@ -57,6 +100,35 @@ const isBottomSheetOpen = ref(false)
 const selectedProducts = computed(() => {
   if (!selectedDoc.value) return []
   return productsCache.get(selectedDoc.value.number) || []
+})
+
+// Internal products pagination (defaults to 10 items per page)
+const productPage = ref(1)
+const productPageSize = ref(10)
+const productPageSizeOptions = [
+  { label: '10 шт.', value: 10 },
+  { label: '20 шт.', value: 20 },
+  { label: '50 шт.', value: 50 },
+]
+
+const totalSelectedProducts = computed(() => selectedProducts.value.length)
+
+const paginatedProducts = computed(() => {
+  const size = Number(productPageSize.value) || 10
+  const start = (productPage.value - 1) * size
+  return selectedProducts.value.slice(start, start + size)
+})
+
+const productPageRangeText = computed(() => {
+  if (totalSelectedProducts.value === 0) return '0 из 0'
+  const size = Number(productPageSize.value) || 10
+  const start = (productPage.value - 1) * size + 1
+  const end = Math.min(productPage.value * size, totalSelectedProducts.value)
+  return `${start}–${end} из ${totalSelectedProducts.value}`
+})
+
+watch([selectedDoc, productPageSize], () => {
+  productPage.value = 1
 })
 
 // Filtered docs based on "In Catalog only" toggle
@@ -264,16 +336,6 @@ const search = async () => {
   }
 }
 
-// Add product to cart handler
-const handleAddToCart = prod => {
-  addProductToCart(prod)
-  showNotice({
-    title: 'Товар добавлен в корзину',
-    description: `${prod.name} (${formatPrice(prod.price)})`,
-    type: 'success',
-  })
-}
-
 // Open feedback modal pre-filled with registry details
 const openFeedback = (doc = selectedDoc.value) => {
   if (isBottomSheetOpen.value) {
@@ -327,21 +389,7 @@ onMounted(async () => {
   <article class="mx-auto max-w-7xl px-4 py-6 sm:px-6">
     <!-- Breadcrumbs / Top header -->
     <header class="mb-6 space-y-2 border-b border-slate-200 pb-5">
-      <div class="flex items-center gap-2 text-xs text-slate-500">
-        <NuxtLink
-          to="/"
-          class="hover:text-indigo-600">
-          Главная
-        </NuxtLink>
-        <span>/</span>
-        <NuxtLink
-          to="/materials"
-          class="hover:text-indigo-600">
-          Материалы
-        </NuxtLink>
-        <span>/</span>
-        <span class="font-medium text-slate-800">ФГИС «АРШИН» Госреестр СИ</span>
-      </div>
+      <UBreadcrumb :items="breadcrumbItems" />
       <div class="flex flex-col justify-between gap-4 md:flex-row md:items-center">
         <div>
           <h1 class="font-accent text-2xl tracking-tight text-slate-900 sm:text-3xl">Поиск по ФГИС РСТ (Госреестр СИ)</h1>
@@ -613,7 +661,7 @@ onMounted(async () => {
       </div>
 
       <!-- Right Column: Desktop Sticky Detail Card -->
-      <div class="hidden space-y-4 lg:sticky lg:top-6 lg:col-span-5 lg:block">
+      <div class="hidden space-y-4 lg:sticky lg:top-[74px] lg:col-span-5 lg:block">
         <div
           v-if="selectedDoc"
           class="space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
@@ -638,9 +686,13 @@ onMounted(async () => {
           </div>
 
           <!-- Official Documents Links -->
-          <div class="space-y-2">
+          <div
+            v-if="selectedDoc.file_ot?.uuid || selectedDoc.file_mp?.uuid"
+            class="space-y-2">
             <h4 class="text-xs font-bold tracking-wider text-slate-400 uppercase">Официальные документы ФГИС</h4>
-            <div class="grid grid-cols-2 gap-2">
+            <div
+              class="grid gap-2"
+              :class="selectedDoc.file_ot?.uuid && selectedDoc.file_mp?.uuid ? 'grid-cols-2' : 'grid-cols-1'">
               <a
                 v-if="selectedDoc.file_ot?.uuid"
                 :href="`/api/fgis/file/${selectedDoc.file_ot.uuid}`"
@@ -655,14 +707,6 @@ onMounted(async () => {
                   <div class="text-[10px] text-slate-400">PDF в новой вкладке</div>
                 </div>
               </a>
-              <div
-                v-else
-                class="flex items-center gap-2 rounded-xl border border-slate-100 bg-slate-50/50 p-3 text-xs text-slate-400">
-                <UIcon
-                  name="i-lucide-file-text"
-                  class="size-6 shrink-0 text-slate-300" />
-                <div class="text-[11px]">Описание типа не прикреплено</div>
-              </div>
 
               <a
                 v-if="selectedDoc.file_mp?.uuid"
@@ -675,22 +719,16 @@ onMounted(async () => {
                   class="size-6 shrink-0 text-blue-500" />
                 <div class="min-w-0">
                   <div class="font-semibold text-slate-800">Методика поверки</div>
-                  <div class="text-[10px] text-slate-400">PDF / ГОСТ</div>
+                  <div class="text-[10px] text-slate-400">PDF в новой вкладке</div>
                 </div>
               </a>
-              <div
-                v-else
-                class="flex items-center gap-2 rounded-xl border border-slate-100 bg-slate-50/50 p-3 text-xs text-slate-400">
-                <UIcon
-                  name="i-lucide-file-text"
-                  class="size-6 shrink-0 text-slate-300" />
-                <div class="text-[11px]">Методика не прикреплена</div>
-              </div>
             </div>
           </div>
 
           <!-- Catalog Products Marketing Showcase -->
-          <div class="space-y-3 border-t border-slate-100 pt-4">
+          <div
+            id="catalog-products-section"
+            class="space-y-3 border-t border-slate-100 pt-4">
             <div class="flex items-center justify-between">
               <h4 class="flex items-center gap-1.5 text-xs font-bold tracking-wider text-slate-700 uppercase">
                 <UIcon
@@ -699,9 +737,9 @@ onMounted(async () => {
                 <span>Товары в каталоге по ГРСИ № {{ selectedDoc.number }}</span>
               </h4>
               <span
-                v-if="selectedProducts.length"
+                v-if="totalSelectedProducts"
                 class="text-xs font-semibold text-emerald-700">
-                {{ selectedProducts.length }} поз.
+                {{ productPageRangeText }}
               </span>
             </div>
 
@@ -713,52 +751,34 @@ onMounted(async () => {
             </div>
 
             <!-- Catalog Products List -->
-            <div
-              v-else-if="selectedProducts.length > 0"
-              class="space-y-2.5">
+            <template v-else-if="totalSelectedProducts > 0">
+              <!-- Desktop Products Mini-Pagination Bar (Top, 1 line, no label) -->
               <div
-                v-for="prod in selectedProducts"
-                :key="prod.id"
-                class="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3 transition hover:border-indigo-300 hover:bg-white hover:shadow-xs">
-                <div class="flex min-w-0 items-center gap-3">
-                  <img
-                    v-if="prod.image"
-                    :src="`/static/img/products/w_64/${prod.image}.jpg`"
-                    :alt="prod.name"
-                    class="size-12 shrink-0 rounded-lg border border-slate-200 bg-white object-contain p-1" />
-                  <div
-                    v-else
-                    class="flex size-12 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-300">
-                    <UIcon
-                      name="i-lucide-shopping-cart"
-                      class="size-5" />
-                  </div>
-                  <div class="min-w-0">
-                    <NuxtLink
-                      :to="`/product/${prod.alias}`"
-                      class="block truncate text-xs font-semibold text-slate-900 hover:text-indigo-600">
-                      {{ prod.name }}
-                    </NuxtLink>
-                    <div class="mt-0.5 flex items-center gap-2">
-                      <span class="text-xs font-bold text-slate-900">{{ formatPrice(prod.price) }}</span>
-                      <span
-                        v-if="prod.priceRegular"
-                        class="text-[10px] text-slate-400 line-through">
-                        {{ formatPrice(prod.priceRegular) }}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <UButton
+                v-if="totalSelectedProducts > 10"
+                class="flex items-center justify-between gap-1.5 rounded-xl border border-slate-100 bg-slate-50/70 p-1.5 text-xs">
+                <USelect
+                  v-model="productPageSize"
+                  :items="productPageSizeOptions"
                   size="xs"
-                  color="primary"
-                  icon="i-lucide-shopping-cart"
-                  label="Купить"
-                  class="shrink-0"
-                  @click="handleAddToCart(prod)" />
+                  class="w-20 shrink-0" />
+
+                <UPagination
+                  v-if="totalSelectedProducts > Number(productPageSize)"
+                  v-model:page="productPage"
+                  :items-per-page="Number(productPageSize)"
+                  :total="totalSelectedProducts"
+                  :sibling-count="1"
+                  size="xs" />
               </div>
-            </div>
+
+              <div class="@container flex max-h-[500px] flex-col gap-y-2 overflow-y-auto py-1 pr-1">
+                <CatalogProductCard
+                  v-for="prod in paginatedProducts"
+                  :key="prod.id"
+                  :prod="prod"
+                  class="shrink-0" />
+              </div>
+            </template>
 
             <!-- Fallback Banner when no products in catalog -->
             <div
@@ -831,9 +851,13 @@ onMounted(async () => {
         </div>
 
         <!-- PDF Links -->
-        <div class="space-y-1.5">
+        <div
+          v-if="selectedDoc.file_ot?.uuid || selectedDoc.file_mp?.uuid"
+          class="space-y-1.5">
           <div class="text-xs font-bold tracking-wider text-slate-400 uppercase">Официальные документы</div>
-          <div class="grid grid-cols-2 gap-2">
+          <div
+            class="grid gap-2"
+            :class="selectedDoc.file_ot?.uuid && selectedDoc.file_mp?.uuid ? 'grid-cols-2' : 'grid-cols-1'">
             <a
               v-if="selectedDoc.file_ot?.uuid"
               :href="`/api/fgis/file/${selectedDoc.file_ot.uuid}`"
@@ -848,11 +872,6 @@ onMounted(async () => {
                 <div class="text-[10px] text-slate-400">PDF</div>
               </div>
             </a>
-            <div
-              v-else
-              class="flex items-center gap-2 rounded-xl border border-slate-100 bg-slate-50/50 p-2.5 text-[11px] text-slate-400">
-              Нет описания типа
-            </div>
 
             <a
               v-if="selectedDoc.file_mp?.uuid"
@@ -865,19 +884,16 @@ onMounted(async () => {
                 class="size-5 shrink-0 text-blue-500" />
               <div class="min-w-0">
                 <div class="font-semibold text-slate-800">Методика поверки</div>
-                <div class="text-[10px] text-slate-400">PDF / ГОСТ</div>
+                <div class="text-[10px] text-slate-400">PDF</div>
               </div>
             </a>
-            <div
-              v-else
-              class="flex items-center gap-2 rounded-xl border border-slate-100 bg-slate-50/50 p-2.5 text-[11px] text-slate-400">
-              Нет методики
-            </div>
           </div>
         </div>
 
         <!-- Products -->
-        <div class="space-y-2 border-t border-slate-100 pt-3">
+        <div
+          id="mobile-catalog-products-section"
+          class="space-y-2 border-t border-slate-100 pt-3">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-1.5 text-xs font-bold tracking-wider text-slate-700 uppercase">
               <UIcon
@@ -886,9 +902,9 @@ onMounted(async () => {
               <span>Товары в каталоге</span>
             </div>
             <span
-              v-if="selectedProducts.length"
+              v-if="totalSelectedProducts"
               class="text-xs font-bold text-emerald-700">
-              {{ selectedProducts.length }} шт.
+              {{ productPageRangeText }}
             </span>
           </div>
 
@@ -898,36 +914,33 @@ onMounted(async () => {
             Загрузка товаров...
           </div>
 
-          <div
-            v-else-if="selectedProducts.length"
-            class="space-y-2">
+          <template v-else-if="totalSelectedProducts > 0">
+            <!-- Mobile Products Mini-Pagination Bar (Top, 1 line, no label) -->
             <div
-              v-for="prod in selectedProducts"
-              :key="prod.id"
-              class="flex items-center justify-between gap-2.5 rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-xs">
-              <div class="flex min-w-0 items-center gap-2.5">
-                <img
-                  v-if="prod.image"
-                  :src="`/static/img/products/w_64/${prod.image}.jpg`"
-                  :alt="prod.name"
-                  class="size-10 shrink-0 rounded border border-slate-200 bg-white object-contain p-1" />
-                <div class="min-w-0">
-                  <NuxtLink
-                    :to="`/product/${prod.alias}`"
-                    class="block truncate font-semibold text-slate-900">
-                    {{ prod.name }}
-                  </NuxtLink>
-                  <div class="font-bold text-slate-800">{{ formatPrice(prod.price) }}</div>
-                </div>
-              </div>
-              <UButton
+              v-if="totalSelectedProducts > 10"
+              class="flex items-center justify-between gap-1.5 rounded-xl border border-slate-100 bg-slate-50/70 p-1.5 text-xs">
+              <USelect
+                v-model="productPageSize"
+                :items="productPageSizeOptions"
                 size="xs"
-                color="primary"
-                label="Купить"
-                class="shrink-0"
-                @click="handleAddToCart(prod)" />
+                class="w-20 shrink-0" />
+
+              <UPagination
+                v-if="totalSelectedProducts > Number(productPageSize)"
+                v-model:page="productPage"
+                :items-per-page="Number(productPageSize)"
+                :total="totalSelectedProducts"
+                :sibling-count="1"
+                size="xs" />
             </div>
-          </div>
+
+            <div class="@container flex flex-col gap-y-2 py-1">
+              <CatalogProductCard
+                v-for="prod in paginatedProducts"
+                :key="prod.id"
+                :prod="prod" />
+            </div>
+          </template>
 
           <div
             v-else

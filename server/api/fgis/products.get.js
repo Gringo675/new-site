@@ -13,7 +13,6 @@ export default defineEventHandler(async event => {
     JOIN i_docs_rstr r ON FIND_IN_SET(r.id, p.reestr_ids)
     WHERE r.number = ? AND p.published = 1
     ORDER BY p.id ASC
-    LIMIT 20
   `
 
   const products = await dbReq(sql, [number])
