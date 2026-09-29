@@ -1,18 +1,25 @@
 import { test, expect } from '@playwright/test'
 
 test('test cart and order', async ({ page, browserName }) => {
-  const urlBase = process.env.TEST_URL_BASE ?? ''
-  // const urlBase = 'http://localhost:3000/'
+  const rawBase = process.env.TEST_URL_BASE ?? 'http://localhost:3000/'
+  const urlBase = rawBase.endsWith('/') ? rawBase : rawBase + '/'
 
   await page.goto(urlBase + 'catalog/mikrometry')
 
+  const cookieBannerBtn = page.getByRole('button', { name: 'Принять' })
+  if (await cookieBannerBtn.isVisible().catch(() => false)) {
+    await cookieBannerBtn.click()
+  }
+
   const productCards = page.getByTestId('product-card')
   const cartButton = page.locator('a[href="/user/cart"]')
-  const firstProduct = await productCards.first()
-  const secondProduct = await productCards.nth(1)
-  const thirdProduct = await productCards.nth(2)
+  const firstProduct = productCards.first()
+  const secondProduct = productCards.nth(1)
+  const thirdProduct = productCards.nth(2)
 
-  await firstProduct.getByRole('button', { name: 'В корзину' }).click()
+  const firstCartBtn = firstProduct.getByRole('button', { name: 'В корзину' })
+  await expect(firstCartBtn).toBeEnabled({ timeout: 15000 })
+  await firstCartBtn.click()
   await expect(cartButton).toHaveText('1')
   await firstProduct.getByRole('button', { name: 'Убавить' }).click()
   await expect(cartButton).toHaveText('0')
