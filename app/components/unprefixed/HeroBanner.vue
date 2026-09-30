@@ -98,12 +98,16 @@ const hitCategories = [
       <div class="space-y-5 lg:col-span-7">
         <!-- Траст-бейдж -->
         <div class="flex flex-wrap items-center gap-2">
-          <span class="inline-flex items-center gap-1.5 rounded-full border border-orange-400/30 bg-orange-500/10 px-3 py-1 text-xs font-semibold tracking-wide text-orange-300 sm:text-sm">
-            <UIcon
-              name="i-heroicons-trophy"
-              class="size-4 text-orange-400" />
-            25+ лет снабжения предприятий
-          </span>
+          <!-- Анимированный бейдж со стажем -->
+          <div class="animate-gradient relative inline-flex rounded-full p-[1px]">
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-stone-900 px-3 py-1 text-xs font-semibold tracking-wide text-orange-200 sm:text-sm">
+              <UIcon
+                name="i-heroicons-trophy"
+                class="size-4 text-orange-400" />
+              25+ лет снабжения предприятий
+            </span>
+          </div>
+
           <span class="inline-flex items-center gap-1.5 rounded-full border border-stone-700 bg-stone-800/80 px-3 py-1 text-xs text-stone-300 sm:text-sm">
             <UIcon
               name="i-heroicons-building-office-2"
@@ -126,15 +130,23 @@ const hitCategories = [
 
         <!-- Кнопки действий (CTA) -->
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <UButton
-            size="lg"
-            color="primary"
-            icon="i-carbon-catalog"
-            trailing-icon="i-heroicons-arrow-right"
-            class="justify-center rounded-xl font-bold shadow-lg shadow-orange-500/25 transition-transform hover:-translate-y-0.5"
-            @click="handleCatalogClick">
-            Открыть каталог
-          </UButton>
+          <!-- Кнопка "Открыть каталог" с анимированной градиентной рамкой и свечением -->
+          <div class="animate-gradient group relative inline-flex rounded-xl p-[1.5px] transition-all duration-300">
+            <!-- Фоновое свечение кнопки при наведении -->
+            <div
+              class="animate-gradient pointer-events-none absolute -inset-1 rounded-xl opacity-60 blur-xs transition-opacity duration-300 group-hover:opacity-100"
+              aria-hidden="true"></div>
+
+            <UButton
+              size="lg"
+              color="neutral"
+              icon="i-carbon-catalog"
+              trailing-icon="i-heroicons-arrow-right"
+              class="relative z-10 w-full justify-center rounded-[10.5px] border-none bg-stone-900 font-bold text-white shadow-md shadow-orange-500/20 transition-all hover:bg-stone-800 sm:w-auto"
+              @click="handleCatalogClick">
+              Открыть каталог
+            </UButton>
+          </div>
 
           <UButton
             size="lg"
@@ -264,7 +276,7 @@ const hitCategories = [
                   <h3 class="text-sm font-semibold text-white transition-colors group-hover:text-orange-200">
                     {{ cat.title }}
                   </h3>
-                  <span :class="['rounded px-1.5 py-0.5 text-[10px] font-semibold', cat.badge === 'Услуги' ? 'border border-emerald-800/50 bg-emerald-950/70 text-emerald-300' : 'bg-stone-800 text-orange-300 group-hover:bg-orange-500/20']">
+                  <span :class="['rounded px-1.5 py-0.5 text-[10px] font-semibold transition-colors', cat.badge === 'Услуги' ? 'border border-emerald-800/50 bg-emerald-950/70 text-emerald-300' : 'animate-gradient font-bold text-white shadow-xs']">
                     {{ cat.badge }}
                   </span>
                 </div>
@@ -279,8 +291,8 @@ const hitCategories = [
           </NuxtLink>
         </div>
 
-        <!-- B2B плашка со спец-условиями -->
-        <div class="flex items-center justify-between rounded-xl border border-violet-900/50 bg-linear-to-r from-violet-950/40 via-stone-900/60 to-violet-950/40 p-2.5 text-xs text-stone-300 sm:p-3">
+        <!-- B2B плашка со спец-условиями с градиентным акцентом -->
+        <div class="flex items-center justify-between rounded-xl border border-orange-500/40 bg-linear-to-r from-orange-950/40 via-stone-900/80 to-violet-950/40 p-2.5 text-xs text-stone-300 shadow-sm shadow-orange-500/20 sm:p-3">
           <div class="flex items-center gap-2">
             <UIcon
               name="i-heroicons-check-circle"
@@ -298,3 +310,11 @@ const hitCategories = [
     </div>
   </section>
 </template>
+
+<style scoped>
+@media (prefers-reduced-motion: reduce) {
+  .animate-gradient {
+    animation: none !important;
+  }
+}
+</style>
