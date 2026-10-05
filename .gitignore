@@ -22,3 +22,5 @@ tests/**/*.png
 .pi/review-results/
 .pi/tmp/
 .pi/.vscode-ready
+
+oldSite/

@@ -33,22 +33,11 @@ const menuState = [
     icon: 'i-heroicons-book-open',
   },
 ]
-
-const toOldSite = () => {
-  $fetch('/api/log/setText', {
-    method: 'POST',
-    body: {
-      text: 'toOldSite button clicked',
-    },
-  })
-  window.open('https://old.chelinstrument.ru/', '_blank', 'noopener,noreferrer')
-}
 </script>
 
 <template>
   <div class="header-hidden">
-    <div
-      class="max-xs:grid-cols-[70px_1fr] mx-auto grid h-full max-w-(--breakpoint-xl) grid-cols-[120px_1fr_auto_1fr_120px] grid-rows-[auto_1fr] gap-1 max-md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] max-md:grid-rows-[100%]">
+    <div class="max-xs:grid-cols-[70px_1fr] mx-auto grid h-full max-w-(--breakpoint-xl) grid-cols-[120px_1fr_auto_1fr_120px] grid-rows-[auto_1fr] gap-1 max-md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] max-md:grid-rows-[100%]">
       <div class="col-span-1 row-span-2 flex items-center justify-center max-md:row-span-1">
         <ULink
           to="/"
@@ -82,24 +71,25 @@ const toOldSite = () => {
           </div>
         </div>
       </div>
-      <div class="col-span-1 mr-2 flex items-center justify-end max-md:hidden">
-        <!-- <img
-          src="/img/rst.svg"
-          alt="rst"
-          class="h-auto w-20"
-          width="80"
-          height="30" /> -->
-        <UButton
-          label="К старой версии сайта"
-          variant="outline"
-          class="rounded-full max-lg:w-[15vw] max-lg:text-sm"
-          trailing-icon="i-heroicons-arrow-right"
-          color="tertiary"
-          @click="toOldSite" />
+      <div class="col-span-1 mt-2 mr-2 flex items-center justify-end max-md:hidden">
+        <NuxtLink
+          to="/materials/fgis"
+          title="Поиск по Государственному реестру СИ (ФГИС РСТ)"
+          class="group flex shrink-0 items-center gap-1.5 rounded-xl border border-indigo-200 bg-white/95 px-2 py-1 shadow-2xs transition-all duration-200 hover:border-indigo-400 hover:bg-indigo-50/80 hover:shadow-xs">
+          <div class="flex h-auto w-[23px] shrink-0 items-center justify-center text-indigo-700 transition-colors group-hover:text-indigo-900">
+            <IconRstLogo class="h-auto w-full" />
+          </div>
+          <div class="flex flex-col text-left leading-none whitespace-nowrap">
+            <span class="text-[11px] font-bold tracking-tight text-indigo-950 transition-colors group-hover:text-indigo-900">ФГИС РСТ</span>
+            <span class="mt-0.5 text-[9px] text-indigo-600/90 transition-colors group-hover:text-indigo-800">Госреестр СИ</span>
+          </div>
+          <UIcon
+            name="i-heroicons-chevron-right"
+            class="ml-0.5 size-2.5 shrink-0 text-indigo-300 transition-all group-hover:translate-x-0.5 group-hover:text-indigo-600" />
+        </NuxtLink>
       </div>
       <div class="col-span-1 flex max-md:justify-center">
-        <div
-          class="font-accent max-xs:text-xl flex flex-col items-center justify-center text-center text-3xl text-gray-800 max-xl:text-2xl max-lg:text-base max-md:mx-2 max-md:text-2xl">
+        <div class="font-accent max-xs:text-xl flex flex-col items-center justify-center text-center text-3xl text-gray-800 max-xl:text-2xl max-lg:text-base max-md:mx-2 max-md:text-2xl">
           <div>Торговый Дом</div>
           <div>Челябинский Инструмент</div>
         </div>
@@ -127,8 +117,7 @@ const toOldSite = () => {
         </picture>
       </div>
       <div class="col-span-2 flex max-md:hidden">
-        <div
-          class="mr-2 flex w-full flex-col items-end justify-center text-lg text-slate-900 italic max-lg:items-center">
+        <div class="mr-2 flex w-full flex-col items-end justify-center text-lg text-slate-900 italic max-lg:items-center">
           <div class="flex items-center gap-2 hover:text-orange-800 max-lg:hidden">
             <UIcon
               name="i-heroicons-home-modern"

@@ -81,6 +81,18 @@ const onFastOrder = () => {
           @click="onFastOrder"
           class="mt-2" />
         <UButton
+          size="lg"
+          variant="subtle"
+          color="tertiary"
+          block
+          label="ФГИС РСТ (Госреестр СИ)"
+          @click="goTo('/materials/fgis')"
+          class="mt-2">
+          <template #leading>
+            <IconRstLogo class="size-5 shrink-0" />
+          </template>
+        </UButton>
+        <UButton
           v-for="item in menuState"
           variant="link"
           size="lg"
