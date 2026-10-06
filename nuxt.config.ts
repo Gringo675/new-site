@@ -135,6 +135,7 @@ export default defineNuxtConfig({
     STATIC_ABSOLUTE_PATH: process.env.STATIC_ABSOLUTE_PATH,
     FAST_LOGIN_MAIL: process.env.FAST_LOGIN_MAIL,
     FAST_LOGIN_CODE: process.env.FAST_LOGIN_CODE,
+    ONEC_API_KEY: process.env.ONEC_API_KEY,
     public: {
       PROD_MODE: process.env.NUXT_BUILD_MODE === 'prod',
       BUILD: new Date().toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' }),

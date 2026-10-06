@@ -82,6 +82,19 @@ async function deploy(archivePath, deployDir) {
     const resSymlink = await ssh.execCommand(`ln -s ~/static ~/${deployDir}/build/public/static`)
     if (resSymlink.stderr) throw new Error(resSymlink.stderr)
     console.log(`\u2713 Symlink for static created.`)
+
+    // Ensure Linux native binaries for sharp when built on Windows
+    const sharpFixCmd = `
+      if [ -f ~/${deployDir}/build/server/package.json ]; then
+        if grep -q "@img/sharp-win32-x64" ~/${deployDir}/build/server/package.json; then
+          sed -i 's/"@img\\/sharp-win32-x64"/"@img\\/sharp-linux-x64"/' ~/${deployDir}/build/server/package.json
+          export PATH=/home/c/chelin/.local/node-v24/bin:$PATH
+          cd ~/${deployDir}/build/server && npm install --no-audit --no-fund
+        fi
+      fi
+    `
+    await ssh.execCommand(sharpFixCmd)
+    console.log(`\u2713 Native server binaries verified.`)
     const resDelArchive = await ssh.execCommand(`rm -f ~/${deployDir}/build.tar.gz`)
     if (resDelArchive.stderr) throw new Error(resDelArchive.stderr)
     console.log(`\u2713 Archive removed from server.`)
