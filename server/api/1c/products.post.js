@@ -35,12 +35,12 @@ export default defineEventHandler(async event => {
     `)
 
     return rows.map(row => [
-      row.ean,
+      String(row.ean),
       row.name,
       row.price,
       row.vendor_price,
       row.verification_price,
-      row.in_grsi ? 1 : 0,
+      row.in_grsi ? '1' : '0',
     ])
   } catch (err) {
     console.error('[1C get_all_products error]:', err)

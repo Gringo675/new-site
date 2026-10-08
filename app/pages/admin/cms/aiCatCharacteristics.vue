@@ -180,7 +180,7 @@ async function generateCharacteristics() {
     inputData: {
       alias: activeCatAlias.value,
     },
-    // runId: '0f7abf5b-0ad9-47e9-8640-1ee8ad37aa4e',
+    runId: '592973ef-724c-412e-b485-c2110d6d5d50',
   })
 
   if (response) {
