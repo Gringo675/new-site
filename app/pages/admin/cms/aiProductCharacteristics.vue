@@ -20,7 +20,7 @@ const activeProduct = computed(() => {
 })
 
 // Навигация и фильтрация
-const currentFilter = ref('all') // 'all' | 'without_ai' | 'with_ai' | 'selected' | 'PASS' | 'FAIL'
+const currentFilter = ref('all') // 'all' | 'without_ai' | 'with_ai' | 'selected' | 'PASS' | 'WARN' | 'ERROR'
 const activeTab = ref('preview') // 'preview' | 'edit' | 'split'
 
 const editorTabs = [
@@ -32,13 +32,25 @@ const editorTabs = [
 // Пакетная генерация и WebSocket
 const isBatchRunning = ref(false)
 const abortBatchFlag = ref(false)
-const includeFailInSave = ref(false)
+const includeWarnInSave = ref(false)
+const concurrencyLimit = ref(2)
+const concurrencyOptions = [
+  { label: '1 поток', value: 1 },
+  { label: '2 потока', value: 2 },
+  { label: '3 потока', value: 3 },
+  { label: '4 потока', value: 4 },
+  { label: '5 потоков', value: 5 },
+]
+const activeGeneratingProducts = ref([])
+const activeSockets = new Set()
 const batchProgress = reactive({
   current: 0,
   total: 0,
-  currentProdName: '',
 })
-let activeSocket = null
+
+const activeGeneratingNames = computed(() => {
+  return activeGeneratingProducts.value.map(p => p.name).join(', ')
+})
 
 // Индикатор несохраненных изменений
 const hasUnsavedChanges = computed(() => {
@@ -51,19 +63,21 @@ const counts = computed(() => {
   const withoutAi = products.value.filter(p => !p.isAiCharacteristics && !p.isSaved).length
   const withAi = products.value.filter(p => p.isAiCharacteristics || p.isSaved).length
   const selected = products.value.filter(p => p.selected).length
-  const pass = products.value.filter(p => (p.status === 'PASS' || p.judgeVerdict === 'PASS') && !p.isSaved).length
-  const fail = products.value.filter(p => (p.status === 'FAIL' || p.judgeVerdict === 'FAIL') && !p.isSaved).length
-  const unsavedPass = products.value.filter(p => (p.status === 'PASS' || p.judgeVerdict === 'PASS') && !p.isSaved && p.workingCharacteristics).length
-  const unsavedGenerated = products.value.filter(p => !p.isSaved && p.workingCharacteristics && (p.status === 'PASS' || p.judgeVerdict === 'PASS' || p.status === 'FAIL' || p.judgeVerdict === 'FAIL' || p.hasUnsavedChanges)).length
-  const selectedUnsavedPass = products.value.filter(p => p.selected && (p.status === 'PASS' || p.judgeVerdict === 'PASS') && !p.isSaved && p.workingCharacteristics).length
-  const selectedUnsavedGenerated = products.value.filter(p => p.selected && !p.isSaved && p.workingCharacteristics && (p.status === 'PASS' || p.judgeVerdict === 'PASS' || p.status === 'FAIL' || p.judgeVerdict === 'FAIL' || p.hasUnsavedChanges)).length
+  const pass = products.value.filter(p => (p.status === 'PASS' || p.judgeVerdict === 'PASS') && !p.isSaved && Boolean(p.workingCharacteristics?.trim())).length
+  const warn = products.value.filter(p => (p.status === 'WARN' || (p.status === 'FAIL' && Boolean(p.workingCharacteristics?.trim()))) && !p.isSaved).length
+  const error = products.value.filter(p => p.status === 'ERROR' || (!p.isSaved && p.judgeVerdict === 'FAIL' && !p.workingCharacteristics?.trim())).length
+  const unsavedPass = products.value.filter(p => (p.status === 'PASS' || p.judgeVerdict === 'PASS') && !p.isSaved && Boolean(p.workingCharacteristics?.trim())).length
+  const unsavedGenerated = products.value.filter(p => !p.isSaved && Boolean(p.workingCharacteristics?.trim()) && (p.status === 'PASS' || p.status === 'WARN' || p.judgeVerdict === 'PASS' || p.hasUnsavedChanges)).length
+  const selectedUnsavedPass = products.value.filter(p => p.selected && (p.status === 'PASS' || p.judgeVerdict === 'PASS') && !p.isSaved && Boolean(p.workingCharacteristics?.trim())).length
+  const selectedUnsavedGenerated = products.value.filter(p => p.selected && !p.isSaved && Boolean(p.workingCharacteristics?.trim()) && (p.status === 'PASS' || p.status === 'WARN' || p.judgeVerdict === 'PASS' || p.hasUnsavedChanges)).length
   return {
     all,
     withoutAi,
     withAi,
     selected,
     pass,
-    fail,
+    warn,
+    error,
     unsavedPass,
     unsavedGenerated,
     selectedUnsavedPass,
@@ -75,13 +89,13 @@ const counts = computed(() => {
 const saveButtonLabel = computed(() => {
   const isSelected = counts.value.selected > 0
   if (isSelected) {
-    if (includeFailInSave.value) {
+    if (includeWarnInSave.value) {
       return `Сохранить выбранные (${counts.value.selectedUnsavedGenerated})`
     }
     return `Сохранить выбранные PASS (${counts.value.selectedUnsavedPass})`
   }
-  if (includeFailInSave.value) {
-    return `Сохранить все (${counts.value.unsavedGenerated})`
+  if (includeWarnInSave.value) {
+    return `Сохранить все с ТТХ (${counts.value.unsavedGenerated})`
   }
   return `Сохранить все PASS (${counts.value.unsavedPass})`
 })
@@ -90,9 +104,9 @@ const saveButtonDisabled = computed(() => {
   if (isBatchRunning.value) return true
   const isSelected = counts.value.selected > 0
   if (isSelected) {
-    return includeFailInSave.value ? counts.value.selectedUnsavedGenerated === 0 : counts.value.selectedUnsavedPass === 0
+    return includeWarnInSave.value ? counts.value.selectedUnsavedGenerated === 0 : counts.value.selectedUnsavedPass === 0
   }
-  return includeFailInSave.value ? counts.value.unsavedGenerated === 0 : counts.value.unsavedPass === 0
+  return includeWarnInSave.value ? counts.value.unsavedGenerated === 0 : counts.value.unsavedPass === 0
 })
 
 // Фильтрация списка товаров
@@ -107,10 +121,13 @@ const filteredProducts = computed(() => {
     return products.value.filter(p => p.selected)
   }
   if (currentFilter.value === 'PASS') {
-    return products.value.filter(p => p.status === 'PASS' || p.judgeVerdict === 'PASS')
+    return products.value.filter(p => (p.status === 'PASS' || p.judgeVerdict === 'PASS') && Boolean(p.workingCharacteristics?.trim()))
   }
-  if (currentFilter.value === 'FAIL') {
-    return products.value.filter(p => p.status === 'FAIL' || p.judgeVerdict === 'FAIL')
+  if (currentFilter.value === 'WARN') {
+    return products.value.filter(p => (p.status === 'WARN' || (p.status === 'FAIL' && Boolean(p.workingCharacteristics?.trim()))) && !p.isSaved)
+  }
+  if (currentFilter.value === 'ERROR' || currentFilter.value === 'FAIL') {
+    return products.value.filter(p => p.status === 'ERROR' || (!p.isSaved && p.judgeVerdict === 'FAIL' && !p.workingCharacteristics?.trim()))
   }
   return products.value
 })
@@ -188,7 +205,7 @@ async function onCategoryChange(newAlias) {
     docsDict.value = { stnd: {}, rstr: {} }
     products.value = []
     activeProductId.value = null
-    includeFailInSave.value = false
+    includeWarnInSave.value = false
     return
   }
 
@@ -197,7 +214,7 @@ async function onCategoryChange(newAlias) {
   catData.value = null
   docsDict.value = { stnd: {}, rstr: {} }
   products.value = []
-  includeFailInSave.value = false
+  includeWarnInSave.value = false
 
   try {
     isLoading.value = true
@@ -303,15 +320,19 @@ function connectionHandler(options = {}) {
   }
 
   return new Promise(resolve => {
+    let socket = null
+
     const errorHandler = (err, logMsg = 'WebSocket error') => {
       console.error(logMsg, err)
-      activeSocket = null
+      if (socket) {
+        activeSockets.delete(socket)
+      }
       resolve(null)
     }
 
     try {
-      const socket = new WebSocket('/api/admin/mastraWsAdapter')
-      activeSocket = socket
+      socket = new WebSocket('/api/admin/mastraWsAdapter')
+      activeSockets.add(socket)
 
       socket.onopen = () => {
         const config = {
@@ -329,7 +350,7 @@ function connectionHandler(options = {}) {
           const response = JSON.parse(event.data)
           if (response.status === 'success') {
             socket.close()
-            activeSocket = null
+            activeSockets.delete(socket)
             resolve(response.data)
           } else {
             throw new Error('Bad response from server: ' + JSON.stringify(response))
@@ -343,6 +364,12 @@ function connectionHandler(options = {}) {
       socket.onerror = event => {
         errorHandler(event, 'WebSocket error')
         socket.close()
+      }
+
+      socket.onclose = () => {
+        if (socket) {
+          activeSockets.delete(socket)
+        }
       }
     } catch (error) {
       errorHandler(error, 'WebSocket setup error')
@@ -372,7 +399,7 @@ async function runProductWorkflow(product) {
   })
 }
 
-// Пакетная генерация
+// Пакетная генерация (многопоточная)
 async function startBatchGeneration() {
   if (isBatchRunning.value) return
 
@@ -394,60 +421,113 @@ async function startBatchGeneration() {
     return
   }
 
+  const limit = Math.max(1, Math.min(5, Number(concurrencyLimit.value) || 2))
+  const workerCount = Math.min(limit, targets.length)
+
   isBatchRunning.value = true
   abortBatchFlag.value = false
+  activeGeneratingProducts.value = []
   batchProgress.total = targets.length
   batchProgress.current = 0
-  batchProgress.currentProdName = targets[0]?.name || ''
 
-  for (let i = 0; i < targets.length; i++) {
-    if (abortBatchFlag.value) break
+  let nextIndex = 0
+  let completedCount = 0
 
-    const target = targets[i]
-    target.status = 'generating'
-    batchProgress.current = i + 1
-    batchProgress.currentProdName = target.name
+  async function worker() {
+    while (nextIndex < targets.length && !abortBatchFlag.value) {
+      const currentIndex = nextIndex++
+      const target = targets[currentIndex]
+      if (!target) break
 
-    const response = await runProductWorkflow(target)
-    if (abortBatchFlag.value) {
-      target.status = target.judgeVerdict || (target.isAiCharacteristics ? 'saved' : 'idle')
-      break
-    }
+      target.status = 'generating'
+      activeGeneratingProducts.value = [...activeGeneratingProducts.value, target]
 
-    if (response) {
-      target.generatedCharacteristics = response.generatedCharacteristics || ''
-      target.workingCharacteristics = response.generatedCharacteristics || ''
-      target.judgeVerdict = response.judgeVerdict || null
-      target.status = response.judgeVerdict === 'PASS' ? 'PASS' : 'FAIL'
-      target.requiredCorrections = response.requiredCorrections || []
-      target.hasUnsavedChanges = true
-      target.isSaved = false
-    } else {
-      target.status = 'FAIL'
+      try {
+        const response = await runProductWorkflow(target)
+        if (abortBatchFlag.value) {
+          target.status = target.judgeVerdict || (target.isAiCharacteristics ? 'saved' : 'idle')
+          break
+        }
+
+        const hasContent = Boolean(response?.generatedCharacteristics && response.generatedCharacteristics.trim().length > 0)
+
+        if (response && hasContent) {
+          target.generatedCharacteristics = response.generatedCharacteristics
+          target.workingCharacteristics = response.generatedCharacteristics
+          target.judgeVerdict = response.judgeVerdict || null
+          target.status = response.judgeVerdict === 'PASS' ? 'PASS' : 'WARN'
+          target.requiredCorrections = response.requiredCorrections || []
+          target.hasUnsavedChanges = true
+          target.isSaved = false
+        } else {
+          target.status = 'ERROR'
+          target.generatedCharacteristics = ''
+          target.workingCharacteristics = ''
+          target.judgeVerdict = 'FAIL'
+          target.requiredCorrections = response?.requiredCorrections?.length ? response.requiredCorrections : ['Сбой генерации: модель недоступна или вернула пустой ответ.']
+          target.hasUnsavedChanges = false
+          target.isSaved = false
+        }
+      } catch (err) {
+        console.error('Error generating product:', target.name, err)
+        if (!abortBatchFlag.value) {
+          target.status = 'ERROR'
+          target.generatedCharacteristics = ''
+          target.workingCharacteristics = ''
+          target.judgeVerdict = 'FAIL'
+          target.requiredCorrections = [err.message || 'Ошибка выполнения генерации']
+          target.hasUnsavedChanges = false
+          target.isSaved = false
+        }
+      } finally {
+        activeGeneratingProducts.value = activeGeneratingProducts.value.filter(p => p.id !== target.id)
+        if (!abortBatchFlag.value) {
+          completedCount++
+          batchProgress.current = Math.min(completedCount, targets.length)
+        }
+      }
     }
   }
 
-  const processedCount = batchProgress.current
-  isBatchRunning.value = false
-  playNotificationSound()
-  showNotice({
-    title: abortBatchFlag.value ? 'Генерация прервана' : 'Пакетная генерация завершена!',
-    description: `Обработано товаров: ${processedCount} из ${targets.length}`,
-    type: 'success',
-  })
+  try {
+    await Promise.all(Array.from({ length: workerCount }, () => worker()))
+
+    if (!abortBatchFlag.value) {
+      playNotificationSound()
+      showNotice({
+        title: 'Пакетная генерация завершена!',
+        description: `Обработано товаров: ${completedCount} из ${targets.length}`,
+        type: 'success',
+      })
+    } else {
+      showNotice({
+        title: 'Генерация прервана',
+        description: `Обработано товаров до остановки: ${completedCount} из ${targets.length}`,
+        type: 'info',
+      })
+    }
+  } finally {
+    isBatchRunning.value = false
+    activeGeneratingProducts.value = []
+    activeSockets.clear()
+  }
 }
 
 // Прерывание пакетной генерации
 function stopBatchGeneration() {
+  if (!isBatchRunning.value) return
   abortBatchFlag.value = true
-  if (activeSocket) {
-    activeSocket.close()
-    activeSocket = null
-  }
-  isBatchRunning.value = false
+  activeSockets.forEach(socket => {
+    try {
+      socket.close()
+    } catch (e) {
+      console.error('Error closing socket:', e)
+    }
+  })
+  activeSockets.clear()
   showNotice({
     title: 'Остановка очереди',
-    description: 'Генерация остановлена оператором.',
+    description: 'Генерация прерывается оператором...',
     type: 'info',
   })
 }
@@ -457,25 +537,33 @@ async function generateSingleProduct(prod) {
   if (!prod || isBatchRunning.value) return
   prod.status = 'generating'
   const response = await runProductWorkflow(prod)
-  if (response) {
-    prod.generatedCharacteristics = response.generatedCharacteristics || ''
-    prod.workingCharacteristics = response.generatedCharacteristics || ''
+  const hasContent = Boolean(response?.generatedCharacteristics && response.generatedCharacteristics.trim().length > 0)
+
+  if (response && hasContent) {
+    prod.generatedCharacteristics = response.generatedCharacteristics
+    prod.workingCharacteristics = response.generatedCharacteristics
     prod.judgeVerdict = response.judgeVerdict || null
-    prod.status = response.judgeVerdict === 'PASS' ? 'PASS' : 'FAIL'
+    prod.status = response.judgeVerdict === 'PASS' ? 'PASS' : 'WARN'
     prod.requiredCorrections = response.requiredCorrections || []
     prod.hasUnsavedChanges = true
     prod.isSaved = false
     playNotificationSound()
     showNotice({
       title: 'Генерация завершена',
-      description: `Результат валидации: ${prod.judgeVerdict}`,
+      description: prod.judgeVerdict === 'PASS' ? 'Характеристики успешно сгенерированы.' : 'Сгенерировано с замечаниями валидатора.',
       type: prod.judgeVerdict === 'PASS' ? 'success' : 'warning',
     })
   } else {
-    prod.status = prod.judgeVerdict || 'FAIL'
+    prod.status = 'ERROR'
+    prod.generatedCharacteristics = ''
+    prod.workingCharacteristics = ''
+    prod.judgeVerdict = 'FAIL'
+    prod.requiredCorrections = response?.requiredCorrections?.length ? response.requiredCorrections : ['Сбой генерации: модель недоступна или вернула пустой ответ.']
+    prod.hasUnsavedChanges = false
+    prod.isSaved = false
     showNotice({
       title: 'Ошибка генерации',
-      description: 'Не удалось получить ответ от воркфлоу.',
+      description: 'Не удалось получить текст характеристик от LLM.',
       type: 'error',
     })
   }
@@ -490,15 +578,15 @@ function copyOriginalToWorking() {
 
 // Сохранение одного товара в БД
 async function saveProduct(prod) {
-  if (!prod || !prod.workingCharacteristics) {
+  if (!prod || !prod.workingCharacteristics || !prod.workingCharacteristics.trim()) {
     showNotice({ title: 'Предупреждение', description: 'Нет характеристик для сохранения.', type: 'warning' })
     return
   }
 
-  if (prod.status === 'FAIL') {
+  if (prod.status === 'WARN' || prod.status === 'FAIL' || prod.judgeVerdict === 'FAIL') {
     const proceed = await showMessage({
-      title: 'Предупреждение: вердикт FAIL',
-      description: `У товара «${prod.name}» валидатор выявил ошибки разметки (вердикт FAIL). Вы уверены, что хотите сохранить эти характеристики в базу данных?`,
+      title: 'Предупреждение: замечания валидатора',
+      description: `У товара «${prod.name}» валидатор выявил замечания к разметке HTML. Вы уверены, что хотите сохранить эти характеристики в базу данных?`,
       isDialog: true,
     })
     if (!proceed) return
@@ -544,45 +632,42 @@ async function saveProduct(prod) {
   }
 }
 
-// Массовое сохранение товаров (PASS или все сгенерированные, включая FAIL)
+// Массовое сохранение товаров (PASS или с замечаниями валидатора)
 async function saveBatchProducts() {
   const isSelected = counts.value.selected > 0
   let targets = []
 
-  if (isSelected) {
-    targets = products.value.filter(p => {
-      if (!p.selected || p.isSaved || !p.workingCharacteristics) return false
-      if (includeFailInSave.value) {
-        return p.status === 'PASS' || p.judgeVerdict === 'PASS' || p.status === 'FAIL' || p.judgeVerdict === 'FAIL' || p.hasUnsavedChanges
-      }
-      return p.status === 'PASS' || p.judgeVerdict === 'PASS'
-    })
-  } else {
-    targets = products.value.filter(p => {
-      if (p.isSaved || !p.workingCharacteristics) return false
-      if (includeFailInSave.value) {
-        return p.status === 'PASS' || p.judgeVerdict === 'PASS' || p.status === 'FAIL' || p.judgeVerdict === 'FAIL' || p.hasUnsavedChanges
-      }
-      return p.status === 'PASS' || p.judgeVerdict === 'PASS'
-    })
-  }
+  targets = products.value.filter(p => {
+    if (p.isSaved || !p.workingCharacteristics || !p.workingCharacteristics.trim()) return false
+    if (isSelected && !p.selected) return false
+
+    if (includeWarnInSave.value) {
+      return p.status === 'PASS' || p.status === 'WARN' || p.judgeVerdict === 'PASS' || p.hasUnsavedChanges
+    }
+    return p.status === 'PASS' || p.judgeVerdict === 'PASS'
+  })
 
   if (targets.length === 0) {
     showNotice({
       title: 'Информация',
-      description: includeFailInSave.value ? 'Нет несохраненных сгенерированных товаров.' : 'Нет несохраненных товаров со статусом PASS.',
+      description: includeWarnInSave.value ? 'Нет несохраненных товаров с характеристиками.' : 'Нет несохраненных товаров со статусом PASS.',
       type: 'info',
     })
     return
   }
 
-  const failCount = targets.filter(p => p.status === 'FAIL' || p.judgeVerdict === 'FAIL').length
+  const passCount = targets.filter(p => p.status === 'PASS' || p.judgeVerdict === 'PASS').length
+  const warnCount = targets.filter(p => p.status === 'WARN' || (p.status !== 'PASS' && p.judgeVerdict !== 'PASS')).length
+  const totalErrors = products.value.filter(p => p.status === 'ERROR' || (!p.isSaved && p.judgeVerdict === 'FAIL' && !p.workingCharacteristics?.trim())).length
+
   let desc = `Будет сохранено ${targets.length} товаров в базу данных.`
-  if (failCount > 0) {
-    desc += ` Внимание: из них ${failCount} товаров имеют замечания валидатора (вердикт FAIL). Продолжить?`
-  } else {
-    desc += ' Продолжить?'
+  if (warnCount > 0) {
+    desc += ` (Из них ${passCount} PASS, ${warnCount} с замечаниями валидатора).`
   }
+  if (totalErrors > 0 && !isSelected) {
+    desc += ` Позиции со сбоем генерации (${totalErrors}) будут пропущены.`
+  }
+  desc += ' Продолжить?'
 
   const proceed = await showMessage({
     title: 'Подтвердите сохранение',
@@ -664,71 +749,87 @@ async function saveBatchProducts() {
     <!-- Панель управления категорией и пакетными действиями -->
     <div
       v-if="catData"
-      class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-xs dark:border-gray-800 dark:bg-gray-900">
-      <div class="flex flex-wrap items-center gap-2 sm:gap-3">
-        <span class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-          {{ catData.name }}
-        </span>
-        <UBadge
-          variant="subtle"
-          color="neutral"
-          size="sm">
-          Всего: {{ products.length }}
-        </UBadge>
-        <UBadge
-          variant="subtle"
-          color="success"
-          size="sm">
-          С AI: {{ counts.withAi }}
-        </UBadge>
-        <UBadge
-          variant="subtle"
-          color="warning"
-          size="sm">
-          Без AI: {{ counts.withoutAi }}
-        </UBadge>
-        <UBadge
-          variant="subtle"
-          color="neutral"
-          size="sm">
-          ГОСТ: {{ Object.keys(docsDict.stnd || {}).length }}
-        </UBadge>
-        <UBadge
-          variant="subtle"
-          color="neutral"
-          size="sm">
-          ГРСИ: {{ Object.keys(docsDict.rstr || {}).length }}
-        </UBadge>
+      class="space-y-3.5 rounded-xl border border-gray-200 bg-white p-4 shadow-xs dark:border-gray-800 dark:bg-gray-900">
+      <!-- Верхний ярус: Название категории и сводная статистика -->
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex min-w-0 items-center gap-2">
+          <UIcon
+            name="i-lucide-folder"
+            class="text-primary-500 size-4 shrink-0" />
+          <h2
+            class="truncate text-sm font-semibold text-gray-900 dark:text-gray-100"
+            :title="catData.name">
+            {{ catData.name }}
+          </h2>
+        </div>
+
+        <!-- Сводная плашка метрик категории -->
+        <div class="flex items-center divide-x divide-gray-200 rounded-lg border border-gray-200 bg-gray-50/80 py-1 text-xs dark:divide-gray-800 dark:border-gray-800 dark:bg-gray-800/40">
+          <span class="px-2.5 text-gray-600 dark:text-gray-400">
+            Всего:
+            <strong class="font-semibold text-gray-900 dark:text-gray-100">{{ products.length }}</strong>
+          </span>
+          <span class="px-2.5 text-emerald-600 dark:text-emerald-400">
+            С AI:
+            <strong class="font-semibold">{{ counts.withAi }}</strong>
+          </span>
+          <span class="px-2.5 text-amber-600 dark:text-amber-400">
+            Без AI:
+            <strong class="font-semibold">{{ counts.withoutAi }}</strong>
+          </span>
+          <span class="px-2.5 text-gray-600 dark:text-gray-400">
+            ГОСТ:
+            <strong class="font-semibold text-gray-800 dark:text-gray-200">{{ Object.keys(docsDict.stnd || {}).length }}</strong>
+          </span>
+          <span class="px-2.5 text-gray-600 dark:text-gray-400">
+            ГРСИ:
+            <strong class="font-semibold text-gray-800 dark:text-gray-200">{{ Object.keys(docsDict.rstr || {}).length }}</strong>
+          </span>
+        </div>
       </div>
 
-      <!-- Кнопки пакетных действий -->
-      <div class="flex flex-wrap items-center gap-2">
-        <!-- Кнопка остановки генерации -->
-        <UButton
-          v-if="isBatchRunning"
-          icon="i-lucide-square"
-          label="Прервать генерацию"
-          color="error"
-          variant="solid"
-          size="sm"
-          @click="stopBatchGeneration" />
+      <!-- Разделитель между инфо и действиями -->
+      <div class="border-t border-gray-100 dark:border-gray-800/80" />
 
-        <!-- Кнопка запуска генерации -->
-        <UButton
-          v-else
-          icon="i-lucide-sparkles"
-          :label="counts.selected > 0 ? `Сгенерировать выбранные (${counts.selected})` : `Сгенерировать без AI (${counts.withoutAi})`"
-          color="primary"
-          variant="solid"
-          size="sm"
-          :disabled="products.length === 0 || (counts.selected === 0 && counts.withoutAi === 0)"
-          @click="startBatchGeneration" />
+      <!-- Нижний ярус: Тулбар пакетных действий -->
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <!-- Блок пакетной генерации (слева) -->
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Выбор количества потоков -->
+          <USelect
+            v-model="concurrencyLimit"
+            :items="concurrencyOptions"
+            :disabled="isBatchRunning"
+            size="sm"
+            class="w-32" />
 
-        <!-- Блок массового сохранения с чекбоксом «Включая FAIL» -->
+          <!-- Кнопка остановки генерации -->
+          <UButton
+            v-if="isBatchRunning"
+            icon="i-lucide-square"
+            label="Прервать генерацию"
+            color="error"
+            variant="solid"
+            size="sm"
+            @click="stopBatchGeneration" />
+
+          <!-- Кнопка запуска генерации -->
+          <UButton
+            v-else
+            icon="i-lucide-sparkles"
+            :label="counts.selected > 0 ? `Сгенерировать выбранные (${counts.selected})` : `Сгенерировать без AI (${counts.withoutAi})`"
+            color="primary"
+            variant="solid"
+            size="sm"
+            :disabled="products.length === 0 || (counts.selected === 0 && counts.withoutAi === 0)"
+            @click="startBatchGeneration" />
+        </div>
+
+        <!-- Блок массового сохранения (справа) -->
         <div class="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50/80 px-2.5 py-1 dark:border-gray-800 dark:bg-gray-800/40">
           <UCheckbox
-            v-model="includeFailInSave"
-            label="Включая FAIL"
+            v-model="includeWarnInSave"
+            label="Включая замечания"
             :disabled="isBatchRunning"
             class="text-xs" />
 
@@ -749,13 +850,16 @@ async function saveBatchProducts() {
       v-if="isBatchRunning"
       class="border-primary-200 bg-primary-50 dark:border-primary-900 dark:bg-primary-950/40 space-y-2 rounded-xl border p-4">
       <div class="flex items-center justify-between text-xs">
-        <span class="text-primary-900 dark:text-primary-100 flex items-center gap-1.5 font-medium">
+        <span class="text-primary-900 dark:text-primary-100 flex min-w-0 items-center gap-1.5 font-medium">
           <UIcon
             name="i-lucide-loader-2"
-            class="text-primary-600 size-4 animate-spin" />
-          Обработка очереди: {{ batchProgress.currentProdName }}
+            class="text-primary-600 size-4 shrink-0 animate-spin" />
+          <span class="truncate">
+            В работе (потоков: {{ activeGeneratingProducts.length }}/{{ concurrencyLimit }}):
+            <span class="font-normal opacity-90">{{ activeGeneratingNames || 'запуск...' }}</span>
+          </span>
         </span>
-        <span class="text-primary-800 dark:text-primary-200 font-semibold">{{ batchProgress.current }} / {{ batchProgress.total }}</span>
+        <span class="text-primary-800 dark:text-primary-200 ml-2 shrink-0 font-semibold">{{ batchProgress.current }} / {{ batchProgress.total }}</span>
       </div>
       <UProgress
         :value="(batchProgress.current / (batchProgress.total || 1)) * 100"
@@ -815,9 +919,15 @@ async function saveBatchProducts() {
           </button>
           <button
             type="button"
-            :class="['cursor-pointer rounded-md px-2 py-1 text-[11px] font-medium transition-colors', currentFilter === 'FAIL' ? 'bg-red-50 font-semibold text-red-600 dark:bg-red-950/60 dark:text-red-400' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800']"
-            @click="currentFilter = 'FAIL'">
-            FAIL ({{ counts.fail }})
+            :class="['cursor-pointer rounded-md px-2 py-1 text-[11px] font-medium transition-colors', currentFilter === 'WARN' ? 'bg-amber-50 font-semibold text-amber-600 dark:bg-amber-950/60 dark:text-amber-400' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800']"
+            @click="currentFilter = 'WARN'">
+            Замечания ({{ counts.warn }})
+          </button>
+          <button
+            type="button"
+            :class="['cursor-pointer rounded-md px-2 py-1 text-[11px] font-medium transition-colors', currentFilter === 'ERROR' ? 'bg-red-50 font-semibold text-red-600 dark:bg-red-950/60 dark:text-red-400' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800']"
+            @click="currentFilter = 'ERROR'">
+            Ошибки ({{ counts.error }})
           </button>
         </div>
 
@@ -864,13 +974,13 @@ async function saveBatchProducts() {
               <div class="flex-shrink-0">
                 <UBadge
                   v-if="prod.status === 'generating'"
-                  color="warning"
+                  color="primary"
                   variant="subtle"
                   size="xs"
-                  class="flex items-center gap-1 font-semibold">
+                  class="border-primary-200 dark:border-primary-800 flex animate-pulse items-center gap-1 border font-semibold">
                   <UIcon
                     name="i-lucide-loader-2"
-                    class="size-3 animate-spin" />
+                    class="text-primary-600 dark:text-primary-400 size-3 animate-spin" />
                   Генерация
                 </UBadge>
                 <UBadge
@@ -878,26 +988,43 @@ async function saveBatchProducts() {
                   color="success"
                   variant="solid"
                   size="xs"
-                  class="font-semibold">
+                  class="flex items-center gap-1 font-semibold">
+                  <UIcon
+                    name="i-lucide-check-circle"
+                    class="size-3" />
                   PASS
                 </UBadge>
                 <UBadge
-                  v-else-if="prod.status === 'FAIL' || prod.judgeVerdict === 'FAIL'"
-                  color="error"
+                  v-else-if="prod.status === 'WARN' || (prod.judgeVerdict === 'FAIL' && prod.workingCharacteristics?.trim() && !prod.isSaved)"
+                  color="warning"
                   variant="subtle"
                   size="xs"
-                  class="font-semibold">
-                  FAIL
+                  class="flex items-center gap-1 border border-amber-200 font-semibold dark:border-amber-800/60">
+                  <UIcon
+                    name="i-lucide-alert-triangle"
+                    class="size-3 text-amber-600 dark:text-amber-400" />
+                  Замечания
+                </UBadge>
+                <UBadge
+                  v-else-if="prod.status === 'ERROR' || (prod.judgeVerdict === 'FAIL' && !prod.workingCharacteristics?.trim())"
+                  color="error"
+                  variant="solid"
+                  size="xs"
+                  class="flex items-center gap-1 font-semibold">
+                  <UIcon
+                    name="i-lucide-circle-alert"
+                    class="size-3" />
+                  Ошибка
                 </UBadge>
                 <UBadge
                   v-else-if="prod.isAiCharacteristics || prod.isSaved"
                   color="success"
                   variant="subtle"
                   size="xs"
-                  class="flex items-center gap-1 font-semibold">
+                  class="flex items-center gap-1 border border-emerald-200 font-semibold dark:border-emerald-800/60">
                   <UIcon
                     name="i-lucide-check"
-                    class="size-3" />
+                    class="size-3 text-emerald-600 dark:text-emerald-400" />
                   AI В БД
                 </UBadge>
               </div>
@@ -958,8 +1085,8 @@ async function saveBatchProducts() {
                 <UButton
                   v-if="!activeProduct.workingCharacteristics"
                   icon="i-lucide-sparkles"
-                  label="Сгенерировать товар"
-                  color="primary"
+                  :label="activeProduct.status === 'ERROR' ? 'Повторить генерацию' : 'Сгенерировать товар'"
+                  :color="activeProduct.status === 'ERROR' ? 'error' : 'primary'"
                   variant="solid"
                   size="sm"
                   :loading="activeProduct.status === 'generating'"
@@ -1107,10 +1234,14 @@ async function saveBatchProducts() {
                 <span class="text-primary-600 dark:text-primary-400 text-xs font-bold tracking-wider uppercase">Сгенерировано AI (Стало)</span>
                 <UBadge
                   v-if="activeProduct.judgeVerdict"
-                  :color="activeProduct.judgeVerdict === 'PASS' ? 'success' : 'error'"
+                  :color="activeProduct.judgeVerdict === 'PASS' ? 'success' : activeProduct.status === 'WARN' ? 'warning' : 'error'"
                   variant="subtle"
-                  size="xs">
-                  {{ activeProduct.judgeVerdict }}
+                  size="xs"
+                  class="flex items-center gap-1 font-semibold">
+                  <UIcon
+                    :name="activeProduct.judgeVerdict === 'PASS' ? 'i-lucide-check-circle' : activeProduct.status === 'WARN' ? 'i-lucide-alert-triangle' : 'i-lucide-circle-alert'"
+                    class="size-3" />
+                  {{ activeProduct.status === 'WARN' ? 'Замечания' : activeProduct.status === 'ERROR' ? 'Ошибка' : activeProduct.judgeVerdict }}
                 </UBadge>
               </div>
 
@@ -1142,7 +1273,7 @@ async function saveBatchProducts() {
             </div>
           </div>
 
-          <!-- Блок проверки валидатором разметки -->
+          <!-- Блок проверки валидатором разметки / статуса генерации -->
           <div
             v-if="activeProduct.judgeVerdict"
             class="space-y-3 rounded-xl border border-gray-200 bg-gray-50/80 p-4 dark:border-gray-800 dark:bg-gray-900/60">
@@ -1150,21 +1281,26 @@ async function saveBatchProducts() {
               <div class="flex items-center gap-2">
                 <span class="text-xs font-bold tracking-wider text-gray-700 uppercase dark:text-gray-300">Валидация HTML / структуры:</span>
                 <UBadge
-                  :color="activeProduct.judgeVerdict === 'PASS' ? 'success' : 'error'"
+                  :color="activeProduct.judgeVerdict === 'PASS' ? 'success' : activeProduct.status === 'WARN' ? 'warning' : 'error'"
                   variant="solid"
                   size="xs"
-                  class="font-bold">
-                  {{ activeProduct.judgeVerdict }}
+                  class="flex items-center gap-1 font-bold">
+                  <UIcon
+                    :name="activeProduct.judgeVerdict === 'PASS' ? 'i-lucide-check-circle' : activeProduct.status === 'WARN' ? 'i-lucide-alert-triangle' : 'i-lucide-circle-alert'"
+                    class="size-3.5" />
+                  {{ activeProduct.status === 'WARN' ? 'Замечания (FAIL)' : activeProduct.status === 'ERROR' ? 'Ошибка генерации' : activeProduct.judgeVerdict }}
                 </UBadge>
               </div>
             </div>
 
-            <!-- Ошибка валидации (если вердикт FAIL) -->
+            <!-- Ошибка / замечание -->
             <div
               v-if="activeProduct.requiredCorrections?.length"
               class="space-y-1">
-              <span class="text-xs font-semibold text-red-600 dark:text-red-400">Причина ошибки:</span>
-              <ul class="list-disc space-y-1 pl-5 text-xs text-red-600 dark:text-red-400">
+              <span :class="['text-xs font-semibold', activeProduct.status === 'ERROR' ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400']">
+                {{ activeProduct.status === 'ERROR' ? 'Причина сбоя:' : 'Замечания валидатора:' }}
+              </span>
+              <ul :class="['list-disc space-y-1 pl-5 text-xs', activeProduct.status === 'ERROR' ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400']">
                 <li
                   v-for="(corr, idx) in activeProduct.requiredCorrections"
                   :key="idx">
