@@ -24,7 +24,7 @@ export default defineEventHandler(async event => {
   try {
     const rows = await dbReq(`
       SELECT 
-        old_id AS ean,
+        id AS ean,
         name,
         price,
         vendor_price,
@@ -34,14 +34,7 @@ export default defineEventHandler(async event => {
       WHERE published = 1
     `)
 
-    return rows.map(row => [
-      String(row.ean),
-      row.name,
-      row.price,
-      row.vendor_price,
-      row.verification_price,
-      row.in_grsi ? '1' : '0',
-    ])
+    return rows.map(row => [String(row.ean), row.name, row.price, row.vendor_price, row.verification_price, row.in_grsi ? '1' : '0'])
   } catch (err) {
     console.error('[1C get_all_products error]:', err)
     throw createError({
