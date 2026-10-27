@@ -34,21 +34,21 @@ export default defineEventHandler(async event => {
   await dbReq(`INSERT INTO \`${vendorTable}\` (ean, name, stock, price, d_price) VALUES ${placeholders}`, values)
 
   // Update products table with new stock and price
-  const products = await dbReq(`SELECT id, old_id, brand_eans, vendor_price, vendor_stock FROM ${productsTable} WHERE p0_brand = ?`, [vendorId])
+  const products = await dbReq(`SELECT id, brand_eans, vendor_price, vendor_stock FROM ${productsTable} WHERE p0_brand = ?`, [vendorId])
 
-  const itemsMap = new Map(items.map(i => [i.ean, i]))
+  const itemsMap = new Map(items.map(i => [String(i.ean), i]))
   const changedBoth = []
   const changedPrice = []
   const changedStock = []
   const date = new Date().toISOString()
 
   for (const product of products) {
-    // У кирова и стиза нет собственных артикулов, используем свои
-    const eans = vendorId === 2 || vendorId === 3 ? [product.old_id] : product.brand_eans ? product.brand_eans.split(' ') : []
+    // У кирова и стиза нет собственных артикулов, используем свои (новый id)
+    const eans = vendorId === 2 || vendorId === 3 ? [String(product.id)] : product.brand_eans ? product.brand_eans.split(' ') : []
     let price = 0,
       stock = ''
     for (const ean of eans) {
-      const item = itemsMap.get(ean)
+      const item = itemsMap.get(String(ean))
       if (item) {
         price === 0 && (price = item.price) // только первое совпадение
         stock = stock ? stock + ',' + item.quantity : item.quantity

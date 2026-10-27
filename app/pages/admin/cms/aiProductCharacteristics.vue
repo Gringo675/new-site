@@ -321,13 +321,21 @@ function connectionHandler(options = {}) {
 
   return new Promise(resolve => {
     let socket = null
+    let isSettled = false
+
+    const safeResolve = val => {
+      if (!isSettled) {
+        isSettled = true
+        resolve(val)
+      }
+    }
 
     const errorHandler = (err, logMsg = 'WebSocket error') => {
       console.error(logMsg, err)
       if (socket) {
         activeSockets.delete(socket)
       }
-      resolve(null)
+      safeResolve(null)
     }
 
     try {
@@ -349,9 +357,9 @@ function connectionHandler(options = {}) {
         try {
           const response = JSON.parse(event.data)
           if (response.status === 'success') {
+            safeResolve(response.data)
             socket.close()
             activeSockets.delete(socket)
-            resolve(response.data)
           } else {
             throw new Error('Bad response from server: ' + JSON.stringify(response))
           }
@@ -370,6 +378,7 @@ function connectionHandler(options = {}) {
         if (socket) {
           activeSockets.delete(socket)
         }
+        safeResolve(null)
       }
     } catch (error) {
       errorHandler(error, 'WebSocket setup error')
@@ -517,6 +526,14 @@ async function startBatchGeneration() {
 function stopBatchGeneration() {
   if (!isBatchRunning.value) return
   abortBatchFlag.value = true
+
+  // Немедленно возвращаем активные товары в исходный статус (убираем вечный спиннер)
+  activeGeneratingProducts.value.forEach(prod => {
+    prod.status = prod.judgeVerdict || (prod.isAiCharacteristics ? 'saved' : 'idle')
+  })
+  activeGeneratingProducts.value = []
+
+  // Закрываем активные WebSocket соединения (вызовет socket.onclose -> safeResolve(null))
   activeSockets.forEach(socket => {
     try {
       socket.close()
@@ -525,9 +542,10 @@ function stopBatchGeneration() {
     }
   })
   activeSockets.clear()
+
   showNotice({
     title: 'Остановка очереди',
-    description: 'Генерация прерывается оператором...',
+    description: 'Генерация прервана оператором.',
     type: 'info',
   })
 }
@@ -845,28 +863,31 @@ async function saveBatchProducts() {
       </div>
     </div>
 
-    <!-- Индикатор прогресса пакета -->
-    <div
+    <!-- Индикатор прогресса пакета (Nuxt UI v4 UProgress) -->
+    <UProgress
       v-if="isBatchRunning"
-      class="border-primary-200 bg-primary-50 dark:border-primary-900 dark:bg-primary-950/40 space-y-2 rounded-xl border p-4">
-      <div class="flex items-center justify-between text-xs">
-        <span class="text-primary-900 dark:text-primary-100 flex min-w-0 items-center gap-1.5 font-medium">
+      v-model="batchProgress.current"
+      :max="batchProgress.total"
+      status
+      size="md"
+      color="primary"
+      :ui="{ status: 'w-full justify-between' }"
+    >
+      <template #status="{ percent }">
+        <span class="flex min-w-0 items-center gap-1.5 text-xs font-medium text-gray-700 dark:text-gray-200">
           <UIcon
             name="i-lucide-loader-2"
-            class="text-primary-600 size-4 shrink-0 animate-spin" />
+            class="text-primary-500 size-4 shrink-0 animate-spin" />
           <span class="truncate">
             В работе (потоков: {{ activeGeneratingProducts.length }}/{{ concurrencyLimit }}):
-            <span class="font-normal opacity-90">{{ activeGeneratingNames || 'запуск...' }}</span>
+            <span class="font-normal text-gray-500 dark:text-gray-400">{{ activeGeneratingNames || 'запуск...' }}</span>
           </span>
         </span>
-        <span class="text-primary-800 dark:text-primary-200 ml-2 shrink-0 font-semibold">{{ batchProgress.current }} / {{ batchProgress.total }}</span>
-      </div>
-      <UProgress
-        :value="(batchProgress.current / (batchProgress.total || 1)) * 100"
-        color="primary"
-        size="sm" />
-    </div>
-
+        <span class="ml-2 shrink-0 font-semibold text-xs text-gray-800 dark:text-gray-100">
+          {{ batchProgress.current }} / {{ batchProgress.total }} ({{ percent }}%)
+        </span>
+      </template>
+    </UProgress>
     <!-- Основная рабочая область (Master-Detail, 2 колонки) -->
     <div
       v-if="catData"

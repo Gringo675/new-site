@@ -1,9 +1,9 @@
 export default defineEventHandler(async event => {
   // получаем артикул товара и отдаем все относящиеся к нему нормативные документы
   try {
-    const { ean: oldEan } = getQuery(event)
+    const { ean } = getQuery(event)
 
-    if (!oldEan) throw new Error('Incorrect request!')
+    if (!ean) throw new Error('Incorrect request!')
 
     const query = `SELECT
     (SELECT JSON_ARRAYAGG(number) FROM i_docs_stnd WHERE FIND_IN_SET(id, p.standart_ids)) as stnd_numbers,
@@ -11,9 +11,9 @@ export default defineEventHandler(async event => {
     FROM
         i_products AS p
     WHERE
-        old_id = ?
+        id = ?
         LIMIT 1`
-    const prod = (await dbReq(query, [oldEan]))[0]
+    const prod = (await dbReq(query, [ean]))[0]
 
     // reverse array
     return (prod.stnd_numbers ?? []).concat((prod.rstr_numbers ?? []).map(num => `ГРСИ №${num}`)).reverse()
