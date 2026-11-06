@@ -30,7 +30,7 @@ test('test login, user pages and feedback', async ({ page, browserName }) => {
 
   await page.getByRole('button', { name: 'Войти через mail.ru' }).click()
   const mailruPage = await page.waitForEvent('popup')
-  await expect(mailruPage.getByText('Sign in to the account')).toBeVisible({ timeout: 15000 })
+  await expect(mailruPage.getByRole('heading', { name: 'Sign in to «Mail»' })).toBeVisible({ timeout: 15000 })
   await mailruPage.close()
 
   await page.getByRole('textbox', { name: 'Ваша почта' }).fill(process.env.FAST_LOGIN_MAIL ?? '')

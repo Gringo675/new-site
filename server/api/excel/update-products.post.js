@@ -34,23 +34,26 @@ export default defineEventHandler(async event => {
   try {
     const today = new Date().toISOString().slice(0, 10)
 
-    const values = products.map(p => [Number(p.id), Math.round(Number(p.price) || 0), Math.round(Number(p.old_price) || 0), Math.round(Number(p.vendor_price) || 0), Math.round(Number(p.vendor_old_price) || 0), Math.round(Number(p.verification_price) || 0), Math.round(Number(p.stock) || 0), String(p.vendor_stock ?? ''), p.date_price_changed ? String(p.date_price_changed).slice(0, 10) : today, p.date_vendor_price_changed ? String(p.date_vendor_price_changed).slice(0, 10) : today])
+    const values = products.map(p => [
+      Number(p.id),
+      Math.round(Number(p.price) || 0),
+      Math.round(Number(p.old_price) || 0),
+      Math.round(Number(p.verification_price) || 0),
+      Math.round(Number(p.stock) || 0),
+      p.date_price_changed ? String(p.date_price_changed).slice(0, 10) : today,
+    ])
 
     await withTransaction(async connection => {
       const sql = `
         INSERT INTO i_products 
-          (id, price, old_price, vendor_price, vendor_old_price, verification_price, stock, vendor_stock, date_price_changed, date_vendor_price_changed)
+          (id, price, old_price, verification_price, stock, date_price_changed)
         VALUES ?
         ON DUPLICATE KEY UPDATE
           price = VALUES(price),
           old_price = VALUES(old_price),
-          vendor_price = VALUES(vendor_price),
-          vendor_old_price = VALUES(vendor_old_price),
           verification_price = VALUES(verification_price),
           stock = VALUES(stock),
-          vendor_stock = VALUES(vendor_stock),
-          date_price_changed = VALUES(date_price_changed),
-          date_vendor_price_changed = VALUES(date_vendor_price_changed)
+          date_price_changed = VALUES(date_price_changed)
       `
       await connection.query(sql, [values])
     })
