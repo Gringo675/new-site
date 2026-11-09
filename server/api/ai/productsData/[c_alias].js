@@ -89,7 +89,8 @@ export default defineEventHandler(async event => {
                          FROM i_products
                          WHERE category_id = ?
                          ${productFilter}
-                         AND published = 1`
+                         AND published = 1
+                         ORDER BY sort_key ASC`
   const products = await dbReq(productsQuery, productParams)
 
   if (!products.length) {
@@ -208,56 +209,6 @@ export default defineEventHandler(async event => {
 
   await Promise.all([fetchPropertiesTask(), fetchStndDocsTask(), fetchRstrDocsTask()])
 
-  // 7. Sort products by props using active category filter groups logic
-  const filterGroups = usePrpsGroupsMap(productsCatId)
-
-  for (const [propKey, group] of filterGroups.entries()) {
-    group.ids = {}
-    products.forEach(product => {
-      const propId = product[propKey]
-      if (!group.disabled && propId > 0) {
-        group.ids[propId] = (group.ids[propId] || 0) + 1
-        if (!product._propIds) product._propIds = new Set()
-        product._propIds.add(propId)
-      }
-    })
-
-    // Exclude values present in 100% of products (they do not affect sorting order)
-    for (const id in group.ids) {
-      if (group.ids[id] === products.length) {
-        delete group.ids[id]
-      }
-    }
-  }
-
-  const filter = Array.from(filterGroups.values())
-    .filter(fGroup => !fGroup.disabled && Object.keys(fGroup.ids).length > 0)
-    .sort((a, b) => a.ordering - b.ordering)
-
-  if (filter.length) {
-    filter.forEach(fGroup => {
-      fGroup.values = Object.keys(fGroup.ids).map(id => {
-        const val = Number(id)
-        return {
-          val,
-          order: propsMap.get(val)?.ordering ?? 0,
-        }
-      })
-      fGroup.values.sort((a, b) => a.order - b.order)
-    })
-
-    products.sort((a, b) => {
-      for (const fGroup of filter) {
-        for (const prop of fGroup.values) {
-          const isA = a._propIds?.has(prop.val)
-          const isB = b._propIds?.has(prop.val)
-          if (isA && !isB) return -1
-          if (!isA && isB) return 1
-        }
-      }
-      return 0
-    })
-  }
 
   // 8. Transform formatted products list
   const formattedProducts = products.map(product => {

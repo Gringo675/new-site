@@ -218,6 +218,26 @@ await checkAdminOnly()
             class="h-4 w-4 transition-transform group-hover:translate-x-1" />
         </div>
       </NuxtLink>
+
+      <NuxtLink
+        to="/admin/cms/sortKeys"
+        class="group hover:border-primary-500 flex flex-col justify-between rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all hover:shadow-md">
+        <div>
+          <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-violet-50 text-violet-600 transition-colors group-hover:bg-violet-100">
+            <UIcon
+              name="i-lucide-arrow-down-up"
+              class="h-6 w-6" />
+          </div>
+          <h2 class="text-lg font-semibold text-gray-900 transition-colors group-hover:text-violet-600">Сортировка каталога</h2>
+          <p class="mt-1 text-sm text-gray-500">Синхронизация и пересчет ключей sort_key товаров по ГОСТ-характеристикам</p>
+        </div>
+        <div class="mt-4 flex items-center gap-1 text-sm font-medium text-violet-600">
+          <span>Открыть</span>
+          <UIcon
+            name="i-lucide-arrow-right"
+            class="h-4 w-4 transition-transform group-hover:translate-x-1" />
+        </div>
+      </NuxtLink>
     </div>
   </div>
 </template>

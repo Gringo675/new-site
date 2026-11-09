@@ -9,6 +9,20 @@ export default defineEventHandler(async event => {
   const prods = await readBody(event)
 
   const table = 'i_products'
+  const sortAffectingKeys = new Set([
+    'category_id',
+    'p0_brand',
+    'p1_type',
+    'p2_counting_system',
+    'p3_range',
+    'p4_size',
+    'p5_accuracy',
+    'p6_class',
+    'p7_feature',
+    'p8_pack',
+  ])
+
+  const recalculateIds = []
 
   for (const prod of prods) {
     if (prod.isDel) {
@@ -17,7 +31,11 @@ export default defineEventHandler(async event => {
       const keys = Object.keys(prod).filter(k => k !== 'isNew' && k !== 'isDel')
       const placeholders = keys.map(() => '?').join(', ')
       const values = keys.map(k => prod[k])
-      await dbReq(`INSERT INTO ${table} (${keys.join(', ')}) VALUES (${placeholders})`, values)
+      const res = await dbReq(`INSERT INTO ${table} (${keys.join(', ')}) VALUES (${placeholders})`, values)
+      const newId = prod.id || res.insertId
+      if (newId) {
+        recalculateIds.push(newId)
+      }
     } else {
       const keys = Object.keys(prod).filter(k => k !== 'id' && k !== 'isDel' && k !== 'isNew')
       const setClause = keys.map(k => `${k} = ?`).join(', ')
@@ -26,7 +44,15 @@ export default defineEventHandler(async event => {
       if (keys.length > 0) {
         await dbReq(`UPDATE ${table} SET ${setClause} WHERE id = ?`, values)
       }
+
+      if (keys.some(k => sortAffectingKeys.has(k))) {
+        recalculateIds.push(prod.id)
+      }
     }
+  }
+
+  if (recalculateIds.length > 0) {
+    await recalculateProductsSortKey(recalculateIds)
   }
 
   return true

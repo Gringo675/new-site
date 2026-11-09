@@ -178,7 +178,8 @@ Wildcards:
 % - Zero, one, or multiple characters
 _ - Exactly one single character
 
-
+## Run local mySQL:
+sudo service mysql start
 
 # Copilots:
 - Gringo675 - 25

@@ -8,7 +8,13 @@ export default defineEventHandler(async event => {
 
   if (pId === 0 || !parent_id) {
     // Root category selected
-    return await dbReq(`SELECT id, name, alias, brand_eans, images, description, characteristics, p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature, p8_pack, label, published FROM ${table} WHERE category_id = ?`, [cat_id])
+    return await dbReq(
+      `SELECT id, name, alias, brand_eans, images, description, characteristics, p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature, p8_pack, label, published
+       FROM ${table}
+       WHERE category_id = ?
+       ORDER BY sort_key ASC`,
+      [cat_id],
+    )
   }
 
   // Sub-category selected: filter by properties of the sub-category
@@ -28,5 +34,11 @@ export default defineEventHandler(async event => {
     return acc + ` AND ${prop.key} = ?`
   }, '')
 
-  return await dbReq(`SELECT id, name, alias, brand_eans, images, description, characteristics, p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature, p8_pack, label, published FROM ${table} WHERE category_id = ?${propFilters}`, params)
+  return await dbReq(
+    `SELECT id, name, alias, brand_eans, images, description, characteristics, p0_brand, p1_type, p2_counting_system, p3_range, p4_size, p5_accuracy, p6_class, p7_feature, p8_pack, label, published
+     FROM ${table}
+     WHERE category_id = ?${propFilters}
+     ORDER BY sort_key ASC`,
+    params,
+  )
 })

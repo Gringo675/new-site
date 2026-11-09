@@ -264,44 +264,6 @@ const columns = computed(() => [
   },
 ])
 
-function sortProdsByProperties(products) {
-  if (!products.length) return products
-
-  // 1. Prepare sorted structure of groups and their properties
-  const sortedGroups = Array.from(prpsGroupsMap.value.entries()).sort((a, b) => a[1].ordering - b[1].ordering)
-
-  const filter = sortedGroups.map(([pGroup, { name }]) => {
-    const groupProps = prps.value[pGroup] || []
-    const sortedValues = [...groupProps].sort((a, b) => a.ordering - b.ordering)
-    return {
-      name,
-      values: sortedValues.map(p => p.id),
-    }
-  })
-
-  // 2. Normalize products: add a 'props' array containing all property IDs
-  products.forEach(prod => {
-    prod.props = []
-    for (const [pGroup] of prpsGroupsMap.value.entries()) {
-      if (prod[pGroup]) prod.props.push(prod[pGroup])
-    }
-  })
-
-  // 3. Apply sorting logic
-  products.sort((a, b) => {
-    for (const fGroup of filter) {
-      for (const propVal of fGroup.values) {
-        const isA = a.props.includes(propVal)
-        const isB = b.props.includes(propVal)
-        if (isA && !isB) return -1
-        if (!isA && isB) return 1
-      }
-    }
-    return 0
-  })
-
-  return products
-}
 
 async function getProds() {
   if (!activeCatId.value) return
@@ -317,7 +279,7 @@ async function getProds() {
     const fetchedProds = await myFetch(`/api/admin/cms/products/getProds?cat_id=${activeCatId.value}&parent_id=${parentId}`)
 
     if (Array.isArray(fetchedProds)) {
-      prods.value = sortProdsByProperties(fetchedProds)
+      prods.value = fetchedProds
     } else {
       prods.value = []
     }

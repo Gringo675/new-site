@@ -30,9 +30,10 @@ export default defineEventHandler(async event => {
         COALESCE(p.brand_eans, '') AS vendor_ean, 
         IF(LENGTH(TRIM(p.reestr_ids)) > 0, 1, 0) AS in_grsi, 
         COALESCE(p.alias, '') AS alias 
-      FROM i_products p 
-      WHERE p.published = 1 
-      ORDER BY p.id ASC
+      FROM i_products p
+      JOIN i_categories c ON c.id = p.category_id
+      WHERE p.published = 1
+      ORDER BY c.ordering ASC, p.sort_key ASC
     `)
 
     return rows.map(row => ({

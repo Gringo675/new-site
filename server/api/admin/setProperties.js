@@ -10,6 +10,7 @@ export default defineEventHandler(async event => {
 
   const table = 'i_properties'
   const props = await readBody(event)
+  const changedPropIds = []
 
   for (const prop of props) {
     let query
@@ -33,11 +34,17 @@ export default defineEventHandler(async event => {
                           ordering = ?
                       WHERE id = ?`
       params = [prop.name, prop.ordering, prop.id]
+      changedPropIds.push(prop.id)
     } else {
       throw createError({ statusCode: 500, statusMessage: "prop object don't have required field!" })
     }
     await dbReq(query, params)
   }
+
+  if (changedPropIds.length > 0) {
+    await recalculateProductsSortKey({ propIds: changedPropIds })
+  }
+
   return true
 })
 

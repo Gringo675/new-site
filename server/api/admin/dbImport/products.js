@@ -101,6 +101,12 @@ export default defineEventHandler(async event => {
       prod.pasport_ids = prod.pasport_ids.replace(/;/g, ',')
     }
 
+    // рассчитываем sort_key для всех импортируемых товаров
+    const propsOrderingMap = await getPropsOrderingMap()
+    for (const prod of prods) {
+      prod.sort_key = buildProductSortKey(prod, propsOrderingMap)
+    }
+
     // собираем запрос
     const fieldsArr = Object.keys(prods[0]) // вытаскиваем названия полей из первого элемента
 

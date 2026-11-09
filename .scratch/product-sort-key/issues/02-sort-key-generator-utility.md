@@ -1,4 +1,4 @@
-Status: open
+Status: closed
 Type: task
 Blocked by: 01-db-schema-and-migration.md
 
@@ -10,30 +10,27 @@ Blocked by: 01-db-schema-and-migration.md
 ## Требования
 
 1. **Формирование ключа (`buildProductSortKey`):**
-   - Принимает объект товара с полями `p0_brand` ... `p8_pack` и `id`.
+   - Принимает объект товара с полями `id`, `category_id` и `p0_brand` ... `p8_pack`.
    - Принимает словарь весов `propsOrderingMap` (где ключ — `prop_id`, значение — `ordering` из таблицы `i_properties`).
-   - Иерархия параметров строго по `usePrpsGroupsMap`:
-     1. `p1_type` (order = 10)
-     2. `p2_counting_system` (order = 20)
-     3. `p3_range` (order = 30)
-     4. `p4_size` (order = 40)
-     5. `p5_accuracy` (order = 50)
-     6. `p6_class` (order = 60)
-     7. `p7_feature` (order = 70)
-     8. `p0_brand` (order = 80)
-     9. `p8_pack` (order = 90)
-   - Если свойство отсутствует (0, null, undefined) — значение блока `'9999'`.
-   - Если свойство задано — значение блока `String(order).padStart(4, '0')`.
+   - Получает группы через `usePrpsGroupsMap(product.category_id)`.
+   - Упорядочивает группы по приоритету:
+     1. Активные группы (`!group.disabled`) упорядочиваются по возрастанию `(group.sortOrdering ?? group.ordering)`.
+     2. Отключенные группы (`group.disabled === true`, например `p8_pack`) помещаются в конец списка.
+   - Для каждой группы в вычисленном порядке:
+     - Если группа отключена (`disabled: true`) или свойство у товара отсутствует (0, null, undefined) — значение блока `'9999'`.
+     - Если свойство задано — значение блока `String(order).padStart(4, '0')`.
    - Tie-breaker — `String(product.id).padStart(6, '0')`.
-   - Результат склеивается через символ `_`.
+   - Все 10 блоков склеиваются через символ `_`. Итоговая длина строки — ровно 51 символ.
 
 2. **Функция пакетного обновления (`recalculateProductsSortKey`):**
-   - Принимает список `productIds` или `categoryId`.
-   - Автоматически подгружает актуальные `i_properties.ordering`.
+   - Принимает список `productIds`, либо объект `{ categoryId, propId }`.
+   - Загружает полные записи товаров из `i_products` (гарантирует сохранение всех характеристик при частичных обновлениях).
+   - Подгружает актуальные `i_properties.ordering`.
    - Рассчитывает ключи и выполняет пакетный `UPDATE` через `CASE id WHEN ... THEN ... END`.
 
 ## Критерии приемки
-- [ ] Модуль `server/utils/productSortKey.js` создан и экспортирует функции `buildProductSortKey` и `recalculateProductsSortKey`.
-- [ ] Ключ формируется детерминированно и имеет фиксированную длину и структуру.
-- [ ] Корректно обрабатываются пропущенные и нулевые характеристики (`9999`).
-- [ ] Написаны модульные тесты для проверки консистентности сортировки.
+- [x] Модуль `server/utils/productSortKey.js` создан и экспортирует функции `buildProductSortKey` и `recalculateProductsSortKey`.
+- [x] Ключ формируется детерминированно и имеет строго фиксированную длину (51 символ).
+- [x] Порядок блоков групп учитывает категорию (`category_id`) и поддержку `sortOrdering ?? ordering`.
+- [x] Корректно обрабатываются пропущенные, нулевые и отключенные характеристики (`'9999'`).
+- [x] Написаны тесты/проверочный скрипт для верификации консистентности сортировки.

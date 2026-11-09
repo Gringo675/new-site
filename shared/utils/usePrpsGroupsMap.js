@@ -1,6 +1,22 @@
+/**
+ * @typedef {Object} PropGroupConfig
+ * @property {string} name - Отображаемое название группы в интерфейсе
+ * @property {number} ordering - Порядок отображения группы в фильтре на страницах категорий
+ * @property {boolean} [disabled] - Если true, группа исключается из фильтра и не участвует в sort_key (значение '9999')
+ * @property {number} [sortOrdering] - Опциональный оверрайд веса группы для расчета sort_key товара
+ * @property {boolean} [emptyFirst] - Если true, товары без этого свойства получают '0000' (идут первыми)
+ */
+
+/**
+ * Возвращает карту групп характеристик товаров (p0_brand ... p8_pack).
+ * Порядок групп в Map соответствует group_id в таблице i_properties:
+ * p0_brand -> group_id=0, p1_type -> group_id=1, ..., p8_pack -> group_id=8.
+ *
+ * @param {number} [catId]
+ * @returns {Map<string, PropGroupConfig>}
+ */
 export const usePrpsGroupsMap = catId => {
-  // the order of groups should match the group_id in i_properties table, i.e. p0_brand has group_id=0, p1_type has group_id=1 and so on
-  // disabled: true means that this group doesn't include in filter on category pages
+  /** @type {Map<string, PropGroupConfig>} */
   const map = new Map([
     [
       'p0_brand',
@@ -75,6 +91,9 @@ export const usePrpsGroupsMap = catId => {
         map.get('p4_size').name = 'Губки'
         map.get('p4_size').ordering = 51
         map.get('p7_feature').name = 'Материал'
+        map.get('p7_feature').sortOrdering = 8
+        map.get('p7_feature').emptyFirst = true
+        map.get('p2_counting_system').sortOrdering = 9
         break
       case 12: // штангенглубиномеры
         map.get('p7_feature').name = 'Зацеп (толщиномер)'

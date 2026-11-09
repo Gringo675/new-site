@@ -38,7 +38,8 @@ export default defineEventHandler(async event => {
                   standart_ids, reestr_ids
                   FROM i_products WHERE category_id = ?
                   ${productFilter}
-                  AND published = 1`
+                  AND published = 1
+                  ORDER BY sort_key ASC`
   const products = await dbReq(query, productParams)
   if (!products.length) return { catData }
 
@@ -94,18 +95,6 @@ export default defineEventHandler(async event => {
       delete fGroup.ids
     })
 
-    // упорядочиваем товары по фильтру
-    products.sort((a, b) => {
-      for (const fGroup of filter) {
-        for (const prop of fGroup.values) {
-          const isA = a.props.includes(prop.val)
-          const isB = b.props.includes(prop.val)
-          if (isA && !isB) return -1
-          if (!isA && isB) return 1
-        }
-      }
-      return 0
-    })
   }
 
   const stnds = new Set()
