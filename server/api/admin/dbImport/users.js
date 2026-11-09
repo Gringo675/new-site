@@ -42,7 +42,7 @@ export default defineEventHandler(async event => {
     users = users.filter(user => !['gringo675g@gmail.com', 'gringo675@yandex.ru', '7907748@rambler.ru'].includes(user.email))
     users.unshift(admin)
 
-    const currentDate = new Date().toISOString()
+    const currentDate = new Date()
 
     const placeholders = users.map(() => '(?, ?, ?, ?, ?, ?, ?)').join(', ')
     const values = users.flatMap(user => [user.email, user.name, user.admin, user.firma_name, user.city, user.phone, currentDate])

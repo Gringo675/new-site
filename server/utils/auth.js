@@ -17,7 +17,7 @@ const getBaseCookieOptions = () => {
   return options
 }
 
-export const createToken = (user, event) => {
+export const createToken = async (user, event) => {
   const tokenExp = new Date(Date.now() + tokenLifeTime)
   const tokenHead = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'jwt' })).toString('base64')
   const tokenPayload = Buffer.from(
@@ -40,7 +40,7 @@ export const createToken = (user, event) => {
   const query = `UPDATE i_users
                     SET last_refresh = ?
                     WHERE id = ?`
-  dbReq(query, [new Date().toISOString(), user.id])
+  await dbReq(query, [new Date(), user.id])
 }
 
 export const deleteToken = event => {
@@ -58,7 +58,7 @@ export const refreshToken = async (tokenUser, event) => {
   const user = (await dbReq(query, [tokenUser.id]))[0]
   if (!user) throw createError({ statusCode: 401, statusMessage: `User not found!` })
 
-  createToken(user, event)
+  await createToken(user, event)
 }
 
 export const checkToken = async (event, options = {}) => {

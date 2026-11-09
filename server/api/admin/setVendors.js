@@ -51,7 +51,7 @@ export default defineEventHandler(async event => {
     const changedBoth = []
     const changedPrice = []
     const changedStock = []
-    const date = new Date().toISOString()
+    const date = new Date()
 
     for (const product of products) {
       // У кирова и стиза нет собственных артикулов, используем свои (новый id)

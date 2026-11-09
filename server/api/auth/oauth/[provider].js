@@ -34,11 +34,11 @@ export default defineEventHandler(async event => {
       user = {}
       query = `INSERT INTO i_users (mail, name, created)
              VALUES(?, ?, ?)`
-      user.id = (await dbReq(query, [oUser.email, oUser.name, new Date().toISOString()])).insertId
+      user.id = (await dbReq(query, [oUser.email, oUser.name, new Date()])).insertId
       user.admin = 0
     }
 
-    createToken(user, event) // устанавливаем cookie
+    await createToken(user, event) // устанавливаем cookie
 
     resultText = 'Данные успешно получены!'
   } catch (e) {

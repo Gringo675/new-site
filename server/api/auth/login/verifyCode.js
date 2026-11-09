@@ -18,7 +18,7 @@ export default defineEventHandler(async event => {
   query = `UPDATE i_users SET ver_code = '' WHERE id = ?`
   await dbReq(query, [user.id])
 
-  createToken(user, event)
+  await createToken(user, event)
 
   // с вероятностью 10% запускаем очистку базы от пустых записей
   if (Math.random() < 0.1) clearUsersBase()

@@ -22,7 +22,7 @@ function escapeRegExp(string) {
 export default defineEventHandler(async event => {
   const order = await getFormData(event)
 
-  order.created = new Date().toISOString()
+  order.created = new Date()
   order.id = order.user.auth ? await saveOrder(event, order) : getRandomCode()
 
   await sendMails(order, event)

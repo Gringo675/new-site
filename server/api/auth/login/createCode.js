@@ -19,7 +19,7 @@ export default defineEventHandler(async event => {
     await dbReq('UPDATE i_users SET ver_code = ? WHERE id = ?', [hashCode, user.id])
   } else {
     const name = mail.match(/(^.+)@/)[1]
-    await dbReq('INSERT INTO i_users (name, mail, ver_code, created) VALUES (?, ?, ?, ?)', [name, mail, hashCode, new Date().toISOString()])
+    await dbReq('INSERT INTO i_users (name, mail, ver_code, created) VALUES (?, ?, ?, ?)', [name, mail, hashCode, new Date()])
   }
 
   // собираем ссылку для автоматического входа
