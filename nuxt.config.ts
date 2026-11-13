@@ -63,6 +63,7 @@ export default defineNuxtConfig({
     '/shipping': { prerender: true },
     '/warranty': { prerender: true },
     '/materials': { prerender: true },
+    '/materials/fgis': { prerender: false },
     '/materials/**': { prerender: true },
     // '/catalog': { prerender: true },
     '/llms.txt': process.env.NODE_ENV === 'production' && {

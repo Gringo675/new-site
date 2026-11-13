@@ -126,12 +126,20 @@ const breadcrumbItems = [
 
 const route = useRoute()
 
+const getInitialQuery = key => {
+  if (route.query[key]) return String(route.query[key])
+  if (import.meta.client) {
+    return new URLSearchParams(window.location.search).get(key) || ''
+  }
+  return ''
+}
+
 // Filter State
 const filterState = reactive({
-  number: '',
-  title: '',
-  notation: '',
-  manufacturers: '',
+  number: getInitialQuery('number').replace(/[^\d-]/g, ''),
+  title: getInitialQuery('title'),
+  notation: getInitialQuery('notation'),
+  manufacturers: getInitialQuery('manufacturers'),
 })
 
 // Number input keyboard & paste sanitizer
@@ -430,31 +438,14 @@ const openFeedback = (doc = selectedDoc.value) => {
   })
 }
 
-// Initial mount: preload numbers map and check URL queries
+// Initial mount: preload numbers map and auto-search if filters are present
 onMounted(async () => {
   // Preload local registry numbers
   loadNumbersMap()
 
-  // Restore filters from URL query params
-  let shouldAutoSearch = false
-  if (route.query.number) {
-    filterState.number = String(route.query.number)
-    shouldAutoSearch = true
-  }
-  if (route.query.title) {
-    filterState.title = String(route.query.title)
-    shouldAutoSearch = true
-  }
-  if (route.query.notation) {
-    filterState.notation = String(route.query.notation)
-    shouldAutoSearch = true
-  }
-  if (route.query.manufacturers) {
-    filterState.manufacturers = String(route.query.manufacturers)
-    shouldAutoSearch = true
-  }
-
-  if (shouldAutoSearch) {
+  // Auto-search if filters were restored from URL
+  const hasFilter = Object.values(filterState).some(val => val && val.trim())
+  if (hasFilter) {
     search()
   }
 })

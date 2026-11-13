@@ -74,38 +74,23 @@ export default defineEventHandler(async event => {
     }
 
     // 4. Обновляем изменившиеся товары в i_products
-    if (changedBoth.length > 0) {
-      for (let i = 0; i < changedBoth.length; i += chunkSize) {
-        const chunk = changedBoth.slice(i, i + chunkSize)
-        const placeholders = chunk.map(() => '(?, ?, ?, ?, ?)').join(', ')
-        const values = chunk.flatMap(p => [p.id, p.price, p.oldPrice, p.stock, p.date])
-        await conn.execute(
-          `INSERT INTO ${productsTable} (id, vendor_price, vendor_old_price, vendor_stock, date_vendor_price_changed) VALUES ${placeholders} ON DUPLICATE KEY UPDATE vendor_price = VALUES(vendor_price), vendor_stock = VALUES(vendor_stock), date_vendor_price_changed = VALUES(date_vendor_price_changed)`,
-          values
-        )
-      }
+    for (const p of changedBoth) {
+      await conn.execute(
+        `UPDATE ${productsTable} SET vendor_price = ?, vendor_old_price = ?, vendor_stock = ?, date_vendor_price_changed = ? WHERE id = ?`,
+        [p.price, p.oldPrice, p.stock, p.date, p.id]
+      )
     }
-    if (changedPrice.length > 0) {
-      for (let i = 0; i < changedPrice.length; i += chunkSize) {
-        const chunk = changedPrice.slice(i, i + chunkSize)
-        const placeholders = chunk.map(() => '(?, ?, ?, ?)').join(', ')
-        const values = chunk.flatMap(p => [p.id, p.price, p.oldPrice, p.date])
-        await conn.execute(
-          `INSERT INTO ${productsTable} (id, vendor_price, vendor_old_price, date_vendor_price_changed) VALUES ${placeholders} ON DUPLICATE KEY UPDATE vendor_price = VALUES(vendor_price), date_vendor_price_changed = VALUES(date_vendor_price_changed)`,
-          values
-        )
-      }
+    for (const p of changedPrice) {
+      await conn.execute(
+        `UPDATE ${productsTable} SET vendor_price = ?, vendor_old_price = ?, date_vendor_price_changed = ? WHERE id = ?`,
+        [p.price, p.oldPrice, p.date, p.id]
+      )
     }
-    if (changedStock.length > 0) {
-      for (let i = 0; i < changedStock.length; i += chunkSize) {
-        const chunk = changedStock.slice(i, i + chunkSize)
-        const placeholders = chunk.map(() => '(?, ?)').join(', ')
-        const values = chunk.flatMap(p => [p.id, p.stock])
-        await conn.execute(
-          `INSERT INTO ${productsTable} (id, vendor_stock) VALUES ${placeholders} ON DUPLICATE KEY UPDATE vendor_stock = VALUES(vendor_stock)`,
-          values
-        )
-      }
+    for (const p of changedStock) {
+      await conn.execute(
+        `UPDATE ${productsTable} SET vendor_stock = ? WHERE id = ?`,
+        [p.stock, p.id]
+      )
     }
   })
 

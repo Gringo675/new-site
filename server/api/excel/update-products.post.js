@@ -34,28 +34,22 @@ export default defineEventHandler(async event => {
   try {
     const today = new Date().toISOString().slice(0, 10)
 
-    const values = products.map(p => [
-      Number(p.id),
-      Math.round(Number(p.price) || 0),
-      Math.round(Number(p.old_price) || 0),
-      Math.round(Number(p.verification_price) || 0),
-      Math.round(Number(p.stock) || 0),
-      p.date_price_changed ? String(p.date_price_changed).slice(0, 10) : today,
-    ])
-
     await withTransaction(async connection => {
-      const sql = `
-        INSERT INTO i_products 
-          (id, price, old_price, verification_price, stock, date_price_changed)
-        VALUES ?
-        ON DUPLICATE KEY UPDATE
-          price = VALUES(price),
-          old_price = VALUES(old_price),
-          verification_price = VALUES(verification_price),
-          stock = VALUES(stock),
-          date_price_changed = VALUES(date_price_changed)
+      const updateSql = `
+        UPDATE i_products 
+        SET price = ?, old_price = ?, verification_price = ?, stock = ?, date_price_changed = ?
+        WHERE id = ?
       `
-      await connection.query(sql, [values])
+      for (const p of products) {
+        const id = Number(p.id)
+        const price = Math.round(Number(p.price) || 0)
+        const oldPrice = Math.round(Number(p.old_price) || 0)
+        const verificationPrice = Math.round(Number(p.verification_price) || 0)
+        const stock = Math.round(Number(p.stock) || 0)
+        const datePriceChanged = p.date_price_changed ? String(p.date_price_changed).slice(0, 10) : today
+
+        await connection.execute(updateSql, [price, oldPrice, verificationPrice, stock, datePriceChanged, id])
+      }
     })
 
     // Обновляем поисковый индекс на сайте после изменения цен
