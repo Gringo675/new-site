@@ -116,13 +116,11 @@ export default defineNuxtConfig({
   ],
 
   runtimeConfig: {
-    dbHost: process.env.DB_HOST_LOCAL, // работает везде, и на localhost, и удаленно
+    // dbHost: process.env.DB_HOST_LOCAL, // работает везде, и на localhost, и удаленно
+    dbHost: process.env.DB_HOST,
     dbName: process.env.DB_NAME,
     dbUser: process.env.DB_USER,
     dbPassword: process.env.DB_PASSWORD,
-    dbOldName: process.env.DB_OLD_NAME,
-    dbOldUser: process.env.DB_OLD_USER,
-    dbOldPassword: process.env.NODE_ENV === 'production' ? process.env.DB_OLD_PASSWORD : process.env.DB_OLD_PASSWORD_LOCAL,
     JWT_TOKEN_KEY: process.env.JWT_TOKEN_KEY,
     JWT_TOKEN_LIFETIME: process.env.JWT_TOKEN_LIFETIME,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
