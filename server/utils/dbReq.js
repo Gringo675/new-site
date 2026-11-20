@@ -27,15 +27,34 @@ const pool = globalForDb._dbPool
 /**
  * Отправляет информацию об ошибке БД в единый лог через /api/log/setError
  */
-async function logDbError(error, query = '') {
+async function logDbError(error, query = '', params = []) {
   try {
+    const rawQuery = typeof query === 'string' && query ? query : 'DB Query'
+    const queryPreview = rawQuery.length > 1000 ? `${rawQuery.slice(0, 1000)}...` : rawQuery
+
+    // Безопасная обработка параметров (поддержка массивов и объектов, защита от переполнения 64КБ)
+    let safeParams = []
+    if (Array.isArray(params)) {
+      safeParams = params.map(p => (typeof p === 'string' && p.length > 5000 ? `${p.slice(0, 5000)}...[truncated]` : p))
+    } else if (params && typeof params === 'object') {
+      safeParams = { ...params }
+      for (const k in safeParams) {
+        if (typeof safeParams[k] === 'string' && safeParams[k].length > 5000) {
+          safeParams[k] = `${safeParams[k].slice(0, 5000)}...[truncated]`
+        }
+      }
+    }
+
     await $fetch('/api/log/setError', {
       method: 'POST',
       body: {
         statusCode: 500,
-        statusMessage: `[DB Error]: ${error.message}`,
-        query: typeof query === 'string' && query ? query : 'DB Query',
-        stack: error.stack || '',
+        statusMessage: `[DB Error]: ${error?.message || 'Unknown error'} | Query: ${queryPreview}`,
+        query: rawQuery,
+        params: safeParams,
+        code: error?.code || null,
+        url: '[server:dbReq]',
+        stack: error?.stack || 'No stack',
         onServer: true,
       },
     })
@@ -47,13 +66,15 @@ async function logDbError(error, query = '') {
 /**
  * Выполнение обычного SQL-запроса через prepared statement
  */
-export default async (query, params = []) => {
+export default async (query, params = [], { skipErrorLog = false } = {}) => {
   try {
     const [rows] = await pool.execute(query, params)
     return rows
   } catch (error) {
-    console.error('[DB Error]:', error.message, '| Query:', query)
-    await logDbError(error, query)
+    if (!skipErrorLog) {
+      console.error('[DB Error]:', error.message, '| Query:', query)
+      await logDbError(error, query, params)
+    }
     throw createError({
       statusCode: 500,
       statusMessage: 'Database query error',
