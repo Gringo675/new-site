@@ -125,6 +125,7 @@ watch(pageSetup, () => changesHandler({ fromPageSetup: true }), { deep: true })
   <!--        order and quantity-->
   <div class="flex w-full flex-wrap justify-end gap-2">
     <USelect
+      id="catalog-sort"
       v-model="pageSetup.sortBy"
       :items="[
         {
@@ -166,6 +167,7 @@ watch(pageSetup, () => changesHandler({ fromPageSetup: true }), { deep: true })
       trailingIcon="i-heroicons-arrows-up-down-20-solid"
       aria-label="Сортировка" />
     <USelect
+      id="catalog-per-page"
       placeholder="На странице:"
       v-model="pageSetup.prodsOnPage"
       :items="[

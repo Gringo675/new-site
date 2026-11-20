@@ -53,7 +53,7 @@ export type TabsSlots<T extends TabsItem = TabsItem> = {
 </script>
 
 <script setup lang="ts" generic="T extends TabsItem">
-import { TabsRoot, TabsList, TabsIndicator, TabsTrigger, TabsContent, useForwardPropsEmits } from 'reka-ui'
+import { ConfigProvider, TabsRoot, TabsList, TabsIndicator, TabsTrigger, TabsContent, useForwardPropsEmits } from 'reka-ui'
 // import { reactivePick } from '@vueuse/core'
 import UIcon from '#ui/components/Icon.vue'
 
@@ -157,13 +157,16 @@ const handleDocClick = ev => {
   const title = link.getAttribute('data-title') || link.textContent
   showDocViewer({ title, url })
 }
+
+const useTabsId = () => (props.title ? 'info-tabs-cat' : 'info-tabs-prod')
 </script>
 
 <template>
-  <TabsRoot
-    class="my-4"
-    v-bind="rootProps"
-    @update:modelValue="onTabChange">
+  <ConfigProvider :use-id="useTabsId">
+    <TabsRoot
+      class="my-4"
+      v-bind="rootProps"
+      @update:modelValue="onTabChange">
     <div class="flex w-full items-end max-lg:flex-wrap">
       <div
         v-if="title"
@@ -237,4 +240,5 @@ const handleDocClick = ev => {
       </div>
     </div>
   </TabsRoot>
+  </ConfigProvider>
 </template>

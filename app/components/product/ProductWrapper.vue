@@ -100,6 +100,7 @@ const priceMultiplier = ref(1)
             </div>
           </div>
           <URadioGroup
+            id="product-price-vat"
             v-model="priceMultiplier"
             :items="priceOptions" />
 
