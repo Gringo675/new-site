@@ -50,9 +50,7 @@ export function buildProductSortKey(product, propsOrderingMap) {
 
     const propId = Number(product[groupKey])
     if (propId > 0) {
-      const ord = propsOrderingMap instanceof Map
-        ? propsOrderingMap.get(propId)
-        : propsOrderingMap?.[propId]
+      const ord = propsOrderingMap instanceof Map ? propsOrderingMap.get(propId) : propsOrderingMap?.[propId]
 
       if (typeof ord === 'number' && ord >= 0 && ord < 9999) {
         blocks.push(String(ord).padStart(4, '0'))
@@ -67,7 +65,6 @@ export function buildProductSortKey(product, propsOrderingMap) {
   // Tie-breaker: 6-значный ID товара
   const idStr = String(product.id || 0).padStart(6, '0')
   blocks.push(idStr)
-
   return blocks.join('_')
 }
 
@@ -88,9 +85,7 @@ export async function recalculateProductsSortKey(target) {
     targetIds = target.map(Number).filter(Boolean)
   } else if (target && typeof target === 'object') {
     const rawCatId = target.categoryId
-    const catId = typeof rawCatId === 'object' && rawCatId !== null
-      ? Number(rawCatId.value ?? rawCatId.id)
-      : Number(rawCatId)
+    const catId = typeof rawCatId === 'object' && rawCatId !== null ? Number(rawCatId.value ?? rawCatId.id) : Number(rawCatId)
 
     if (catId && !isNaN(catId)) {
       const rows = await dbReq('SELECT id FROM i_products WHERE category_id = ?', [catId])

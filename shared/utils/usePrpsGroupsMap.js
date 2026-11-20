@@ -95,11 +95,18 @@ export const usePrpsGroupsMap = catId => {
         map.get('p7_feature').emptyFirst = true
         map.get('p2_counting_system').sortOrdering = 9
         break
-      case 12: // штангенглубиномеры
+      case 13: // штангенглубиномеры
         map.get('p7_feature').name = 'Зацеп (толщиномер)'
+        map.get('p7_feature').emptyFirst = true
         break
       case 16: // индикаторы
         map.get('p7_feature').name = 'Наличие ушка'
+        break
+      case 18: // нутромеры
+        map.get('p5_accuracy').sortOrdering = 19
+        map.get('p7_feature').name = 'Модификация'
+        map.get('p7_feature').sortOrdering = 29
+        map.get('p7_feature').emptyFirst = true
         break
       case 19: // КМД
         map.get('p1_type').name = 'Категория'
@@ -123,14 +130,18 @@ export const usePrpsGroupsMap = catId => {
         break
       case 30: // Щупы и шаблоны
         map.get('p3_range').name = 'Набор'
+        map.get('p3_range').ordering = 18
         map.get('p4_size').name = 'Модификация'
+        map.get('p4_size').ordering = 19
         break
       case 32: // Кронциркули, циркули
         map.get('p4_size').name = 'Длина'
         map.get('p7_feature').name = 'Модификация'
+        map.get('p7_feature').ordering = 39
         break
       case 33: // Рулетки
         map.get('p7_feature').name = 'Лента'
+        map.get('p7_feature').sortOrdering = 29
         break
       case 35: // Пластины
         map.get('p4_size').name = 'Диаметр'

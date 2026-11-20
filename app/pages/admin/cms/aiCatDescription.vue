@@ -161,7 +161,7 @@ async function generateDescription() {
     inputData: {
       alias: activeCatAlias.value,
     },
-    runId: '8a02eba5-ef9d-4775-b153-4387ce8538c4',
+    // runId: '8a02eba5-ef9d-4775-b153-4387ce8538c4',
   })
 
   if (response) {

@@ -94,7 +94,6 @@ export default defineEventHandler(async event => {
       delete fGroup.ordering
       delete fGroup.ids
     })
-
   }
 
   const stnds = new Set()
