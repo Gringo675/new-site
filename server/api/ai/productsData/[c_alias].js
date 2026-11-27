@@ -37,6 +37,9 @@ function compareDocIds(a, b, docDict) {
 
 export default defineEventHandler(async event => {
   const alias = getRouterParam(event, 'c_alias')
+  const query = getQuery(event)
+  const skipDocText = query.skipDocText === '1' || query.skipDocText === 'true'
+  const includeDescription = query.includeDescription === '1' || query.includeDescription === 'true'
 
   if (!alias || !alias.length) {
     throw createError({ statusCode: 500, statusMessage: 'Incorrect URI!' })
@@ -83,7 +86,9 @@ export default defineEventHandler(async event => {
     return `${acc} AND ${key} IN (${placeholders})`
   }, '')
 
-  const productsQuery = `SELECT id, name, alias, category_id, characteristics, is_ai_characteristics,
+  const extraSelectSql = includeDescription ? ', description, is_ai_description' : ''
+
+  const productsQuery = `SELECT id, name, alias, category_id, characteristics, is_ai_characteristics${extraSelectSql},
                                 ${selectProps},
                                 standart_ids, reestr_ids
                          FROM i_products
@@ -93,14 +98,17 @@ export default defineEventHandler(async event => {
                          ORDER BY sort_key ASC`
   const products = await dbReq(productsQuery, productParams)
 
+  const categoryPayload = {
+    id: catData.id,
+    name: catData.name,
+    alias: catData.alias,
+    characteristics: catData.characteristics || '',
+    ...(includeDescription ? { description: catData.description || '' } : {}),
+  }
+
   if (!products.length) {
     return {
-      category: {
-        id: catData.id,
-        name: catData.name,
-        alias: catData.alias,
-        characteristics: catData.characteristics || '',
-      },
+      category: categoryPayload,
       docs: { stnd: {}, rstr: {} },
       products: [],
     }
@@ -181,7 +189,7 @@ export default defineEventHandler(async event => {
           name: row.name,
           year: parseDocYear(row.number),
           url: fileTrim ? `/static/doc/stnd/${encodeURIComponent(fileTrim)}` : '',
-          text: await fetchDocText(row.file),
+          text: skipDocText ? '' : await fetchDocText(row.file),
         }
       }),
     )
@@ -201,14 +209,13 @@ export default defineEventHandler(async event => {
           name: row.name,
           year: parseDocYear(row.number),
           url_ot: fileOtTrim ? `/static/doc/rstr/${encodeURIComponent(fileOtTrim)}` : '',
-          text_ot: await fetchDocText(row.file_ot),
+          text_ot: skipDocText ? '' : await fetchDocText(row.file_ot),
         }
       }),
     )
   }
 
   await Promise.all([fetchPropertiesTask(), fetchStndDocsTask(), fetchRstrDocsTask()])
-
 
   // 8. Transform formatted products list
   const formattedProducts = products.map(product => {
@@ -246,6 +253,12 @@ export default defineEventHandler(async event => {
       brand,
       characteristics: product.characteristics || '',
       is_ai_characteristics: Boolean(product.is_ai_characteristics),
+      ...(includeDescription
+        ? {
+            description: product.description || '',
+            is_ai_description: Boolean(product.is_ai_description),
+          }
+        : {}),
       props,
       stndIds,
       rstrIds,
@@ -253,12 +266,7 @@ export default defineEventHandler(async event => {
   })
 
   return {
-    category: {
-      id: catData.id,
-      name: catData.name,
-      alias: catData.alias,
-      characteristics: catData.characteristics || '',
-    },
+    category: categoryPayload,
     docs,
     products: formattedProducts,
   }
